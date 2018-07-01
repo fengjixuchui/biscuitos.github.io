@@ -1,6 +1,6 @@
 #Site
-title: 水榭清松-Song Kong
-description: This is Song' home.
+title: BiscuitOS
+description: The Blog for BiscuitOS
 logo: favicon.png
 url: kongsong.me
 rss_url: /feed.xml
@@ -33,17 +33,17 @@ baidu_analytics: 5b31ffbbdc6cff18727f3adf75a03777    #from //hm.baidu.com/hm.js?
 # Author information:
 author:
   #resume: /resume
-  name: Song Kong     #the name of Blog section
-  about_me: I'm Song Kong, a student from BUPT. This is my online home & blog, where I share thoughts about front-end development, my daily life and other insteresting topics. Feel free to contact me by email if you have any question.
+  name: BiscuitOS     #the name of Blog section
+  about_me: BiscuitOS is a open legacy linux distro that basic linux 0.11 to linux 1.0
  
 # Social Links
-email:               hi@kongsong.me
+email:               buddy.zhang@aliyun.com
 #google.plus:        username
 #twitter:            username
-facebook:            kongsong
-github:              songkong
+#facebook:           kongsong
+github:              BiscuitOS
 stackoverflow:      6438519/song-kong   #from a "http://stackoverflow.com/users/123456/username" link
-linkedin:           kongsong
+#linkedin:           kongsong
 #xing:              username
 #instagram:          username
 #lastfm:            username

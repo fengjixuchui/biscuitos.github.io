@@ -1,14 +1,13 @@
 ---
 layout: post
-title:  "由移动端 1px 过粗引发的 viewport 探究"
-date:   2017-07-26 17:31:30 +0800
-categories: [Tech]
-excerpt: UI 一直嫌弃 1px 分割线过粗？解决问题之前，先花一点时间研究下问题的原因吧。
+title:  "Tour of BiscuitOS on Beging"
+date:   2018-07-01 10:18:30 +0800
+categories: [All]
+excerpt: This is a simple guide to introduce how to running BiscuitOS.
 tags:
   - CN
-  - front-end
-  - Mobile
-  - html
+  - Kernel
+  - Linux
 ---
 
 在探究 viewport 前，需要了解一些概念：

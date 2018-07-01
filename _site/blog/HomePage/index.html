@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BiscuitOS 的第一步</title>
+  <meta name="description" content="This is a simple guide to introduce how to running BiscuitOS.">
+
+  <link rel="stylesheet" href="/assets/css/main.css" | prepend: site.baseurl }}">
+  <link rel="canonical" href="kongsong.me/blog/HomePage/">
+  <link rel="alternate" type="application/rss+xml" title="BiscuitOS" href="kongsong.me/feed.xml">
+  <script src="/assets/js/jquery-1.8.2.min.js" | prepend: site.baseurl }}"></script>
+  <script src="/assets/js/jPages.js" | prepend: site.baseurl }}"></script>
+  <script src="/assets/js/script.js" | prepend: site.baseurl }}"></script>
+  <script src="/assets/js/snap.svg-min.js" | prepend: site.baseurl }}"></script>
+  <script src="/assets/js/svg-animation.js" | prepend: site.baseurl }}"></script>
+  <script defer src="https://buttons.github.io/buttons.js"></script>
+</head>
+
+  
+  <body>
+	
+	<div class="main-wrapper">
+		<header id="header">
+  <div class="wrapper">
+    <nav>
+      
+        <a href=" /">Home</a>
+        <a href=" /blog ">Blog</a>
+        <a href=" /feed.xml "><i class="fa fa-rss" aria-hidden="true"></i></a>
+      
+    </nav>
+  </div>
+</header>
+
+		<section id="banner">
+    <div class="wrapper">
+	    <svg id="ice-bear" xmlns="http://www.w3.org/2000/svg"  version="1.1" width="100%" height="100%" viewBox="0 0 800 400">
+		
+            <g id="welcom-text" style="text-shadow: 1px 1px #EFEFEF, 2px 2px #ccc">
+                <text x="50" y="130" fill="#ed5565" font-size="100">W</text>
+                <text x="160" y="180" fill="#f4b350" font-size="100">E</text>
+                <text x="230" y="140" fill="#f2db94" font-size="130">L</text>
+                <text x="310" y="160" fill="#62ddbd" font-size="100">C</text>
+                <text x="400" y="160" fill="#62B3E5" font-size="90">O</text>
+                <text x="480" y="160" fill="#ec87c0" font-size="120">M</text>
+                <text x="600" y="160" fill="#b3aeef" font-size="100">E</text>
+            </g>
+            <g id="bear-head" fill="white">
+                <circle r="20" cx="380" cy="310"/>
+                <circle r="20" cx="500" cy="310"/>
+                <path d="M 360 400 V 355 A30 30 0 0 1 520 360 V 400"/>
+                <circle r="5px" cx="410" cy="330" fill="black"/>
+                <circle r="5px" cx="470" cy="330" fill="black"/>
+                <ellipse rx="15" ry="10" cx="440" cy="340" fill="black"/>
+                <path d="M 430 360 Q 440 370 450 360" stroke="black" stroke-width="2"/>
+            </g>
+            <g id="bear-paw-left">
+                <path d="M 305 410 V 300 A30 30 0 0 1 365 310 V 410"fill="white" stroke="#C4E8F8" stroke-width="1px"/>
+                <g fill="#62B3E5">
+                    <circle r="5" cx="315" cy="305"/>
+                    <circle r="5" cx="355" cy="305"/>
+                    <circle r="5" cx="327" cy="295"/>
+                    <circle r="5" cx="343" cy="295"/>
+                    <ellipse rx="15" ry="10" cx="335" cy="320"/>
+                </g>
+                <!--<animateTransform attributeName="transform" begin="0s" dur="3s" type="rotate" values="-14 340 400;15 340 400;-15 340 400" repeatCount="indefinite"/>-->
+            </g>
+            <g id="sea">
+                <path d="M 60 400 C 70 360 150 360 160 400 C 170 360 250 360 260 400 C 270 360 350 360 360 400 C 370 360 450 360 460 400 C 470 360 550 360 560 400 C 570 360 650 360 660 400 C 670 360 750 360 760 400 Z"  fill="#62B3E5"/>
+            </g>
+            <g id="bear-paw-right">
+                <path d="M 515 440 V 380 A30 30 0 0 1 575 390 V 440"fill="white" stroke="#C4E8F8" stroke-width="1px" transform="rotate(20, 575 390)"/>
+            </g>
+        </svg>
+    </div>
+</section>
+
+			<section style="padding-bottom: 0">
+		<article class="wrapper">
+			<div class="post-header">
+			<h2 class="red-title" >BiscuitOS 的第一步</h2>
+			<ul class="tags">
+				
+				<li><a href="/tags#CN">CN</a></li>
+				
+				
+				<li><a href="/tags#Kernel">Kernel</a></li>
+				
+				
+				<li><a href="/tags#Linux">Linux</a></li>
+				
+				
+			</ul>
+			<div class="line-highlight">01 Jul 2018</div>
+			</div>
+			<div class="post-content">
+				<h2 id="section">简介</h2>
+
+<p>BiscuitOS 是一个基于古老版本 Linux 的发行版，其主要目的就是给开发者提供一个简单，
+  易用，有趣的 Linux 调试环境，让开发者专注于代码调试，减少繁琐的移植和编译问题。
+  截止目前，BiscuitOS 已经支持 Linux 0.11 到 Linux 1.0.1 各版本内核。 BiscuitOS 
+  支持内核列表：</p>
+
+<ul>
+  <li>linux 0.11</li>
+  <li>linux 0.12</li>
+  <li>linux 0.95</li>
+  <li>linux 0.96</li>
+  <li>linux 0.97</li>
+  <li>linux 0.98</li>
+  <li>linux 0.99</li>
+  <li>linux 1.0.1</li>
+</ul>
+
+<h2 id="feature">Feature</h2>
+
+<p>BiscuitOS 作为一个 Legacy Linux 发行版，完整还原了早期 Linux 内核，并提供基础的 
+  Rootfs，使其基于 qemu 可以在现代 PC 机上运行并调试。BiscuitOS  是一款专注于开发
+  者使用的发行版，其以下特点符合多数开发者需求：</p>
+
+<ul>
+  <li>BiscuitOS 是一款基于 Intel X86 的操作系统，其运行在 qemu 模拟的 X86 环境中，
+对于无硬件环境的开发者较友好。</li>
+  <li>BiscuitOS 的内核支持 Kbuild 编译环境，开发者可以只用 <code class="highlighter-rouge">make menuconfig</code> 进行自定义
+内核编译，这将大大减少编译带来的问题。对于想研究内核 Kconfig 语法及编译过程的开
+发者比较友好。</li>
+  <li>BiscuitOS 的内核支持自定义链接过程，可通过修改链接脚本控制整个链接过程，对于想研
+究内核链接过程的开发者比较友好。</li>
+  <li>BiscuitOS 提供了多版本的内核，对于想研究某个子系统的发展历史的开发者，可以结合原
+理对每行代码进行在线调试。</li>
+  <li>BiscuitOS 提供了 debug call 机制，开发者之用编写自己的代码，使用 debug call 
+机制，就能在内核不同阶段运行你的代码，这个功能利于开发者快速调试自己的代码</li>
+  <li>BiscuitOS 提供了一套完成的调试机制，从上电开始，开发者就可以使用基于 gdb 的调试
+工具，逐行进行在线调试。</li>
+  <li>BiscuitOS 提供了一套 POSIX system call 的 demo code，开发者可以通过 demo code 
+从用户空间到内核空间调试每一个系统调用。BiscuitOS 也提供了一套自定义的 LibC 库，
+开发者可以自行创建符合 POSIX 的系统调用。</li>
+  <li>BiscuitOS 提供了一套通过中断机制，开发者可以通过这套机制使用并调试触发每种中断
+   到方法。</li>
+  <li>BiscuitOS 包含了一套精简到 VFS 机制，并支持 minix, ext, ext2, msdos 等 9 种文件
+系统， BiscuitOS 也提供了制作这 9 种 Rootfs 的方法。以便开发者了解文件系统，VFS 
+和 Rootfs 之间的联系。</li>
+  <li>BiscuitOS 包含了一套精简到 VM 机制，并支持逻辑地址，虚拟地址，线性地址和物理地
+址之间的转换代码，同时支持 kmalloc，vmalloc，page 等内存分配器。为开发者提供了
+一套 demo code 以便完整理解 linux 内存机制的运作原理。</li>
+  <li>BiscuitOS 还提供了调度，驱动等子系统的 demo code，开发者可以通过调试 demo code，
+可以深入理解每种机制的运作原理。</li>
+</ul>
+
+<h2 id="biscuitos-">BiscuitOS 的使用</h2>
+
+<p>在使用 BiscuitOS 之前，开发者需要准备一套 Linux PC，最好是 Ubuntu 16.04 ，本教程
+  以 Ubuntu16.04-64Bit 为例，其他 Linux 发行版照旧</p>
+
+<ul>
+  <li>安装必要的开发工具</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">    <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">qemu</span> <span class="n">gcc</span> <span class="n">make</span> <span class="n">gdb</span> <span class="n">git</span> <span class="n">indent</span> <span class="n">lib32z1</span> <span class="n">lib32z1</span><span class="o">-</span><span class="n">dev</span>
+    <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">libncurses5</span><span class="o">-</span><span class="n">dev</span>
+    </code></pre></figure>
+
+<ul>
+  <li>获得源码.安装完必要的开发工具之后，开发者可以从 github 上获得源码，使用以下命令
+下载到特定的目录：</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">    <span class="n">git</span> <span class="nb">clone</span> <span class="n">https</span><span class="ss">:/</span><span class="o">/</span><span class="n">github</span><span class="p">.</span><span class="nf">com</span><span class="o">/</span><span class="no">BiscuitOS</span><span class="o">/</span><span class="no">Kernel</span><span class="p">.</span><span class="nf">git</span>
+    </code></pre></figure>
+
+<ul>
+  <li>配置和编译内核.第一编译内核，请使用如下命令：</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">    <span class="n">make</span> <span class="n">defconfig</span>
+    <span class="n">make</span>
+    </code></pre></figure>
+
+<ul>
+  <li>运行内核.在编译完内核之后，开发者在 Linux PC 上直接运行内核，使用如下命令：</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">    <span class="n">make</span> <span class="n">start</span>
+    </code></pre></figure>
+
+<ul>
+  <li>自定义配置内核.开发当然可以根据自己的需求去裁剪和添加内核功能，可以使用如下
+命令进行：</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">    <span class="n">make</span> <span class="n">menuconfig</span>
+    </code></pre></figure>
+
+
+			</div>
+			
+			
+<div style="margin-top:30px">
+    <a href="https://twitter.com/intent/tweet?text=kongsong.me/blog/HomePage/" class="share-btn twitter-btn" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i></a>
+    <a href="https://plus.google.com/share?url=kongsong.me/blog/HomePage/" class="share-btn googleplus-btn" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i></a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=kongsong.me/blog/HomePage/" class="share-btn facebook-btn" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i></a>
+    <a href="http://v.t.sina.com.cn/share/share.php?title=kongsong.me/blog/HomePage/" class="share-btn weibo-btn" title="Share on Sina Weibo"><i class="fa fa-fw fa-weibo" aria-hidden="true"></i></a>
+</div>
+
+
+		</article>
+	</section>
+	<section id="comments">
+    <div class="wrapper">
+        <div class="line-highlight"><i class="fa fa-paw" aria-hidden="true"></i></div>
+		
+        <h1 class="blue-title">Comments</h1>
+		
+		
+		<div id="disqus_thread"></div>
+		<!--<div class="comment-desc">Powered by Disqus. If your browser can't load comments successfully, maybe you need to use a vpn.</div>-->
+		<script>
+		/** * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS. * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+		/*
+		var disqus_config = function () { this.page.url = PAGE_URL;
+		// Replace PAGE_URL with your page's canonical URL variable this.page.identifier = PAGE_IDENTIFIER;
+		// Replace PAGE_IDENTIFIER with your page's unique identifier variable };
+		*/
+			(function() { // DON'T EDIT BELOW THIS LINE
+				var d = document, s = d.createElement('script');
+				s.src = '//kongsong.disqus.com/embed.js';
+				s.setAttribute('data-timestamp', +new Date());
+				(d.head || d.body).appendChild(s);
+			})();
+		</script>
+		<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+		
+       	
+        
+        <!-- 来必力City版安装代码 -->
+        <div id="lv-container" data-id="city" data-uid="MTAyMC8yODgzNC81NDA0">
+            <script type="text/javascript">
+                (function(d, s) {
+                 var j, e = d.getElementsByTagName(s)[0];
+                 
+                 if (typeof LivereTower === 'function') { return; }
+                 
+                 j = d.createElement(s);
+                 j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+                 j.async = true;
+                 
+                 e.parentNode.insertBefore(j, e);
+                 })(document, 'script');
+                </script>
+            <noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+        </div>
+        <!-- City版安装代码已完成 -->
+        
+        
+		
+    </div>
+</section>
+
+		
+		<footer id="footer">
+  <div class="footer-border"></div>
+  <div class="footer-content">
+    <div class="social-wrapper text-center">
+      <ul class="social-lists">
+        <li><a class="social-btn btn-white" href="mailto:buddy.zhang@aliyun.com" target="_blank" rel="noopener noreferrer" title="Mail me"><i class="fa fa-fw fa-envelope"></i></a></li>
+        
+        
+        
+        
+        
+        
+        
+        
+        <li><a class="social-btn btn-white" href="http://github.com/BiscuitOS" target="_blank" rel="noopener noreferrer" title="Follow me on Github"><i class="fa fa-fw fa-github"></i></a></li>
+        <li><a class="social-btn btn-white" href="http://stackoverflow.com/users/6438519/song-kong" target="_blank" rel="noopener noreferrer" title="Follow me on Stackoverflow"><i class="fa fa-fw fa-stack-overflow"></i></a></li>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+      </ul>
+    </div>
+    <div class="copyright text-center">Copyright © 2018 BiscuitOS. Powered by Jekyll.</div>
+  </div>
+  <div id="top" class="btn-top" style="display:none">
+    <a href=" #header "><i class="fa fa-paw" aria-hidden="true"></i></a>
+  </div>
+</footer>
+	</div>
+	
+  </body>
+  <!-- Google analytics -->
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-82494501-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
+
+
+<!-- Baidu analytics -->
+
+<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?5b31ffbbdc6cff18727f3adf75a03777";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+
+</script>
+
+
+</html>

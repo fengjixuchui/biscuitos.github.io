@@ -9,8 +9,8 @@
   <meta name="description" content="IOS 9 和 10 利用 Universal Link 调起原生 App，告别系统体验极差的弹窗。其它版本 IOS 和安卓利用 iframe 调起 App。">
 
   <link rel="stylesheet" href="/assets/css/main.css" | prepend: site.baseurl }}">
-  <link rel="canonical" href="http://localhost:4000/blog/web-call-app/">
-  <link rel="alternate" type="application/rss+xml" title="水榭清松-Song Kong" href="http://localhost:4000/feed.xml">
+  <link rel="canonical" href="kongsong.me/blog/web-call-app/">
+  <link rel="alternate" type="application/rss+xml" title="BiscuitOS" href="kongsong.me/feed.xml">
   <script src="/assets/js/jquery-1.8.2.min.js" | prepend: site.baseurl }}"></script>
   <script src="/assets/js/jPages.js" | prepend: site.baseurl }}"></script>
   <script src="/assets/js/script.js" | prepend: site.baseurl }}"></script>
@@ -109,7 +109,7 @@
 
 <p>由于微信和微博存在坑，开发中，我们首先判断当前页面是否在微信或微博中，若是，可以显示一个蒙板提醒用户在浏览器中打开当前页面。</p>
 
-<h4 id="1-判断浏览器类型">1. 判断浏览器类型</h4>
+<h4 id="section">1. 判断浏览器类型</h4>
 
 <hr />
 
@@ -123,7 +123,7 @@
 	<span class="k">return</span>
 <span class="p">}</span></code></pre></figure>
 
-<h4 id="2-iframe-调起-app">2. iframe 调起 App。</h4>
+<h4 id="iframe--app">2. iframe 调起 App。</h4>
 
 <hr />
 
@@ -136,7 +136,7 @@
 <span class="kd">var</span> <span class="nx">iframeHtml</span> <span class="o">=</span> <span class="s1">'&lt;iframe src="'</span> <span class="o">+</span> <span class="nx">naUrl</span> <span class="o">+</span> <span class="s1">'" id="open_app" width="0" height="0" style="border: 0;display: none;"/&gt;'</span><span class="p">;</span>
 <span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">iframeHtml</span><span class="p">);</span></code></pre></figure>
 
-<h4 id="3-判断本地是否安装-app">3. 判断本地是否安装 App</h4>
+<h4 id="app">3. 判断本地是否安装 App</h4>
 
 <hr />
 
@@ -153,14 +153,14 @@
     <span class="p">}</span>
 <span class="p">},</span> <span class="mi">1000</span><span class="p">);</span></code></pre></figure>
 
-<h4 id="4-ios-9-和-10-利用-universal-link-调起-app">4. IOS 9 和 10 利用 Universal Link 调起 App</h4>
+<h4 id="ios-9--10--universal-link--app">4. IOS 9 和 10 利用 Universal Link 调起 App</h4>
 
 <hr />
 
 <p>在 IOS 9 和 10 中，无法利用 iframe 调起 App，可以使用<code class="highlighter-rouge">location.href</code>直接跳转 App，但会出现两个问题：1. 当本地有 App 时，Safari 弹出<code class="highlighter-rouge">是否打开 App</code>的弹窗，当用户两次选择<code class="highlighter-rouge">取消</code>时，页面会跳转到苹果官网。2. 当本地无 App 时，Safari 会弹出<code class="highlighter-rouge">无效的链接</code>的弹窗，然后才会弹出<code class="highlighter-rouge">是否打开 Appstore</code>的弹窗，体验非常不好。因此，我们使用 Universal Link 来调起 App。</p>
 
 <blockquote>
-  <h6 id="universal-link-是什么">Universal Link 是什么？</h6>
+  <h6 id="universal-link-">Universal Link 是什么？</h6>
   <p>简单地说就是通过一个 https 的链接，完成从浏览器直接跳转到 App 或者在没安装 App 的情况下跳转到指定页面。没有是否要进入 App 的弹窗，没有微信客户端限制跳转。</p>
 </blockquote>
 
@@ -171,7 +171,7 @@
 	<span class="k">return</span><span class="p">;</span>
 <span class="p">}</span></code></pre></figure>
 
-<h4 id="5-切换到后台后的相关处理">5. 切换到后台后的相关处理</h4>
+<h4 id="section-1">5. 切换到后台后的相关处理</h4>
 
 <hr />
 
@@ -205,10 +205,10 @@
 
 			
 <div style="margin-top:30px">
-    <a href="https://twitter.com/intent/tweet?text=http://localhost:4000/blog/web-call-app/" class="share-btn twitter-btn" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i></a>
-    <a href="https://plus.google.com/share?url=http://localhost:4000/blog/web-call-app/" class="share-btn googleplus-btn" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i></a>
-    <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/blog/web-call-app/" class="share-btn facebook-btn" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i></a>
-    <a href="http://v.t.sina.com.cn/share/share.php?title=http://localhost:4000/blog/web-call-app/" class="share-btn weibo-btn" title="Share on Sina Weibo"><i class="fa fa-fw fa-weibo" aria-hidden="true"></i></a>
+    <a href="https://twitter.com/intent/tweet?text=kongsong.me/blog/web-call-app/" class="share-btn twitter-btn" title="Share on Twitter"><i class="fa fa-fw fa-twitter" aria-hidden="true"></i></a>
+    <a href="https://plus.google.com/share?url=kongsong.me/blog/web-call-app/" class="share-btn googleplus-btn" title="Share on Google Plus"><i class="fa fa-fw fa-google-plus" aria-hidden="true"></i></a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=kongsong.me/blog/web-call-app/" class="share-btn facebook-btn" title="Share on Facebook"><i class="fa fa-fw fa-facebook" aria-hidden="true"></i></a>
+    <a href="http://v.t.sina.com.cn/share/share.php?title=kongsong.me/blog/web-call-app/" class="share-btn weibo-btn" title="Share on Sina Weibo"><i class="fa fa-fw fa-weibo" aria-hidden="true"></i></a>
 </div>
 
 
@@ -271,16 +271,16 @@
   <div class="footer-content">
     <div class="social-wrapper text-center">
       <ul class="social-lists">
-        <li><a class="social-btn btn-white" href="mailto:hi@kongsong.me" target="_blank" rel="noopener noreferrer" title="Mail me"><i class="fa fa-fw fa-envelope"></i></a></li>
-        
-        
-        <li><a class="social-btn btn-white" href="http://facebook.com/kongsong" target="_blank" rel="noopener noreferrer" title="Follow me on Facebook"><i class="fa fa-fw fa-facebook"></i></a></li>
-        
-        <li><a class="social-btn btn-white" href="http://linkedin.com/in/kongsong" target="_blank" rel="noopener noreferrer" title="Follow me on Linkedin"><i class="fa fa-fw fa-linkedin"></i></a></li>
+        <li><a class="social-btn btn-white" href="mailto:buddy.zhang@aliyun.com" target="_blank" rel="noopener noreferrer" title="Mail me"><i class="fa fa-fw fa-envelope"></i></a></li>
         
         
         
-        <li><a class="social-btn btn-white" href="http://github.com/songkong" target="_blank" rel="noopener noreferrer" title="Follow me on Github"><i class="fa fa-fw fa-github"></i></a></li>
+        
+        
+        
+        
+        
+        <li><a class="social-btn btn-white" href="http://github.com/BiscuitOS" target="_blank" rel="noopener noreferrer" title="Follow me on Github"><i class="fa fa-fw fa-github"></i></a></li>
         <li><a class="social-btn btn-white" href="http://stackoverflow.com/users/6438519/song-kong" target="_blank" rel="noopener noreferrer" title="Follow me on Stackoverflow"><i class="fa fa-fw fa-stack-overflow"></i></a></li>
         
         
