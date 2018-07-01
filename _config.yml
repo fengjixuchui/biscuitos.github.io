@@ -2,7 +2,7 @@
 title: BiscuitOS
 description: The Blog for BiscuitOS
 logo: favicon.png
-url: kongsong.me
+url: BiscuitOS.me
 rss_url: /feed.xml
 
 # Jekyll
@@ -21,7 +21,7 @@ sass:
 
 # Comment
 comment:
-  disqus: kongsong    
+  disqus: BiscuitOS    
   # duoshuo: kongsong
   # youyan: 2122392
   laibili: MTAyMC8yODgzNC81NDA0
@@ -42,7 +42,7 @@ email:               buddy.zhang@aliyun.com
 #twitter:            username
 #facebook:           kongsong
 github:              BiscuitOS
-stackoverflow:      6438519/song-kong   #from a "http://stackoverflow.com/users/123456/username" link
+#stackoverflow:      6438519/song-kong   #from a "http://stackoverflow.com/users/123456/username" link
 #linkedin:           kongsong
 #xing:              username
 #instagram:          username
