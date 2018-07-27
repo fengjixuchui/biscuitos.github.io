@@ -22,8 +22,8 @@ sass:
 # Comment
 comment:
   disqus: BiscuitOS    
-  # duoshuo: kongsong
-  # youyan: 2122392
+  # duoshuo: 
+  # youyan: 
   laibili: MTAyMC8yODgzNC81NDA0
 
 # Website analytics
@@ -39,7 +39,7 @@ author:
 # Social Links
 email:               buddy.zhang@aliyun.com
 #google.plus:        username
-#twitter:            username
+twitter:             BiscuitOS
 #facebook:           kongsong
 github:              BiscuitOS
 #stackoverflow:      6438519/song-kong   #from a "http://stackoverflow.com/users/123456/username" link
