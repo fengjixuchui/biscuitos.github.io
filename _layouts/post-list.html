@@ -10,8 +10,8 @@ layout: default
 				<h1 class="blue-title">Posts</h1>
 			</div>
 			<div class="posts-tabs">
-				<span class="posts-tab-item btn-left tab-one active">All</span>
-				<span class="posts-tab-item btn-right tab-two">Life</span>
+				<span class="posts-tab-item btn-left tab-one active">Top</span>
+				<span class="posts-tab-item btn-right tab-two">Build</span>
 
 				{% for tab in site.data.post_blog.tabs %}
 				<span class="posts-tab-item btn-right tab-{{ tab.id }}">{{ tab.title }}</span>
@@ -22,7 +22,7 @@ layout: default
 			</div>
 			<ul class="posts-list tab-one-list" id="pag-itemContainer-one">
 				{% assign counter-one = 0 %}
-				{% for post in site.categories.All %}
+				{% for post in site.categories.Top %}
 				{% assign counter-one = counter-one | plus: 1 %}
 				<li>
 					<h2>
@@ -44,7 +44,7 @@ layout: default
 			</ul>
 			<ul class="posts-list tab-two-list tab-hidden" id="pag-itemContainer-two">
 				{% assign counter-two = 0 %}
-				{% for post in site.categories.Life %}
+				{% for post in site.categories.Build %}
 				{% assign counter-two = counter-two | plus: 1 %}
 				<li>
 					<h2>
@@ -66,7 +66,7 @@ layout: default
 			</ul>
 			<ul class="posts-list tab-thr-list tab-hidden" id="pag-itemContainer-3">
 				{% assign counter-thr = 0 %}
-				{% for post in site.categories.Custom3 %}
+				{% for post in site.categories.VFS %}
 				{% assign counter-thr = counter-thr | plus: 1 %}
 				<li>
 					<h2>
@@ -88,7 +88,7 @@ layout: default
 			</ul>		
 			<ul class="posts-list tab-fou-list tab-hidden" id="pag-itemContainer-4">
 				{% assign counter-thr = 0 %}
-				{% for post in site.categories.Custom4 %}
+				{% for post in site.categories.MMU %}
 				{% assign counter-thr = counter-thr | plus: 1 %}
 				<li>
 					<h2>
@@ -110,7 +110,7 @@ layout: default
 			</ul>		
 			<ul class="posts-list tab-fiv-list tab-hidden" id="pag-itemContainer-5">
 				{% assign counter-thr = 0 %}
-				{% for post in site.categories.Custom5 %}
+				{% for post in site.categories.IO %}
 				{% assign counter-thr = counter-thr | plus: 1 %}
 				<li>
 					<h2>
@@ -132,7 +132,7 @@ layout: default
 			</ul>		
 			<ul class="posts-list tab-six-list tab-hidden" id="pag-itemContainer-6">
 				{% assign counter-thr = 0 %}
-				{% for post in site.categories.Custom6 %}
+				{% for post in site.categories.Device %}
 				{% assign counter-thr = counter-thr | plus: 1 %}
 				<li>
 					<h2>
@@ -154,7 +154,7 @@ layout: default
 			</ul>		
 			<ul class="posts-list tab-svn-list tab-hidden" id="pag-itemContainer-7">
 				{% assign counter-thr = 0 %}
-				{% for post in site.categories.Custom7 %}
+				{% for post in site.categories.C/C++ %}
 				{% assign counter-thr = counter-thr | plus: 1 %}
 				<li>
 					<h2>
@@ -176,7 +176,7 @@ layout: default
 			</ul>		
 			<ul class="posts-list tab-egt-list tab-hidden" id="pag-itemContainer-8">
 				{% assign counter-thr = 0 %}
-				{% for post in site.categories.Custom8 %}
+				{% for post in site.categories.Demo %}
 				{% assign counter-thr = counter-thr | plus: 1 %}
 				<li>
 					<h2>
