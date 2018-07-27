@@ -1,19 +1,19 @@
 tabs:
      - id: thr
-       title: Custom3
+       title: VFS
 
      - id: fou
-       title: Custom4
+       title: MMU
 
      - id: fiv
-       title: Custom5
+       title: IO
 
      - id: six
-       title: Custom6
+       title: Device
 
      - id: svn
-       title: Custom7
+       title: C/C++
 
      - id: egt
-       title: Custom8
+       title: Demo
 
