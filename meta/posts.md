@@ -1,6 +1,6 @@
 ---
 layout: post-list
-title:  Blog of Song
+title:  BiscuitOS
 description: "List of posts"
 permalink: /blog/
 comment: true
