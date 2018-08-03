@@ -19,16 +19,16 @@ tags:
 --------------------------------------------------------
 目录
 
-> Ubuntu 14.04/16.04
+> Ubuntu 14.04/16.04 Vmware/VirtualBox
     
-> Ubuntu 18.04
+> Ubuntu 18.04/17.10 Vmware/VirtualBox
     
 > Fedora
     
 > Mint
 
 --------------------------------------------------------
-## Ubuntu 14.04/16.04
+## Ubuntu 14.04/16.04 Vmware/VirtualBox
 
 作为 BiscuitOS 开发的首选平台，开发者首先确认是否安装必要的开发工具，如
 果没有，请安如下步骤安装：
@@ -51,9 +51,10 @@ git config —global user.email “Your Email"
 至此，基本的开发工具已经安装完成。
 
 ----------------------------------------------------------
-## Ubuntu 18.04
+## Ubuntu 18.04/17.10 Vmware/VirtualBox
 
-类似于 Ubuntu 16.04，Ubuntu 18.04 有不同的地方，开发者首先确认是否安装必要的开发工具，如果没有，请安如下步骤安装：
+类似于 Ubuntu 16.04，Ubuntu 18.04/17.10 有不同的地方，开发者首先确认是否
+安装必要的开发工具，如果没有，请安如下步骤安装：
 
 安装必要的开发工具，使用如下命令：
 
@@ -70,7 +71,8 @@ git config —global user.name “Your Name”
 git config —global user.email “Your Email"
 {% endhighlight %}
 
-由于 Ubuntu 18.04 默认的 gcc 版本是 7，版本导致很多编译问题，所以开发者需要修改 gcc 版本为 4.8，具体步骤如下：
+由于 Ubuntu 18.04/17.10 默认的 gcc 版本是 7，版本导致很多编译问题，所以
+开发者需要修改 gcc 版本为 4.8，具体步骤如下：
 
 {% highlight ruby %}
 sudo apt-get update
