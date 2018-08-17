@@ -5,8 +5,8 @@ date:   2018-08-17 14:58:30 +0800
 categories: [MMU]
 excerpt: ADC 进位运算引起的 CF 置位.
 tags:
-  - Kernel
-  - Linux
+  - EFLAGS
+  - CF
 ---
 
 ## 原理
@@ -78,14 +78,13 @@ make menuconfig
 
 运行实例代码，使用如下代码：
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000020.png)
-
 {% highlight ruby %}
 cd BiscuitOS/kernel/linux_1.0.1.1/
 make 
 make start
 {% endhighlight %}
 
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000020.png)
 ## 源码分析
 
 源码位置：
