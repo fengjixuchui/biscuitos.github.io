@@ -48,37 +48,37 @@ make menuconfig
 由于 BiscuitOS 的内核使用 Kbuild 构建起来的，在执行完 make menuconfig 之后，
 系统会弹出内核配置的界面，开发者根据如下步骤进行配置：
 
-![Menuconfig](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MMU000003.png)
+![Menuconfig](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000003.png)
 
 选择 **kernel hacking**，回车
 
-![Menuconfig1](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MMU000004.png)
+![Menuconfig1](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000004.png)
 
 选择 **Demo Code for variable subsystem mechanism**, 回车
 
-![Menuconfig2](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MMU000005.png)
+![Menuconfig2](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000005.png)
 
 选择 **MMU (Memory Manager Unit) on X86 Architecture**, 回车
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MMU000006.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000006.png)
 
 选择 **Data storage： Main  Memory, Buffer, Cache**, 回车
 
-![Menuconfig4](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MMU000007.png)
+![Menuconfig4](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000007.png)
 
 选择 **Register: X86 Common Register mechanism**, 回车
 
-![Menuconfig5](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MMU000008.png)
+![Menuconfig5](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000008.png)
 
 选择 **EFLAGS： Current status register of processor**, 回车
 
-![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MMU000019.png)
+![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000019.png)
 
 选择 **ADC   Addition with carry bit**.
 
 运行实例代码，使用如下代码：
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MMU000020.png)
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000020.png)
 
 {% highlight ruby %}
 cd BiscuitOS/kernel/linux_1.0.1.1/
@@ -94,7 +94,7 @@ make start
 BiscuitOS/kernel/linux_1.0.1.1/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 {% endhighlight %}
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MMU000021.png)
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000021.png)
 
 源码如上图，将立即数 0xFFFF 存储到 AX 寄存器中，调用 add 指令使 AL 寄存器增
 加 1，接着将立即数 0x1 存储到 BX 寄存器中，调用 ADC 命令对 BX 寄存器里面的
@@ -103,7 +103,7 @@ BiscuitOS/kernel/linux_1.0.1.1/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 
 ##### 运行结果如下：
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MMU000022.png)
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000022.png)
 
 ##### 运行分析：
 
@@ -113,6 +113,6 @@ BiscuitOS/kernel/linux_1.0.1.1/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 
 ## 附录
 
-[ADC 指令 Intel Architectures Software Developer's Manual: Combined Volumes: 2 Instruction Set Reference,A-Z-- Chapter 3 Instruction Set Reference,A-L: 3.2 Instruction(A-L) : ADC -- Add with Carry](https://software.intel.com/en-us/articles/intel-sdm)
+[1. ADC 指令 Intel Architectures Software Developer's Manual: Combined Volumes: 2 Instruction Set Reference,A-Z-- Chapter 3 Instruction Set Reference,A-L: 3.2 Instruction(A-L) : ADC -- Add with Carry](https://software.intel.com/en-us/articles/intel-sdm)
 
-[Intel Architectures Software Developer's Manual](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/Intel-IA32_DevelopmentManual.pdf)
+[2. Intel Architectures Software Developer's Manual](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/Intel-IA32_DevelopmentManual.pdf)
