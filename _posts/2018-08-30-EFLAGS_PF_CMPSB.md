@@ -82,7 +82,7 @@ make
 make start
 {% endhighlight %}
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000118.png)
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000121.png)
 
 ## 源码分析
 
@@ -92,7 +92,7 @@ make start
 BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 {% endhighlight %}
 
-![Menuconfig8](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000119.png)
+![Menuconfig8](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000122.png)
 
 源码如上图，将字符串 “Hello EWorld”的地址存储到 ESI 寄存器中，再将字符串 
 “Hello BiscuitOS”的地址存储到 EDI 寄存器中，再将立即数 10 存储到 CX 寄存器
@@ -108,7 +108,7 @@ ESI 和 EDI 寄存器指向的字符串会从各自字符串的第一个字节�
 
 #### 运行结果如下：
 
-![Menuconfig9](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000120.png)
+![Menuconfig9](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000123.png)
 
 #### 运行分析：
 
