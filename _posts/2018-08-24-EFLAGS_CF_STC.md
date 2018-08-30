@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "ADC 进位运算引起的 CF 置位"
-date:   2018-08-17 14:58:30 +0800
+title:  "STC 置位 CF 标志位"
+date:   2018-08-24 16:29:30 +0800
 categories: [MMU]
-excerpt: ADC 进位运算引起的 CF 置位.
+excerpt: STC 置位 CF 标志位.
 tags:
   - EFLAGS
   - CF
@@ -11,18 +11,11 @@ tags:
 
 ## 原理
 
-Intel X86 提供了 ADC 指令，该指令用于在一次加法运算中，如果 CF 已经值位，
-那么会累加一个 1，反之不累加。ADC 指令中，两个数的和存储在与任意通用寄存器
-中，ADC 命令执行的时候检测到 CF 已经值位，和累加 1。
-
-{% highlight ruby %}
-CF 值位： AX = AX + BX + 1
-CF 清零： AX = AX + BX
-{% endhighlight %}
+Intel X86 提供了 STC 指令，该指令用于置位 EFLAGS 的 CF 标志位。
 
 ## 实践
 
-BiscuitOS 提供了 ADC 相关的实例代码，开发者可以使用如下命令：
+BiscuitOS 提供了 STC 相关的实例代码，开发者可以使用如下命令：
 
 首先，开发者先准备 BiscuitOS 系统，内核版本 linux 1.0.1.2。开发可以参照文档
 构建 BiscuitOS 调试环境：
@@ -72,9 +65,11 @@ make menuconfig
 
 选择 **EFLAGS： Current status register of processor**, 回车
 
-![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000019.png)
+选择 **CF    Carry Flag(bit 0)**.
 
-选择 **ADC   Addition with carry bit**.
+选择 **STC Set Carry flag on EFLAGS register**.
+
+![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000055.png)
 
 运行实例代码，使用如下代码：
 
@@ -84,7 +79,8 @@ make
 make start
 {% endhighlight %}
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000020.png)
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000056.png)
+
 ## 源码分析
 
 源码位置：
@@ -93,25 +89,29 @@ make start
 BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 {% endhighlight %}
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000021.png)
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000057.png)
 
-源码如上图，将立即数 0xFFFF 存储到 AX 寄存器中，调用 add 指令使 AL 寄存器增
-加 1，接着将立即数 0x1 存储到 BX 寄存器中，调用 ADC 命令对 BX 寄存器里面的
-值加一操作。最后将 BX 的值存储到变量 BX 里面。
+源码如上图，调用 STC 指令，如果 CF 置位，则跳转到 CF_SET11 分支，并将立即
+数 1 存储到寄存器 BX 中；如果 CF 清零，则跳转到分支 CF_CLEAR11，并将立即数 
+0 存储到寄存器 BX 中，最终将 BX 的值存储到变量 CF 中。
 
+#### 运行结果如下：
 
-##### 运行结果如下：
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000058.png)
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000022.png)
+#### 运行分析：
 
-##### 运行分析：
+调用 STC 指令， CF 置位，则跳转到分支 CF_SET11，并将立即数 1 存储到寄存器 
+BX 中，最终将 BX 的值存储到变量 CF 中。
 
-先将立即数 0xFFF 存储到 AX 寄存器里，然后调用 ADD 指令累加一，以此使 CF 置
-位。接着将 0 存储到 BX 寄存器中，再调用 ADC 累加一操作，此时 BX 的寄存器累
-加 1 之外还要加上 CF 置位之后的 1，最后 BX 的值为: 1 + 1 = 2. 
+#### 实践结论：
+
+STC 可以无条件置位 CF 标志位.
+
+## 运用场景分析
 
 ## 附录
 
-[1. ADC 指令 Intel Architectures Software Developer's Manual: Combined Volumes: 2 Instruction Set Reference,A-Z-- Chapter 3 Instruction Set Reference,A-L: 3.2 Instruction(A-L) : ADC -- Add with Carry](https://software.intel.com/en-us/articles/intel-sdm)
+[1. STC 指令: Intel Architectures Software Developer's Manual: Combined Volumes: 2 Instruction Set Reference,A-Z-- Chapter 4 Instruction Set Reference,M-U: 4.3 Instruction(M-U) : STC -- Set Carry Flag](https://software.intel.com/en-us/articles/intel-sdm)
 
 [2. Intel Architectures Software Developer's Manual](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/Intel-IA32_DevelopmentManual.pdf)

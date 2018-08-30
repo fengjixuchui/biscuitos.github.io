@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "ADC 进位运算引起的 CF 置位"
-date:   2018-08-17 14:58:30 +0800
+title:  "ADD 进位运算引起的 CF 置位"
+date:   2018-08-27 14:09:30 +0800
 categories: [MMU]
-excerpt: ADC 进位运算引起的 CF 置位.
+excerpt: ADD 进位运算引起的 CF 置位.
 tags:
   - EFLAGS
   - CF
@@ -11,18 +11,12 @@ tags:
 
 ## 原理
 
-Intel X86 提供了 ADC 指令，该指令用于在一次加法运算中，如果 CF 已经值位，
-那么会累加一个 1，反之不累加。ADC 指令中，两个数的和存储在与任意通用寄存器
-中，ADC 命令执行的时候检测到 CF 已经值位，和累加 1。
-
-{% highlight ruby %}
-CF 值位： AX = AX + BX + 1
-CF 清零： AX = AX + BX
-{% endhighlight %}
+Intel X86 提供了 ADD 指令，该指令用于两个数的加法运算，当加法运算产生进位时，
+ CF 置位。
 
 ## 实践
 
-BiscuitOS 提供了 ADC 相关的实例代码，开发者可以使用如下命令：
+BiscuitOS 提供了 ADD 相关的实例代码，开发者可以使用如下命令：
 
 首先，开发者先准备 BiscuitOS 系统，内核版本 linux 1.0.1.2。开发可以参照文档
 构建 BiscuitOS 调试环境：
@@ -72,9 +66,11 @@ make menuconfig
 
 选择 **EFLAGS： Current status register of processor**, 回车
 
-![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000019.png)
+选择 **CF    Carry Flag(bit 0)**.
 
-选择 **ADC   Addition with carry bit**.
+选择 **ADD Carry on Addition**.
+
+![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000023.png)
 
 运行实例代码，使用如下代码：
 
@@ -84,7 +80,8 @@ make
 make start
 {% endhighlight %}
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000020.png)
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000024.png)
+
 ## 源码分析
 
 源码位置：
@@ -93,25 +90,38 @@ make start
 BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 {% endhighlight %}
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000021.png)
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000025.png)
 
-源码如上图，将立即数 0xFFFF 存储到 AX 寄存器中，调用 add 指令使 AL 寄存器增
-加 1，接着将立即数 0x1 存储到 BX 寄存器中，调用 ADC 命令对 BX 寄存器里面的
-值加一操作。最后将 BX 的值存储到变量 BX 里面。
+源码如上图，将立即数 0xFFFF 存储到 AX 寄存器中，调用 ADD 指令使 AX 寄存器增
+加 1，如果 CF 置位就跳转到 CF_SET3 分支，并将立即数 1 存储到 BX 寄存器里；如
+果 CF 没有置位，跳转到 CF_CLEAR3 分支，并将立即数存储到 BX 寄存器。最后将 
+BX 寄存器的值存储到 CF 变量， AX 寄存器的值存储到 AX 变量里。
 
+#### 运行结果如下：
 
-##### 运行结果如下：
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000026.png)
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000022.png)
+#### 运行分析：
 
-##### 运行分析：
+先将立即数 0xFFF 存储到 AX 寄存器里，然后调用 ADD 指令加一，以此使 CF 置
+位。CF 置位之后，立即数 1 存储到 BX 寄存器，最终 BX 寄存器的值存储到 CF 变
+量里，CF 的值为 1. AX 寄存器的值存储到 AX 变量里，此时 AX 由于 CF 的置位，
+AX 的值变成 0x0.
 
-先将立即数 0xFFF 存储到 AX 寄存器里，然后调用 ADD 指令累加一，以此使 CF 置
-位。接着将 0 存储到 BX 寄存器中，再调用 ADC 累加一操作，此时 BX 的寄存器累
-加 1 之外还要加上 CF 置位之后的 1，最后 BX 的值为: 1 + 1 = 2. 
+{% highlight ruby %}
+AX = AX + 1 - 0xFFFF 
+{% endhighlight %}
+
+#### 实践结论：
+
+调用 ADD 进行加法运算时，如果产生进位，CF 将会被置位。
+
+## 运用场景分析
 
 ## 附录
 
-[1. ADC 指令 Intel Architectures Software Developer's Manual: Combined Volumes: 2 Instruction Set Reference,A-Z-- Chapter 3 Instruction Set Reference,A-L: 3.2 Instruction(A-L) : ADC -- Add with Carry](https://software.intel.com/en-us/articles/intel-sdm)
+[1. ADD 指令: Intel Architectures Software Developer's Manual: Combined Volumes: 2 Instruction Set Reference,A-Z-- Chapter 3 Instruction Set Reference,A-L: 3.2 Instruction(A-L) : ADD -- Add](https://software.intel.com/en-us/articles/intel-sdm)
 
 [2. Intel Architectures Software Developer's Manual](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/Intel-IA32_DevelopmentManual.pdf)
+
+[3. Packed BCD and Unpacked BCD](https://github.com/BuddyZhang1/Kernel/tree/master/tools/demo/Data/Base/BCD)
