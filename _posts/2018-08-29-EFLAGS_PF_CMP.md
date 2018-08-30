@@ -122,6 +122,6 @@ EFLAGS 会根据这个结果设置特定标志。此时 0x4 CMP 0x1 之后的值
 
 ## 附录
 
-[1. CMP 指令: Intel Architectures Software Developer's Manual: Combined Volumes: 2 Instruction Set Reference,A-Z-- Chapter 3 Instruction Set Reference,A-L: 3.2 Instruction(A-L) : AND -- Logical AND](https://software.intel.com/en-us/articles/intel-sdm)
+[1. CMP 指令: Intel Architectures Software Developer's Manual: Combined Volumes: 2 Instruction Set Reference,A-Z-- Chapter 3 Instruction Set Reference,A-L: 3.2 Instruction(A-L) : CMP -- Compare two operands](https://software.intel.com/en-us/articles/intel-sdm)
 
 [2. Intel Architectures Software Developer's Manual](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/Intel-IA32_DevelopmentManual.pdf)
