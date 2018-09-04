@@ -80,7 +80,7 @@ make
 make start
 {% endhighlight %}
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000169.png)
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000178.png)
 
 ## 源码分析
 
@@ -90,7 +90,7 @@ make start
 BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 {% endhighlight %}
 
-![Menuconfig8](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000170.png)
+![Menuconfig8](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000179.png)
 
 源码如上图，首先将立即数 0x7 存储到寄存器 AL 中，再将立即数 0x3 存储到寄存
 器 BL 中。调用 TEST 指令让 AL 寄存器中的值与 BL 寄存器中的值对应的值按位比
@@ -102,7 +102,7 @@ BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 
 #### 运行结果如下：
 
-![Menuconfig9](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000171.png)
+![Menuconfig9](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000180.png)
 
 #### 运行分析：
 
