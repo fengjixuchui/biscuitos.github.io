@@ -67,7 +67,7 @@ make menuconfig
 
 选择 **EFLAGS： Current status register of processor**, 回车
 
-选择 **CF    Carry Flag(bit 0)**.
+选择 **PF    Parity flag (bit 2)**.
 
 选择 **ADD   Carry on addition**.
 
