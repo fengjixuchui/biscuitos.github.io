@@ -68,9 +68,9 @@ make menuconfig
 
 选择 **CF    Carry Flag(bit 0)**.
 
-选择 **SAR  Shift arithmetic right**.
+选择 **OR    Logical Inclusive OR**.
 
-![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000083.png)
+![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000199.png)
 
 运行实例代码，使用如下代码：
 

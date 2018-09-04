@@ -68,9 +68,11 @@ make menuconfig
 
 选择 **CF    Carry Flag(bit 0)**.
 
-选择 **SAR  Shift arithmetic right**.
+选择 **JPE   Jump short if parity even (PF = 1)**.
 
-![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000083.png)
+选择 **JPO   Jump short if parity odd (PF = 0)**.
+
+![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000195.png)
 
 运行实例代码，使用如下代码：
 
