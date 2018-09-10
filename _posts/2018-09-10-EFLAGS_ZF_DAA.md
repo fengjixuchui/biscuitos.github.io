@@ -6,7 +6,7 @@ categories: [MMU]
 excerpt: DAA 压缩 BCD 加法引起的 ZF 置位.
 tags:
   - EFLAGS
-  - PF
+  - ZF
 ---
 
 ## 原理
@@ -81,7 +81,7 @@ make
 make start
 {% endhighlight %}
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000226.png)
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000243.png)
 
 ## 源码分析
 
@@ -91,7 +91,7 @@ make start
 BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 {% endhighlight %}
 
-![Menuconfig8](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000243.png)
+![Menuconfig8](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000244.png)
 
 源码如上图，将立即数 0x99 存储到 AL 寄存器中，将立即数 0x1 存储到寄存器 BL 
 中。调用 ADD 指令使 AX 寄存器的值与 BX 寄存器的值相加，相加的结果存储到 AX 
@@ -103,7 +103,7 @@ ZF_Z8 分支，并将立即数 0 存储到 DX 寄存器。最后将 DX 寄存器
 
 #### 运行结果如下：
 
-![Menuconfig9](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000244.png)
+![Menuconfig9](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000245.png)
 
 #### 运行分析：
 

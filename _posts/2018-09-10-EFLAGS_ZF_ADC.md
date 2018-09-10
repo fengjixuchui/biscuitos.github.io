@@ -6,7 +6,7 @@ categories: [MMU]
 excerpt: ADC 进位运算引起的 ZF 置位.
 tags:
   - EFLAGS
-  - PF
+  - ZF
 ---
 
 ## 原理

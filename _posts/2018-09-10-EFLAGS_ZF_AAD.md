@@ -6,7 +6,7 @@ categories: [MMU]
 excerpt: AAD ASCII 调整引起的 ZF 置位.
 tags:
   - EFLAGS
-  - PF
+  - ZF
 ---
 
 ## 原理

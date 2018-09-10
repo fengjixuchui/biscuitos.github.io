@@ -6,7 +6,7 @@ categories: [MMU]
 excerpt: CMPSD 字符串按双字比较运算引起的 ZF 置位.
 tags:
   - EFLAGS
-  - PF
+  - ZF
 ---
 
 ## 原理

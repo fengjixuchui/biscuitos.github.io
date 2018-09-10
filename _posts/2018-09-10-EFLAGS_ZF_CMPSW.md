@@ -6,7 +6,7 @@ categories: [MMU]
 excerpt: CMPSW 字符串按字比较运算引起的 ZF 置位.
 tags:
   - EFLAGS
-  - PF
+  - ZF
 ---
 
 ## 原理

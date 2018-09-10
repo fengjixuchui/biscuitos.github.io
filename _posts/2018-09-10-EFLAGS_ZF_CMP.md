@@ -6,7 +6,7 @@ categories: [MMU]
 excerpt: CMP 比较运算引起的 ZF 置位.
 tags:
   - EFLAGS
-  - PF
+  - ZF
 ---
 
 ## 原理
