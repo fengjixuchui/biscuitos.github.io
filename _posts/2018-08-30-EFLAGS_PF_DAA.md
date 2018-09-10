@@ -96,10 +96,10 @@ BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 源码如上图，将立即数 0x79 存储到 AL 寄存器中，将立即数 0x35 存储到寄存器 
 BL 中。调用 ADD 指令使 AX 寄存器的值与 BX 寄存器的值相加，相加的结果存储到 
 AX 寄存器中，接着调用 DAA 指令将 AL 寄存器中的值转换成非压缩的 BCD 码。如果 
-AL 寄存器中的值含有偶数个 1 ，CF 就置位。 CF 置位就跳转到 CF_SET4 分支，并
+AL 寄存器中的值含有偶数个 1 ，CF 就置位。 PF 置位就跳转到 PF_SET4 分支，并
 将立即数 1 存储到 BX 寄存器里；如果 AL 寄存器中的值含有奇数个 1，则 CF 清
-零，CF 没有置位，跳转到 CF_CLEAR4 分支，并将立即数存储到 BX 寄存器。最后将 
-BX 寄存器的值存储到 CF 变量， AX 寄存器的值存储到 AX 变量里。
+零，PF 没有置位，跳转到 PF_CLEAR4 分支，并将立即数存储到 BX 寄存器。最后将 
+BX 寄存器的值存储到 PF 变量， AX 寄存器的值存储到 AX 变量里。
 
 #### 运行结果如下：
 
