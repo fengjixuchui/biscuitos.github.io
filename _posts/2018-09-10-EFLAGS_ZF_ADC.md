@@ -102,8 +102,6 @@ BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 零，那么跳转到分支 ZF_C2 分支，并将立即数 0 存储到 DX 寄存器中。最后将 DX 
 寄存器的值存储到 ZF 变量中，将 AX 寄存器的值存储到 AX 变量中。
 
-
-
 #### 运行结果如下：
 
 ![Menuconfig9](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000220.png)
