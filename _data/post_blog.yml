@@ -12,7 +12,7 @@ tabs:
        title: Device
 
      - id: svn
-       title: C/C++
+       title: BIOS
 
      - id: egt
        title: HW
