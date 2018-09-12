@@ -88,7 +88,7 @@ sudo apt-get install iasl
 cd BiscuitOS/
 make update
 make clean
-linux_1_0_1_2_ext2_defconfig
+make linux_1_0_1_2_ext2_defconfig
 make menuconfig
 {% endhighlight %}
 
