@@ -37,7 +37,7 @@ tags:
 
 {% highlight ruby %}
 sudo apt-get install qemu gcc make gdb git figlet
-sudo apt-get install libncurses5-dev
+sudo apt-get install libncurses5-dev iasl
 sudo apt-get install lib32z1 lib32z1-dev
 {% endhighlight %}
 
@@ -60,7 +60,7 @@ git config —global user.email “Your Email"
 
 {% highlight ruby %}
 sudo apt-get install qemu gcc make gdb git figlet
-sudo apt-get install libncurses5-dev
+sudo apt-get install libncurses5-dev iasl
 sudo apt-get install lib32z1 lib32z1-dev
 {% endhighlight %}
 
@@ -113,7 +113,7 @@ Fedora27，开发者首先确认是否安装必要的开发工具，如果没有
 
 {% highlight ruby %}
 sudo yum install qemu gcc make gdb git figlet
-sudo yum install ncurses-d
+sudo yum install ncurses-d iasl
 {% endhighlight %}
 
 注意！如果是第一次使用 git，请按如下配置 git 对应的内容：
@@ -134,7 +134,7 @@ Mint18 64Bit，开发者首先确认是否安装必要的开发工具，如果�
 
 {% highlight ruby %}
 sudo apt-get install qemu gcc make gdb git figlet indent
-sudo apt-get install libncurses5-dev
+sudo apt-get install libncurses5-dev iasl
 {% endhighlight %}
 
 注意！如果是第一次使用 git，请按如下配置 git 对应的内容：
