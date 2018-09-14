@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "BSF 位查找引起的 ZF 置位"
-date:   2018-09-14 17:35:30 +0800
+title:  "BSR 位查找引起的 ZF 置位"
+date:   2018-09-14 19:12:30 +0800
 categories: [MMU]
-excerpt: BSF 位查找引起的 ZF 置位.
+excerpt: BSR 位查找引起的 ZF 置位.
 tags:
   - EFLAGS
   - ZF
@@ -11,13 +11,13 @@ tags:
 
 ## 原理
 
-Intel X86 提供了 BSF 指令，该指令用于由于查找从右到左第一个置位的位置，如果
+Intel X86 提供了 BSR 指令，该指令用于由于查找从左到右第一个置位的位置，如果
 找到，则将位置存储到目的寄存器，并且 ZF 清零；反之没有找到置位的位置，则 ZF 
 置位。
 
 ## 实践
 
-BiscuitOS 提供了 BSF 相关的实例代码，开发者可以使用如下命令：
+BiscuitOS 提供了 BSR 相关的实例代码，开发者可以使用如下命令：
 
 首先，开发者先准备 BiscuitOS 系统，内核版本 linux 1.0.1.2。开发可以参照文档
 构建 BiscuitOS 调试环境：
@@ -69,9 +69,9 @@ make menuconfig
 
 选择 **ZF Zero flag (bit 6)**.
 
-选择 **BSF    Bit scan forward**.
+选择 **BSR    Bit scan reverse**.
 
-![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000306.png)
+![Menuconfig6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000310.png)
 
 运行实例代码，使用如下代码：
 
@@ -81,7 +81,7 @@ make
 make start
 {% endhighlight %}
 
-![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000307.png)
+![Menuconfig7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000311.png)
 
 ## 源码分析
 
@@ -91,41 +91,41 @@ make start
 BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/storage/register/EFLAGS/eflags.c
 {% endhighlight %}
 
-![Menuconfig8](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000308.png)
+![Menuconfig8](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000312.png)
 
-源码如上图，首先将立即数 0x700 存储到 AX 寄存器中，然后调用 BSF 指令去查找 
-AX 寄存 器中，从右到左第一个出现 1 的位置。如果找到，则将找到的位置存储到 
-BX 寄存器 中，并将 ZF 清零；如果没有找到，则将 ZF 置位。如果 ZF 置位，则跳
-转到 ZF_SO 分支，并将立即数 1 存储到 DX 寄存器中；如果 ZF 清零，则跳转到 
-ZF_CO 分支中，并将立即数存储到 DX 寄存中。最后将 DX 寄存器中的值存储到 ZF 
-变量中，再将 BX 寄存器中的值存储到 AX 变量里。
+源码如上图，首先将立即数 0x300 存储到 AX 寄存器中，然后调用 BSR 指令去查找 
+AX 寄存器中，从左到右第一个出现 1 的位置。如果找到，则将找到的位置存储到 BX 
+寄存器中，并将 ZF 清零；如果没有找到，则将 ZF 置位。如果 ZF 置位，则跳转到 
+ZF_SP 分支，并将立即数 1 存储到 DX 寄存器中；如果 ZF 清零，则跳转到 ZF_CP 分
+支中，并将立即数存储到 DX 寄存中。最后将 DX 寄存器中的值存储到 ZF 变量中，再
+将 BX 寄存器中的值存储到 AX 变量里。
 
 #### 运行结果如下：
 
-![Menuconfig9](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000309.png)
+![Menuconfig9](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000313.png)
 
 #### 运行分析：
 
-源码如上图，首先将立即数存储到 AX 寄存器中，然后调用 BSF 指令去查找 AX 寄存
+源码如上图，首先将立即数存储到 AX 寄存器中，然后调用 BSR 指令去查找 AX 寄存
 器中，从右到左第一个出现 1 的位置。如果找到，则将找到的位置存储到 BX 寄存器
 中，并将 ZF 清零；如果没有找到，则将 ZF 置位。
 
 {% highlight ruby %}
-0x700 = 0000 0111 0000 0000 
+0x300 = 0000 0011 0000 0000 
 {% endhighlight %}
 
-所以从右到左，第 9 个位置为 1 也就是 bit 8。所以 ZF 清零，则跳转到 ZF_CO 分
+所以从右到左，第 10 个位置为 1 也就是 bit 9。所以 ZF 清零，则跳转到 ZF_CP 分
 支中，并将立即数 0 存储到 DX 寄存中。最后将 DX 寄存器中的值 0 存储到 ZF 变量
-中，再将 BX 寄存器中的值 8 存储到 AX 变量里。
+中，再将 BX 寄存器中的值 9 存储到 AX 变量里。
 
 #### 实践结论：
 
-BSF 指令当找不到 1 的时候会使 ZF 置位。
+BSR 指令当找不到 1 的时候会使 ZF 置位。
 
 ## 运用场景分析
 
 ## 附录
 
-[1. BSF 指令: Intel Architectures Software Developer's Manual: Combined Volumes: 3 Instruction Set Reference,A-L-- Chapter 3 Instruction Set Reference,A-L: 4.3 Instruction(A-L) : BSF -- Bit scan forward](https://software.intel.com/en-us/articles/intel-sdm)
+[1. BSR 指令: Intel Architectures Software Developer's Manual: Combined Volumes: 3 Instruction Set Reference,A-L-- Chapter 3 Instruction Set Reference,A-L: 4.3 Instruction(A-L) : BSR -- Bit scan reverse](https://software.intel.com/en-us/articles/intel-sdm)
 
 [2. Intel Architectures Software Developer's Manual](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/Intel-IA32_DevelopmentManual.pdf)
