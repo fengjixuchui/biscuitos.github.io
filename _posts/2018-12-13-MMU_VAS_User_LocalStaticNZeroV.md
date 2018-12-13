@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "用户空间始化为零静态局部变量的虚拟地址"
-date:   2018-12-13 15:33:30 +0800
+title:  "用户空间始化为非零静态局部变量的虚拟地址"
+date:   2018-12-13 16:59:30 +0800
 categories: [MMU]
-excerpt: 用户空间始化为零静态局部变量的虚拟地址.
+excerpt: 用户空间始化为非零静态局部变量的虚拟地址.
 tags:
   - MMU
   - VAS
@@ -17,7 +17,7 @@ tags:
 
 > 1. 静态局部变量
 >
-> 2. 始化为零的静态局部变量
+> 2. 始化为非零的静态局部变量
 >
 > 3. 实践
 >
@@ -52,39 +52,37 @@ int fun()
 
 ----------------------------------------------------------
 
-# 始化为零静态局部变量
+# 始化为非零静态局部变量
 
-始化为零的静态局部变量是静态局部变量中的一种，其在定义之后进行显式的初始化赋值为零。
-始化为零的静态局部变量定义如下：
+始化为非零的静态局部变量是静态局部变量中的一种，其在定义之后进行显式的初始化赋值为非零。
+始化为非零的静态局部变量定义如下：
 
 {% highlight ruby %}
 demo.c
 
-static int demo_inta = 0;
+static int demo_inta = 2;
 
 int fun()
 {
-    static int demo_intb = 0;
-
     return 0;
 }
 {% endhighlight %}
 
-#### ELF 目标文件中的始化为零静态局部变量
+#### ELF 目标文件中的始化为非零静态局部变量
 
-始化为零的静态局部变量在经过编译汇编之后，会被存储到 ELF 目标文件的 .bss 段内，
-并不占用 ELF 目标的存储空间。
+始化为非零的静态局部变量在经过编译汇编之后，会被存储到 ELF 目标文件的 .data 段内，并
+占用 ELF 目标的存储空间。
 
-#### 进程中的始化为零静态局部变量
+#### 进程中的始化为非零静态局部变量
 
-当程序运行之后，始化为零的静态局部变量会被加载到进程的 .bss 段内，操作系统会为未
-初始化静态局部变量分配指定的虚拟地址空间。
+当程序运行之后，始化为非零的静态局部变量会被加载到进程的 .data 段内，操作系统会为
+未初始化静态局部变量分配指定的虚拟地址空间。
 
 ---------------------------------------------------------
 
 # 实践
 
-BiscuitOS 提供了始化为零静态局部变量相关的实例代码，开发者可以使用如下命令：
+BiscuitOS 提供了始化为非零静态局部变量相关的实例代码，开发者可以使用如下命令：
 首先，开发者先准备 BiscuitOS 系统，内核版本 linux 1.0.1.2。开发可以参照文档构建 BiscuitOS 调试环境：
 
 [Linux 1.0.1.2 内核构建方法](https://biscuitos.github.io/blog/Linux1.0.1.2_ext2fs_Usermanual/)
@@ -145,10 +143,10 @@ make menuconfig
 这个选项用于指定用户程序运行的平台。开发者可以根据自己需求选择，这里推荐选择
 **Intel i386 (32bit) Mechine**, 回车并按 Esc 退出。
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000461.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000464.png)
 
 最后开发者选择 **.data segment**,下拉菜单打开后，选择 
-**Local Static Inited Zero Data** 选项，回车保存并退出。
+**Local Static Inited Non-Zero Data** 选项，回车保存并退出。
 
 运行实例代码，使用如下代码：
 
@@ -159,16 +157,16 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 ./data.elf
 {% endhighlight %}
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000462.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000465.png)
 
 -----------------------------------------------------------
 
 # 分析
 
-初始化为零的静态局部变量是静态局部变量中的一种，其声明之后赋值为零。在编译和汇
-编阶段，初始化为零的静态局部变量会被放置到 ELF 文件的 .bss 段，并且不占用 ELF 
-的空间。在程序运行之后，进程会将初始化为零的全局放到进程的 .bss 段并分配相应的
-虚拟空间。这里我们将分析初始化为零的静态局部变量的生命周期。
+初始化为非零的静态局部变量是静态局部变量中的一种，其声明之后赋值为非零。在编译
+和汇编阶段，初始化为非零的静态局部变量会被放置到 ELF 文件的 .data 段，并且占用
+ELF 的空间。在程序运行之后，进程会将初始化为非零的全局放到进程的 .data 段并分
+配相应的虚拟空间。这里我们将分析初始化为非零的静态局部变量的生命周期。
 
 开发者可以使用实例源码，源码位置：
 
@@ -176,34 +174,35 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/addressing/virtual_address/user/data.c
 {% endhighlight %}
 
-如源码所示，始化为零静态局部变量定义如下：
+如源码所示，始化为非零静态局部变量定义如下：
 
 {% highlight ruby %}
 data.c
 
 int main()
 {
-#ifdef CONFIG_DEBUG_VA_USER_DATA_LSINITZERO
-    /* Local static inited zero data */
-    static char  LSInitZero_char  = 0;
-    static short LSInitZero_short = 0;
-    static int   LSInitZero_int   = 0;
-    static long  LSInitZero_long  = 0;
-    static char  LSInitZeroA_char[ARRAY_LEN]  = { 0, 0, 0, 0};
-    static short LSInitZeroA_short[ARRAY_LEN] = { 0, 0, 0, 0};
-    static int   LSInitZeroA_int[ARRAY_LEN]   = { 0, 0, 0, 0};
-    static long  LSInitZeroA_long[ARRAY_LEN]  = { 0, 0, 0, 0};
-    static char  *LSInitZeroP_char  = NULL;
-    static short *LSInitZeroP_short = NULL;
-    static int   *LSInitZeroP_int   = NULL;
-    static long  *LSInitZeroP_long  = NULL;
-#endif
+#ifdef CONFIG_DEBUG_VA_USER_DATA_LSINITNZERO
+    /* Local static inited non-zero data */
+    static char  LSInitNZero_char  = 'A';
+    static short LSInitNZero_short = 0x10;
+    static int   LSInitNZero_int   = 0x20;
+    static long  LSInitNZero_long  = 0x30;
+    static char  LSInitNZeroA_char[ARRAY_LEN]  = { 'A', 'B', 'C', 'D'};
+    static short LSInitNZeroA_short[ARRAY_LEN] = { 0x1, 0x2, 0x3, 0x5};
+    static int   LSInitNZeroA_int[ARRAY_LEN]   = { 0x2, 0x3, 0x4, 0x5};
+    static long  LSInitNZeroA_long[ARRAY_LEN]  = { 0x3, 0x4, 0x5, 0x6};
+    static char  *LSInitNZeroP_char  = &LSInitNZero_char;
+    static short *LSInitNZeroP_short = &LSInitNZero_short;
+    static int   *LSInitNZeroP_int   = &LSInitNZero_int;
+    static long  *LSInitNZeroP_long  = &LSInitNZero_long;
+#endi
+
     return 0;
 }
 {% endhighlight %}
 
-始化为零的静态局部变量定义在函数之外，这里定义了各种类型的变量，包括变量，数组
-和指针。接着开发者对源文件进行编译汇编，以此生成 ELF 文件，使用如下命令：
+始化为非零的静态局部变量定义在函数之外，这里定义了各种类型的变量，包括变量，数组和指
+针。接着开发者对源文件进行编译汇编，以此生成 ELF 文件，使用如下命令：
 
 {% highlight ruby %}
 cd BiscuitOS/kernel/linux_1.0.1.2/
@@ -215,10 +214,10 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 **data.objdump.elf** 文件。开发者可以通过查看 data.objdump.elf 文件查看未初始
 化静态局部变量在 ELF 文件中的布局。
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000463.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000466.png)
 
-从上图可以看出，始化为零的静态局部变量在 ELF 文件中被放置到 .bss 段中，但不占用 ELF
-的空间。接下来开发者查看运行时，始化为零静态局部变量在进程中的布局。
+从上图可以看出，始化为非零的静态局部变量在 ELF 文件中被放置到 .data 段中，但占
+用 ELF的空间。接下来开发者查看运行时，始化为非零静态局部变量在进程中的布局。
 
 用户空间程序来运行之前需要链接脚本进行链接运行，所以链接脚本影响着进程的虚拟内
 存布局。开发者可以使用如下命令查看链接脚本的内容，如下：
@@ -259,14 +258,14 @@ mmap_fd, 50000000);
     printf("Data Segment: .data Describe\n\n");
     printf("+---+-------+-------+------+--+------+-+------+--------------+\n");
     printf("|   |       |       |      |  |      | |      |              |\n");
-    printf("|   | .text | .data | .bss |  | Heap | | Mmap |        Stack |\n");
+    printf("|   | .text | .data | .data |  | Heap | | Mmap |        Stack |\n");
     printf("|   |       |       |      |  |      | |      |              |\n");
     printf("+---+-------+-------+------+--+------+-+------+--------------+\n");
     printf("0                                                           4G\n");
     printf("Executable start: %#08lx\n", (unsigned long)__executable_start);
     printf("Data Range:       %#08lx -- %#08lx\n", (unsigned long)etext,
                                                    (unsigned long)edata);
-    printf("BSS  Range:       %#08lx -- %#08lx\n", (unsigned long)edata,
+    printf(".data  Range:       %#08lx -- %#08lx\n", (unsigned long)edata,
                                                    (unsigned long)end);
     printf("Heap Base:        %#08lx\n", (unsigned long)heap_base);
     printf("Mmap Base:        %#08lx\n", (unsigned long)mmap_base);
@@ -289,9 +288,9 @@ printf("***************************************************************\n");
 >
 > 2. etext 指向进程代码段结束的虚拟地址，也就是进程数据段开始的位置
 >
-> 3. edata 指向进程数据段结束的位置，也就是 .BSS 段开始的位置
+> 3. edata 指向进程数据段结束的位置，也就是 .data 段开始的位置
 >
-> 4. end 指向 BSS 段结束的位置
+> 4. end 指向 .data 段结束的位置
 >
 > 5. stack_bsp 指向 main 函数的局部堆栈特定位置
 >
@@ -309,19 +308,20 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 ./data.elf
 {% endhighlight %}
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000462.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000465.png)
 
-从运行结果来看，所有初始化为零的静态局部变量地址被加载到从 0x804a086 递减到 
-0x804a040，从进程的布局可以知道，BSS 段的范围从 0x804a03c 增加到 0x804a088. 
-所以初始化为零的静态局部变量都被进程加载到了 BSS 段，并分配了相应的虚拟地址。
+从运行结果来看，所有初始化为非零的静态局部变量地址被加载到从 0x804a082 递减到 
+0x804a03c，从进程的布局可以知道，.data 段的范围从 0x8048898 增加到 0x804a084. 
+所以初始化为非零的静态局部变量都被进程加载到了 .data 段，并分配了相应的虚拟地
+址。
 
 ------------------------------------------------------
 
 # 总结
 
-通过实践，实践的结果和预期一样，始化为零静态局部变量进过编译汇编之后，在 ELF 
-文件中被存储到 .bss 段，并且不占用 ELF 文件的空间。当程序运行时，进程会将始化
-为零的静态局部变量加载到进程的 .bss 段，并分配对应的虚拟内存。
+通过实践，实践的结果和预期一样，始化为非零静态局部变量进过编译汇编之后，在 
+ELF 文件中被存储到 .data 段，并且占用 ELF 文件的空间。当程序运行时，进程会将始
+化为非零的静态局部变量加载到进程的 .data 段，并分配对应的虚拟内存。
 
 ------------------------------------------------------
 
