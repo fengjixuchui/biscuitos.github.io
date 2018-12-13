@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "用户空间始化为零全局变量的虚拟地址"
-date:   2018-12-13 09:14:30 +0800
+title:  "用户空间始化为非零全局变量的虚拟地址"
+date:   2018-12-13 09:57:30 +0800
 categories: [MMU]
-excerpt: 用户空间始化为零全局变量的虚拟地址.
+excerpt: 用户空间始化为非零全局变量的虚拟地址.
 tags:
   - MMU
   - VAS
@@ -17,7 +17,7 @@ tags:
 
 > 1. 全局变量
 >
-> 2. 始化为零的全局变量
+> 2. 始化为非零的全局变量
 >
 > 3. 实践
 >
@@ -78,20 +78,20 @@ int fun()
 {% endhighlight %}
 
 一个程序中可以定义多个全局变量。当编译器将源文件编译为目标 ELF 文件之后，全局
-变量可以存储在 ELF 目标文件的 .data 段内，也可以存储在 .bss 段内。当程序执行的
-时候，全局变量会被链接到程序的 .data 段内或 .bss 段内。
+变量可以存储在 ELF 目标文件的 .data 段内，也可以存储在 .data 段内。当程序执行的
+时候，全局变量会被链接到程序的 .data 段内或 .data 段内。
 
 ----------------------------------------------------------
 
-# 始化为零全局变量
+# 始化为非零全局变量
 
-始化为零的全局变量是全局变量中的一种，其在定义之后进行显式的初始化赋值为零。
-始化为零的全局变量定义如下：
+始化为非零的全局变量是全局变量中的一种，其在定义之后进行显式的初始化赋值为非零。
+始化为非零的全局变量定义如下：
 
 {% highlight ruby %}
 demo.c
 
-int demo_inta = 0;
+int demo_inta = 2;
 
 int fun()
 {
@@ -99,21 +99,21 @@ int fun()
 }
 {% endhighlight %}
 
-#### ELF 目标文件中的始化为零全局变量
+#### ELF 目标文件中的始化为非零全局变量
 
-始化为零的全局变量在经过编译汇编之后，会被存储到 ELF 目标文件的 .bss 段内，并
-不占用 ELF 目标的存储空间。
+始化为非零的全局变量在经过编译汇编之后，会被存储到 ELF 目标文件的 .data 段内，并
+占用 ELF 目标的存储空间。
 
-#### 进程中的始化为零全局变量
+#### 进程中的始化为非零全局变量
 
-当程序运行之后，始化为零的全局变量会被加载到进程的 .bss 段内，操作系统会为未初
-始化全局变量分配指定的虚拟地址空间。
+当程序运行之后，始化为非零的全局变量会被加载到进程的 .data 段内，操作系统会为
+未初始化全局变量分配指定的虚拟地址空间。
 
 ---------------------------------------------------------
 
 # 实践
 
-BiscuitOS 提供了始化为零全局变量相关的实例代码，开发者可以使用如下命令：
+BiscuitOS 提供了始化为非零全局变量相关的实例代码，开发者可以使用如下命令：
 首先，开发者先准备 BiscuitOS 系统，内核版本 linux 1.0.1.2。开发可以参照文档构建 BiscuitOS 调试环境：
 
 [Linux 1.0.1.2 内核构建方法](https://biscuitos.github.io/blog/Linux1.0.1.2_ext2fs_Usermanual/)
@@ -174,10 +174,10 @@ make menuconfig
 这个选项用于指定用户程序运行的平台。开发者可以根据自己需求选择，这里推荐选择
 **Intel i386 (32bit) Mechine**, 回车并按 Esc 退出。
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000443.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000446.png)
 
 最后开发者选择 **.data segment**,下拉菜单打开后，选择 
-**Global Inited Zero Data** 选项，回车保存并退出。
+**Global Inited Non-Zero Data** 选项，回车保存并退出。
 
 运行实例代码，使用如下代码：
 
@@ -188,16 +188,16 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 ./data.elf
 {% endhighlight %}
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000445.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000448.png)
 
 -----------------------------------------------------------
 
 # 分析
 
-初始化为零的全局变量是全局变量中的一种，其声明之后赋值为零。在编译和汇编阶段，
-初始化为零的全局变量会被放置到 ELF 文件的 .bss 段，并且不占用 ELF 的空间。在程
-序运行之后，进程会将初始化为零的全局放到进程的 .bss 段并分配相应的虚拟空间。这
-里我们将分析初始化为零的全局变量的生命周期。
+初始化为非零的全局变量是全局变量中的一种，其声明之后赋值为非零。在编译和汇编阶
+段，初始化为非零的全局变量会被放置到 ELF 文件的 .data 段，并且占用 ELF 的空间。
+在程序运行之后，进程会将初始化为非零的全局放到进程的 .data 段并分配相应的虚拟
+空间。这里我们将分析初始化为非零的全局变量的生命周期。
 
 开发者可以使用实例源码，源码位置：
 
@@ -205,29 +205,29 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/addressing/virtual_address/user/data.c
 {% endhighlight %}
 
-如源码所示，始化为零全局变量定义如下：
+如源码所示，始化为非零全局变量定义如下：
 
 {% highlight ruby %}
 data.c
 
-#ifdef CONFIG_DEBUG_VA_USER_DATA_GINITZERO
-/* Global inited zero data */
-char  GInitZero_char  = 0;
-short GInitZero_short = 0;
-int   GInitZero_int   = 0;
-long  GInitZero_long  = 0;
-char  GInitZeroA_char[ARRAY_LEN]  = { 0, 0, 0, 0};
-short GInitZeroA_short[ARRAY_LEN] = { 0, 0, 0, 0};
-int   GInitZeroA_int[ARRAY_LEN]   = { 0, 0, 0, 0};
-long  GInitZeroA_long[ARRAY_LEN]  = { 0, 0, 0, 0};
-char  *GInitZeroP_char  = NULL;
-short *GInitZeroP_short = NULL;
-int   *GInitZeroP_int   = NULL;
-long  *GInitZeroP_long  = NULL;
+#ifdef CONFIG_DEBUG_VA_USER_DATA_GINITNZERO
+/* Global inited non-zero data */
+char  GInitNZero_char  = 'A';
+short GInitNZero_short = 0x10;
+int   GInitNZero_int   = 0x20;
+long  GInitNZero_long  = 0x30;
+char  GInitNZeroA_char[ARRAY_LEN]  = { 'A', 'B', 'C', 'D'};
+short GInitNZeroA_short[ARRAY_LEN] = { 0x1, 0x2, 0x3, 0x5};
+int   GInitNZeroA_int[ARRAY_LEN]   = { 0x2, 0x3, 0x4, 0x5};
+long  GInitNZeroA_long[ARRAY_LEN]  = { 0x3, 0x4, 0x5, 0x6};
+char  *GInitNZeroP_char  = &GInitNZero_char;
+short *GInitNZeroP_short = &GInitNZero_short;
+int   *GInitNZeroP_int   = &GInitNZero_int;
+long  *GInitNZeroP_long  = &GInitNZero_long;
 #endif
 {% endhighlight %}
 
-始化为零的全局变量定义在函数之外，这里定义了各种类型的变量，包括变量，数组和指
+始化为非零的全局变量定义在函数之外，这里定义了各种类型的变量，包括变量，数组和指
 针。接着开发者对源文件进行编译汇编，以此生成 ELF 文件，使用如下命令：
 
 {% highlight ruby %}
@@ -240,10 +240,10 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 **data.objdump.elf** 文件。开发者可以通过查看 data.objdump.elf 文件查看未初始
 化全局变量在 ELF 文件中的布局。
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000444.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000447.png)
 
-从上图可以看出，始化为零的全局变量在 ELF 文件中被放置到 .bss 段中，但不占用 ELF
-的空间。接下来开发者查看运行时，始化为零全局变量在进程中的布局。
+从上图可以看出，始化为非零的全局变量在 ELF 文件中被放置到 .data 段中，但占用 ELF
+的空间。接下来开发者查看运行时，始化为非零全局变量在进程中的布局。
 
 用户空间程序来运行之前需要链接脚本进行链接运行，所以链接脚本影响着进程的虚拟内
 存布局。开发者可以使用如下命令查看链接脚本的内容，如下：
@@ -284,14 +284,14 @@ mmap_fd, 50000000);
     printf("Data Segment: .data Describe\n\n");
     printf("+---+-------+-------+------+--+------+-+------+--------------+\n");
     printf("|   |       |       |      |  |      | |      |              |\n");
-    printf("|   | .text | .data | .bss |  | Heap | | Mmap |        Stack |\n");
+    printf("|   | .text | .data | .data |  | Heap | | Mmap |        Stack |\n");
     printf("|   |       |       |      |  |      | |      |              |\n");
     printf("+---+-------+-------+------+--+------+-+------+--------------+\n");
     printf("0                                                           4G\n");
     printf("Executable start: %#08lx\n", (unsigned long)__executable_start);
     printf("Data Range:       %#08lx -- %#08lx\n", (unsigned long)etext,
                                                    (unsigned long)edata);
-    printf("BSS  Range:       %#08lx -- %#08lx\n", (unsigned long)edata,
+    printf(".data  Range:       %#08lx -- %#08lx\n", (unsigned long)edata,
                                                    (unsigned long)end);
     printf("Heap Base:        %#08lx\n", (unsigned long)heap_base);
     printf("Mmap Base:        %#08lx\n", (unsigned long)mmap_base);
@@ -314,9 +314,9 @@ printf("***************************************************************\n");
 >
 > 2. etext 指向进程代码段结束的虚拟地址，也就是进程数据段开始的位置
 >
-> 3. edata 指向进程数据段结束的位置，也就是 .BSS 段开始的位置
+> 3. edata 指向进程数据段结束的位置，也就是 .data 段开始的位置
 >
-> 4. end 指向 BSS 段结束的位置
+> 4. end 指向 .data 段结束的位置
 >
 > 5. stack_bsp 指向 main 函数的局部堆栈特定位置
 >
@@ -334,19 +334,19 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 ./data.elf
 {% endhighlight %}
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000445.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000448.png)
 
-从运行结果来看，所有始化为零的全局变量地址被加载到从 0x804a040 增长到 
-0x804a084，从进程的布局可以知道，BSS 段的范围从 0x804a03c 增加到 0x804a088. 所
-以始化为零的全局变量都被进程加载到了 BSS 段，并分配了相应的虚拟地址。
+从运行结果来看，所有初始化为非零的全局变量地址被加载到从 0x804a03c 增长到 
+0x804a080，从进程的布局可以知道，.data 段的范围从 0x8048898 增加到 0x804a084. 
+所以初始化为非零的全局变量都被进程加载到了 .data 段，并分配了相应的虚拟地址。
 
 ------------------------------------------------------
 
 # 总结
 
-通过实践，实践的结果和预期一样，始化为零全局变量进过编译汇编之后，在 ELF 文件
-中被存储到 .bss 段，并且不占用 ELF 文件的空间。当程序运行时，进程会将始化为零
-的全局变量加载到进程的 .bss 段，并分配对应的虚拟内存。
+通过实践，实践的结果和预期一样，始化为非零全局变量进过编译汇编之后，在 ELF 文件
+中被存储到 .data 段，并且占用 ELF 文件的空间。当程序运行时，进程会将始化为非零
+的全局变量加载到进程的 .data 段，并分配对应的虚拟内存。
 
 ------------------------------------------------------
 
