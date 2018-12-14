@@ -1,70 +1,52 @@
 ---
 layout: post
-title:  "用户空间始化为零静态变量的虚拟地址"
-date:   2018-12-13 11:21:30 +0800
+title:  "用户空间常量的虚拟地址"
+date:   2018-12-14 16:22:30 +0800
 categories: [MMU]
-excerpt: 用户空间始化为零静态变量的虚拟地址.
+excerpt: 用户空间常量的虚拟地址.
 tags:
   - MMU
   - VAS
 ---
 
-**Architecture: I386 32bit Mechine Ubuntu 16.04**
-
-**Kernel: 4.15.0-39-generic**
+> Architecture: I386 32bit Mechine Ubuntu 16.04
+>
+> Kernel: 4.15.0-39-generic
 
 # 目录
 
-> 1. 静态变量
+> 1. 常量
 >
-> 2. 始化为零的静态变量
+> 2. 实践
 >
-> 3. 实践
+> 3. 分析
 >
-> 4. 分析
+> 4. 总结
 >
-> 5. 总结
->
-> 6. 附录
+> 5. 附录
 
 --------------------------------------------------------
 
-# 静态变量
+# 常量
 
-C 语言中的静态变量是一个只能被本文件可见的变量。静态变量定义在源文件的函数之外，使用 static 显式声明。静态变量定义如下：
-
-{% highlight ruby %}
-demo.c
-
-static int glob_inta;
-static int glob_intb = 1;
-static int glob_intc = 0;
-
-int fun()
-{
-    static int local_inta;
-    static int local_intb = 1;
-    static int local_intc = 0;
-
-    return 0;
-}
-{% endhighlight %}
-
-一个程序中可以定义多个静态变量。当编译器将源文件编译为目标 ELF 文件之后，全局
-变量可以存储在 ELF 目标文件的 .data 段内，也可以存储在 .bss 段内。当程序执行的
-时候，静态变量会被链接到程序的 .data 段内或 .bss 段内。
-
-----------------------------------------------------------
-
-# 始化为零静态变量
-
-始化为零的静态变量是静态变量中的一种，其在定义之后进行显式的初始化赋值为零。
-始化为零的静态变量定义如下：
+C 语言中的常量是固定值，在程序执行期间不会改变，这些固定值又叫做字面量，常量可
+以使任何的基础数据类型，比如整形常量，字符常量；也有枚举常量。常量就像是常规的
+变量，只不过常量的值在定义以后不能修改。常量的定义如下：
 
 {% highlight ruby %}
 demo.c
 
-static int demo_inta = 0;
+#define CONST_STR    "Hello BiscuitOS"
+
+int const const_int = 0x99;
+
+enum CONST_DATA {
+    CONST_ZERO,
+    CONST_ONE,
+    CONST_TWO,
+    CONST_THREE
+};
+enum CONST_DATA CDATA;
 
 int fun()
 {
@@ -72,21 +54,19 @@ int fun()
 }
 {% endhighlight %}
 
-#### ELF 目标文件中的始化为零静态变量
+常量的定义有三种方法：
 
-始化为零的静态变量在经过编译汇编之后，会被存储到 ELF 目标文件的 .bss 段内，并
-不占用 ELF 目标的存储空间。
-
-#### 进程中的始化为零静态变量
-
-当程序运行之后，始化为零的静态变量会被加载到进程的 .bss 段内，操作系统会为未初
-始化静态变量分配指定的虚拟地址空间。
+> 1. 使用 #define 宏定义
+>
+> 2. 使用 const 关键定义
+>
+> 3. 使用枚举定义
 
 ---------------------------------------------------------
 
 # 实践
 
-BiscuitOS 提供了始化为零静态变量相关的实例代码，开发者可以使用如下命令：
+BiscuitOS 提供了始化为非零常量相关的实例代码，开发者可以使用如下命令：
 首先，开发者先准备 BiscuitOS 系统，内核版本 linux 1.0.1.2。开发可以参照文档构建 BiscuitOS 调试环境：
 
 [Linux 1.0.1.2 内核构建方法](https://biscuitos.github.io/blog/Linux1.0.1.2_ext2fs_Usermanual/)
@@ -147,10 +127,10 @@ make menuconfig
 这个选项用于指定用户程序运行的平台。开发者可以根据自己需求选择，这里推荐选择
 **Intel i386 (32bit) Mechine**, 回车并按 Esc 退出。
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000452.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000483.png)
 
 最后开发者选择 **.data segment**,下拉菜单打开后，选择 
-**Static Inited Zero Data** 选项，回车保存并退出。
+**Const Data** 选项，回车保存并退出。
 
 运行实例代码，使用如下代码：
 
@@ -161,16 +141,15 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 ./data.elf
 {% endhighlight %}
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000453.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000484.png)
 
 -----------------------------------------------------------
 
 # 分析
 
-初始化为零的静态变量是静态变量中的一种，其声明之后赋值为零。在编译和汇编阶段，
-初始化为零的静态变量会被放置到 ELF 文件的 .bss 段，并且不占用 ELF 的空间。在程
-序运行之后，进程会将初始化为零的全局放到进程的 .bss 段并分配相应的虚拟空间。这
-里我们将分析初始化为零的静态变量的生命周期。
+C 语言中的常量是固定值，在程序执行期间不会改变，这些固定值又叫做字面量，常量
+可以使任何的基础数据类型，比如整形常量，字符常量；也有枚举常量。常量就像是常
+规的变量，只不过常量的值在定义以后不能修改。这里将研究常量的声明周期。
 
 开发者可以使用实例源码，源码位置：
 
@@ -178,30 +157,34 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 BiscuitOS/kernel/linux_1.0.1.2/tools/demo/mmu/addressing/virtual_address/user/data.c
 {% endhighlight %}
 
-如源码所示，始化为零静态变量定义如下：
+如源码所示，始化为非零常量定义如下：
 
 {% highlight ruby %}
 data.c
 
-#ifdef CONFIG_DEBUG_VA_USER_DATA_SINITZERO
-/* Static inited zero data */
-static char  SInitZero_char  = 0;
-static short SInitZero_short = 0;
-static int   SInitZero_int   = 0;
-static long  SInitZero_long  = 0;
-static char  SInitZeroA_char[ARRAY_LEN]  = { 0, 0, 0, 0};
-static short SInitZeroA_short[ARRAY_LEN] = { 0, 0, 0, 0};
-static int   SInitZeroA_int[ARRAY_LEN]   = { 0, 0, 0, 0};
-static long  SInitZeroA_long[ARRAY_LEN]  = { 0, 0, 0, 0};
-static char  *SInitZeroP_char  = NULL;
-static short *SInitZeroP_short = NULL;
-static int   *SInitZeroP_int   = NULL;
-static long  *SInitZeroP_long  = NULL;
+#ifdef CONFIG_DEBUG_VA_USER_DATA_CONST
+#define CONST_STR    "Hello BiscuitOS"
+
+int const const_int = 0x99;
+
+enum CONST_DATA {
+    CONST_ZERO,
+    CONST_ONE,
+    CONST_TWO,
+    CONST_THREE
+};
+enum CONST_DATA CDATA;
 #endif
+
+int main()
+{
+    return 0;
+}
 {% endhighlight %}
 
-始化为零的静态变量定义在函数之外，这里定义了各种类型的变量，包括变量，数组和指
-针。接着开发者对源文件进行编译汇编，以此生成 ELF 文件，使用如下命令：
+
+常量定义在函数之内或之外，这里定义了各种类型的指针。接着开发者对源文件
+进行编译汇编，以此生成 ELF 文件，使用如下命令：
 
 {% highlight ruby %}
 cd BiscuitOS/kernel/linux_1.0.1.2/
@@ -211,12 +194,12 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 
 默认情况下，运行 make 命令之后，在目录下就会生成对应的 ELF 文件和反汇编文件 
 **data.objdump.elf** 文件。开发者可以通过查看 data.objdump.elf 文件查看未初始
-化静态变量在 ELF 文件中的布局。
+化常量在 ELF 文件中的布局。
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000454.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000485.png)
 
-从上图可以看出，始化为零的静态变量在 ELF 文件中被放置到 .bss 段中，但不占用 ELF
-的空间。接下来开发者查看运行时，始化为零静态变量在进程中的布局。
+从上图可以看出，常量被放置到 .rodata 段里面，且在 main 函数内，汇编代码从 
+0x194 到 0x199 行调用对常量进行引用。
 
 用户空间程序来运行之前需要链接脚本进行链接运行，所以链接脚本影响着进程的虚拟内
 存布局。开发者可以使用如下命令查看链接脚本的内容，如下：
@@ -280,7 +263,7 @@ printf("***************************************************************\n");
 }
 {% endhighlight %}
 
-如上图源码，引用了很多链接脚本定义的变量和自定义了一些局部变量，这些变量分别代
+如上图源码，引用了很多链接脚本定义的变量和自定义了一些常量，这些变量分别代
 表：
 
 > 1. __executable_start 进程开始执行的虚拟地址
@@ -307,19 +290,19 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 ./data.elf
 {% endhighlight %}
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000453.png)
+![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000484.png)
 
-从运行结果来看，所有始化为零的静态变量地址被加载到从 0x804a040 增长到 
-0x804a084，从进程的布局可以知道，BSS 段的范围从 0x804a03c 增加到 0x804a088. 所
-以始化为零的静态变量都被进程加载到了 BSS 段，并分配了相应的虚拟地址。
+根据链接脚本可知，.rodata 段紧跟 .text 之后，所以从实际运行的例子可知，.text 
+段结束的位置是 0x8048848, 常量的地址从 0x8048a72  增加到 0x8048850，由于枚举
+变量无法打印地址。所以综上所定义的常量全部位于 .rodata 段里。
 
 ------------------------------------------------------
 
 # 总结
 
-通过实践，实践的结果和预期一样，始化为零静态变量进过编译汇编之后，在 ELF 文件
-中被存储到 .bss 段，并且不占用 ELF 文件的空间。当程序运行时，进程会将始化为零
-的静态变量加载到进程的 .bss 段，并分配对应的虚拟内存。
+常量在源码就被定义为固定值，编译汇编生成 ELF 之后，常量被放置到 ELF 文件的 .
+rodata 段内。当程序运行时，常量放置在进程的 .rodata 虚拟空间内，直到程序运行
+结束，常量的值都不改变。
 
 ------------------------------------------------------
 

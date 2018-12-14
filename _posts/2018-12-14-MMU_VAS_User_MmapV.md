@@ -162,13 +162,6 @@ data.c
 int main()
 {
 
-data.c
-
-int main()
-{
-
-int fun()
-{
     unsigned long *mmap_base = NULL;
     int mmap_fd;
 
@@ -198,7 +191,6 @@ int fun()
         close(mmap_fd);
     return 0;
 }
-
 {% endhighlight %}
 
 

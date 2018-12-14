@@ -42,6 +42,10 @@ static int glob_intc = 0;
 
 int fun()
 {
+    static int local_inta;
+    static int local_intb = 1;
+    static int local_intc = 0;
+
     return 0;
 }
 {% endhighlight %}
