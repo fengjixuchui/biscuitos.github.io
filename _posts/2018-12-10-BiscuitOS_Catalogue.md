@@ -13,17 +13,41 @@ tags:
 
 ##### Segmentation
 
-* [Page fault](https://biscuitos.github.io/blog/Architecture_English_note/)
+>    [I2C](https://biscuitos.github.io/blog/I2CBus/)
+>
+>    [PCIe](https://biscuitos.github.io/blog/PCIe/)
+>
+>    [CMA](https://biscuitos.github.io/blog/CMA/)
 
 ##### Paging
 
-* [Page fault](https://biscuitos.github.io/blog/Architecture_English_note/)
+>    [I2C](https://biscuitos.github.io/blog/I2CBus/)
+>
+>    [PCIe](https://biscuitos.github.io/blog/PCIe/)
+>
+>    [CMA](https://biscuitos.github.io/blog/CMA/)
 
 ## Schedult
 
-* [Task structure](https://biscuitos.github.io/blog/Architecture_English_note/)
+>    [I2C](https://biscuitos.github.io/blog/I2CBus/)
+>
+>    [PCIe](https://biscuitos.github.io/blog/PCIe/)
+>
+>    [CMA](https://biscuitos.github.io/blog/CMA/)
 
 ## VFS
 
-* [MINIXFS](https://biscuitos.github.io/blog/Architecture_English_note/)
+>    [I2C](https://biscuitos.github.io/blog/I2CBus/)
+>
+>    [PCIe](https://biscuitos.github.io/blog/PCIe/)
+>
+>    [CMA](https://biscuitos.github.io/blog/CMA/)
+
+## Bus
+
+>    [I2C](https://biscuitos.github.io/blog/I2CBus/)
+>
+>    [PCIe](https://biscuitos.github.io/blog/PCIe/)
+>
+>    [CMA](https://biscuitos.github.io/blog/CMA/)
 
