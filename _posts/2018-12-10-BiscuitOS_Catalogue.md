@@ -50,4 +50,6 @@ tags:
 >    [PCIe](https://biscuitos.github.io/blog/PCIe/)
 >
 >    [CMA](https://biscuitos.github.io/blog/CMA/)
+>
+>    [DMA](https://biscuitos.github.io/blog/DMA/)
 
