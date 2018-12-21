@@ -9,40 +9,6 @@ tags:
 
 # Catalogue
 
-## MMU
-
-##### Segmentation
-
->    [I2C](https://biscuitos.github.io/blog/I2CBus/)
->
->    [PCIe](https://biscuitos.github.io/blog/PCIe/)
->
->    [CMA](https://biscuitos.github.io/blog/CMA/)
-
-##### Paging
-
->    [I2C](https://biscuitos.github.io/blog/I2CBus/)
->
->    [PCIe](https://biscuitos.github.io/blog/PCIe/)
->
->    [CMA](https://biscuitos.github.io/blog/CMA/)
-
-## Schedult
-
->    [I2C](https://biscuitos.github.io/blog/I2CBus/)
->
->    [PCIe](https://biscuitos.github.io/blog/PCIe/)
->
->    [CMA](https://biscuitos.github.io/blog/CMA/)
-
-## VFS
-
->    [I2C](https://biscuitos.github.io/blog/I2CBus/)
->
->    [PCIe](https://biscuitos.github.io/blog/PCIe/)
->
->    [CMA](https://biscuitos.github.io/blog/CMA/)
-
 ## Bus
 
 >    [I2C](https://biscuitos.github.io/blog/I2CBus/)
@@ -52,4 +18,6 @@ tags:
 >    [CMA](https://biscuitos.github.io/blog/CMA/)
 >
 >    [DMA](https://biscuitos.github.io/blog/DMA/)
+>
+>    [MDIO/SMI/MIIM](https://biscuitos.github.io/blog/MDIO/)
 
