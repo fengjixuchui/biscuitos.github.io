@@ -22,4 +22,6 @@ tags:
 >    [MDIO/SMI/MIIM](https://biscuitos.github.io/blog/MDIO/)
 >
 >    [SPI](https://biscuitos.github.io/blog/SPI/)
+>
+>    [CAN](https://biscuitos.github.io/blog/CAN/)
 
