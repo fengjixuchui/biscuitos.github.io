@@ -20,4 +20,6 @@ tags:
 >    [DMA](https://biscuitos.github.io/blog/DMA/)
 >
 >    [MDIO/SMI/MIIM](https://biscuitos.github.io/blog/MDIO/)
+>
+>    [SPI](https://biscuitos.github.io/blog/SPI/)
 
