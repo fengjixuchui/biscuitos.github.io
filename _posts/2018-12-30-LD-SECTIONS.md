@@ -36,7 +36,7 @@ SECTIONS 命令告诉 ld 如何把输入文件的 sections 映射到输出文件
 >
 > 2. [符号赋值语句](https://biscuitos.github.io/blog/LD-EXPRESSION/)
 >
-> 3. [输出 section 的描述](#输出 section 的描述)
+> 3. [输出 section 的描述](#Output section description)
 >
 > 4. [Section 叠加描述](#Section 叠加描述)
 
