@@ -10,21 +10,59 @@ tags:
 
 # Catalogue
 
+## Kernel Establish
+
+> - [Build Linux 0.11](https://biscuitos.github.io/blog/Linux0.11_Usermanual/)
+>
+> - [Build Linux 0.12](https://biscuitos.github.io/blog/Linux0.12_Usermanual/)
+>
+> - [Build Linux 0.95.3](https://biscuitos.github.io/blog/Linux0.95.3_Usermanual/)
+>
+> - [Build Linux 0.95.a](https://biscuitos.github.io/blog/Linux0.95a_Usermanual/)
+>
+> - [Build Linux 0.96.1](https://biscuitos.github.io/blog/Linux0.96.1_Usermanual/)
+>
+> - [Build Linux 0.97.1](https://biscuitos.github.io/blog/Linux0.97.1_Usermanual/)
+>
+> - [Build Linux 0.98.1](https://biscuitos.github.io/blog/Linux0.98.1_Usermanual/)
+>
+> - [Build Linux 0.99.1](https://biscuitos.github.io/blog/Linux0.99.1_Usermanual/)
+>
+> - [Build Linux 1.0.1](https://biscuitos.github.io/blog/Linux1.0.1_Usermanual/)
+>
+> - [Build Linux 1.0.1.1 minix-fs](https://biscuitos.github.io/blog/Linux1.0.1.1_minixfs_Usermanual/)
+>
+> - [Build Linux 1.0.1.1 ext2-fs](https://biscuitos.github.io/blog/Linux1.0.1.1_ext2fs_Usermanual/)
+>
+> - [Build Linux 1.0.1.2 minix-fs](https://biscuitos.github.io/blog/Linux1.0.1.2_minixfs_Usermanual/)
+>
+> - [Build Linux 1.0.1.2 ext2-fs](https://biscuitos.github.io/blog/Linux1.0.1.2_ext2fs_Usermanual/)
+
+## BIOS
+
+> - [Build SeaBIOS](https://biscuitos.github.io/blog/BIOS_SeaBIOS/)
+
 ## Enginerring Practice
 
->    [I2C](https://biscuitos.github.io/blog/I2CBus/)
+> - [I2C](https://biscuitos.github.io/blog/I2CBus/)
 >
->    [PCIe](https://biscuitos.github.io/blog/PCIe/)
+> - [PCIe](https://biscuitos.github.io/blog/PCIe/)
 >
->    [CMA](https://biscuitos.github.io/blog/CMA/)
+> - [CMA](https://biscuitos.github.io/blog/CMA/)
 >
->    [DMA](https://biscuitos.github.io/blog/DMA/)
+> - [DMA](https://biscuitos.github.io/blog/DMA/)
 >
->    [MDIO/SMI/MIIM](https://biscuitos.github.io/blog/MDIO/)
+> - [MDIO/SMI/MIIM](https://biscuitos.github.io/blog/MDIO/)
 >
->    [SPI](https://biscuitos.github.io/blog/SPI/)
+>   - [MDIO](https://biscuitos.github.io/blog/MDIO/)
 >
->    [CAN](https://biscuitos.github.io/blog/CAN/)
+>   - [SMI](https://biscuitos.github.io/blog/MDIO/)
 >
->    [DTS](https://biscuitos.github.io/blog/DTS/)
+>   - [MIIM](https://biscuitos.github.io/blog/MDIO/)
+>
+> - [SPI](https://biscuitos.github.io/blog/SPI/)
+>
+> - [CAN](https://biscuitos.github.io/blog/CAN/)
+>
+> - [DTS](https://biscuitos.github.io/blog/DTS/)
 

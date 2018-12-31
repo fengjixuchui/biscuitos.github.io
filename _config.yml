@@ -63,7 +63,7 @@ github:              BiscuitOS
 #behance:           username
 
 # Plugins
-plugins:
+plugins_dir:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-gist
