@@ -19,16 +19,17 @@ tags:
 --------------------------------------------------------
 目录
 
-> Ubuntu 14.04/16.04 Vmware/VirtualBox
+> [Ubuntu 14.04/16.04 Vmware/VirtualBox](#Ubuntu 14.04)
     
-> Ubuntu 18.04/17.10 Vmware/VirtualBox
+> [Ubuntu 18.04/17.10 Vmware/VirtualBox](#Ubuntu 18.04)
     
-> Fedora
+> [Fedora](#Fedora)
     
-> Mint
+> [Mint](#Mint)
 
 --------------------------------------------------------
-## Ubuntu 14.04/16.04 Vmware/VirtualBox
+
+## <span id="Ubuntu 14.04">Ubuntu 14.04/16.04 Vmware/VirtualBox</span>
 
 作为 BiscuitOS 开发的首选平台，开发者首先确认是否安装必要的开发工具，如
 果没有，请安如下步骤安装：
@@ -51,7 +52,8 @@ git config —global user.email “Your Email"
 至此，基本的开发工具已经安装完成。
 
 ----------------------------------------------------------
-## Ubuntu 18.04/17.10 Vmware/VirtualBox
+
+## <span id="Ubuntu 18.04">Ubuntu 18.04/17.10 Vmware/VirtualBox</span>
 
 类似于 Ubuntu 16.04，Ubuntu 18.04/17.10 有不同的地方，开发者首先确认是否
 安装必要的开发工具，如果没有，请安如下步骤安装：
@@ -105,7 +107,8 @@ sudo update-alternatives --config g++
 至此，基本的开发工具已经安装完成。
 
 -------------------------------------------------------------
-## Fedora
+
+## <span id="Fedora">Fedora</span>
 
 Fedora27，开发者首先确认是否安装必要的开发工具，如果没有，请安如下步骤安装：
 
@@ -126,7 +129,8 @@ git config —global user.email “Your Email"
 至此，基本的开发工具已经安装完成。
 
 ----------------------------------------------------------
-## Mint
+
+## <span id="Mint">Mint</span>
 
 Mint18 64Bit，开发者首先确认是否安装必要的开发工具，如果没有，请安如下步骤安装：
 
