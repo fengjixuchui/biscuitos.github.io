@@ -2,7 +2,7 @@
 layout: post
 title:  "Small Biscuit"
 date:   2019-01-02 09:38:30 +0800
-categories: [MMU]
+categories: [HAB]
 excerpt: Story Small BiscuitOS.
 tags:
   - Linker

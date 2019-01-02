@@ -76,4 +76,4 @@ tags:
 
 > - [ASCII Animation](https://biscuitos.github.io/blog/Animator/)
 >
-> - [Small Biscuit](https://biscuitos.github.io/blog/Small_Biscuit/)
+> - [Small Biscuit](https://biscuitos.github.io/blog/Story_SmallBiscuitOS/)

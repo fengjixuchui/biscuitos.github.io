@@ -9,7 +9,7 @@ tabs:
        title: IO
 
      - id: six
-       title: Device
+       title: HAB
 
      - id: svn
        title: BIOS
