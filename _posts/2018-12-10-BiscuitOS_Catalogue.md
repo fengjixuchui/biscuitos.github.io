@@ -38,6 +38,12 @@ tags:
 >
 > - [Build Linux 1.0.1.2 ext2-fs](https://biscuitos.github.io/blog/Linux1.0.1.2_ext2fs_Usermanual/)
 
+## Basic
+
+> - [GNU LD scripts](https://biscuitos.github.io/blog/LD/)
+>
+>   - [LD Instruction List](https://biscuitos.github.io/blog/LD/#ld 链接语法)
+
 ## BIOS
 
 > - [Build SeaBIOS](https://biscuitos.github.io/blog/BIOS_SeaBIOS/)
@@ -66,3 +72,8 @@ tags:
 >
 > - [DTS](https://biscuitos.github.io/blog/DTS/)
 
+## My Hobbies
+
+> - [ASCII Animation](https://biscuitos.github.io/blog/Animator/)
+>
+> - [xiaobinggan](https://biscuitos.github.io/blog/Animator/)
