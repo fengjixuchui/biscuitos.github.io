@@ -44,6 +44,75 @@ tags:
 >
 > - ZONE_NORMAL
 
+Linux 内核空间的分布图如下：
+
+{% highlight ruby %}
+4G +----------------+
+   |                |
+   +----------------+-- FIXADDR_TOP
+   |                |
+   |                | FIX_KMAP_END
+   |     Fixmap     |
+   |                | FIX_KMAP_BEGIN
+   |                |
+   +----------------+-- FIXADDR_START
+   |                |
+   |                |
+   +----------------+--
+   |                | A
+   |                | |
+   |   Persistent   | | LAST_PKMAP * PAGE_SIZE
+   |    Mappings    | |
+   |                | V
+   +----------------+-- PKMAP_BASE
+   |                |
+   +----------------+-- VMALLOC_END / MODULE_END
+   |                |
+   |                |
+   |    VMALLOC     |
+   |                |
+   |                |
+   +----------------+-- VMALLOC_START / MODULE_VADDR
+   |                | A
+   |                | |
+   |                | | VMALLOC_OFFSET
+   |                | |
+   |                | V
+   +----------------+-- high_memory
+   |                |
+   |                |
+   |                |
+   | Mapping of all |
+   |  physical page |
+   |     frames     |
+   |    (Normal)    |
+   |                |
+   |                |
+   +----------------+-- MAX_DMA_ADDRESS
+   |                |
+   |      DMA       |
+   |                |
+   +----------------+
+   |     .bss       |
+   +----------------+
+   |     .data      |
+   +----------------+
+   | 8k thread size |
+   +----------------+
+   |     .init      |
+   +----------------+
+   |     .text      |
+   +----------------+ 0xC0008000
+   | swapper_pg_dir |
+   +----------------+ 0xC0004000
+   |                |
+3G +----------------+-- TASK_SIZE / PAGE_OFFSET
+   |                |
+   |                |
+   |                |
+0G +----------------+
+{% endhighlight %}
+
 对于整个 1G 内核虚拟地址空间，通常把空间低于 896MB 称为 Normal 区，即 
 ZONE_Normal 区。在有的体系结构中，硬件将 DMA 空间固定在了物理内存的低 16MB 空
 间，这段区域成为 DMA 内存区；有的体系结构中不存在 DMA 内存。IA32 中，低端虚拟
