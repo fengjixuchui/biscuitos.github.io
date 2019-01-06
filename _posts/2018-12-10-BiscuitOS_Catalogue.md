@@ -44,33 +44,11 @@ tags:
 >
 >   - [Linux 1.0 Kernel Virtual Space](https://_Usermanual/)
 >
->     - [Kmalloc Virtual Space](https://_Usermanual/)
->
->     - [VMALLOC Virtual Space](https://_Usermanual/)
->
->     - [Linux 1.0 kernel ld scripts](https://_Usermanual/)
->
 >   - [Linux 1.0 User Vritual Space](https://_Usermanual/)
 >
 >   - [Linux 4.x User Virtual Space](https://_Usermanual/)
 >
->     - [User Space Data Virtual Space](https://_Usermanual/)
->
->     - [User Space linker scripts](https://_Usermanual/)
->
 >   - [Linux 4.x Kernel Virtual Space](https://biscuitos.github.io/blog/MMU-Linux4x-KERNEL/)
->
->     - [DMA Virtual Space](https://biscuitos.github.io/blog/MMU-Linux4x-DMA/)
->
->     - [Normal Virtual Space](https://biscuitos.github.io/blog/MMU-Linux4x-Normal/)
->
->     - [VMALLOC Virtual Space](https://biscuitos.github.io/blog/MMU-Linux4x-VMALLOC/)
->
->     - [PKMAP Virtual Space](https://biscuitos.github.io/blog/MMU-Linux4x-PKMAP/)
->
->     - [FIXUP Virtual Space](https://biscuitos.github.io/blog/MMU-Linux4x-FIXUP/)
->
->     - [Module Virtual Space](https://biscuitos.github.io/blog/MMU-Linux4x-MODULE/)
 >
 > - [Logical Address](https://_Usermanual/)
 >
