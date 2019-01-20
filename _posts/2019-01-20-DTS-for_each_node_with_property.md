@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000106.jpg)
 
-> Github: [for_each_matching_node](https://github.com/BiscuitOS/HardStack/tree/master/bus/DTS/kernel/API/for_each_node_with_property)
+> Github: [for_each_node_with_property](https://github.com/BiscuitOS/HardStack/tree/master/bus/DTS/kernel/API/for_each_node_with_property)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
