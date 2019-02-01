@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000106.jpg)
 
-> Github: [of_add_property](https://github.com/BiscuitOS/HardStack/tree/master/bus/DTS/kernel/API/of_add_property)
+> Github: [of_add_property](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/of_add_property)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,13 +28,13 @@ tags:
 
 ##### of_add_property
 
-```
+{% highlight ruby %}
 of_add_property
 |
 |---of_property_notify
 |
 |---proc_device_tree_add_prop
-```
+{% endhighlight %}
 
 > 平台： ARM64
 >
@@ -44,7 +44,7 @@ of_add_property
 
 ##### of_add_property
 
-```
+{% highlight ruby %}
 /**
 * of_add_property - Add a property to a node
 */
@@ -80,7 +80,7 @@ int of_add_property(struct device_node *np, struct property *prop)
 
     return 0;
 }
-```
+{% endhighlight %}
 
 参数 np 指向当前 device_node; prop 指向新的 prop
 
@@ -91,7 +91,7 @@ properties 属性链表，分别遍历链表中的所有属性，如果遇到新
 properties 成员维护的链表里，of_find_property() 函数就是遍历这个链表，从而找
 到指定的属性。
 
-```
+{% highlight ruby %}
 Relation: device_node and property
                                                                           +----------+
                                                                           |          |
@@ -105,7 +105,7 @@ Relation: device_node and property
 | properties -|-------->+----------+
 |             |
 +-------------+
-```
+{% endhighlight %}
 
 ----------------------------------------------------------
 
@@ -114,9 +114,9 @@ Relation: device_node and property
 实践目的是在 DTS 文件中构建一个私有节点，然后通过of_add_property() 函数插入
 多个属性到节点里，函数定义如下：
 
-```
+{% highlight ruby %}
 int of_add_property(struct device_node *np, struct property *prop)
-```
+{% endhighlight %}
 
 这个函数经常用用于插入新的属性到当前节点里。
 
@@ -125,7 +125,7 @@ int of_add_property(struct device_node *np, struct property *prop)
 由于使用的平台是 ARM64，所以在源码 /arch/arm64/boot/dts 目录下创建一个 DTSI 文
 件，在 root 节点之下创建一个名为 DTS_demo 的子节点。具体内容如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS Demo Code
  *
@@ -141,15 +141,15 @@ int of_add_property(struct device_node *np, struct property *prop)
                 status = "okay";
         };
 };
-```
+{% endhighlight %}
 
 创建完毕之后，将其保存并命名为 DTS_demo.dtsi。然后开发者找到系统默认的 DTS 文
 件，比如当前编译使用的 DTS 文件为 XXX.dtsi，然后在 XXX.dtsi 文件开始地方添加如
 下内容：
 
-```
+{% highlight ruby %}
 #include "DTS_demo.dtsi"
-```
+{% endhighlight %}
 
 #### 编写 DTS 对应驱动
 
@@ -159,7 +159,7 @@ probe 函数中，首先获得驱动所对应的节点，通过 platform_device 
 递。获得驱动对应的节点之后，通过调用 of_add_property() 函数将不同种类的属性插
 入到当前节点，插入完成后再通过 DT 相关的函数读取其值并打印，驱动编写如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS: of_add_property
  *
@@ -320,18 +320,18 @@ static struct platform_driver DTS_demo_driver = {
     },
 };
 module_platform_driver(DTS_demo_driver);
-```
+{% endhighlight %}
 
 编写好驱动之后，将其编译进内核。编译内核和 dts，如下命令：
 
-```
+{% highlight ruby %}
 make ARCH=arm64
 make ARCH=arm64 dtbs
-```
+{% endhighlight %}
 
 启动内核，在启动阶段就会运行驱动的 probe 函数，并打印如下信息：
 
-```
+{% highlight ruby %}
 [    3.587479] DTS demo probe entence.
 [    3.587496] BiscuitOS-u8:  0x10
 [    3.587508] BiscuitOS-u16: 0x1020
@@ -340,7 +340,7 @@ make ARCH=arm64 dtbs
 [    3.587549] BiscuitOS-u32arry[0]: 0x10203040
 [    3.587562] BiscuitOS-u32arry[1]: 0x50607080
 [    3.587576] BiscuitOS-string: BiscuitOS
-```
+{% endhighlight %}
 
 驱动给出了多种属性的定义以及添加方法，开发者可以根据需求自行选择。
 
