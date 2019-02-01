@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000106.jpg)
 
-> Github: [for_each_compatible_node](https://github.com/BiscuitOS/HardStack/tree/master/bus/DTS/kernel/API/for_each_compatible_node)
+> Github: [for_each_compatible_node](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/for_each_compatible_node)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,7 +28,7 @@ tags:
 
 ##### for_each_compatible_node
 
-```
+{% highlight ruby %}
 for_each_compatible_node
 |
 |---of_find_compatible_node
@@ -36,7 +36,7 @@ for_each_compatible_node
     |---__of_device_is_available
         |
         |---__of_get_property
-```
+{% endhighlight %}
 
 函数作用：通过 compatible 属性找到所有对应的 device node。
 
@@ -44,11 +44,11 @@ for_each_compatible_node
 >
 > linux： 3.10/4.14
 
-```
+{% highlight ruby %}
 #define for_each_compatible_node(dn, type, compatible) \
     for (dn = of_find_compatible_node(NULL, type, compatible); dn; \
          dn = of_find_compatible_node(dn, type, compatible))
-```
+{% endhighlight %}
 
 参数 dn 指向 device_node; 参数 type 指向属性类型；compatible 指向 compatible 
 属性名字
@@ -60,7 +60,7 @@ compatible 属性名字是 compatible 的节点，然后 for 循环中，只要 
 
 ##### of_find_compatible_node
 
-```
+{% highlight ruby %}
 /**
 *    of_find_compatible_node - Find a node based on type and one of the
 *                                tokens in its "compatible" property
@@ -96,7 +96,7 @@ struct device_node *of_find_compatible_node(struct device_node *from,
     return np;
 }
 EXPORT_SYMBOL(of_find_compatible_node);
-```
+{% endhighlight %}
 
 参数 from 指向开始的 device node； type 指向属性的类型；compatible 指向 
 compatible 属性的名字
@@ -109,7 +109,7 @@ compatible 属性的名字
 
 ##### __of_device_is_available
 
-```
+{% highlight ruby %}
 /**
 *  __of_device_is_available - check if a device is available for use
 *
@@ -134,7 +134,7 @@ static int __of_device_is_available(const struct device_node *device)
 
     return 0;
 }
-```
+{% endhighlight %}
 
 参数 device 指向当前节点
 
@@ -143,7 +143,7 @@ static int __of_device_is_available(const struct device_node *device)
 
 ##### __of_get_property
 
-```
+{% highlight ruby %}
 /*
 * Find a property with a given name for a given node
 * and return the value.
@@ -155,7 +155,7 @@ static const void *__of_get_property(const struct device_node *np,
 
     return pp ? pp->value : NULL;
 }
-```
+{% endhighlight %}
 
 参数 np 指向设备节点；name 指向属性值；lenp 用于存储属性长度
 
@@ -164,7 +164,7 @@ static const void *__of_get_property(const struct device_node *np,
 
 ##### __of_find_property
 
-```
+{% highlight ruby %}
 static struct property *__of_find_property(const struct device_node *np,
                        const char *name, int *lenp)
 {
@@ -183,7 +183,7 @@ static struct property *__of_find_property(const struct device_node *np,
 
     return pp;
 }
-```
+{% endhighlight %}
 
 由于每个 device_node 包含一个名为 properties 的成员，properties 是一个单链表的
 表头，这个单链表包含了该节点的所有属性，函数通过使用 for 循环遍历这个链表，以
@@ -199,11 +199,11 @@ NULL，那么会将属性的长度即 length 存储到 lenp 指向的地址。
 实践目的是在 DTS 文件中构建两个私有节点，第一个私有节点默认打开，通过调用 
 for_each_compatible_node() 函数找到 compatible 属性对应的所有节点，定义如下：
 
-```
+{% highlight ruby %}
 #define for_each_compatible_node(dn, type, compatible) \
     for (dn = of_find_compatible_node(NULL, type, compatible); dn; \
          dn = of_find_compatible_node(dn, type, compatible))
-```
+{% endhighlight %}
 
 这个函数经常用用于通过 compatible 属性找到对应的所有节点。
 
@@ -213,7 +213,7 @@ for_each_compatible_node() 函数找到 compatible 属性对应的所有节点�
 件，在 root 节点之下创建名为 DTS_demo，DTS_demoY， 和 DTS_demoX 的子节点。
 DTS_demo 节点默认打开，具体内容如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS Demo Code
  *
@@ -237,15 +237,15 @@ DTS_demo 节点默认打开，具体内容如下：
                 status = "disabled";
         };
 };
-```
+{% endhighlight %}
 
 创建完毕之后，将其保存并命名为 DTS_demo.dtsi。然后开发者找到系统默认的 DTS 文
 件，比如当前编译使用的 DTS 文件为 XXX.dtsi，然后在 XXX.dtsi 文件开始地方添加如
 下内容：
 
-```
+{% highlight ruby %}
 #include "DTS_demo.dtsi"
-```
+{% endhighlight %}
 
 #### 编写 DTS 对应驱动
 
@@ -255,7 +255,7 @@ probe 函数中，首先获得驱动所对应的节点，通过 platform_device 
 递。获得驱动对应的节点之后，通过调用 for_each_compatible_node() 函数找到 
 compatible 属性对应的所有节点。驱动编写如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS: for_each_compatible_node
  *
@@ -339,23 +339,23 @@ static struct platform_driver DTS_demo_driver = {
     },
 };
 module_platform_driver(DTS_demo_driver);
-```
+{% endhighlight %}
 
 编写好驱动之后，将其编译进内核。编译内核和 dts，如下命令：
 
-```
+{% highlight ruby %}
 make ARCH=arm64
 make ARCH=arm64 dtbs
-```
+{% endhighlight %}
 
 启动内核，在启动阶段就会运行驱动的 probe 函数，并打印如下信息：
 
-```
+{% highlight ruby %}
 [    3.534323] DTS probe entence...
 [    3.534359] Found /DTS_demo
 [    3.534364] Found /DTS_demoY
 [    3.534369] Found /DTS_demoX
-```
+{% endhighlight %}
 
 --------------------------------------
 
