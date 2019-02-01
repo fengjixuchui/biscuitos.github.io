@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000106.jpg)
 
-> Github: [of_compat_cmp](https://github.com/BiscuitOS/HardStack/tree/master/bus/DTS/kernel/API/of_count_phandle_with_args)
+> Github: [of_count_phandle_with_args](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/of_count_phandle_with_args)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,7 +28,7 @@ tags:
 
 ##### of_count_phandle_with_args
 
-```
+{% highlight ruby %}
 of_count_phandle_with_args
 |
 |---__of_parse_phandle_with_args
@@ -40,13 +40,14 @@ of_count_phandle_with_args
     |---of_property_read_u32
     |
     |---of_node_put
-```
+{% endhighlight %}
 
 函数作用：获得节点 phandle 列表中 phandle 的数量
 
 平台： ARM64
 linux： 3.10/4.14
 
+{% highlight ruby %}
 /**
 * of_count_phandle_with_args() - Find the number of phandles references in a property
 * @np:        pointer to a device tree node containing a list
@@ -68,14 +69,17 @@ int of_count_phandle_with_args(const struct device_node *np, const char *list_na
     return __of_parse_phandle_with_args(np, list_name, cells_name, -1, NULL);
 }
 EXPORT_SYMBOL(of_count_phandle_with_args);
+{% endhighlight %}
 
-参数 np 指向当前节点；list_name 指向节点中 phandle 列表的属性名；cells_name 参数指明 phandle 指向的节点所含的 cells 个数。
-函数直接调用 __of_parse_phandle_with_args() 函数，然后返回。
+参数 np 指向当前节点；list_name 指向节点中 phandle 列表的属性名；cells_name 参
+数指明 phandle 指向的节点所含的 cells 个数。函数直接调用 
+__of_parse_phandle_with_args() 函数，然后返回。
 
-__of_parse_phandle_with_args
+##### __of_parse_phandle_with_args
 
 函数较长，分段分析。
 
+{% highlight ruby %}
 /**
 * of_parse_phandle_with_args() - Find a node pointed by phandle in a list
 * @np:        pointer to a device tree node containing a list
@@ -118,17 +122,25 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
     uint32_t count = 0;
     struct device_node *node = NULL;
     phandle phandle;
+{% endhighlight %}
 
-参数 np 指向当前节点；list_name 指向节点中 phandle 列表的属性名；cells_name 参数指明 phandle 指向的节点所含的 cells 个数；index 表示 phandle 列表的索引，0 代表第一个 phandle，1 代表第二个 phandle；out_args 参数用于存储 phandle 中的参数。
+参数 np 指向当前节点；list_name 指向节点中 phandle 列表的属性名；cells_name 参
+数指明 phandle 指向的节点所含的 cells 个数；index 表示 phandle 列表的索引，0 
+代表第一个 phandle，1 代表第二个 phandle；out_args 参数用于存储 phandle 中的参
+数。
 
+{% highlight ruby %}
     /* Retrieve the phandle list property */
     list = of_get_property(np, list_name, &size);
     if (!list)
         return -ENOENT;
     list_end = list + size / sizeof(*list);
+{% endhighlight %}
 
-调用函数 of_get_property() 函数获得当前节点的 phandle list 属性的值，存储到 list 变量，然后计算 phandle list 属性结束的值。
+调用函数 of_get_property() 函数获得当前节点的 phandle list 属性的值，存储到 
+list 变量，然后计算 phandle list 属性结束的值。
 
+{% highlight ruby %}
     /* Loop over the phandles until all the requested entry is found */
     while (list < list_end) {
         rc = -EINVAL;
@@ -167,9 +179,14 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
                 goto err;
             }
         }
+{% endhighlight %}
 
-然后遍历节点 phandle list 里面的 cells，每遍历依次，只要 phandle 有效，就调用 of_find_node_by_phandle() 函数获得 phandle 对应的节点，然后读取该节点中 cells_name 名字对应的属性值，存储在 count 变量中。如果 list + count 的值越界，那么判定位越界。
+然后遍历节点 phandle list 里面的 cells，每遍历依次，只要 phandle 有效，就调用 
+of_find_node_by_phandle() 函数获得 phandle 对应的节点，然后读取该节点中 
+cells_name 名字对应的属性值，存储在 count 变量中。如果 list + count 的值越界，
+那么判定位越界。
 
+{% highlight ruby %}
         /*
          * All of the error cases above bail out of the loop, so at
          * this point, the parsing is successful. If the requested
@@ -202,9 +219,14 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
         list += count;
         cur_index++;
     }
+{% endhighlight %}
 
-cur_index 和 index 的比较确保了正在读取指定的 phandle。如果 out_args 存在，那么函数将 phandle 对应的参数都存储在 out_args 的 args 数组里，然后返回；否则调用 of_node_put() 函数，释放节点的使用权；如果不是需要找的 phandle，那么继续遍历下一个。
+cur_index 和 index 的比较确保了正在读取指定的 phandle。如果 out_args 存在，那
+么函数将 phandle 对应的参数都存储在 out_args 的 args 数组里，然后返回；否则调
+用 of_node_put() 函数，释放节点的使用权；如果不是需要找的 phandle，那么继续遍
+历下一个。
 
+{% highlight ruby %}
     /*
      * Unlock node before returning result; will be one of:
      * -ENOENT : index is for empty phandle
@@ -217,11 +239,13 @@ err:
         of_node_put(node);
     return rc;
 }
+{% endhighlight %}
 
 函数的错误处理。
 
-of_find_node_by_phandle
+##### of_find_node_by_phandle
 
+{% highlight ruby %}
 /**
 * of_find_node_by_phandle - Find a node given a phandle
 * @handle:    phandle of the node to find
@@ -243,12 +267,19 @@ struct device_node *of_find_node_by_phandle(phandle handle)
     return np;
 }
 EXPORT_SYMBOL(of_find_node_by_phandle);
+{% endhighlight %}
 
 参数 handle 指向节点中 phandle 的属性值。
-函数首先调用 raw_spin_lock_irqsave() 函数加锁。由于 DTB 将所有节点都存放在 of_allnodes 为表头的单链表里，然后调用 for 循环遍历所有节点。每次遍历一个节点，如果节点 device_node 的 phandle 成员和遍历到的节点一致，那么就找到 phandle 对应的节点。接着停止 for 循环，调用 of_node_get() 函数添加节点引用数。最后返回 device_node 之前调用 raw_spin_unlock_irqrestore() 函数释放锁。
 
-of_property_read_u32_array
+函数首先调用 raw_spin_lock_irqsave() 函数加锁。由于 DTB 将所有节点都存放在 
+of_allnodes 为表头的单链表里，然后调用 for 循环遍历所有节点。每次遍历一个节点，
+如果节点 device_node 的 phandle 成员和遍历到的节点一致，那么就找到 phandle 对
+应的节点。接着停止 for 循环，调用 of_node_get() 函数添加节点引用数。最后返回 
+device_node 之前调用 raw_spin_unlock_irqrestore() 函数释放锁。
 
+##### of_property_read_u32_array
+
+{% highlight ruby %}
 /**
 * of_property_read_u32_array - Find and read an array of 32 bit integers
 * from a property.
@@ -280,12 +311,17 @@ int of_property_read_u32_array(const struct device_node *np,
     return 0;
 }
 EXPORT_SYMBOL_GPL(of_property_read_u32_array);
+{% endhighlight %}
 
-参数 np 指向当前节点；propbane 参数指向属性的名字；out_values 参数用于存储整形数组的指针；sz 参数用于执行需要读取 32 位整形的数量。
-函数首先调用 of_find_property_value_of_size() 函数获得属性对应的属性值。然后进行判断之后，将每个属性值存储到 out_values 中。
+参数 np 指向当前节点；propbane 参数指向属性的名字；out_values 参数用于存储整形
+数组的指针；sz 参数用于执行需要读取 32 位整形的数量。
 
-of_find_property_value_of_size
+函数首先调用 of_find_property_value_of_size() 函数获得属性对应的属性值。然后进
+行判断之后，将每个属性值存储到 out_values 中。
 
+##### of_find_property_value_of_size
+
+{% highlight ruby %}
 /**
 * of_find_property_value_of_size
 *
@@ -313,12 +349,16 @@ static void *of_find_property_value_of_size(const struct device_node *np,
 
     return prop->value;
 }
+{% endhighlight %}
 
 参数 np 指向当前节点；propname 指向属性的名字，len 参数表示属性的长度。
-函数首先调用 of_find_property() 函数获得属性，然后分别判断属性，属性的值，以及属性的长度是否都符合要求。当条件都满足之后，返回属性的值。
 
-of_find_property
+函数首先调用 of_find_property() 函数获得属性，然后分别判断属性，属性的值，以及
+属性的长度是否都符合要求。当条件都满足之后，返回属性的值。
 
+##### of_find_property
+
+{% highlight ruby %}
 struct property *of_find_property(const struct device_node *np,
                   const char *name,
                   int *lenp)
@@ -333,13 +373,19 @@ struct property *of_find_property(const struct device_node *np,
     return pp;
 }
 EXPORT_SYMBOL(of_find_property);
+{% endhighlight %}
 
-参数 np 指向一个 device_node；name 参数表示需要查看属性的名字；lenp 用于存储属性长度。
+参数 np 指向一个 device_node；name 参数表示需要查看属性的名字；lenp 用于存储属
+性长度。
 
-函数通过调用 raw_spin_lock_irqsave() 函数加锁之后，就直接调用 __of_find_property() 函数。__of_find_property() 函数用于查找并返回属性名字与 name 一致的属性。调用完 __of_find_property() 函数之后，调用 raw_spin_unlock_irqrestore() 函数解锁。最后返回 property 结构。
+函数通过调用 raw_spin_lock_irqsave() 函数加锁之后，就直接调用 
+__of_find_property() 函数。__of_find_property() 函数用于查找并返回属性名字与 
+name 一致的属性。调用完 __of_find_property() 函数之后，调用 
+raw_spin_unlock_irqrestore() 函数解锁。最后返回 property 结构。
 
-__of_find_property
+##### __of_find_property
 
+{% highlight ruby %}
 static struct property *__of_find_property(const struct device_node *np,
                        const char *name, int *lenp)
 {
@@ -358,22 +404,38 @@ static struct property *__of_find_property(const struct device_node *np,
 
     return pp;
 }
+{% endhighlight %}
 
-由于每个 device_node 包含一个名为 properties 的成员，properties 是一个单链表的表头，这个单链表包含了该节点的所有属性，函数通过使用 for 循环遍历这个链表，以此遍历节点所包含的所有属性。每遍历一个属性就会调用 of_prop_cmp() 函数，of_prop_cmp() 函数用于对比两个字符串是否相等，如果相等返回 0. 因此，当遍历到的属性的名字与参数 name 一致，那么定义为找到了指定的属性。此时，如果 lenp 不为 NULL，那么会将属性的长度即 length 存储到 lenp 指向的地址。
+由于每个 device_node 包含一个名为 properties 的成员，properties 是一个单链表的
+表头，这个单链表包含了该节点的所有属性，函数通过使用 for 循环遍历这个链表，以
+此遍历节点所包含的所有属性。每遍历一个属性就会调用 of_prop_cmp() 函数，
+of_prop_cmp() 函数用于对比两个字符串是否相等，如果相等返回 0. 因此，当遍历到的
+属性的名字与参数 name 一致，那么定义为找到了指定的属性。此时，如果 lenp 不为 
+NULL，那么会将属性的长度即 length 存储到 lenp 指向的地址。
 
-实践
+----------------------------------------
 
-实践目的是在 DTS 文件中构建三个私有节点，第一个私有节点通过 phandle 的方式引用了第二个和第三个节点，节点二和节点三都存储在第一个节点的 phandle list 属性中，然后通过 of_count_phandle_with_args() 函数统计 phandle list 中 phandle 的数量，函数定义如下：
+# <span id="实践">实践</span>
 
+实践目的是在 DTS 文件中构建三个私有节点，第一个私有节点通过 phandle 的方式引用
+了第二个和第三个节点，节点二和节点三都存储在第一个节点的 phandle list 属性中，
+然后通过 of_count_phandle_with_args() 函数统计 phandle list 中 phandle 的数量，
+函数定义如下：
+
+{% highlight ruby %}
 int of_count_phandle_with_args(const struct device_node *np, const char *list_name,
                 const char *cells_name)
+{% endhighlight %}
 
 这个函数经常用用于从节点的 phandle list 中读取 phandle 对应的节点
 
-DTS 文件
+#### DTS 文件
 
-由于使用的平台是 ARM64，所以在源码 /arch/arm64/boot/dts 目录下创建一个 DTSI 文件，在 root 节点之下创建一个名为 DTS_demo 的子节点。节点默认打开。再创建两个节点，节点的 cells 分别是 3 和 2，具体内容如下：
+由于使用的平台是 ARM64，所以在源码 /arch/arm64/boot/dts 目录下创建一个 DTSI 文
+件，在 root 节点之下创建一个名为 DTS_demo 的子节点。节点默认打开。再创建两个节
+点，节点的 cells 分别是 3 和 2，具体内容如下：
 
+{% highlight ruby %}
 /*
  * DTS Demo Code
  *
@@ -384,31 +446,41 @@ DTS 文件
  * published by the Free Software Foundation.
  */
 / {
-    DTS_demo {
-        compatible = "DTS_demo, BiscuitOS";
-        status = "okay";
-        phy-handle = <&phy0 1 2 3 &phy1 4 5>;
-    };
+        DTS_demo {
+                compatible = "DTS_demo, BiscuitOS";
+                status = "okay";
+                phy-handle = <&phy0 1 2 3 &phy1 4 5>;
+        };
 
-    phy0: phy@0 {
-        #phy-cells = <3>;
-        compatible = "PHY0, BiscuitOS";
-    };
+        phy0: phy@0 {
+                #phy-cells = <3>;
+                compatible = "PHY0, BiscuitOS";
+        };
 
-    phy1: phy@1 {
-        #phy-cells = <2>;
-        compatible = "PHY1, BiscuitOS";
-    };
+        phy1: phy@1 {
+                #phy-cells = <2>;
+                compatible = "PHY1, BiscuitOS";
+        };
 };
+{% endhighlight %}
 
-创建完毕之后，将其保存并命名为 DTS_demo.dtsi。然后开发者找到系统默认的 DTS 文件，比如当前编译使用的 DTS 文件为 XXX.dtsi，然后在 XXX.dtsi 文件开始地方添加如下内容：
+创建完毕之后，将其保存并命名为 DTS_demo.dtsi。然后开发者找到系统默认的 DTS 文
+件，比如当前编译使用的 DTS 文件为 XXX.dtsi，然后在 XXX.dtsi 文件开始地方添加如
+下内容：
 
+{% highlight ruby %}
 #include "DTS_demo.dtsi"
+{% endhighlight %}
 
-编写 DTS 对应驱动
+#### 编写 DTS 对应驱动
 
-准备好 DTSI 文件之后，开发者编写一个简单的驱动，这个驱动作为 DTS_demo 的设备驱动，在 DTS 机制遍历时会调用匹配成功的驱动，最终运行驱动里面的代码。在驱动的 probe 函数中，首先获得驱动所对应的节点，通过 platform_device 的 of_node 成员传递。获得驱动对应的节点之后，通过调用 of_count_phandle_with_args() 函数统计当前 phandle list 属性中有几个 phandle。驱动编写如下：
+准备好 DTSI 文件之后，开发者编写一个简单的驱动，这个驱动作为 DTS_demo 的设备驱
+动，在 DTS 机制遍历时会调用匹配成功的驱动，最终运行驱动里面的代码。在驱动的 
+probe 函数中，首先获得驱动所对应的节点，通过 platform_device 的 of_node 成员传
+递。获得驱动对应的节点之后，通过调用 of_count_phandle_with_args() 函数统计当前 
+phandle list 属性中有几个 phandle。驱动编写如下：
 
+{% highlight ruby %}
 /*
  * DTS: of_count_phandle_with_args
  *
@@ -499,18 +571,22 @@ static struct platform_driver DTS_demo_driver = {
     },
 };
 module_platform_driver(DTS_demo_driver);
+{% endhighlight %}
 
 编写好驱动之后，将其编译进内核。编译内核和 dts，如下命令：
 
+{% highlight ruby %}
 make ARCH=arm64
 make ARCH=arm64 dtbs
+{% endhighlight %}
 
 启动内核，在启动阶段就会运行驱动的 probe 函数，并打印如下信息：
 
+{% highlight ruby %}
 [    3.534323] DTS demo probe entence.
 [    3.534359] Number phandle: 2
+{% endhighlight %}
 
-附录
+-----------------------------------------------
 
-
-
+#<span id="附录">附录</span>
