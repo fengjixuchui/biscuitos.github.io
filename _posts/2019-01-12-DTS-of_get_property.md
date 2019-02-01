@@ -10,6 +10,10 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000106.jpg)
 
+> Github: [of_get_property](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/of_get_parent)
+>
+> Email: BuddyZhang1 <buddy.zhang@aliyun.com>
+
 # 目录
 
 > - [源码分析](#源码分析)
