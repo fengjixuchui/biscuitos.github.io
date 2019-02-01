@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000106.jpg)
 
-> Github: [for_each_child_of_node](https://github.com/BiscuitOS/HardStack/tree/master/bus/DTS/kernel/API/for_each_child_of_node)
+> Github: [for_each_child_of_node](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/for_each_child_of_node)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,7 +28,7 @@ tags:
 
 ##### for_each_child_of_node
 
-```
+{% highlight ruby %}
 for_each_child_of_node
 |
 |---of_get_next_child
@@ -36,7 +36,7 @@ for_each_child_of_node
     |---raw_spin_lock_irqsave  
     |
     |---raw_spin_unlock_irqrestore
-```
+{% endhighlight %}
 
 函数作用：用于遍历节点里的所有子节点。
 
@@ -44,11 +44,11 @@ for_each_child_of_node
 >
 > linux： 3.10/4.14/5.0
 
-```
+{% highlight ruby %}
 #define for_each_child_of_node(parent, child) \
     for (child = of_get_next_child(parent, NULL); child != NULL; \
          child = of_get_next_child(parent, child))
-```
+{% endhighlight %}
 
 参数 parent 指向当前节点；child 指向子节点
 
@@ -59,7 +59,7 @@ of_get_next_child(parent, child) 函数获得 child 子节点的下一个子节�
 
 ##### of_get_next_child
 
-```
+{% highlight ruby %}
 /**
 *    of_get_next_child - Iterate a node childs
 *    @node:    parent node
@@ -84,7 +84,7 @@ struct device_node *of_get_next_child(const struct device_node *node,
     return next;
 }
 EXPORT_SYMBOL(of_get_next_child);
-```
+{% endhighlight %}
 
 参数 node 指向设备节点。prev 参数为前一个子节点
 
@@ -102,11 +102,11 @@ of_node_get() 获得节点的父节点，最后返回之前调用 raw_spin_unloc
 for_each_child_of_node() 函数遍历节点的所有子节点，并打印子节点的名字，函数
 定义如下：
 
-```
+{% highlight ruby %}
 #define for_each_child_of_node(parent, child) \
     for (child = of_get_next_child(parent, NULL); child != NULL; \
          child = of_get_next_child(parent, child))
-```
+{% endhighlight %}
 
 这个函数经常用用于遍历当前节点的所有子节点。
 
@@ -116,7 +116,7 @@ for_each_child_of_node() 函数遍历节点的所有子节点，并打印子节�
 件，在 root 节点之下创建一个名为 DTS_demo 的子节点。节点默认打开。具体内容
 如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS Demo Code
  *
@@ -142,15 +142,15 @@ for_each_child_of_node() 函数遍历节点的所有子节点，并打印子节�
                 };
         };
 };
-```
+{% endhighlight %}
 
 创建完毕之后，将其保存并命名为 DTS_demo.dtsi。然后开发者找到系统默认的 DTS 文
 件，比如当前编译使用的 DTS 文件为 XXX.dtsi，然后在 XXX.dtsi 文件开始地方添加
 如下内容：
 
-```
+{% highlight ruby %}
 #include "DTS_demo.dtsi"
-```
+{% endhighlight %}
 
 #### 编写 DTS 对应驱动
 
@@ -160,7 +160,7 @@ for_each_child_of_node() 函数遍历节点的所有子节点，并打印子节�
 成员传递。获得驱动对应的节点之后，通过调用 for_each_child_of_node() 函数遍历
 节点的所有子节点，并打印子节点的名字，驱动编写如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS: of_get_child_count
  *      for_each_child_of_node
@@ -263,7 +263,7 @@ static struct platform_driver DTS_demo_driver = {
     },
 };
 module_platform_driver(DTS_demo_driver);
-```
+{% endhighlight %}
 
 编写好驱动之后，将其编译进内核。编译内核和 dts，如下命令：
 
@@ -274,7 +274,7 @@ make ARCH=arm64 dtbs
 
 启动内核，在启动阶段就会运行驱动的 probe 函数，并打印如下信息：
 
-```
+{% highlight ruby %}
 [    3.581300] DTS probe entence...
 [    3.581316] DTS_demo has 2 children
 [    3.581332] DTS_demo child:
@@ -282,7 +282,8 @@ make ARCH=arm64 dtbs
 [    3.581362]   "child1"
 [    3.581371] DTS_demo available child:
 [    3.581378]   "child1"
-```
+{% endhighlight %}
+
 ----------------------------------
 
 # <span id="附录">附录</span>
