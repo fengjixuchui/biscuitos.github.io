@@ -62,6 +62,10 @@ tags:
 > - [GNU LD scripts](https://biscuitos.github.io/blog/LD/)
 >
 >   - [LD Instruction List](https://biscuitos.github.io/blog/LD/#ld 链接语法)
+>
+> - [Device-Tree](https://biscuitos.github.io/blog/DTS/)
+>
+>   - [DTS Kernel API](https://biscuitos.github.io/blog/DTS/#DTS_KERNEL_API)
 
 ## BIOS
 
