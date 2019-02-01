@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000106.jpg)
 
-> Github: [for_each_node_with_property](https://github.com/BiscuitOS/HardStack/tree/master/bus/DTS/kernel/API/for_each_node_with_property)
+> Github: [for_each_node_with_property](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/for_each_node_with_property)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,7 +28,7 @@ tags:
 
 ##### for_each_node_with_property
 
-```
+{% highlight ruby %}
 for_each_node_with_property
 |
 |---of_find_node_with_property
@@ -36,7 +36,7 @@ for_each_node_with_property
     |---of_compat_cmp
         |
         |---strcmp
-```
+{% endhighlight %}
 
 函数作用：通过属性名找到所有对应的节点。
 
@@ -44,11 +44,11 @@ for_each_node_with_property
 >
 > linux： 3.10/4.18/5.0
 
-```
+{% highlight ruby %}
 #define for_each_node_with_property(dn, prop_name) \
     for (dn = of_find_node_with_property(NULL, prop_name); dn; \
          dn = of_find_node_with_property(dn, prop_name))
-```
+{% endhighlight %}
 
 参数 dn 指向 device node；prop_name 参数指向属性的名字
 
@@ -58,7 +58,7 @@ of_find_node_with_property(dn, prop_name) 函数查找下一个符合要求的�
 
 ##### of_find_node_with_property
 
-```
+{% highlight ruby %}
 /**
 *    of_find_node_with_property - Find a node which has a property with
 *                                   the given name.
@@ -94,7 +94,7 @@ out:
     return np;
 }
 EXPORT_SYMBOL(of_find_node_with_property);
-```
+{% endhighlight %}
 
 参数 from 指向 device node；prop_name 指向属性的名字
 
@@ -107,9 +107,9 @@ EXPORT_SYMBOL(of_find_node_with_property);
 
 ##### of_prop_cmp
 
-```
+{% highlight ruby %}
 #define of_prop_cmp(s1, s2)        strcmp((s1), (s2))
-```
+{% endhighlight %}
 
 参数 s1,s2 都为字符串；
 
@@ -122,11 +122,11 @@ EXPORT_SYMBOL(of_find_node_with_property);
 实践目的是在 DTS 文件中构建一个私有节点，私有节点默认打开，然后通过调用 
 for_each_node_with_property() 函数通过属性名找到所有节点，函数定义如下：
 
-```
+{% highlight ruby %}
 #define for_each_node_with_property(dn, prop_name) \
     for (dn = of_find_node_with_property(NULL, prop_name); dn; \
          dn = of_find_node_with_property(dn, prop_name))
-```
+{% endhighlight %}
 
 这个函数经常用用于通过属性名找所有节点
 
@@ -136,7 +136,7 @@ for_each_node_with_property() 函数通过属性名找到所有节点，函数�
 件，在 root 节点之下创建名为 DTS_demo，DTS_demoX，和 DTS_demoY 的子节点，
 DTS_demo 节点默认打开。具体内容如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS Demo Code
  *
@@ -163,15 +163,15 @@ DTS_demo 节点默认打开。具体内容如下：
                 status = "disabled";
         };
 };
-```
+{% endhighlight %}
 
 创建完毕之后，将其保存并命名为 DTS_demo.dtsi。然后开发者找到系统默认的 DTS 文
 件，比如当前编译使用的 DTS 文件为 XXX.dtsi，然后在 XXX.dtsi 文件开始地方添加
 如下内容：
 
-```
+{% highlight ruby %}
 #include "DTS_demo.dtsi"
-```
+{% endhighlight %}
 
 #### 编写 DTS 对应驱动
 
@@ -181,7 +181,7 @@ probe 函数中，首先获得驱动所对应的节点，通过 platform_device 
 递。获得驱动对应的节点之后，通过调用 for_each_node_with_property() 函数通过属
 性名字找到所有节点，驱动编写如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS: for_each_node_with_property
  *
@@ -268,23 +268,23 @@ static struct platform_driver DTS_demo_driver = {
     },
 };
 module_platform_driver(DTS_demo_driver);
-```
+{% endhighlight %}
 
 编写好驱动之后，将其编译进内核。编译内核和 dts，如下命令：
 
-```
+{% highlight ruby %}
 make ARCH=arm64
 make ARCH=arm64 dtbs
-```
+{% endhighlight %}
 
 启动内核，在启动阶段就会运行驱动的 probe 函数，并打印如下信息：
 
-```
+{% highlight ruby %}
 [    3.565634] DTS demo probe entence...
 [    3.565645] Found /DTS_demo
 [    3.565649] Found /DTS_demoX
 [    3.565656] Found /DTS_demoY
-```
+{% endhighlight %}
 
 --------------------------------
 
