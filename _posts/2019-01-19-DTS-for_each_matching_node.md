@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000106.jpg)
 
-> Github: [for_each_matching_node](https://github.com/BiscuitOS/HardStack/tree/master/bus/DTS/kernel/API/for_each_matching_node)
+> Github: [for_each_matching_node](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/for_each_matching_node)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -34,11 +34,11 @@ tags:
 >
 > linux： 3.10/4.18/5.0
 
-```
+{% highlight ruby %}
 #define for_each_matching_node(dn, matches) \
     for (dn = of_find_matching_node(NULL, matches); dn; \
          dn = of_find_matching_node(dn, matches))
-```
+{% endhighlight %}
 
 dn 指向 device node; matches 指向 device id list
 
@@ -49,14 +49,14 @@ device node。
 
 ##### of_find_matching_node
 
-```
+{% highlight ruby %}
 static inline struct device_node *of_find_matching_node(
     struct device_node *from,
     const struct of_device_id *matches)
 {
     return of_find_matching_node_and_match(from, matches, NULL);
 }
-```
+{% endhighlight %}
 
 参数 from 指向开始查找的 device node；matches 指向一个已知的 device_id 列表
 
@@ -64,7 +64,7 @@ static inline struct device_node *of_find_matching_node(
 
 ##### of_find_matching_node_and_match
 
-```
+{% highlight ruby %}
 /**
 *    of_find_matching_node_and_match - Find a node based on an of_device_id
 *                      match table.
@@ -104,7 +104,7 @@ struct device_node *of_find_matching_node_and_match(struct device_node *from,
     return np;
 }
 EXPORT_SYMBOL(of_find_matching_node_and_match);
-```
+{% endhighlight %}
 
 参数 from 指向开始查找的 device node；matches 指向一个已知的 device_id 列表；
 match 是一个二级指针，用于存储找到的 device_id.
@@ -118,7 +118,7 @@ match 是一个二级指针，用于存储找到的 device_id.
 
 ##### __of_match_node
 
-```
+{% highlight ruby %}
 static
 const struct of_device_id *__of_match_node(const struct of_device_id *matches,
                        const struct device_node *node)
@@ -143,7 +143,7 @@ const struct of_device_id *__of_match_node(const struct of_device_id *matches,
     }
     return NULL;
 }
-```
+{% endhighlight %}
 
 参数 matches 指向一个 device_id 列表；参数 node 指向一个 device node
 
@@ -160,11 +160,11 @@ device id 结构，如果 device id 的 name 存在，那么 match 指向节点�
 实践目的是在 DTS 文件中构建一个私有节点，私有节点默认打开，然后通过调用 
 for_each_matching_node() 函数获得所有节点，函数定义如下：
 
-```
+{% highlight ruby %}
 #define for_each_matching_node(dn, matches) \
     for (dn = of_find_matching_node(NULL, matches); dn; \
          dn = of_find_matching_node(dn, matches))
-```
+{% endhighlight %}
 
 这个函数经常用用于通过 device id 找到对应的所有 device node。
 
@@ -174,7 +174,7 @@ for_each_matching_node() 函数获得所有节点，函数定义如下：
 件，在 root 节点之下创建一个名为 DTS_demo , DTS_demoX, 和 DTS_demoY 的子节点，
 DTS_demo 节点默认打开。具体内容如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS Demo Code
  *
@@ -198,15 +198,15 @@ DTS_demo 节点默认打开。具体内容如下：
                 status = "disabled";
         };
 };
-```
+{% endhighlight %}
 
 创建完毕之后，将其保存并命名为 DTS_demo.dtsi。然后开发者找到系统默认的 DTS 文
 件，比如当前编译使用的 DTS 文件为 XXX.dtsi，然后在 XXX.dtsi 文件开始地方添加
 如下内容：
 
-```
+{% highlight ruby %}
 #include "DTS_demo.dtsi"
-```
+{% endhighlight %}
 
 #### 编写 DTS 对应驱动
 
@@ -216,7 +216,7 @@ probe 函数中，首先获得驱动所对应的节点，通过 platform_device 
 递。获得驱动对应的节点之后，通过调用 for_each_matching_node() 函数获得所有节
 点，驱动编写如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS: for_each_matching_node
  *
@@ -302,23 +302,23 @@ static struct platform_driver DTS_demo_driver = {
     },
 };
 module_platform_driver(DTS_demo_driver);
-```
+{% endhighlight %}
 
 编写好驱动之后，将其编译进内核。编译内核和 dts，如下命令：
 
-```
+{% highlight ruby %}
 make ARCH=arm64
 make ARCH=arm64 dtbs
-```
+{% endhighlight %}
 
 启动内核，在启动阶段就会运行驱动的 probe 函数，并打印如下信息：
 
-```
+{% highlight ruby %}
 [    3.565634] DTS demo probe entence...
 [    3.565645] Matching DTS_demo
 [    3.565654] Matching DTS_demoX
 [    3.565659] Matching DTS_demoY
-```
+{% endhighlight %}
 
 --------------------------------------
 
