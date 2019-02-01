@@ -375,7 +375,7 @@ make ARCH=arm64 dtbs
 
 ---------------------------------
 
-# 附录
+# <span id="附录">附录</span>
 
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
 
