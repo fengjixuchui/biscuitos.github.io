@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000106.jpg)
 
-> Github: [of_compat_cmp](https://github.com/BiscuitOS/HardStack/tree/master/bus/DTS/kernel/API/of_compat_cmp)
+> Github: [of_compat_cmp](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/of_compat_cmp)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,11 +28,11 @@ tags:
 
 ##### of_compat_cmp
 
-```
+{% highlight ruby %}
 of_compat_cmp
 |
 |---strcasecmp
-```
+{% endhighlight %}
 
 函数作用：确定节点的 compatible 属性是否为指定的字符串。
 
@@ -40,9 +40,9 @@ of_compat_cmp
 >
 > linux： 3.10/4.18/5.0
 
-```
+{% highlight ruby %}
 #define of_compat_cmp(s1, s2, l)    strcasecmp((s1), (s2))
-```
+{% endhighlight %}
 
 参数 s1,s2 都为字符串；参数 l 为字符串长度
 
@@ -56,9 +56,9 @@ of_compat_cmp
 of_compat_cmp() 函数对比节点的 compatible 属性值是否为指定字符串，函数定义
 如下：
 
-```
+{% highlight ruby %}
 #define of_compat_cmp(s1, s2, l)    strcasecmp((s1), (s2))
-```
+{% endhighlight %}
 
 这个函数经常用用于对比节点的 compatible 属性值。
 
@@ -68,7 +68,7 @@ of_compat_cmp() 函数对比节点的 compatible 属性值是否为指定字符�
 文件，在 root 节点之下创建一个名为 DTS_demo 的子节点，节点默认打开。具体内容
 如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS Demo Code
  *
@@ -84,15 +84,15 @@ of_compat_cmp() 函数对比节点的 compatible 属性值是否为指定字符�
                 status = "okay";
         };
 };
-```
+{% endhighlight %}
 
 创建完毕之后，将其保存并命名为 DTS_demo.dtsi。然后开发者找到系统默认的 DTS 文
 件，比如当前编译使用的 DTS 文件为 XXX.dtsi，然后在 XXX.dtsi 文件开始地方添加如
 下内容：
 
-```
+{% highlight ruby %}
 #include "DTS_demo.dtsi"
-```
+{% endhighlight %}
 
 #### 编写 DTS 对应驱动
 
@@ -102,7 +102,7 @@ probe 函数中，首先获得驱动所对应的节点，通过 platform_device 
 递。获得驱动对应的节点之后，通过调用 of_compat_cmp() 函数对比节点的 
 compatible 属性值是否为指定字符串，驱动编写如下：
 
-```
+{% highlight ruby %}
 /*
  * DTS: of_compat_cmp
  *      of_prop_cmp
@@ -195,23 +195,23 @@ static struct platform_driver DTS_demo_driver = {
     },
 };
 module_platform_driver(DTS_demo_driver);
-```
+{% endhighlight %}
 
 编写好驱动之后，将其编译进内核。编译内核和 dts，如下命令：
 
-```
+{% highlight ruby %}
 make ARCH=arm64
 make ARCH=arm64 dtbs
-```
+{% endhighlight %}
 
 启动内核，在启动阶段就会运行驱动的 probe 函数，并打印如下信息：
 
-```
+{% highlight ruby %}
 [    3.565634] DTS demo probe entence...
 [    3.565645] DTS_demo compatible: DTS_demo, BiscuitOS
 [    3.565649] cmopatible property exist
 [    3.565653] DTS_demo node exist
-```
+{% endhighlight %}
 
 ---------------------------------------------
 
