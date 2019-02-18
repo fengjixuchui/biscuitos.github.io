@@ -71,7 +71,7 @@ tags:
 
 > - [Build SeaBIOS](https://biscuitos.github.io/blog/BIOS_SeaBIOS/)
 
-## <span id="Enginerring Practice">Enginerring Practice</span>
+## <span id="Enginerring">Enginerring Practice</span>
 
 > - [I2C](https://biscuitos.github.io/blog/I2CBus/)
 >
