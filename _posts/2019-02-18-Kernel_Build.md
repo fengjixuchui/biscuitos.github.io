@@ -10,7 +10,9 @@ tags:
 
 ## <span id="Linux_newest">Linux Newest</span>
 
-> - [Build Linux Newest version](https://biscuitos.github.io/blog/)
+> - [Build Newest Linux Running on ARM32](https://biscuitos.github.io/blog/Linux-newest-arm32-Usermanual/)
+>
+> - [Build Newest Linux Running on ARM64](https://biscuitos.github.io/blog/Linux-newest-arm64-Usermanual/)
 
 ## <span id="Linux_0X">Linux 0.X</span>
 
@@ -58,11 +60,9 @@ tags:
 
 ## <span id="Linux_4X">Linux 4.X</span>
 
-> - [Build Linux 4.1](https://biscuitos.github.io/blog/)
+> - [Build Linux 4.20.8 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.20.8-arm32-Usermanual/)
 >
-> - [Build Linux 4.11](https://biscuitos.github.io/blog/)
->
-> - [Build Linux 4.20.8](https://biscuitos.github.io/blog/)
+> - [Build Linux 4.20.8 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.20.8-arm64-Usermanual/)
 
 ## <span id="Linux_5X">Linux 5.X</span>
 

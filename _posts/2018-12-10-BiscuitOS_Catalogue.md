@@ -12,9 +12,13 @@ tags:
 
 ## <span id="Kernel_Establish">Kernel Establish</span>
 
-> - [Build Linux 4.20.8]()
+> - [Build Linux 4.20.8 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.20.8-arm32-Usermanual/)
 >
-> - [Build Linux newest]()
+> - [Build Linux 4.20.8 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.20.8-arm64-Usermanual/)
+>
+> - [Build Newest Linux Running on ARM32](https://biscuitos.github.io/blog/Linux-newest-arm32-Usermanual/)
+>
+> - [Build Newest Linux Running on ARM64](https://biscuitos.github.io/blog/Linux-newest-arm64-Usermanual/)
 >
 > - [Build Linux 0.11](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/)
 >
