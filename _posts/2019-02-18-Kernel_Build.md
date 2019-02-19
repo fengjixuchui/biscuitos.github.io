@@ -14,19 +14,31 @@ tags:
 
 ## <span id="Linux_0X">Linux 0.X</span>
 
-> - [Build Linux 0.11](https://biscuitos.github.io/blog/)
+> - [Build Linux 0.11](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/)
 >
-> - [Build Linux 0.12](https://biscuitos.github.io/blog/)
+> - [Build Linux 0.12](https://biscuitos.github.io/blog/Linux-0.12-Usermanual/)
 >
-> - [Build Linux 0.13](https://biscuitos.github.io/blog/)
+> - [Build Linux 0.95.3](https://biscuitos.github.io/blog/Linux-0.95.3-Usermanual/)
+>
+> - [Build Linux 0.95a](https://biscuitos.github.io/blog/Linux-0.95a-Usermanual/)
+>
+> - [Build Linux 0.96](https://biscuitos.github.io/blog/Linux-0.96-Usermanual/)
+>
+> - [Build Linux 0.97](https://biscuitos.github.io/blog/Linux-0.97-Usermanual/)
+>
+> - [Build Linux 0.98](https://biscuitos.github.io/blog/Linux-0.98-Usermanual/)
+>
+> - [Build Linux 0.99](https://biscuitos.github.io/blog/Linux-0.99-Usermanual/)
+>
 
 ## <span id="Linux_1X">Linux 1.X</span>
 
-> - [Build Linux 1.0.1](https://biscuitos.github.io/blog/)
+> - [Build Linux 1.0.1](https://biscuitos.github.io/blog/Linux-1.0.1-Usermanual/)
 >
-> - [Build Linux 1.0.1.1](https://biscuitos.github.io/blog/)
+> - [Build Linux 1.0.1.1 minix-fs](https://biscuitos.github.io/blog/Linux-1.0.1.1-minix-Usermanual/)
 >
-> - [Build Linux 1.0.1.2](https://biscuitos.github.io/blog/)
+> - [Build Linux 1.0.1 ext2-fs](https://biscuitos.github.io/blog/Linux-1.0.1.1-ext2-Usermanual/)
+>
 
 ## <span id="Linux_2X">Linux 2.X</span>
 
