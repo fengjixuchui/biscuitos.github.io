@@ -58,6 +58,10 @@ tags:
 
 ## <span id="Linux_4X">Linux 4.X</span>
 
+> - [Build Linux 4.8.1 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.8.1-arm32-Usermanual/)
+>
+> - [Build Linux 4.8.1 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.8.1-arm64-Usermanual/)
+>
 > - [Build Linux 4.20.8 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.20.8-arm32-Usermanual/)
 >
 > - [Build Linux 4.20.8 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.20.8-arm64-Usermanual/)
