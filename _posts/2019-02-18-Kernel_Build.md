@@ -52,6 +52,8 @@ tags:
 
 ## <span id="Linux_3X">Linux 3.X</span>
 
+> - [Build Linux 3.4.29 Running on ARM32](https://biscuitos.github.io/blog/Linux-3.4.29-arm32-Usermanual/)
+>
 > - [Build Linux 3.16.63 Running on ARM32](https://biscuitos.github.io/blog/Linux-3.16.63-arm32-Usermanual/)
 >
 > - [Build Linux 3.16.63 Running on ARM64](https://biscuitos.github.io/blog/Linux-3.16.63-arm64-Usermanual/)
