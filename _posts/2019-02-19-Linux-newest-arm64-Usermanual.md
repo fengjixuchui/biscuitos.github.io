@@ -565,7 +565,9 @@ gdb 挂载：
 > [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 
-赞赏一下吧 🙂
+## 赞赏一下吧 🙂
 
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
