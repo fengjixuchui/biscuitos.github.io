@@ -34,7 +34,7 @@ baidu_analytics: 5b31ffbbdc6cff18727f3adf75a03777    #from //hm.baidu.com/hm.js?
 author:
   #resume: /resume
   name: BiscuitOS     #the name of Blog section
-  about_me: BiscuitOS is a open legacy linux distro that basic linux 0.11 to linux 1.0
+  about_me: BiscuitOS is a simple tools to build 0.x, 1.x, 2.x, 3.x, 4.x, and 5.x Linux-distro.
  
 # Social Links
 email:               buddy.zhang@aliyun.com

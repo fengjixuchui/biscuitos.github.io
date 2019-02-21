@@ -53,6 +53,12 @@ tags:
 > - [Build Linux 3.16.63 Running on ARM32](https://biscuitos.github.io/blog/Linux-3.16.63-arm32-Usermanual/)
 >
 > - [Build Linux 3.16.63 Running on ARM64](https://biscuitos.github.io/blog/Linux-3.16.63-arm64-Usermanual/)
+>
+> - [Build Linux 3.18.134 Running on ARM32](https://biscuitos.github.io/blog/Linux-3.18.134-arm32-Usermanual/)
+>
+> - [Build Linux 3.18.134 Running on ARM64](https://biscuitos.github.io/blog/Linux-3.18.134-arm64-Usermanual/)
+
+
 
 ## <span id="Linux_4X">Linux 4.X</span>
 
