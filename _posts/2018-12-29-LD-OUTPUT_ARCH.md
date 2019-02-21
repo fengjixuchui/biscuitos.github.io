@@ -98,3 +98,21 @@ objdump -sSdhx a.out
 ![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000501.png)
 
 从上面的数据可以看出，a.out 可执行文件中 architecture 为 i386。
+
+-----------------------------------------------
+
+# <span id="附录">附录</span>
+
+> [BiscuitOS Home](https://biscuitos.github.io/)
+>
+> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+>
+> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+>
+> [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
+
+## 赞赏一下吧 🙂
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)

@@ -118,3 +118,22 @@ objdump -xSsdh a.out
 
 通过运行的数据可知，输出 DemoText 的 VMA 地址对齐到 0x0804a000，而不是 
 0x08049001。输出 DemoData 的 VMA 地址对齐到了 0x08051000，而不是 0x08050001。
+
+------------------------------------------------
+
+# <span id="附录">附录</span>
+
+> [BiscuitOS Home](https://biscuitos.github.io/)
+>
+> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+>
+> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+>
+> [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
+
+## 赞赏一下吧 🙂
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+

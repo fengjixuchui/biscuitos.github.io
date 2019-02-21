@@ -99,3 +99,21 @@ objdump -sSdhx a.out
 
 从上面的数据可知，可看到 file format 是 elf32-i386, 所以可以使用 
 OUTPUT_FORMAT 指令来指定输出文件的 BFD 格式。
+
+-----------------------------------------------
+
+# <span id="附录">附录</span>
+
+> [BiscuitOS Home](https://biscuitos.github.io/)
+>
+> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+>
+> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+>
+> [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
+
+## 赞赏一下吧 🙂
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)

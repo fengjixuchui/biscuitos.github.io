@@ -100,3 +100,21 @@ objdump -sSdhx a.out
 从上面的数据可知，所有的段都按着链接脚本内容进行链接，Demotext 段包含了所有目
 标文件的 .text, .data 和 .rodata 段。链接脚本中 INCLUDE 关键字包含其他链接脚本
 可以正常链接。
+
+-----------------------------------------------
+
+# <span id="附录">附录</span>
+
+> [BiscuitOS Home](https://biscuitos.github.io/)
+>
+> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+>
+> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+>
+> [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
+
+## 赞赏一下吧 🙂
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
