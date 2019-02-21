@@ -40,7 +40,7 @@ for_each_available_child_of_node
 
 函数作用：用于遍历节点里的所有可用子节点（status 属性值为 “okay”）。
 
-> 平台： ARM64
+> 平台： ARM32
 >
 > linux： 3.10/4.14/5.0
 
@@ -199,9 +199,14 @@ for_each_available_child_of_node() 函数遍历节点的所有可用子节点，
 
 这个函数经常用用于遍历当前节点的所有可用子节点。
 
+本文实践基于 Linux 4.20.8 arm32 平台，开发者可以参考如下文章快速搭建一个
+调试环境：
+
+> [Establish Linux 4.20.8 on ARM32](https://biscuitos.github.io/blog/Linux-4.20.8-arm32-Usermanual/)
+
 #### DTS 文件
 
-由于使用的平台是 ARM64，所以在源码 /arch/arm64/boot/dts 目录下创建一个 DTSI 文
+由于使用的平台是 ARM32，所以在源码 /arch/arm/boot/dts 目录下创建一个 DTSI 文
 件，在 root 节点之下创建一个名为 DTS_demo 的子节点。节点默认打开。具体内容
 如下：
 
@@ -233,9 +238,10 @@ for_each_available_child_of_node() 函数遍历节点的所有可用子节点，
 };
 {% endhighlight %}
 
-创建完毕之后，将其保存并命名为 DTS_demo.dtsi。然后开发者找到系统默认的 DTS 文
-件，比如当前编译使用的 DTS 文件为 XXX.dtsi，然后在 XXX.dtsi 文件开始地方添加如
-下内容：
+创建完毕之后，将其保存并命名为 DTS_demo.dtsi。然后开发者在 Linux 4.20.8 的源码中
+，
+找到 arch/arm/boot/dts/vexpress-v2p-ca9.dts 文件，然后在文件开始地方添
+加如下内容：
 
 {% highlight ruby %}
 #include "DTS_demo.dtsi"
@@ -357,8 +363,8 @@ module_platform_driver(DTS_demo_driver);
 编写好驱动之后，将其编译进内核。编译内核和 dts，如下命令：
 
 {% highlight ruby %}
-make ARCH=arm64
-make ARCH=arm64 dtbs
+make ARCH=arm BiscuitOS/output/linux-4.20.8/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi- j8
+make ARCH=arm BiscuitOS/output/linux-4.20.8/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi- dtbs
 {% endhighlight %}
 
 启动内核，在启动阶段就会运行驱动的 probe 函数，并打印如下信息：
