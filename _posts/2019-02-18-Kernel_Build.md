@@ -60,6 +60,10 @@ tags:
 >
 > - [Build Linux 4.0.1 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.0.1-arm64-Usermanual/)
 >
+> - [Build Linux 4.4.174 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.4.174-arm32-Usermanual/)
+>
+> - [Build Linux 4.4.174 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.4.174-arm64-Usermanual/)
+>
 > - [Build Linux 4.8.1 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.8.1-arm32-Usermanual/)
 >
 > - [Build Linux 4.8.1 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.8.1-arm64-Usermanual/)
