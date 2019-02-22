@@ -6,8 +6,6 @@
 
 ### DTS 文件
 
-由于使用的平台是 ARM32，所以在源码 /arch/arm32/boot/dts 目录下创建一个 DTSI 
-
 
 
 创建完毕之后，将其保存并命名为 DTS_demo.dtsi。然后开发者在 Linux 4.20.8 的源
@@ -25,3 +23,5 @@ make ARCH=arm BiscuitOS/output/linux-4.20.8/arm-linux-gnueabi/arm-linux-gnueabi/
 {% endhighlight %}
 
 
+{% highlight c %}
+{% endhighlight %}

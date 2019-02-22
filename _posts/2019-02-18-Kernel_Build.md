@@ -41,6 +41,7 @@ tags:
 >
 > - [Build Linux 1.0.1.1 ext2-fs](https://biscuitos.github.io/blog/Linux-1.0.1.1-ext2-Usermanual/)
 >
+> - [Build Linux 1.0.1.2](https://biscuitos.github.io/blog/Linux-1.0.1.2-Usermanual/)
 
 ## <span id="Linux_2X">Linux 2.X</span>
 

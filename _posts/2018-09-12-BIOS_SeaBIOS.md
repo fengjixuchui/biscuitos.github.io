@@ -70,7 +70,7 @@ Linux。开发者可以按照如下步骤在 BiscuitOS 上运行 SeaBIOS。
 
 首先制作搭建 BiscuitOS 系统，请参考如下文档：
 
-[制作基于 Linux 1.0.1.2 ext2-fs 内核 BiscuitOS](https://biscuitos.github.io/blog/Linux1.0.1.2_ext2fs_Usermanual/)
+> [制作基于 Linux 1.0.1.2 内核 BiscuitOS](https://biscuitos.github.io/blog/Linux-1.0.1.2-Usermanual/)
 
 搭建完之后，请安装必要的开发工具，使用如下命令：
 
@@ -86,40 +86,7 @@ sudo apt-get install iasl
 
 {% highlight ruby %}
 cd BiscuitOS/
-make update
-make clean
-make linux_1_0_1_2_ext2_defconfig
-make menuconfig
-{% endhighlight %}
-
-由于 BiscuitOS 的内核使用 Kbuild 构建起来的，在执行完 make menuconfig 之后，
-系统会弹出内核配置的界面，开发者根据如下步骤进行配置：
-
-![Menuconfig](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BIOS000001.png)
-
-选择 **bootloaders**，回车
-
-![Menuconfig1](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BIOS000002.png)
-
-选择 **Intel i386 CPU**, 回车
-
-![Menuconfig2](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BIOS000003.png)
-
-选择 **Intel i386 BIOS Setup**, 回车
-
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BIOS000004.png)
-
-选择 **SeaBIOS Intel i386**, 回车
-
-![Menuconfig4](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BIOS000005.png)
-
-最后选择 **SeaBIOS**，目前版本的 BiscuitOS 对 SeaBIOS 只提供了版本选项，开发
-者可以根据自己需要选择一个合适的 SeaBIOS 版本，推荐使用 rel-1.9.3 版本。
-SeaBIOS 版本支持列表请看附录。
-
-选择好 SeaBIOS 之后，开发者保存选中的配置，使用如下命令进行编译
-
-{% highlight ruby %}
+make linux_1.0.1.2_defconfig
 make
 {% endhighlight %}
 
@@ -129,7 +96,7 @@ make
 镜像 SeaBIOS.bin 会被安装到如下目录：
 
 {% highlight ruby %}
-BiscuitOS/kernel/linux_1.0.1.2/SeaBIOS.bin
+BiscuitOS/output/linux_1.0.1.2-ext2/BIOS/SeaBIOS.bin
 {% endhighlight %}
 
 #### 运行 SeaBIOS
@@ -137,7 +104,7 @@ BiscuitOS/kernel/linux_1.0.1.2/SeaBIOS.bin
 编译完之后，开发者可以使用如下命令运行 SeaBIOS，
 
 {% highlight ruby %}
-cd BiscuitOS/kernel/linux_1.0.1.2/
+cd BiscuitOS/output/linux_1.0.1.2-ext2/linux/linux/
 make start
 {% endhighlight %}
 
@@ -151,14 +118,14 @@ BiscuitOS 的编译体制类似于 Buildroot，所以开发者要修改 SeaBIOS 
 照如下步骤。例如本例中，SeaBIOS 的版本为 rel-1.9.3，其源码位于
 
 {% highlight ruby %}
-BiscuitOS/output/BIOS/SeaBIOS_rel-1.9.3
+BiscuitOS/output/linux_1.0.1.2-ext2/BIOS/SeaBIOS_rel-1.9.3
 {% endhighlight %}
 
 开发者可以在此目录下修改任意代码，修改完之后，请参照如下命令生成补丁(本例子
 以 SeaBIOS rel-1.9.3 作介绍，其他版本照样)
 
 {% highlight ruby %}
-cd BiscuitOS/output/BIOS/SeaBIOS_rel-1.9.3
+cd BiscuitOS/output/linux_1.0.1.2-ext2/BIOS/SeaBIOS_rel-1.9.3
 git status
 git add （添加你修改的文件）
 git commit -m "(添加你的修改注释)"
@@ -231,10 +198,23 @@ rel-1.9.3
 
 ### 附录 B
 
-引用链接
+> [SeaBIOS 介绍](https://blog.csdn.net/lindahui2008/article/details/80948396)
+>
+> [SeaBIOS](https://www.coreboot.org/SeaBIOS)
+>
+> [BiscuitOS](https://biscuitos.github.io/blog/HomePage/)
 
-[SeaBIOS 介绍](https://blog.csdn.net/lindahui2008/article/details/80948396)
+> [BiscuitOS Home](https://biscuitos.github.io/)
+>
+> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+>
+> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+>
+> [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/sou
+rce)
 
-[SeaBIOS](https://www.coreboot.org/SeaBIOS)
+## 赞赏一下吧 🙂
 
-[BiscuitOS](https://biscuitos.github.io/blog/HomePage/)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
