@@ -438,7 +438,7 @@ device-tree structure 的第二个成员。在获得 device-tree structure 首�
 对 device-tree structure 第一个字节也就是 tag 进行判断，看其是否属于节点还是属
 性，以下是一个 device-tree structure 的基本结构：
 
-
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000547.png)
 
 如果 device-tree structure 的 tag 是 FDT_BEGIN_NODE，那么 device-tree 
 structure 就是一个独立的节点或子节点；如果 device-tree structure 的首地址是 
