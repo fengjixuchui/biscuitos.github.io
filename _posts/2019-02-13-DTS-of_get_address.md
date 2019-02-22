@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000106.jpg)
 
-> Github: [of_find_property](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/of_find_property)
+> Github: [of_get_address](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/of_get_address)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 

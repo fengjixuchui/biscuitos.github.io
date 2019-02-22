@@ -25,3 +25,5 @@ make ARCH=arm BiscuitOS/output/linux-4.20.8/arm-linux-gnueabi/arm-linux-gnueabi/
 
 {% highlight c %}
 {% endhighlight %}
+
+[中文教程](https://biscuitos.github.io/blog/DTS-/)
