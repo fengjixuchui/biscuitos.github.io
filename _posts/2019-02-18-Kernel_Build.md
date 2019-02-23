@@ -81,4 +81,4 @@ tags:
 
 ## <span id="Linux_5X">Linux 5.X</span>
 
-> - [Build Linux 5.0-rc6](https://biscuitos.github.io/blog/)
+> - [Build Linux 5.0-rc6](https://biscuitos.github.io/blog/Linux-newest-arm64-Usermanual/)
