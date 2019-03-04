@@ -81,4 +81,7 @@ tags:
 
 ## <span id="Linux_5X">Linux 5.X</span>
 
-> - [Build Linux 5.0-rc6](https://biscuitos.github.io/blog/Linux-newest-arm64-Usermanual/)
+> - [Build Linux 5.0 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+>
+> - [Build Linux 5.0 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.0-arm64-Usermanual/)
+
