@@ -8,7 +8,7 @@ tags:
   - MMU
 ---
 
-> [GitHub: BiscuitOS](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_reserve)
+> [GitHub: MEMBLOCK memblock_reserve()](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_reserve)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
