@@ -2,7 +2,7 @@
 layout: post
 title:  "memblock_reserve() Reserved 分配第一个内存区块"
 date:   2019-03-06 13:56:30 +0800
-categories: [Build]
+categories: [MMU]
 excerpt: memblock_reserve() Reserved 分配第一个内存区块.
 tags:
   - MMU
@@ -997,7 +997,7 @@ index 375b13f..d36d824 100644
 
 [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
-#### <span id"驱动运行">驱动运行</span>
+#### <span id="驱动运行">驱动运行</span>
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
