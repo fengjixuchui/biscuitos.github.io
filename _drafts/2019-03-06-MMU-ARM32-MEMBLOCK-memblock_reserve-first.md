@@ -732,8 +732,8 @@ memblock_reserve() 函数的作用就是将一块物理内存区块加入到预�
 #### <span id="驱动实践准备">实践准备</span>
 
 由于本次实践是基于 Linux 5.x 的 arm32 系统，所以请先参考 Linux 5.x arm32 开发环境
-搭建方法以及重点关注驱动实践一节，因为接下来所讲的内容都和驱动有关，文章链接如下：
-
+搭建方法以及重点关注驱动实践一节，请参考下例文章，选择一个 linux 5.x 版本进行实践，后
+面内容均基于 linux 5.x 继续讲解，文章链接如下：
 
 [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
@@ -1274,9 +1274,8 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 
 #### <span id="驱动配置">驱动配置</span>
 
-驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选  
-"Memblock allocator" 和 “memblock_reserve()” 选项，以打开
-CONFIG_BISCUITOS_MEMBLOCK_RESERVE，具体过程请参考：
+驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选 "Device Driver" --> "BiscuitOS Driver" --> "Memblock allocator" --> "memblock_reserve()"
+选项，以打开 CONFIG_BISCUITOS_MEMBLOCK_RESERVE，具体过程请参考：
 
 [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
