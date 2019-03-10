@@ -1,14 +1,14 @@
 ---
 layout: post
-title:  "for_each_mem_range() 正序遍历所有可用的物理内存区块"
-date:   2019-03-10 11:56:30 +0800
+title:  "__next_mem_range() 正序从指定位置查找一块有用的物理内存"
+date:   2019-03-09 16:16:30 +0800
 categories: [MMU]
-excerpt: for_each_mem_range() 正序遍历所有可用的物理内存区块.
+excerpt: __next_mem_range() 正序从指定位置查找一块有用的物理内存.
 tags:
   - MMU
 ---
 
-> [GitHub: for_each_mem_range()](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/for_each_mem_range)
+> [GitHub: __next_mem_range()](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/__next_mem_range)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -206,60 +206,21 @@ MEMBLOCK 通过上面的数据结构管理 arm32 早期的物理内存，使操�
 >
 > Version： Linux 5.x
 
-函数： for_each_mem_range()
+函数： __next_mem_range()
 
-功能： 正序遍历所有可用的物理内存区块
+功能：从指定的区域之后查找一块可用的物理内存区块
 
 {% highlight bash %}
-for_each_mem_range
+__next_mem_range
 |
-|---__next_mem_range
-    |
-    |---memblock_get_region_node
-    |
-    |---memblock_is_hotpluggable
-    |
-    |---memblock_is_mirror
-    |
-    |---memblock_is_nomap
+|---memblock_get_region_node
+|
+|---memblock_is_hotpluggable
+|
+|---memblock_is_mirror
+|
+|---memblock_is_nomap
 {% endhighlight %}
-
-##### for_each_mem_range
-
-{% highlight c %}
-/**
- * for_each_mem_range - reverse iterate through memblock areas from
- * type_a and not included in type_b. Or just type_a if type_b is NULL.
- * @i: u64 used as loop variable
- * @type_a: ptr to memblock_type to iterate
- * @type_b: ptr to memblock_type which excludes from the iteration
- * @nid: node selector, %NUMA_NO_NODE for all nodes
- * @flags: pick from blocks based on memory attributes
- * @p_start: ptr to phys_addr_t for start address of the range, can be %NULL
- * @p_end: ptr to phys_addr_t for end address of the range, can be %NULL
- * @p_nid: ptr to int for nid of the range, can be %NULL
- */
-#define for_each_mem_range(i, type_a, type_b, nid, flags,           \
-                               p_start, p_end, p_nid)                   \
-        for (i = (u64)ULLONG_MAX,                                       \
-                     __next_mem_range(&i, nid, flags, type_a, type_b,\
-                                          p_start, p_end, p_nid);       \
-             i != (u64)ULLONG_MAX;                                      \
-             __next_mem_range(&i, nid, flags, type_a, type_b,       \
-                                  p_start, p_end, p_nid))
-
-{% endhighlight %}
-
-参数 i 用于循环；type_a 参数指向可用物理内存区块; type_b 参数指向预留物理内存
-区块。 nid 指向节点信息；参数 flags 指向内存区标志； p_start 参数用于存储查找
-到的内存区块起始地址； p_end 参数用于存储查找到的内存区块的终止地址
-
-函数首先调用 for 循环，将参数 i 设置为 ULLONG_MAX, 以此遍历所有预留区，然后调用
-__next_mem_range_rev() 函数查找一块可用的物理内存。每遍历一次，循环都检查 i 的
-值，如果 i 不等于 ULLONG_MAX, 那么继续循环。每次调用完 __next_mem_range_rev()
-函数之后，i 都会指向前一个预留区。通过循环，每个找到的可用物理内存区块都会将其起始
-地址存储到 p_start 参数里，将终止地址存储到 p_end 参数里。直到遍历完所有可用物理
-内存区块之后终止循环。
 
 ##### __next_mem_range
 
@@ -440,6 +401,7 @@ if (m_start < r_end) {
 {% endhighlight %}
 
 如果循环遍历之后，还找不到，那么直接设置 idx 为 ULLONG_MAX.
+
 ---------------------------------------------
 
 # <span id="实践">实践</span>
@@ -464,8 +426,9 @@ if (m_start < r_end) {
 
 #### <span id="驱动实践目的">实践目的</span>
 
-for_each_mem_range() 函数的作用是正序遍历所有可用的物理内存，
-实践的目的就是正序遍历所有可用物理内存。
+__next_mem_range() 函数的作用是在指定的可用物理内存区中找到一块可用
+的物理内存块。实践的目的是，如果通过这个函数从指定的内存区块中找到可用的物理
+内存区块。
 
 #### <span id="驱动实践准备">实践准备</span>
 
@@ -496,42 +459,140 @@ for_each_mem_range() 函数的作用是正序遍历所有可用的物理内存�
 
 int bs_debug = 0;
 
-#ifdef CONFIG_DEBUG_for_each_mem_range
-int debug_for_each_mem_range(void)
+#ifdef CONFIG_DEBUG__NEXT_MEM_RANGE
+int debug__next_mem_range(void)
 {
-        enum memblock_flags flags = choose_memblock_flags();
-        phys_addr_t start;
-        phys_addr_t end;
-        u64 idx; /* (memory.cnt << 32) | (reserved.cnt) */
+	enum memblock_flags flags = choose_memblock_flags();
+	struct memblock_region *reg;
+	int cnt = 0;
+	phys_addr_t start;
+	phys_addr_t end;
+	u64 idx; /* (memory.cnt << 32) | (reserved.cnt) */
 
-        /*
-         * Memory Maps:
-         *
-         *                     Reserved 0            Reserved 1
-         *                   | <------> |          | <------> |
-         * +-----------------+----------+----------+----------+------+
-         * |                 |          |          |          |      |
-         * |                 |          |          |          |      |
-         * |                 |          |          |          |      |
-         * +-----------------+----------+----------+----------+------+
-         *                              | <------> |
-         *                               Found area
-         *
-         * Reserved 0: [0x64000000, 0x64100000]
-         * Reserved 1: [0x64300000, 0x64400000]
-         */
-        memblock_reserve(0x64000000, 0x100000);
-        memblock_reserve(0x64300000, 0x100000);
+	/*
+	 * Memory Maps:
+	 *
+	 *                     Reserved 0            Reserved 1
+	 *                   | <------> |          | <------> |
+	 * +-----------------+----------+----------+----------+------+
+	 * |                 |          |          |          |      |
+	 * |                 |          |          |          |      |
+	 * |                 |          |          |          |      |
+	 * +-----------------+----------+----------+----------+------+
+	 *                              | <------> |
+	 *                               Found area
+	 *
+	 * Reserved 0: [0x64000000, 0x64100000]
+	 * Reserved 1: [0x64300000, 0x64400000]
+	 */
+	memblock_reserve(0x64000000, 0x100000);
+	memblock_reserve(0x64300000, 0x100000);
 
-        for_each_mem_range(idx, &memblock.memory, &memblock.reserved,
-                        NUMA_NO_NODE, flags, &start, &end, NULL)
-                pr_info("Region: [%#x - %#x]\n", start, end);
+	/*
+	 * Found a valid memory area from tail of reserved memory
+	 * Last reserved area: [0x64300000, 0x74400000]
+	 *
+	 *                     Reserved 0            Reserved 1
+	 *                   | <------> |          | <------> |
+	 * +-----------------+----------+----------+----------+------+
+	 * |                 |          |          |          |      |
+	 * |                 |          |          |          |      |
+	 * |                 |          |          |          |      |
+	 * +-----------------+----------+----------+----------+------+
+	 *                                                    | <--> |
+	 *                                                 Searching area
+	 *
+	 * Reserved 0: [0x64000000, 0x64100000]
+	 * Reserved 1: [0x64300000, 0x64400000]
+	 */
+	idx = (u64)ULLONG_MAX & ((u64)(memblock.reserved.cnt) << 32);
+	__next_mem_range(&idx, NUMA_NO_NODE, flags,
+		&memblock.memory, &memblock.reserved, &start, &end, NULL);
+	pr_info("Valid memory behine last reserved:  [%#x - %#x]\n",
+			start, end);
 
-        /* Clear rservation for debug */
-        memblock.reserved.cnt = 1;
-        memblock.reserved.total_size = 0;
+	/*
+	 * Found a valid memory area from head of memory.
+	 *
+	 *
+	 *                     Reserved 0            Reserved 1
+	 *                   | <------> |          | <------> |
+	 * +-----------------+----------+----------+----------+------+
+	 * |                 |          |          |          |      |
+	 * |                 |          |          |          |      |
+	 * |                 |          |          |          |      |
+	 * +-----------------+----------+----------+----------+------+
+	 * | <-------------> |
+	 *   Searching Area
+	 *
+	 * Reserved 0: [0x64000000, 0x64100000]
+	 * Reserved 1: [0x64300000, 0x64400000]
+	 */
+	idx = (u64)0;
+	__next_mem_range(&idx, NUMA_NO_NODE, flags,
+		&memblock.memory, &memblock.reserved, &start, &end, NULL);
+	pr_info("Valid memory from head of memory:   [%#x - %#x]\n",
+			start, end);
 
-        return 0;
+	/*
+	 * Found a valid memory area behind special reserved area.
+	 * Special reserved area: [0x64000000, 0x64100000]
+	 *
+	 *                     Reserved 0            Reserved 1
+	 *                   | <------> |          | <------> |
+	 * +-----------------+----------+----------+----------+------+
+	 * |                 |          |          |          |      |
+	 * |                 |          |          |          |      |
+	 * |                 |          |          |          |      |
+	 * +-----------------+----------+----------+----------+------+
+	 *                              | <------> |
+	 *                             Searching area
+	 *
+	 * Reserved 0: [0x64000000, 0x64100000]
+	 * Reserved 1: [0x64300000, 0x64400000]
+	 */
+	for_each_memblock(reserved, reg) {
+		if (reg->base == 0x64000000)
+			break;
+		else
+			cnt++;
+	}
+	idx = (u64)ULLONG_MAX & ((u64)++cnt << 32);
+	__next_mem_range(&idx, NUMA_NO_NODE, flags,
+		&memblock.memory, &memblock.reserved, &start, &end, NULL);
+	pr_info("Valid memory behine special region: [%#x - %#x]\n",
+			start, end);
+
+	/*
+	 * Found a valid memory area behind special index for
+	 * reservation area. e.g. index = 1
+	 *
+	 *                     Reserved 0            Reserved 1
+	 *                   | <------> |          | <------> |
+	 * +-----------------+----------+----------+----------+------+
+	 * |                 |          |          |          |      |
+	 * |                 |          |          |          |      |
+	 * |                 |          |          |          |      |
+	 * +-----------------+----------+----------+----------+------+
+	 *                                                    | <--> |
+	 *                                                 Searching area
+	 *
+   * Memory:     [0x60000000, 0x64000000] index = 0
+   * Reserved 0: [0x64000000, 0x64100000] index = 1
+   * Reserved 1: [0x64300000, 0x64400000] index = 2
+	 */
+	idx = (u64)ULLONG_MAX & ((u64)1 << 32);
+	__next_mem_range(&idx, NUMA_NO_NODE, flags,
+		&memblock.memory, &memblock.reserved, &start, &end, NULL);
+	pr_info("Valid memory behind special index:  [%#x - %#x]\n",
+			start, end);
+
+
+	/* Clear rservation for debug */
+	memblock.reserved.cnt = 1;
+	memblock.reserved.total_size = 0;
+
+	return 0;
 }
 #endif
 {% endhighlight %}
@@ -544,7 +605,7 @@ memblock.c，然后修改 Kconfig 文件，添加内容参考如下：
 
 {% highlight bash %}
 diff --git a/drivers/BiscuitOS/Kconfig b/drivers/BiscuitOS/Kconfig
-index cca538e38..c4c2edcab 100644
+index cca538e38..e8c5b112d 100644
 --- a/drivers/BiscuitOS/Kconfig
 +++ b/drivers/BiscuitOS/Kconfig
 @@ -6,4 +6,14 @@ if BISCUITOS_DRV
@@ -552,12 +613,12 @@ index cca538e38..c4c2edcab 100644
      bool "BiscuitOS misc driver"
 
 +config MEMBLOCK_ALLOCATOR
-+       bool "MEMBLOCK allocator"
++	bool "MEMBLOCK allocator"
 +
 +if MEMBLOCK_ALLOCATOR
 +
-+config DEBUG_FOR_EACH_MEM_RANGE
-+       bool "for_each_mem_range()"
++config DEBUG__NEXT_MEM_RANGE
++	bool "__next_mem_range()"
 +
 +endif # MEMBLOCK_ALLOCATOR
 +
@@ -578,13 +639,14 @@ index 82004c9a2..1e4052a4b 100644
 
 #### <span id="驱动配置">驱动配置</span>
 
-驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选如下选项，如下：
+驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选如下选项，
+以打开 CONFIG_BISCUITOS_MEMBLOCK_RESERVE，如下：
 
 {% highlight bash %}
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]Memblock allocator
-            [*]for_each_mem_range()
+            [*]__next_mem_range()
 {% endhighlight %}
 
 具体过程请参考：
@@ -598,30 +660,30 @@ Device Driver--->
 
 {% highlight bash %}
 diff --git a/arch/arm/kernel/setup.c b/arch/arm/kernel/setup.c
-index 375b13f7e..fec6919a9 100644
+index 375b13f7e..5e172f0bc 100644
 --- a/arch/arm/kernel/setup.c
 +++ b/arch/arm/kernel/setup.c
 @@ -1073,6 +1073,10 @@ void __init hyp_mode_check(void)
  void __init setup_arch(char **cmdline_p)
  {
-        const struct machine_desc *mdesc;
-+#ifdef CONFIG_DEBUG_FOR_EACH_MEM_RANGE
-+       extern int bs_debug;
-+       extern int debug_for_each_mem_range(void);
+ 	const struct machine_desc *mdesc;
++#ifdef CONFIG_DEBUG__NEXT_MEM_RANGE
++	extern int bs_debug;
++	extern int debug__next_mem_range(void);
 +#endif
 
-        setup_processor();
-        mdesc = setup_machine_fdt(__atags_pointer);
+ 	setup_processor();
+ 	mdesc = setup_machine_fdt(__atags_pointer);
 @@ -1104,6 +1108,10 @@ void __init setup_arch(char **cmdline_p)
-        strlcpy(cmd_line, boot_command_line, COMMAND_LINE_SIZE);
-        *cmdline_p = cmd_line;
+ 	strlcpy(cmd_line, boot_command_line, COMMAND_LINE_SIZE);
+ 	*cmdline_p = cmd_line;
 
-+#ifdef CONFIG_DEBUG_FOR_EACH_MEM_RANGE
-+       debug_for_each_mem_range();
++#ifdef CONFIG_DEBUG__NEXT_MEM_RANGE
++	debug__next_mem_range();
 +#endif
 +
-        early_fixmap_init();
-        early_ioremap_init();
+ 	early_fixmap_init();
+ 	early_ioremap_init();
 {% endhighlight %}
 
 #### <span id="驱动编译">驱动编译</span>
@@ -642,11 +704,13 @@ index 375b13f7e..fec6919a9 100644
 CPU: ARMv7 Processor [410fc090] revision 0 (ARMv7), cr=10c5387d
 CPU: PIPT / VIPT nonaliasing data cache, VIPT nonaliasing instruction cache
 OF: fdt: Machine model: V2P-CA9
-Region: [0x60000000 - 0x64000000]
-Region: [0x64100000 - 0x64300000]
-Region: [0x64400000 - 0xa0000000]
+Valid memory behine last reserved:  [0x64400000 - 0xa0000000]
+Valid memory from head of memory:   [0x60000000 - 0x64000000]
+Valid memory behine special region: [0x64100000 - 0x64300000]
+Valid memory behind special index:  [0x64100000 - 0x64300000]
 Malformed early option 'earlycon'
 Memory policy: Data cache writeback
+Reserved memory: created DMA memory pool at 0x4c000000, size 8 MiB
 {% endhighlight %}
 
 #### <span id="驱动分析">驱动分析</span>
@@ -673,26 +737,177 @@ Memory Maps:
  Reserved 1: [0x64300000, 0x64400000]
 {% endhighlight %}
 
-接着调用 for_each_mem_range() 函数遍历所有的可用物理内存，并将
-可用物理内存的起始地址和终止地址都打印出来，代码如下：
+> 获得最后一块可用物理内存
 
-{% highlight c %}
-for_each_mem_range(idx, &memblock.memory, &memblock.reserved,
-                NUMA_NO_NODE, flags, &start, &end, NULL)
-        pr_info("Region: [%#x - %#x]\n", start, end);
+最后一块可用物理内存指的是：最后一块预留内存区块之后的可用物理内存区块。
+调用 __next_mem_range() 函数从最后一块预留区之后找到一块可用的物
+理内存区块，具体代码如下：
+
+{% highlight bash %}
+/*
+ * Found a valid memory area from tail of reserved memory
+ * Last reserved area: [0x64300000, 0x74400000]
+ *
+ *                     Reserved 0            Reserved 1
+ *                   | <------> |          | <------> |
+ * +-----------------+----------+----------+----------+------+
+ * |                 |          |          |          |      |
+ * |                 |          |          |          |      |
+ * |                 |          |          |          |      |
+ * +-----------------+----------+----------+----------+------+
+ *                                                    | <--> |
+ *                                                 Searching area
+ *
+ * Reserved 0: [0x64000000, 0x64100000]
+ * Reserved 1: [0x64300000, 0x64400000]
+ */
+idx = (u64)ULLONG_MAX & ((u64)(memblock.reserved.cnt) << 32);
+__next_mem_range(&idx, NUMA_NO_NODE, flags,
+  &memblock.memory, &memblock.reserved, &start, &end, NULL);
+pr_info("Valid memory behine last reserved:  [%#x - %#x]\n",
+    start, end);
 {% endhighlight %}
 
-通过调用调用 for_each_mem_range() 函数，所有的可用物理内存区块都会
-被找到，所以这个函数用于查找可用的物理内存区块。实践中，物理内存区范围是：
-[0x60000000, 0xa0000000], 就在这块内存区块，被两个预留区分成了三段，两个
-预留区占据了 [0x64000000, 0x64100000] 和 [0x64300000, 0x64400000],
-所以剩下的可用物理内存区块为：
+要从最后一块物理内存区块中找到可用的物理内存区块，那么需要将 idx
+参数设置为 (u64)ULLONG_MAX & ((u64)(memblock.reserved.cnt) << 32)，
+这样函数就会从最后一块预留区开始查找可用的物理内存区块，运行结果如下：
 
-> [0x60000000 - 0x64000000]
->
-> [0x64100000 - 0x64300000]
->
-> [0x64400000 - 0xa0000000]
+{% highlight bash %}
+Valid memory behine last reserved:  [0x64400000 - 0xa0000000]
+{% endhighlight %}
 
-通过实践可知，分析的可用内存区段和实践获得物理内存区块是一致的。更多
-原理请看[for_each_mem_range() 源码分析](#源码分析)
+由之前可知，最后一块预留区的范围是： [0x64300000, 0x64400000]，那么可用
+的物理内存区块的范围从 0x64400000 开始，一直到可用物理内存区的结束地址，
+所以是 0xa0000000。因此运行的结果和预期的相同。
+
+> 获得第一块可用的物理内存区块
+
+第一块可用物理内存指的是：从可用物理内存区开始到第一块预留内存之间的内存
+区域。具体代码如下：
+
+{% highlight bash %}
+/*
+ * Found a valid memory area from head of memory.
+ *
+ *
+ *                     Reserved 0            Reserved 1
+ *                   | <------> |          | <------> |
+ * +-----------------+----------+----------+----------+------+
+ * |                 |          |          |          |      |
+ * |                 |          |          |          |      |
+ * |                 |          |          |          |      |
+ * +-----------------+----------+----------+----------+------+
+ * | <-------------> |
+ *   Searching Area
+ *
+ * Reserved 0: [0x64000000, 0x64100000]
+ * Reserved 1: [0x64300000, 0x64400000]
+ */
+idx = (u64)0;
+__next_mem_range(&idx, NUMA_NO_NODE, flags,
+  &memblock.memory, &memblock.reserved, &start, &end, NULL);
+pr_info("Valid memory from head of memory:   [%#x - %#x]\n",
+    start, end);
+{% endhighlight %}
+
+第一块可用物理内存区对应的 idx 参数设置为： idx = (u64)0，
+idx 的 高 32 位存储预留区的内存区索引，根据源码可知，将 idx 高 32 位
+值设置为 0 之后，函数就会从可用物理内存区起始地址开始查找。运行结果如下：
+
+{% highlight bash %}
+Valid memory from head of memory:   [0x60000000 - 0x64000000]
+{% endhighlight %}
+
+由上可知，可用物理内存区的首地址为 0x60000000, 第一块预留区的首地址是：
+0x64000000,那么运行的结果正好和预期的一致。
+
+> 从指定预留区之后获得可用内存区块
+
+从指定的预留区块的结束地址开始，到下一块预留内存区块之间找到可用的物理内存区
+块，实践代码如下：
+
+{% highlight bash %}
+/*
+ * Found a valid memory area behind special reserved area.
+ * Special reserved area: [0x64000000, 0x64100000]
+ *
+ *                     Reserved 0            Reserved 1
+ *                   | <------> |          | <------> |
+ * +-----------------+----------+----------+----------+------+
+ * |                 |          |          |          |      |
+ * |                 |          |          |          |      |
+ * |                 |          |          |          |      |
+ * +-----------------+----------+----------+----------+------+
+ *                              | <------> |
+ *                             Searching area
+ *
+ * Reserved 0: [0x64000000, 0x64100000]
+ * Reserved 1: [0x64300000, 0x64400000]
+ */
+for_each_memblock(reserved, reg) {
+  if (reg->base == 0x64000000)
+    break;
+  else
+    cnt++;
+}
+idx = (u64)ULLONG_MAX & ((u64)++cnt << 32);
+__next_mem_range(&idx, NUMA_NO_NODE, flags,
+  &memblock.memory, &memblock.reserved, &start, &end, NULL);
+pr_info("Valid memory behine special region: [%#x - %#x]\n",
+    start, end);
+{% endhighlight %}
+
+首先调用 for_each_memblock() 函数找到指定的预留区，然后再将 idx 的
+高 32 位设置为对应预留区的索引，接着调用函数进行查找，查找的结果如下：
+
+{% highlight bash %}
+Valid memory behine special region: [0x64100000 - 0x64300000]
+{% endhighlight %}
+
+指定的预留区块的范围为： [0x64000000, 0x64100000]，到下一块预留区块
+的范围是 [0x64300000, 0x64400000]，所以指定的预留区块之后的范围是：
+[0x64100000, 0x64300000]，运行结果正好和预测的结果一致，所以符合预期。
+
+> 从指定索引的预留区之后获得可用物理内存区块
+
+通过索引获得一块预留区，再从这块预留区之后获得可用的物理内存区块，具体
+实践代码如下：
+
+{% highlight bash %}
+/*
+ * Found a valid memory area behind special index for
+ * reservation area. e.g. index = 1
+ *
+ *                     Reserved 0            Reserved 1
+ *                   | <------> |          | <------> |
+ * +-----------------+----------+----------+----------+------+
+ * |                 |          |          |          |      |
+ * |                 |          |          |          |      |
+ * |                 |          |          |          |      |
+ * +-----------------+----------+----------+----------+------+
+ *                                                    | <--> |
+ *                                                 Searching area
+ *
+ * Memory:     [0x60000000, 0x64000000] index = 0
+ * Reserved 0: [0x64000000, 0x64100000] index = 1
+ * Reserved 1: [0x64300000, 0x64400000] index = 2
+ */
+idx = (u64)ULLONG_MAX & ((u64)1 << 32);
+__next_mem_range(&idx, NUMA_NO_NODE, flags,
+  &memblock.memory, &memblock.reserved, &start, &end, NULL);
+pr_info("Valid memory behind special index:  [%#x - %#x]\n",
+    start, end);
+{% endhighlight %}
+
+idx 参数的高 32 位设置为指定的索引：(u64)ULLONG_MAX & ((u64)1 << 32)，
+然后调用函数进行查找。运行结果如下：
+
+{% highlight bash %}
+Valid memory behind special index:  [0x64100000 - 0x64300000]
+{% endhighlight %}
+
+索引 1 对应的预留区范围是： [0x64000000, 0x64100000], 所以调用函数之
+后，查找的范围到下一块预留区： [0x6430000, 0x64400000], 实际找到的区域
+是 [0x64100000, 0x64300000],符合预期。
+
+更多原理请看[__next_mem_range 源码分析](#源码分析)
