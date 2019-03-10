@@ -1,14 +1,14 @@
 ---
 layout: post
-title:  "for_each_mem_range_rev() 倒序遍历所有可用的物理内存区块"
-date:   2019-03-10 11:45:30 +0800
+title:  "for_each_mem_range() 正序遍历所有可用的物理内存区块"
+date:   2019-03-10 11:56:30 +0800
 categories: [MMU]
-excerpt: for_each_mem_range_rev() 倒序遍历所有可用的物理内存区块.
+excerpt: for_each_mem_range() 正序遍历所有可用的物理内存区块.
 tags:
   - MMU
 ---
 
-> [GitHub: for_each_mem_range_rev()](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/for_each_mem_range_rev)
+> [GitHub: for_each_mem_range()](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/for_each_mem_range)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -206,14 +206,14 @@ MEMBLOCK 通过上面的数据结构管理 arm32 早期的物理内存，使操�
 >
 > Version： Linux 5.x
 
-函数： for_each_mem_range_rev()
+函数： for_each_mem_range()
 
-功能： 遍历所有可用的物理内存区块
+功能： 正序遍历所有可用的物理内存区块
 
 {% highlight bash %}
-for_each_mem_range_rev
+for_each_mem_range
 |
-|---__next_mem_range_rev
+|---__next_mem_range
     |
     |---memblock_get_region_node
     |
@@ -224,11 +224,11 @@ for_each_mem_range_rev
     |---memblock_is_nomap
 {% endhighlight %}
 
-##### for_each_mem_range_rev
+##### for_each_mem_range
 
 {% highlight c %}
 /**
- * for_each_mem_range_rev - reverse iterate through memblock areas from
+ * for_each_mem_range - reverse iterate through memblock areas from
  * type_a and not included in type_b. Or just type_a if type_b is NULL.
  * @i: u64 used as loop variable
  * @type_a: ptr to memblock_type to iterate
@@ -239,13 +239,13 @@ for_each_mem_range_rev
  * @p_end: ptr to phys_addr_t for end address of the range, can be %NULL
  * @p_nid: ptr to int for nid of the range, can be %NULL
  */
-#define for_each_mem_range_rev(i, type_a, type_b, nid, flags,           \
+#define for_each_mem_range(i, type_a, type_b, nid, flags,           \
                                p_start, p_end, p_nid)                   \
         for (i = (u64)ULLONG_MAX,                                       \
-                     __next_mem_range_rev(&i, nid, flags, type_a, type_b,\
+                     __next_mem_range(&i, nid, flags, type_a, type_b,\
                                           p_start, p_end, p_nid);       \
              i != (u64)ULLONG_MAX;                                      \
-             __next_mem_range_rev(&i, nid, flags, type_a, type_b,       \
+             __next_mem_range(&i, nid, flags, type_a, type_b,       \
                                   p_start, p_end, p_nid))
 
 {% endhighlight %}
@@ -261,14 +261,13 @@ __next_mem_range_rev() 函数查找一块可用的物理内存。每遍历一次
 地址存储到 p_start 参数里，将终止地址存储到 p_end 参数里。直到遍历完所有可用物理
 内存区块之后终止循环。
 
-##### __next_mem_range_rev
+##### __next_mem_range
 
 函数代码较长，分段解析
 
 {% highlight c %}
 /**
- * __next_mem_range_rev - generic next function for for_each_*_range_rev()
- *
+ * __next__mem_range - next function for for_each_free_mem_range() etc.
  * @idx: pointer to u64 loop variable
  * @nid: node selector, %NUMA_NO_NODE for all nodes
  * @flags: pick from blocks based on memory attributes
@@ -278,17 +277,28 @@ __next_mem_range_rev() 函数查找一块可用的物理内存。每遍历一次
  * @out_end: ptr to phys_addr_t for end address of the range, can be %NULL
  * @out_nid: ptr to int for nid of the range, can be %NULL
  *
- * Finds the next range from type_a which is not marked as unsuitable
- * in type_b.
+ * Find the first area from *@idx which matches @nid, fill the out
+ * parameters, and update *@idx for the next iteration.  The lower 32bit of
+ * *@idx contains index into type_a and the upper 32bit indexes the
+ * areas before each region in type_b.  For example, if type_b regions
+ * look like the following,
  *
- * Reverse of __next_mem_range().
+ *      0:[0-16), 1:[32-48), 2:[128-130)
+ *
+ * The upper 32bit indexes the following regions.
+ *
+ *      0:[0-0), 1:[16-32), 2:[48-128), 3:[130-MAX)
+ *
+ * As both region arrays are sorted, the function advances the two indices
+ * in lockstep and returns each intersection.
  */
-void __init_memblock __next_mem_range_rev(u64 *idx, int nid,
-                                          enum memblock_flags flags,
-                                          struct memblock_type *type_a,
-                                          struct memblock_type *type_b,
-                                          phys_addr_t *out_start,
-                                          phys_addr_t *out_end, int *out_nid)
+void __init_memblock __next_mem_range(u64 *idx, int nid,
+                                      enum memblock_flags flags,
+                                      struct memblock_type *type_a,
+                                      struct memblock_type *type_b,
+                                      phys_addr_t *out_start,
+                                      phys_addr_t *out_end, int *out_nid)
+
 {
         int idx_a = *idx & 0xffffffff;
         int idx_b = *idx >> 32;
@@ -417,17 +427,17 @@ if (m_end > r_start) {
                 *out_end = min(m_end, r_end);
         if (out_nid)
                 *out_nid = m_nid;
-        if (m_start >= r_start)
-                idx_a--;
+        if (m_end <= r_end)
+                idx_a++;
         else
-                idx_b--;
+                idx_b++;
         *idx = (u32)idx_a | (u64)idx_b << 32;
         return;
 }
 {% endhighlight %}
 
 如果符合之前的条件，那么接下来只要找到的物理内存区块的终止地址比预留区的大，但找到的
-物理内存区块的起始地址小于预留区块的终止地址，至少保证可用物理内存区在预留区块之前有
+物理内存区块的终止地址小于预留区块的终止地址，至少保证可用物理内存区在预留区块之前有
 交集。接下来，将 out_start 参数指向最大的起始地址；将 out_end 指向最小的终止地
 址，这样处理能确保找到的物理内存区块不与预留区块重叠。接着如果找到的可用物理内存区块
 的起始地址大于预留区块的起始地址，那么增加 idx_a 的引用计数，这样可以在循环中指向
@@ -464,8 +474,8 @@ if (m_end > r_start) {
 
 #### <span id="驱动实践目的">实践目的</span>
 
-for_each_mem_range_rev() 函数的作用是遍历所有可用的物理内存，
-实践的目的就是遍历所有可用物理内存。
+for_each_mem_range() 函数的作用是正序遍历所有可用的物理内存，
+实践的目的就是正序遍历所有可用物理内存。
 
 #### <span id="驱动实践准备">实践准备</span>
 
@@ -496,8 +506,8 @@ for_each_mem_range_rev() 函数的作用是遍历所有可用的物理内存，
 
 int bs_debug = 0;
 
-#ifdef CONFIG_DEBUG_FOR_EACH_MEM_RANGE_REV
-int debug_for_each_mem_range_rev(void)
+#ifdef CONFIG_DEBUG_for_each_mem_range
+int debug_for_each_mem_range(void)
 {
         enum memblock_flags flags = choose_memblock_flags();
         phys_addr_t start;
@@ -523,7 +533,7 @@ int debug_for_each_mem_range_rev(void)
         memblock_reserve(0x64000000, 0x100000);
         memblock_reserve(0x64300000, 0x100000);
 
-        for_each_mem_range_rev(idx, &memblock.memory, &memblock.reserved,
+        for_each_mem_range(idx, &memblock.memory, &memblock.reserved,
                         NUMA_NO_NODE, flags, &start, &end, NULL)
                 pr_info("Region: [%#x - %#x]\n", start, end);
 
@@ -556,8 +566,8 @@ index cca538e38..c4c2edcab 100644
 +
 +if MEMBLOCK_ALLOCATOR
 +
-+config DEBUG_FOR_EACH_MEM_RANGE_REV
-+       bool "for_each_mem_range_rev()"
++config DEBUG_FOR_EACH_MEM_RANGE
++       bool "for_each_mem_range()"
 +
 +endif # MEMBLOCK_ALLOCATOR
 +
@@ -578,14 +588,13 @@ index 82004c9a2..1e4052a4b 100644
 
 #### <span id="驱动配置">驱动配置</span>
 
-驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选如下选项，
-以打开 CONFIG_BISCUITOS_MEMBLOCK_RESERVE，如下：
+驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选如下选项，如下：
 
 {% highlight bash %}
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]Memblock allocator
-            [*]for_each_mem_range_rev()
+            [*]for_each_mem_range()
 {% endhighlight %}
 
 具体过程请参考：
@@ -606,9 +615,9 @@ index 375b13f7e..fec6919a9 100644
  void __init setup_arch(char **cmdline_p)
  {
         const struct machine_desc *mdesc;
-+#ifdef CONFIG_DEBUG_FOR_EACH_MEM_RANGE_REV
++#ifdef CONFIG_DEBUG_FOR_EACH_MEM_RANGE
 +       extern int bs_debug;
-+       extern int debug_for_each_mem_range_rev(void);
++       extern int debug_for_each_mem_range(void);
 +#endif
 
         setup_processor();
@@ -617,8 +626,8 @@ index 375b13f7e..fec6919a9 100644
         strlcpy(cmd_line, boot_command_line, COMMAND_LINE_SIZE);
         *cmdline_p = cmd_line;
 
-+#ifdef CONFIG_DEBUG_FOR_EACH_MEM_RANGE_REV
-+       debug_for_each_mem_range_rev();
++#ifdef CONFIG_DEBUG_FOR_EACH_MEM_RANGE
++       debug_for_each_mem_range();
 +#endif
 +
         early_fixmap_init();
@@ -643,9 +652,9 @@ index 375b13f7e..fec6919a9 100644
 CPU: ARMv7 Processor [410fc090] revision 0 (ARMv7), cr=10c5387d
 CPU: PIPT / VIPT nonaliasing data cache, VIPT nonaliasing instruction cache
 OF: fdt: Machine model: V2P-CA9
-Region: [0x64400000 - 0xa0000000]
-Region: [0x64100000 - 0x64300000]
 Region: [0x60000000 - 0x64000000]
+Region: [0x64100000 - 0x64300000]
+Region: [0x64400000 - 0xa0000000]
 Malformed early option 'earlycon'
 Memory policy: Data cache writeback
 {% endhighlight %}
@@ -674,26 +683,26 @@ Memory Maps:
  Reserved 1: [0x64300000, 0x64400000]
 {% endhighlight %}
 
-接着调用 for_each_mem_range_rev() 函数遍历所有的可用物理内存，并将
+接着调用 for_each_mem_range() 函数遍历所有的可用物理内存，并将
 可用物理内存的起始地址和终止地址都打印出来，代码如下：
 
 {% highlight c %}
-for_each_mem_range_rev(idx, &memblock.memory, &memblock.reserved,
+for_each_mem_range(idx, &memblock.memory, &memblock.reserved,
                 NUMA_NO_NODE, flags, &start, &end, NULL)
         pr_info("Region: [%#x - %#x]\n", start, end);
 {% endhighlight %}
 
-通过调用调用 for_each_mem_range_rev() 函数，所有的可用物理内存区块都会
+通过调用调用 for_each_mem_range() 函数，所有的可用物理内存区块都会
 被找到，所以这个函数用于查找可用的物理内存区块。实践中，物理内存区范围是：
 [0x60000000, 0xa0000000], 就在这块内存区块，被两个预留区分成了三段，两个
 预留区占据了 [0x64000000, 0x64100000] 和 [0x64300000, 0x64400000],
 所以剩下的可用物理内存区块为：
 
-> [0x64400000 - 0xa0000000]
+> [0x60000000 - 0x64000000]
 >
 > [0x64100000 - 0x64300000]
 >
-> [0x60000000 - 0x64000000]
+> [0x64400000 - 0xa0000000]
 
 通过实践可知，分析的可用内存区段和实践获得物理内存区块是一致的。更多
-原理请看[for_each_mem_range_rev() 源码分析](#源码分析)
+原理请看[for_each_mem_range() 源码分析](#源码分析)
