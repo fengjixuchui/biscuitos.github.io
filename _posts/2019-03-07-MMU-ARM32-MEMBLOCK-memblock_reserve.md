@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "memblock_reserve() Reserved 分配后端相连的内存区块"
+title:  "memblock_reserve() 添加一块预留区"
 date:   2019-03-07 09:32:30 +0800
 categories: [MMU]
-excerpt: memblock_reserve() Reserved 分配后端相连的内存区块.
+excerpt: memblock_reserve() 添加一块预留区.
 tags:
   - MMU
 ---
@@ -208,9 +208,7 @@ MEMBLOCK 通过上面的数据结构管理 arm32 早期的物理内存，使操�
 
 函数： memblock_reserve()
 
-功能：将一块物理内存加入到预留内存区内。本文分析的情况是：当原始预留区为空时，加入第一
-块内存区块时，memblock_reserve() 会将这块物理内存块放到 regions 链表的头部。具体调
-用树如下：
+功能：将一块物理内存加入到预留内存区内。具体调用树如下：
 
 {% highlight bash %}
 memblock_reserve
@@ -726,9 +724,7 @@ NUMA 号相同，flags 也相同，那么这两块内存区块就可以合并；
 #### <span id="驱动实践目的">实践目的</span>
 
 memblock_reserve() 函数的作用就是将一块物理内存区块加入到预留物理内存内。本次实践的
-目的就是加入一块新的内存区块，新的内存区块与已存在的内存区块后端相连，以此查看这种新加
-入的内存区块是否会和前一块内存区块合并。在加入前和加入后，都会去遍历整个预留区的所有内
-存区块。
+目的就是向预留区的不同位置添加内存区块。
 
 #### <span id="驱动实践准备">实践准备</span>
 
@@ -1252,7 +1248,7 @@ config BISCUITOS_MISC
 +
 +if BISCUITOS_MEMBLOCK
 +
-+config BISCUITOS_MEMBLOCK_RESERVE
++config DEBUG_MEMBLOCK_RESERVE
 +       bool "memblock_reserve()"
 +
 +endif # BISCUITOS_MEMBLOCK
@@ -1275,8 +1271,16 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 
 #### <span id="驱动配置">驱动配置</span>
 
-驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选 "Device Driver" --> "BiscuitOS Driver" --> "Memblock allocator" --> "memblock_reserve()"
-选项，以打开 CONFIG_BISCUITOS_MEMBLOCK_RESERVE，具体过程请参考：
+驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选如下选项，如下：
+
+{% highlight bash %}
+Device Driver--->
+    [*]BiscuitOS Driver--->
+        [*]Memblock allocator
+            [*]memblock_reserve()
+{% endhighlight %}
+
+具体过程请参考：
 
 [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
@@ -1293,7 +1297,7 @@ index 375b13f..d36d824 100644
 @@ -1074,6 +1074,10 @@ void __init setup_arch(char **cmdline_p)
 {
         const struct machine_desc *mdesc;
-+#ifdef CONFIG_BISCUITOS_MEMBLOCK_RESERVE
++#ifdef CONFIG_DEBUG_MEMBLOCK_RESERVE
 +       extern int debug_memblock_reserve(void);
 +#endif
 +
@@ -1303,7 +1307,7 @@ index 375b13f..d36d824 100644
 @@ -1104,6 +1108,10 @@ void __init setup_arch(char **cmdline_p)
         strlcpy(cmd_line, boot_command_line, COMMAND_LINE_SIZE);
         *cmdline_p = cmd_line;
-+#ifdef CONFIG_BISCUITOS_MEMBLOCK_RESERVE
++#ifdef CONFIG_DEBUG_MEMBLOCK_RESERVE
 +       debug_memblock_reserve();
 +#endif
 +
@@ -1373,6 +1377,46 @@ Reserved memory: created DMA memory pool at 0x4c000000, size 8 MiB
 
 #### <span id="驱动分析">驱动分析</span>
 
+当往 MEMBLOCK 的预留区中加入第一个内存区块，MEMBLOCK 分配器会将第一个预留区放到
+reserved.regions 链表的头部，并更新相应的数据，测试代码如下：
+
+{% highlight c %}
+        /* Scan old reserved region */
+        for_each_memblock(reserved, reg)
+                pr_info("Region [%#x -- %#x]\n", reg->base,
+                        reg->base + reg->size);
+
+        /* Reserved memblock region is empty and insert a new region
+         *
+         * memblock.reserved--->+--------+
+         *                      |        |
+         *                      | Empty- |
+         *                      |        |
+         *                      +--------+
+         */
+        memblock_reserve(0x60000000, 0x200000);
+        pr_info("Scan first region:\n");
+        for_each_memblock(reserved, reg)
+                pr_info("Region [%#x -- %#x]\n", reg->base,
+                        reg->base + reg->size);
+{% endhighlight %}
+
+从源码中可知，调用 memblock_serve() 函数，将内存区块 [0x60000000, 0x60200000] 添加
+到预留区间的头部，添加完毕之后，调用 for_each_memblock() 函数遍历预留区内的所有内存
+区块，运行结果如下：
+
+{% highlight bash %}
+Region [0x0 -- 0x0]
+Scan first region:
+Region [0x60000000 -- 0x60200000]
+{% endhighlight %}
+
+从运行的结果可以看出，第一次调用 for_each_memblock() 函数遍历预留区的时候，预留区
+为空，所以打印的值都是 0。当添加第一个内存区块之后，再调用 for_each_memblock() 函数
+遍历预留区之后，第一个预留区块就是刚刚添加的内存区块： 0x60000000 -- 0x60200000。综
+上所述，memblock_reserve() 函数会将第一个预留区存储到 memblock.reserved.regions
+的头部。
+
 当往 MEMBLOCK 的预留区中加入一个内存区块，并且新加入的内存区块与已存在的内存区块后端
 相连，测试代码如下：
 
@@ -1430,3 +1474,624 @@ Region [0x62000000 -- 0x62400000]
 从运行的结果可以看出，调用 for_each_memblock() 函数进行遍历的过程中，函数发现两个内存
 区块相连并且新的内存区块位于后端，那么函数就将这个新的内存区块加入到预留内存区链表的尾
 部，由于相连，就将这两个内存区块合并为一个内存区块，具体过程情况源码分析部分。
+
+当往 MEMBLOCK 的预留区中加入一个内存区块，由于新加入的内存区块与已存在的内存区块存在
+重叠部分，并且新内存区块前部重叠但后部不重叠，具体代码如下：
+
+{% highlight c %}
+/*
+ * Insert a new region that part of new region contains by exist
+ * regions and part of new region behine exist regions:
+ *
+ * memblock.reserved:
+ *
+ * rbase                     rend
+ * | <---------------------> |
+ * +----------------+--------+----------------------+
+ * |                |        |                      |
+ * | Exist regions  |        |     new region       |
+ * |                |        |                      |
+ * +----------------+--------+----------------------+
+ *                  | <---------------------------> |
+ *                  base                            end
+ *
+ * 1) base > rebase
+ * 2) end  > rend
+ * 3) base > rend
+ * 4) rbase: 0x62000000
+ *    rend:  0x62400000
+ *    base:  0x62300000
+ *    end:   0x62500000
+ *
+ * Processing: Insert/Merge
+ *
+ * rbase                                            rend
+ * +------------------------------------------------+
+ * |                                                |
+ * | Exist regions                                  |
+ * |                                                |
+ * +------------------------------------------------+
+ *
+ * 1) rbase: 0x62000000
+ *    rend:  0x62500000
+ */
+memblock_reserve(0x62300000, 0x200000);
+pr_info("Scan behine but contain regions:\n");
+for_each_memblock(reserved, reg)
+        pr_info("Region [%#x -- %#x]\n", reg->base,
+                reg->base + reg->size);
+{% endhighlight %}
+
+从源码中可知，调用 memblock_serve() 函数，将内存区块 [0x62300000, 0x62500000] 添加
+到预留区间的头部，添加之前，新内存区块与内存区 [0x62000000, 0x62400000] 存在重叠，
+添加完毕之后，调用 for_each_memblock() 函数遍历预留区内的所有内存区块，运行结果如下：
+
+{% highlight bash %}
+Region [0x60000000 -- 0x60200000]
+Region [0x62000000 -- 0x62400000]
+Scan behine but contain regions:
+Region [0x60000000 -- 0x60200000]
+Region [0x62000000 -- 0x62500000]
+{% endhighlight %}
+
+从运行的结果可以看出，memblock_reserve() 函数将重叠的部分以及后续部分合并到原始的内存
+区块中，并未占用新的节点。具体原理请看源码分析。
+
+将一块内存区块加入到预留区链表里，新加入的内存区块包含整块内存区块，并且新加入的
+内存区块头部和尾部都不与已存在的内存区块重叠，以此实践验证这种情况下，
+memblock_reserve() 会将这两个区合并但不占用新的内存区块节点，测试代码如下：
+
+{% highlight c %}
+/*
+ * Insert a new region that contain whole exist regions.
+ *
+ * memblock.reserved:
+ *
+ * base             New regions                     end
+ * | <--------------------------------------------> |
+ * +-----------+--------------------+---------------+
+ * |           |                    |               |
+ * |           |   Exist regions    |               |
+ * |           |                    |               |
+ * +-----------+--------------------+---------------+
+ *             | <----------------> |
+ *             rbase                rend
+ *
+ * 1) base < rbase
+ * 2) rend < end
+ * 3) rbase: 0x62000000
+ *    rend:  0x62600000
+ *    base:  0x61000000
+ *    end:   0x63000000
+ *
+ * Processing: Insert/Merge
+ *
+ * rbase                                            rend
+ * +------------------------------------------------+
+ * |                                                |
+ * |              Exist Regions                     |
+ * |                                                |
+ * +------------------------------------------------+
+ *
+ * 1) rbase: 0x61000000
+ *    rend:  0x63000000
+ */
+memblock_reserve(0x61000000, 0x2000000);
+pr_info("Scan region which contain exist one:\n");
+for_each_memblock(reserved, reg)
+        pr_info("Region [%#x -- %#x]\n", reg->base,
+                reg->base + reg->size);
+{% endhighlight %}
+
+从源码中可知，调用 memblock_serve() 函数，将内存区块 [0x61000000, 0x63000000] 添加
+到预留区间链表，在添加之前，预留区存在一块内存区块，其范围是：
+[0x62000000, 0x62600000]，添加完毕之后，调用 for_each_memblock() 函数遍历预留区内
+的所有内存区块，运行结果如下：
+
+{% highlight bash %}
+Region [0x60000000 -- 0x60200000]
+Region [0x62000000 -- 0x62600000]
+Scan region which contain exist one:
+Region [0x60000000 -- 0x60200000]
+Region [0x61000000 -- 0x63000000]
+{% endhighlight %}
+
+从运行的结果可以看出，调用 memblock_reserve() 函数之后，预留区的一块内存区范围变成了
+[0x61000000, 0x63000000]，因此通过实践可知，这种情况下，内存区块会进行合并但不产生新
+的内存区块节点。
+
+当往 MEMBLOCK 的预留区中加入一个内存区块，内存区块的范围是：
+[0x62000000, 0x62600000]，测试代码如下：
+
+{% highlight c %}
+/*
+ * Insert a new region that contain an exist regions which base
+ * address is equal to new region. The end address of new region
+ * is big than exist regions.
+ *
+ * memblock.reserved:
+ *
+ * rbase:             rend
+ * | <--------------> |
+ * +------------------+-----------------------------+
+ * |                  |                             |
+ * |  Exist regions   |                             |
+ * |                  |                             |
+ * +------------------+-----------------------------+
+ * | <--------------------------------------------> |
+ * base              new region                     end
+ *
+ * 1) base == rbase
+ * 2) rend < end
+ * 3) rbase: 0x62000000
+ *    rend:  0x62500000
+ *    base:  0x62000000
+ *    end:   0x62600000
+ *
+ * Processing: Insert/Merge
+ *
+ * rbase                                            rend
+ * +------------------------------------------------+
+ * |                                                |
+ * |  Exist regions                                 |
+ * |                                                |
+ * +------------------------------------------------+
+ *
+ * 1) rbase: 0x62000000
+ *    rend:  0x62600000
+ *
+ */
+memblock_reserve(0x62000000, 0x600000);
+pr_info("Scan contain but equal regions:\n");
+for_each_memblock(reserved, reg)
+        pr_info("Region [%#x -- %#x]\n", reg->base,
+                reg->base + reg->size);
+{% endhighlight %}
+
+从源码中可知，调用 memblock_serve() 函数，将内存区块 [0x62000000, 0x62600000] 添加
+到预留区间的头部，添加完毕之后，调用 for_each_memblock() 函数遍历预留区内的所有内存
+区块，运行结果如下：
+
+{% highlight bash %}
+Region [0x60000000 -- 0x60200000]
+Region [0x62000000 -- 0x62500000]
+Scan contain but equal regions:
+Region [0x60000000 -- 0x60200000]
+Region [0x62000000 -- 0x62600000]
+{% endhighlight %}
+
+从运行的结果可以看出，在添加内存区块之前，预留区包含了一个块内存区块的范围是：
+[0x62000000, 0x62500000]，新加入的内存区块范围是： [0x62000000, 0x62600000], 合并
+之后的内存区是： [0x62000000, 0x62600000], 预留区的内存区数并未发生改变，所以合并成
+功。具体原理请看源码分析。
+
+当将一块与已存在的内存区块重合并且起始地址相同，但终止地址小于已存在内存区块的内存
+区块加入到预留区后，MEMBLOCK 是否会将这两个内存区块合并为一块内存区块，并且合并后的内
+存区块和之前存在的内存区块一致。具体源码如下：
+
+{% highlight c %}
+/*
+ * Insert a new region into memblock.reserved regions that exist region
+ * contains new region and the base address of exist region is equal
+ * to new, but the end address of exist is big than new.
+ *
+ * memblock.reserved:
+ *
+ * rbase              Exist regions               rend
+ * | <------------------------------------------> |
+ * +----------------+-----------------------------+
+ * |                |                             |
+ * |   New region   |                             |
+ * |                |                             |
+ * +----------------+-----------------------------+
+ * | <------------> |
+ * base             end
+ *
+ * 1) base == rbase
+ * 2) end < rend
+ * 3) rbase: 0x61000000
+ *    rend:  0x63000000
+ *    base:  0x61000000
+ *    end:   0x62000000
+ *
+ * Processing: Insert/Merge
+ *
+ * rbase                                          rend
+ * +----------------------------------------------+
+ * |                                              |
+ * |  Exist Regions                               |
+ * |                                              |
+ * +----------------------------------------------+
+ *
+ * 1) rbase: 0x61000000
+ *    rend:  0x63000000
+ */
+memblock_reserve(0x61000000, 0x1000000);
+pr_info("Scan region which contain and head of regions:\n");
+for_each_memblock(reserved, reg)
+        pr_info("Region [%#x -- %#x]\n", reg->base,
+                reg->base + reg->size);
+{% endhighlight %}
+
+从源码中可知，调用 memblock_serve() 函数，将内存区块 [0x61000000, 0x62000000] 添加
+到预留区间，添加完毕之后，调用 for_each_memblock() 函数遍历预留区内的所有内存
+区块，运行结果如下：
+
+{% highlight bash %}
+Region [0x60000000 -- 0x60200000]
+Region [0x61000000 -- 0x63000000]
+Scan region which contain and head of regions:
+Region [0x60000000 -- 0x60200000]
+Region [0x61000000 -- 0x63000000]
+{% endhighlight %}
+
+从运行的结果可以看出，添加新内存区块之前，预留区就存在一块内存区块，其范围是：
+[0x61000000, 0x63000000]，新加的内存区块 [0x61000000, 0x62000000] 与之前的内存区块
+头部重叠，合并之后的内存区块范围是： [0x61000000，0x63000000]，因此验证了之前的猜想。
+具体原理请看源码分析。
+
+当往 MEMBLOCK 的预留区中加入一个内存区块，新的内存区块的范围被已存在的内存区块覆盖，
+并且新内存区块的起始地址大于已存在的内存区块起始地址，但新内存区块的终止地址和已存在内
+存区块的终止地址相等，插入到预留内存区之后，新的内存区块被完全合并到已存在的内存
+区块内。
+
+{% highlight c %}
+/*
+ * Insert a new region into memblock.reserved regions that new region
+ * contain by exist regions, but the base address of new regions is
+ * big than exist regions, and end address of new regions is equal
+ * to exist regions.
+ *
+ * memblock.reserved:
+ *
+ * rbase           Exist regions                   rend
+ * | <-------------------------------------------> |
+ * +-------------------+---------------------------+
+ * |                   |                           |
+ * |                   |      New region           |
+ * |                   |                           |
+ * +-------------------+---------------------------+
+ *                     | <-----------------------> |
+ *                     base                        end
+ *
+ * 1) end == rend
+ * 2) rbase < base
+ * 3) rbase: 0x61000000
+ *    rend:  0x63000000
+ *    base:  0x62000000
+ *    end:   0x63000000
+ *
+ * Processing: Insert/Merge
+ *
+ * rbase                                           rend
+ * +-----------------------------------------------+
+ * |                                               |
+ * |  Exist regions                                |
+ * |                                               |
+ * +-----------------------------------------------+
+ *
+ * 1) rbase: 0x61000000
+ *    rend:  0x63000000
+ */
+memblock_reserve(0x62000000, 0x1000000);
+pr_info("Scan region which contain new one:\n");
+for_each_memblock(reserved, reg)
+        pr_info("Region [%#x -- %#x]\n", reg->base,
+                reg->base + reg->size);
+{% endhighlight %}
+
+从源码中可知，调用 memblock_serve() 函数，将内存区块 [0x62000000, 0x63000000] 添加
+到预留区间，添加完毕之后，调用 for_each_memblock() 函数遍历预留区内的所有内存
+区块，运行结果如下：
+
+{% highlight bash %}
+Region [0x60000000 -- 0x60200000]
+Region [0x61000000 -- 0x63000000]
+Scan region which contain new one:
+Region [0x60000000 -- 0x60200000]
+Region [0x61000000 -- 0x63000000]
+{% endhighlight %}
+
+从运行的结果可以看出，第一次调用 for_each_memblock() 函数遍历预留区的时候，预留区已
+经存在一块内存区 [0x61000000, 0x63000000]，新加入的内存区块的范围是：
+[0x62000000, 0x63000000], 进过 memblock_reserve() 函数调用之后，MEMBLOCK 分配器会
+将两个内存区块合并，但存在完整重叠，所以合并后的内存区块不变，其范围为：
+[0x61000000，0x63000000]。具体原理请看源码分析。
+
+当往 MEMBLOCK 的预留区中加入一个内存区块之前，预留区存在一个内存区块，其范围是：
+[0x60000000, 0x60200000]，新加入的内存区块不与已存在的内存区块相连，其范围是：
+[0x62000000, 0x62200000]，调用 memblock_reserve() 函数将内存区块加入到预留区内存区
+块链表上，源码如下：
+
+{% highlight c %}
+/*
+ * Insert a new region which behine and disjunct an exist region:
+ *
+ * memblock.reserved:
+ *
+ * rbase                rend         base                  end
+ * +--------------------+            +---------------------+
+ * |                    |            |                     |
+ * |   Exist regions    |            |      new region     |
+ * |                    |            |                     |
+ * +--------------------+            +---------------------+
+ *
+ * 1) rend < base
+ * 2) rbase: 0x60000000
+ *    rend:  0x60200000
+ *    base:  0x62000000
+ *    end:   0x62200000
+ *
+ * Processing: Insert/Merge
+ *
+ * rbase                rend         rbase                 rend
+ * +--------------------+            +---------------------+
+ * |                    |            |                     |
+ * |   Exist regions    |            |    Exist regions    |
+ * |                    |            |                     |
+ * +--------------------+            +---------------------+
+ *
+ * 1) rbase: 0x60000000
+ *    rend:  0x60200000
+ *    base:  0x62000000
+ *    end:   0x62200000
+ *
+ */
+memblock_reserve(0x62000000, 0x200000);
+pr_info("Scan behine and disjunct region:\n");
+for_each_memblock(reserved, reg)
+        pr_info("Region [%#x -- %#x]\n", reg->base,
+                reg->base + reg->size);
+{% endhighlight %}
+
+从源码中可知，调用 memblock_serve() 函数，将内存区块 [0x62000000, 0x62200000] 添加
+到预留区间链表，添加完毕之后，调用 for_each_memblock() 函数遍历预留区内的所有内存
+区块，运行结果如下：
+
+{% highlight bash %}
+Region [0x60000000 -- 0x60200000]
+Scan behine and disjunct region:
+Region [0x60000000 -- 0x60200000]
+Region [0x62000000 -- 0x62200000]
+{% endhighlight %}
+
+从运行结果可以看出，不相连的内存区块加入到预留区链表后，并不会和其他已存在的内存区块进
+行合并，而是占用了一个新的节点。具体原理分析情况源码分析。
+
+当往 MEMBLOCK 的预留区中加入一个内存区块，加入的内存区块与已存在的内存区块完全重合，
+测试代码如下：
+
+{% highlight c %}
+/*
+ * Insert a new region into memblock.reserved and new region is
+ * same with exist regions.
+ *
+ * memblock.reserved:
+ *
+ * rbase            Exist Regions                 rend
+ * | <------------------------------------------> |
+ * +----------------------------------------------+
+ * |                                              |
+ * |                                              |
+ * |                                              |
+ * +----------------------------------------------+
+ * | <------------------------------------------> |
+ * base             New region                    end
+ *
+ * 1) rbase = base
+ * 2) rend  = end
+ * 3) rbase: 0x61000000
+ *    rend:  0x63000000
+ *    base:  0x61000000
+ *    rend:  0x63000000
+ *
+ * Processing: Insert/Merge
+ *
+ * rbase                                          rend
+ * +----------------------------------------------+
+ * |                                              |
+ * | Exist regions                                |
+ * |                                              |
+ * +----------------------------------------------+
+ *
+ * 1) rbase: 0x61000000
+ *    rend:  0x63000000
+ */
+memblock_reserve(0x61000000, 0x2000000);
+pr_info("Scan equal region:\n");
+for_each_memblock(reserved, reg)
+        pr_info("Region [%#x -- %#x]\n", reg->base,
+                reg->base + reg->size);
+{% endhighlight %}
+
+从源码中可知，调用 memblock_serve() 函数，将内存区块 [0x61000000, 0x63000000] 添加
+到预留区，添加完毕之后，调用 for_each_memblock() 函数遍历预留区内的所有内存区块，运
+行结果如下：
+
+{% highlight bash %}
+Region [0x60000000 -- 0x60200000]
+Region [0x61000000 -- 0x63000000]
+Scan equal region:
+Region [0x60000000 -- 0x60200000]
+Region [0x61000000 -- 0x63000000]
+{% endhighlight %}
+
+从运行的结果可以看出，当添加新的内存区块 [0x61000000, 0x63000000] 之前，预留区已经
+存在一块同样大小的内存区块，执行 memblock_reserve() 函数之后，MEMBLOCK 将两块合并
+成一块，合并之后的内存区块和之前的内存区块一致，所以并未在预留区的内存区块链表上增加
+新的节点。
+
+当往 MEMBLOCK 的预留区中加入一个内存区块，新的内存区块的终止地址与存在的内存区块的首
+地址重合，测试代码如下：
+
+{% highlight c %}
+/*
+ * Insert a new region into memblock.reserved regions, and new region
+ * is in front of exist regions and conjunct with exist regions.
+ *
+ * memblock.reserved:
+ *
+ *                        rbase                      rend
+ *                        | <----------------------> |
+ * +----------------------+--------------------------+
+ * |                      |                          |
+ * | New region           | Exist regions            |
+ * |                      |                          |
+ * +----------------------+--------------------------+
+ * | <------------------> |
+ * base                   end
+ *
+ * 1) end == rbase
+ * 2) rbase: 0x60f00000
+ *    rend:  0x63000000
+ *    base:  0x60e00000
+ *    end:   0x60f00000
+ *
+ * Processing: Insert/Merge
+ *
+ * rbase                                             rend
+ * +-------------------------------------------------+
+ * |                                                 |
+ * | Exist regions                                   |
+ * |                                                 |
+ * +-------------------------------------------------+
+ *
+ * 1) rbase: 0x60e00000
+ *    rend:  0x63000000
+ *
+ */
+memblock_reserve(0x60e00000, 0x100000);
+pr_info("Scan forward and conjunct regions:\n");
+for_each_memblock(reserved, reg)
+        pr_info("Region [%#x -- %#x]\n", reg->base,
+                reg->base + reg->size);
+{% endhighlight %}
+
+从源码中可知，调用 memblock_serve() 函数之前，预留区存在一块内存区块的地址范围是：
+[0x60f00000, 0x63000000], MEMBLOCK 将内存区块 [0x60e00000, 0x60f00000] 添加
+到预留区间，添加完毕之后，调用 for_each_memblock() 函数遍历预留区内的所有内存区块，
+运行结果如下：
+
+{% highlight bash %}
+Region [0x60000000 -- 0x60200000]
+Region [0x60f00000 -- 0x63000000]
+Scan forward and conjunct regions:
+Region [0x60000000 -- 0x60200000]
+Region [0x60e00000 -- 0x63000000]
+{% endhighlight %}
+
+从运行的结果可以看出，调用 memblock_reserve() 函数之后，MEMBLOCK 将两块内存区块合并
+成一块，其地址方位变成 [0x60e00000, 0x63000000]，并且预留区的内存区块链表没有增加节
+点数。具体原理请查看源码分析。
+
+当往 MEMBLOCK 的预留区中加入一个内存区块，新的内存区块与已存在的内存区块不相连，并且
+新内存区块位于已存在内存区块的前段，测试代码如下：
+
+{% highlight c %}
+/*
+ * Insert a new region into memblock.reserved regions that disjunct
+ * with exist regions, and the end address of new regions is more
+ * small than exist.
+ *
+ * memblock.reserved
+ *
+ * base                    end        rbase               rend
+ * +-----------------------+          +-------------------+
+ * |                       |          |                   |
+ * | New region            |          | Exist regions     |
+ * |                       |          |                   |
+ * +-----------------------+          +-------------------+
+ *
+ * 1) end < rbase
+ * 2) rbase: 0x60e00000
+ *    rend:  0x63000000
+ *    base:  0x60a00000
+ *    end:   0x60b00000
+ */
+memblock_reserve(0x60a00000, 0x100000);
+pr_info("Scan forware and disjunct regions:\n");
+for_each_memblock(reserved, reg)
+        pr_info("Region [%#x -- %#x]\n", reg->base,
+                reg->base + reg->size);
+{% endhighlight %}
+
+从源码中可知，调用 memblock_serve() 函数，将内存区块 [0x60a00000, 0x60b00000] 添加
+到预留区间内，此时预留区内已经存在一个内存区块，其范围是：[0x60e00000, 0x63000000]，
+添加完毕之后，调用 for_each_memblock() 函数遍历预留区内的所有内存区块，运行结果如下：
+
+{% highlight bash %}
+Region [0x60000000 -- 0x60200000]
+Region [0x60e00000 -- 0x63000000]
+Scan forware and disjunct regions:
+Region [0x60000000 -- 0x60200000]
+Region [0x60a00000 -- 0x60b00000]
+Region [0x60e00000 -- 0x63000000]
+{% endhighlight %}
+
+从运行的结果可以看出，新插入的内存区块并没有和任何内存区块进行合并，而且新加入的内存区
+块被加到了预留区内存区块链表的头部，具体原理请看源码分析。
+
+当往 MEMBLOCK 的预留区中加一个内存区块，新的内存区块的尾部与已存在的内存区块的头部重
+合，具体代码如下：
+
+{% highlight c %}
+/*
+ * Insert a new region into memblock.reserved regions. The base address
+ * of new region is in the front of base address of exist regions,
+ * but end address of new region is big then exist.
+ *
+ * memblock.reserved
+ *
+ *                 rbase     Exist regions        rend
+ *                 | <--------------------------> |
+ * +---------------+--------+---------------------+
+ * |               |        |                     |
+ * |               |        |                     |
+ * |               |        |                     |
+ * +---------------+--------+---------------------+
+ * | <--------------------> |
+ * base   New region        end
+ *
+ * 1) rbase > base
+ * 2) rbase < end
+ * 3) end < rend
+ * 4) rbase: 0x61000000
+ *    rend:  0x63000000
+ *    base:  0x60f00000
+ *    ene:   0x61100000
+ *
+ * Processing: Insert/Merge
+ *
+ * rbase                                          rend
+ * +----------------------------------------------+
+ * |                                              |
+ * | Exist regions                                |
+ * |                                              |
+ * +----------------------------------------------+
+ *
+ * 1) rbase: 0x60f00000
+ *    rend:  0x63000000
+ */
+memblock_reserve(0x60f00000, 0x200000);
+pr_info("Scan forware and contain regions:\n");
+for_each_memblock(reserved, reg)
+        pr_info("Region [%#x -- %#x]\n", reg->base,
+                reg->base + reg->size);
+{% endhighlight %}
+
+从源码中可知，调用 memblock_serve() 函数，将内存区块 [0x60f00000, 0x61100000] 添加
+到预留区，添加完毕之后，调用 for_each_memblock() 函数遍历预留区内的所有内存区块，运行
+结果如下：
+
+{% highlight bash %}
+Region [0x60000000 -- 0x60200000]
+Region [0x61000000 -- 0x63000000]
+Scan forware and contain regions:
+Region [0x60000000 -- 0x60200000]
+Region [0x60f00000 -- 0x63000000]
+{% endhighlight %}
+
+从运行的结果可以看出，在调用 memblock_reserve() 之前，预留区存在一块内存区块，其范围
+[0x61000000，0x63000000]，当插入新的内存区块之后，MEMBLOCK 将两个内存区块合并为一个
+内存区块，其范围变为：[0x60f00000，0x63000000] ，但这样并未增加预留区中内存区块链表
+的节点。具体原理请看源码分析。
