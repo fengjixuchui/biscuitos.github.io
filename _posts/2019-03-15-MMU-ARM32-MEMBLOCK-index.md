@@ -8,7 +8,7 @@ tags:
   - MMU
 ---
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000206.gif)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000201.gif)
 
 # 目录
 
@@ -27,6 +27,7 @@ tags:
 > - [附录](#附录)
 
 --------------------------------------------------------------
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
 
 # <span id="MEMBLOCK 原理">MEMBLOCK 内存分配器原理</span>
 
@@ -82,6 +83,7 @@ MEMBLOCK
 更多 MEMBLOCK 内存分配器原理，请看源码分析部分。
 
 --------------------------------------------------------------
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000G.jpg)
 
 # <span id="MEMBLOCK 内存分配器最小实践">MEMBLOCK 内存分配器最小实践</span>
 
@@ -93,6 +95,7 @@ MEMBLOCK
 > - [MEMBLOCK 分配器 -- 从 MEMBLOCK 分配器中释放一块物理内存](#)
 
 ---------------------------------------------------------------
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000R.jpg)
 
 # <span id="MEMBLOCK 内存分配器的 API 使用">MEMBLOCK 内存分配器的 API 使用</span>
 
@@ -209,6 +212,7 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 > - [memblock_set_bottom_up: 设置 MEMBLOCK 分配的方向](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 
 --------------------------------------------------------------
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000X.jpg)
 
 # <span id="MEMBLOCK 源码分析">MEMBLOCK 源码分析</span>
 
@@ -909,6 +913,7 @@ void __init bootmem_init(void)
 
 
 -----------------------------------------------------
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000J.jpg)
 
 # <span id="MEMBLOCK_API-LIST">MEMBLOCK API List</span>
 
