@@ -1,14 +1,14 @@
 ---
 layout: post
-title:  "for_each_reserved_region() 遍历预留区内的所有内存区块"
+title:  "for_each_reserved_mem_region() 遍历预留区内的所有内存区块"
 date:   2019-03-13 10:03:30 +0800
 categories: [MMU]
-excerpt: for_each_reserved_region() 遍历预留区内的所有内存区块.
+excerpt: for_each_reserved_mem_region() 遍历预留区内的所有内存区块.
 tags:
   - MMU
 ---
 
-> [GitHub: MEMBLOCK for_each_reserved_region()](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/for_each_reserved_region)
+> [GitHub: MEMBLOCK for_each_reserved_mem_region()](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/for_each_reserved_mem_region)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -306,7 +306,7 @@ void __init_memblock __next_reserved_mem_region(u64 *idx,
 
 #### <span id="驱动实践目的">实践目的</span>
 
-for_each_reserved_region() 函数的作用遍历预留区内的所有内存区块，本实践的
+for_each_reserved_mem_region() 函数的作用遍历预留区内的所有内存区块，本实践的
 目的就是研究如何在内核中使用这个函数去遍历预留区内的所有内存区块。
 
 #### <span id="驱动实践准备">实践准备</span>
@@ -433,7 +433,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_MEMBLOCK
 +
 +config DEBUG_FOR_EACH_RESERVED_MEM_REGION
-+       bool "for_each_reserved_region()"
++       bool "for_each_reserved_mem_region()"
 +
 +endif # BISCUITOS_MEMBLOCK
 +
@@ -461,7 +461,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]Memblock allocator
-            [*]for_each_reserved_region()
+            [*]for_each_reserved_mem_region()
 {% endhighlight %}
 
 具体过程请参考：
