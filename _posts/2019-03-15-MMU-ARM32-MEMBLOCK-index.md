@@ -29,8 +29,6 @@ tags:
 
 # <span id="MEMBLOCK 原理">MEMBLOCK 内存分配器原理</span>
 
-#### MEMBLOCK 内存分配器原理
-
 MEMBLOCK 内存分配器作为 arm32 早期的内存管理器，用于维护系统可用的物理内存。
 系统启动过程中，可以使用 MEMBLOCK 内存分配器获得所需的物理内存，也可以将特定
 物理内存预留给特殊功能使用。MEMBLOCK 内存分配器逻辑框架简单易用，框架中将将物理
@@ -112,7 +110,7 @@ MEMBLOCK 分配器提供了很多接口供其他模块使用，开发者可以�
 >
 > - [MEMBLOCK 分配器信息](#MEMBLOCK 分配器信息)
 
-### <span id="分配物理内存">分配物理内存</span>
+##### <span id="分配物理内存">分配物理内存</span>
 
 MEMBLOCK 分配器所管理的是系统可用的物理内存，在系统启动初期，即
 start_kernel->setup_arch->setup_machine_fdt() 函数之后就可以使用 MEMBLOCK
@@ -120,13 +118,12 @@ start_kernel->setup_arch->setup_machine_fdt() 函数之后就可以使用 MEMBLO
 
 > - [memblock_alloc_base: 从某段物理地址之前分配特定长度的物理内存](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_base/)
 >
-> - [memblock_alloc_base_nid: 从特定 NUMA 的某段物理地址之前分配特定长度的物理内存](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_base_nid/)
 >
 > - [memblock_alloc_range: 从指定范围内分配特定长度的物理内存](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_range/)
 >
 > - [__memblock_alloc_base: 从指定地址之前开始分配物理内存](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__memblock_alloc_base/)
 
-### <span id="释放物理内存">释放物理内存</span>
+##### <span id="释放物理内存">释放物理内存</span>
 
 当使用完从 MEMBLOCK 分配器中申请的内存时，可以调用函数将这些物理内存归还给
 MEMBLOCK 分配器，分配器就将这些物理内存从预留区中移除，然后放入到可用物理
@@ -136,7 +133,7 @@ MEMBLOCK 分配器，分配器就将这些物理内存从预留区中移除，�
 >
 > - [memblock_remove: 从可用物理内存区内移除一段物理内存](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
 
-### <span id="添加可用物理内存">添加可用物理内存</span>
+##### <span id="添加可用物理内存">添加可用物理内存</span>
 
 MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加新的可用物理内存，
 即往 MEMBLOCK 分配器的可用物理内存区添加新的物理块，其提供的 API 以及 API 的
@@ -144,11 +141,10 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 
 > - [memblock_add: 往 MEMBLOCK 的可用内存区添加一块物理内存区块](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add/)
 >
-> - [memblock_add_node: 往 MEMBLOCK 的可用内存区添加一块物理内存区块，并指定了 NUMA 号](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_node/)
 >
 > - [memblock_add_range: 往 MEMBLOCK 的可用内存区添加一块物理内存区块](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range/)
 
-### <span id="添加预留区">添加预留区</span>
+##### <span id="添加预留区">添加预留区</span>
 
 内核启动过程中，需要将某些物理内存预留给特定功能使用，这时可以使用 MEMBLOCK
 分配器将这些物理内存区块加入到预留区维护起来，其提供的 API 以及 API 的具体实践如下：
@@ -157,7 +153,7 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 >
 > - [memblock_add_range: 往 MEMBLOCK 的预留区添加一块物理内存区块](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range/)
 
-### <span id="遍历内存区">遍历内存区</span>
+##### <span id="遍历内存区">遍历内存区</span>
 
 在内核中，有的时候需要遍历某个内存区内的所有内存区块，以此对各内存区进行安全合理
 的操作，MEMBLOCK 分配器也提供了很多 API 以及 API 实践，如下：
@@ -172,7 +168,7 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 >
 > - [for_each_reserved_mem_region: 遍历预留区内的所有内存区块](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_reserved_mem_region/)
 
-### <span id="MEMBLOCK 分配器信息">MEMBLOCK 分配器信息</span>
+##### <span id="MEMBLOCK 分配器信息">MEMBLOCK 分配器信息</span>
 
 有时需要通过 MEMBLOCK 分配器获得关于物理内存等消息，MEMBLOCK 分配器也提供
 了很多 API 供使用，如下：
@@ -215,7 +211,25 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 
 # <span id="MEMBLOCK 源码分析">MEMBLOCK 源码分析</span>
 
-## MEMBLOCK 内存分配器构建
+> - [MEMBLOCK 内存分配器构建](#MEMBLOCK 内存分配器构建)
+>
+>   - [第一层数据结构]
+>
+>   - [第二层数据结构]
+>
+>   - [第三层数据结构]
+>
+> - [MEMBLOCK 内存分配器使用](#MEMBLOCK 内存分配器使用)
+>
+>   - [构建可用物理内存](#构建可用物理内存)
+>
+>   - [adjust_lowmem_bounds](#adjust_lowmem_bounds)
+>
+>   - [arm_memblock_init](#arm_memblock_init)
+>
+>   - [bootmem_init](#bootmem_init)
+
+#### <span id="MEMBLOCK 内存分配器构建">MEMBLOCK 内存分配器构建</span>
 
 MEMBLOCK 内存分配器的创建为 /mm/memblock.c 文件中，在内核镜像加载到内存
 之后，CPU 的执行权交给 Linux 之后，Linux 就根据这个文件，构建最原始的
@@ -257,7 +271,7 @@ MEMBLOCK
 每层逻辑单元采用不同的数据结构进行维护，每种数据结构的相互配合，共同作为
 MEMBLOCK 内存分配器的基础框架。
 
-### 第一层数据结构
+##### <span id="第一层数据结构">第一层数据结构</span>
 
 第一层逻辑单元用于维护系统的物理内存，采用数据结构 struct memblock 进行维护，
 其定义如下：
@@ -312,7 +326,7 @@ physmem 成员是一个 struct memblock_type 结构，这个成员用于指向�
 内核就开始构建内核的代码段，数据段等多种段，毕竟内核也是一个体积巨大的程序。
 在这个阶段，与 MEMBLOCK 有关的操作如下：
 
-##### 创建 __init_memblock，__initdata_memblock section
+###### <span id="创建section">创建 __init_memblock，__initdata_memblock section</span>
 
 内核为 MEMBLOCK 内存分配器创建了一些私有的 section，这些 section 用于存放于
 MEMBLOCK 分配器有关的函数和数据，这些 section 就是 __init_memblock 和
@@ -341,7 +355,7 @@ void memblock_discard(void);
 CONFIG_ARCH_DISCARD_MEMBLOCK 宏，那么与 MEMBLOCK 内存分配器有关的函数都会
 被加入到内核的代码段，与 MEMBLOCK 内存分配器相关的数据会被加入到内核的数据段。
 
-##### 创建 struct memblock 实例
+###### 创建 struct memblock 实例
 
 在创建完 __init_memblock section 和 __initdata_memblock section 之后，
 MEMBLOCK 分配器开始创建 struct memblock 实例，这个实例此时作为最原始的 MEMBLOCK
@@ -382,7 +396,7 @@ bottom_up 成员的值为 false，那么 MEMBLOCK 分配器默认采用 top-down
 初始化完第一层逻辑之后，MEMBLOCK 分配器对内核初期的物理内存的维护就通过 memblock
 实例展开。
 
-### 第二层数据结构
+##### <span id="第二层数据结构">第二层数据结构</span>
 
 第二层数据结构用于维护不同类型的内存区，采用数据结构 struct memblock_type 维护，
 其源码如下：
@@ -456,19 +470,19 @@ memblock.memory 的 regions 成员指向了 memblock_memory_init_regions[] 数�
 数组。memblock.physmem 的 regions 成员指向 memblock_physmem_init_regions[]
 数组。
 
-##### memblock.memory 可用物理内存区
+###### memblock.memory 可用物理内存区
 
 这个内存区用于管理系统可用的物理内存，其初始化时，cnt 成员为 1，max 成员设置为
 INIT_MEMBLOCK_REGIONS， total_size 设置为 0. 名字设置为 "memory"。可用物理
 内存指定是平台 DRAM 的体积。
 
-##### memblock.reserved 预留区
+###### memblock.reserved 预留区
 
 这个内存区用于管理已经分配的内存区块，其初始化时，cnt 成员为 1，max 成员设置为
 INIT_MEMBLOCK_RESERVED_REGIONS， total_size 设置为 0. 名字设置为 "reserved"。
 每当 MEMBLOCK 分配器分配一段物理内存，这段物理内存就会被添加到预留区进行管理。
 
-##### memblock.physmem 物理映射区
+###### memblock.physmem 物理映射区
 
 这个内存区用于物理映射，如果 CONFIG_HAVE_MEMBLOCK_PHYS_MAP 宏没有打开，那么
 该内存区不使用，默认不使用。
@@ -484,7 +498,7 @@ INIT_MEMBLOCK_RESERVED_REGIONS， total_size 设置为 0. 名字设置为 "reser
 >
 > - 内存区块的合并，插入和移除
 
-### 第三层数据结构
+##### <span id="第三层数据结构">第三层数据结构</span>
 
 第二层数据结构用于维护一块独立的内存区块，独立内存区块就是一定大小的物理内存区块，
 采用数据结构 struct memblock_region 维护，其源码如下：
@@ -552,13 +566,13 @@ enum memblock_flags {
 >
 > - 内存区块状态管理
 
-## MEMBLOCK 内存分配器使用
+#### <span id="MEMBLOCK 内存分配器使用">MEMBLOCK 内存分配器使用</span>
 
 MEMBLOCK 内存分配器的使用概述为：内核在启动初期，通过 MEMBLOCK 分配器获得
 所需的物理内存，将某些物理内存添加到预留区，然后将使用完的物理内存退还给 MEMBLOCK
 内存分配器等。所以本节讲解的是内核启动过程中，MEMBLOCK 内存分配器使用情况。
 
-##### 构建可用物理内存
+###### <span id="构建可用物理内存">构建可用物理内存</span>
 
 内核在启动过程中，uboot 将平台具有的 DRAM 信息传递给 MEMBLOCK 分配器，MEMBLOCK
 分配器将这些物理内存加入到可用物理内存区，其函数调用是：
@@ -599,7 +613,7 @@ memory@60000000 {
 长度。对于 DTS 的配置，请根据实际 DRAM 进行配置，就算这个配错了，uboot
 阶段也会对 DTB 进行纠错，然后读出正确 DRAM 的尺寸。
 
-##### adjust_lowmem_bounds
+###### <span id="adjust_lowmem_bounds">adjust_lowmem_bounds</span>
 
 在构建完可用的物理内存之后，内核启动初期的物理内存分配都是通过 MEMBLOCK 分配器
 进行，adjust_lowmem_bounds() 函数用于调整物理内存的基础信息，其源码分析如下：
@@ -729,7 +743,7 @@ cache_is_vipt_aliasing() 函数返回 ture，那么函数就执行下面一段�
 分配方式分配内存，如果改用 bottom-up 自底向上的分配方式，那么 MEMBLOCK 分配器
 的限制也要做修改)。
 
-##### arm_memblock_init
+###### <span id="arm_memblock_init">arm_memblock_init</span>
 
 在初始化完基础的 MEMBLOCK 分配器之后，系统就开始使用 MEMBLOCK 分配器，首先是
 函数 arm_memblock_init, 其调用逻辑是：
@@ -827,7 +841,7 @@ Reserved: 0x9f000000 - 0xa0000000
 arm_memblock_init 函数运行完毕之后，内核需要的基础物理内存基本加入到 MEMBLOCK
 分配器的预留区内，其他模块需要使用这些物理内存的时候就会分配失败。
 
-##### bootmem_init
+###### <span id="bootmem_init">bootmem_init</span>
 
 在接下来的启动过程中，就是各个模块使用 MEMBLOCK 分配器获得所需要的物理内存，
 其中 bootmem_init() 函数用于构建内核不同 zone 做了前期准备，函数位置如下：
