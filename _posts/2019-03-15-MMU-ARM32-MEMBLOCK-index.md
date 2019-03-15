@@ -8,6 +8,7 @@ tags:
   - MMU
 ---
 
+![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000206.gif)
 
 # 目录
 
