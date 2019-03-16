@@ -944,6 +944,7 @@ void __init bootmem_init(void)
 
 # MEMBLOCK 调试
 
+MEMBLOCK 的调试分为启动阶段的调试和运行阶段的调试，对于启动阶段的调试，
 MEMBLOCK 分配器默认提供了 debug 功能，debug 功能主要让开发者能够更便捷的获得 MEMBLOCK
 分配器的信息，以及跟踪每次分配回收操作。开发者如果要开启 MEMBLOCK 的 debug 功能，需要
 使用 CMDLINE 的方式传递给 kernel 参数 “memblock=debug”。在本实践平台上，开发者
@@ -974,7 +975,7 @@ do_running()
 }
 {% endhighlight %}
 
-##### debug 模式下的内核
+###### debug 模式下的内核
 
 当开发者打开 MEMBLOCK 的 debug 功能之后，内核启动信息中就会出现更多有用的 debug
 信息。如下：
@@ -1030,6 +1031,92 @@ memblock_reserve: [0x9e7f2000-0x9eff1fff] memblock_alloc_internal+0x120/0x1a8
   Normal zone: 262144 pages, LIFO batch:63
 memblock_alloc_try_nid_nopanic: 128 bytes align=0x40 nid=0 from=0x00000000 max_addr=0x00000000 setup_usemap.constprop.14+0x5c/0x68
 {% endhighlight %}
+
+### MEMBLOCK 用户空间调试
+
+Linux 也将 MEMBLOCK 的调试信息添加到 debugfs 子系统里，所以在系统正常运行之后，
+开发者也可以通过下面的办法读取 MEMBLOCK 分配器的信息：
+
+{% highlight bash %}
+cd /sys/kernel/debug/memblock
+
+# 查看可用物理内存
+cat memory
+   0: 0x60000000..0x9fffffff
+
+# 查看预留内存
+cat reserved
+  0: 0x60004000..0x60007fff
+  1: 0x60100000..0x60b90997
+  2: 0x64000000..0x640fffff
+  3: 0x68000000..0x69d02c2d
+  4: 0x9e6db000..0x9e7e6fff
+  5: 0x9e7e96a0..0x9effefff
+  6: 0x9efff080..0x9efff0f7
+  7: 0x9efff100..0x9efff403
+  8: 0x9efff440..0x9efff784
+  9: 0x9efff7c0..0x9efff7fb
+  10: 0x9efff800..0x9efff983
+  11: 0x9efff9c0..0x9efffb84
+  12: 0x9efffbc0..0x9efffc4f
+  13: 0x9efffc80..0x9efffc8f
+  14: 0x9efffcc0..0x9efffcc3
+  15: 0x9efffd00..0x9efffd62
+  16: 0x9efffd80..0x9efffde2
+  17: 0x9efffe00..0x9efffe62
+  18: 0x9efffe80..0x9efffe83
+  19: 0x9efffe94..0x9efffec6
+  20: 0x9efffec8..0x9efffee2
+  21: 0x9efffee4..0x9efffefe
+  22: 0x9effff00..0x9effff1f
+  23: 0x9effff24..0x9effff3e
+  24: 0x9effff40..0x9fffffff
+{% endhighlight %}
+
+开发者也可以通过如下命令查看系统物理内存布局：
+
+{% highlight bash %}
+cat /proc/iomem
+
+10000008-1000000b : dat
+10000048-1000004b : dat
+1000004c-1000004f : dat
+100000a0-100000ab : vexpress-syscfg.6.auto
+10002000-10002fff : i2c@2000
+10004000-10004fff : aaci@4000
+  10004000-10004fff : aaci-pl041
+10005000-10005fff : mmci@5000
+  10005000-10005fff : mmci@5000
+10006000-10006fff : kmi@6000
+  10006000-10006fff : kmi-pl050
+10007000-10007fff : kmi@7000
+  10007000-10007fff : kmi-pl050
+10009000-10009fff : uart@9000
+  10009000-10009fff : uart@9000
+1000a000-1000afff : uart@a000
+  1000a000-1000afff : uart@a000
+1000b000-1000bfff : uart@b000
+  1000b000-1000bfff : uart@b000
+1000c000-1000cfff : uart@c000
+  1000c000-1000cfff : uart@c000
+10011000-10011fff : timer@11000
+10012000-10012fff : timer@12000
+10016000-10016fff : i2c@16000
+10017000-10017fff : rtc@17000
+  10017000-10017fff : rtc-pl031
+1001f000-1001ffff : clcd@1f000
+10020000-10020fff : clcd@10020000
+  10020000-10020fff : clcd@10020000
+40000000-43ffffff : flash@0,00000000
+44000000-47ffffff : flash@0,00000000
+48000000-49ffffff : psram@2,00000000
+60000000-9fffffff : System RAM
+  60008000-609fffff : Kernel code
+  60b00000-60b90997 : Kernel data
+{% endhighlight %}
+
+
+
 
 -----------------------------------------------------
 # <span id="内存分配器进阶实践"></span>
