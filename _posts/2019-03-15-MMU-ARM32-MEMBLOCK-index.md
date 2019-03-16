@@ -10,17 +10,21 @@ tags:
 
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000201.gif)
 
+> [MEMBLOCK Allocator GitHub Main Page](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/)
+>
+> Email: BuddyZhang1 <buddy.zhang@aliyun.com>
+
 # 目录
 
 > - [MEMBLOCK 内存分配器原理](#MEMBLOCK 原理)
 >
 > - [MEMBLOCK 内存分配器最小实践](#MEMBLOCK 内存分配器最小实践)
 >
->   - [MEMBLOCK 分配可用物理内存](#)
+>   - [MEMBLOCK 分配可用物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_range/)
 >
->   - [MEMBLOCK 加入预留区](#)
+>   - [MEMBLOCK 加入预留区](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
 >
->   - [MEMBLOCK 释放物理内存](#)
+>   - [MEMBLOCK 释放物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_free/)
 >
 > - [MEMBLOCK 内存分配器的使用](#MEMBLOCK 内存分配器的使用)
 >
@@ -108,9 +112,11 @@ MEMBLOCK
 为了让开发者对 MEMBLOCK 内存分配器有更多的认识，开发者可以选择下面任何一个
 实践主题进行实践，推荐多实践：
 
-> - [MEMBLOCK 分配器 -- 从 MEMBLOCK 分配器中获得一块可用物理内存](#)
+> - [MEMBLOCK 分配器 -- 从 MEMBLOCK 分配器中获得一块可用物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_range/)
 >
-> - [MEMBLOCK 分配器 -- 从 MEMBLOCK 分配器中释放一块物理内存](#)
+> - [MEMBLOCK 分配器 -- 从 MEMBLOCK 分配器中释放一块物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_free/)
+>
+> - [MEMBLOCK 分配器 -- 将一块物理内存预留](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
 
 ---------------------------------------------------------------
 <span id="MEMBLOCK 内存分配器的使用"></span>
@@ -140,12 +146,11 @@ MEMBLOCK 分配器所管理的是系统可用的物理内存，在系统启动�
 start_kernel->setup_arch->setup_machine_fdt() 函数之后就可以使用 MEMBLOCK
 分配器分配所需的内存，其提供的 API 以及 API 的具体实践如下：
 
-> - [memblock_alloc_base: 从某段物理地址之前分配特定长度的物理内存](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_base/)
+> - [memblock_alloc_base: 从某段物理地址之前分配特定长度的物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_base/)
 >
+> - [memblock_alloc_range: 从指定范围内分配特定长度的物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_range/)
 >
-> - [memblock_alloc_range: 从指定范围内分配特定长度的物理内存](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_range/)
->
-> - [__memblock_alloc_base: 从指定地址之前开始分配物理内存](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__memblock_alloc_base/)
+> - [__memblock_alloc_base: 从指定地址之前开始分配物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__memblock_alloc_base/)
 
 ##### <span id="释放物理内存">释放物理内存</span>
 
@@ -153,9 +158,9 @@ start_kernel->setup_arch->setup_machine_fdt() 函数之后就可以使用 MEMBLO
 MEMBLOCK 分配器，分配器就将这些物理内存从预留区中移除，然后放入到可用物理
 内存区供其他模块使用，其提供的 API 以及 API 的具体实践如下：
 
-> - [memblock_free: 释放一段物理内存](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_free/)
+> - [memblock_free: 释放一段物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_free/)
 >
-> - [memblock_remove: 从可用物理内存区内移除一段物理内存](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
+> - [memblock_remove: 从可用物理内存区内移除一段物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
 
 ##### <span id="添加可用物理内存">添加可用物理内存</span>
 
@@ -163,73 +168,72 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 即往 MEMBLOCK 分配器的可用物理内存区添加新的物理块，其提供的 API 以及 API 的
 具体实践如下：
 
-> - [memblock_add: 往 MEMBLOCK 的可用内存区添加一块物理内存区块](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add/)
+> - [memblock_add: 往 MEMBLOCK 的可用内存区添加一块物理内存区块](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add/)
 >
->
-> - [memblock_add_range: 往 MEMBLOCK 的可用内存区添加一块物理内存区块](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range/)
+> - [memblock_add_range: 往 MEMBLOCK 的可用内存区添加一块物理内存区块](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range/)
 
 ##### <span id="添加预留区">添加预留区</span>
 
 内核启动过程中，需要将某些物理内存预留给特定功能使用，这时可以使用 MEMBLOCK
 分配器将这些物理内存区块加入到预留区维护起来，其提供的 API 以及 API 的具体实践如下：
 
-> - [memblock_reserve: 将一块物理块加入预留区](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
+> - [memblock_reserve: 将一块物理块加入预留区](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
 >
-> - [memblock_add_range: 往 MEMBLOCK 的预留区添加一块物理内存区块](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range/)
+> - [memblock_add_range: 往 MEMBLOCK 的预留区添加一块物理内存区块](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range/)
 
 ##### <span id="遍历内存区">遍历内存区</span>
 
 在内核中，有的时候需要遍历某个内存区内的所有内存区块，以此对各内存区进行安全合理
 的操作，MEMBLOCK 分配器也提供了很多 API 以及 API 实践，如下：
 
-> - [for_each_memblock: 遍历内存区内的所有内存区块](#)
+> - [for_each_memblock: 遍历内存区内的所有内存区块](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_memblock/)
 >
-> - [for_each_free_mem_range: 正序遍历所有可用物理内存区块](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/)
+> - [for_each_free_mem_range: 正序遍历所有可用物理内存区块](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/)
 >
-> - [for_each_free_mem_range_reverse: 倒序遍历所有可用物理内存区块](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/)
+> - [for_each_free_mem_range_reverse: 倒序遍历所有可用物理内存区块](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/)
 >
-> - [for_each_mem_range: 正序遍历所有可用物理内存区块](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range/)
+> - [for_each_mem_range: 正序遍历所有可用物理内存区块](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range/)
 >
-> - [for_each_reserved_mem_region: 遍历预留区内的所有内存区块](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_reserved_mem_region/)
+> - [for_each_reserved_mem_region: 遍历预留区内的所有内存区块](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_reserved_mem_region/)
 
 ##### <span id="MEMBLOCK 分配器信息">MEMBLOCK 分配器信息</span>
 
 有时需要通过 MEMBLOCK 分配器获得关于物理内存等消息，MEMBLOCK 分配器也提供
 了很多 API 供使用，如下：
 
-> - [memblock_phys_mem_size: 获得可用物理内存的总体积](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_phys_mem_size: 获得可用物理内存的总体积](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_reserved_size: 获得预留区内存的总体积](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_reserved_size: 获得预留区内存的总体积](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_start_of_DRAM: 获得 DRAM 的起始物理地址](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_start_of_DRAM: 获得 DRAM 的起始物理地址](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_end_of_DRAM: 获得 DRAM 的结束物理地址](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_end_of_DRAM: 获得 DRAM 的结束物理地址](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_is_reserved: 检查某个物理地址是否位于预留区内](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_is_reserved: 检查某个物理地址是否位于预留区内](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_is_memory: 检查某个物理地址是否位于可用内存区](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_is_memory: 检查某个物理地址是否位于可用内存区](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_is_region_memory: 检查某段内存区是否属于可用内存区](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_is_region_memory: 检查某段内存区是否属于可用内存区](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_is_region_reserved: 检查某段内存区块是否属于预留区](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_is_region_reserved: 检查某段内存区块是否属于预留区](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_get_current_limit: 获得 MEMBLOCK 的 limit](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_get_current_limit: 获得 MEMBLOCK 的 limit](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_set_current_limit: 设置 MEMBLOCK 的 limit](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_set_current_limit: 设置 MEMBLOCK 的 limit](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_is_hotpluggable: 检查内存区块是否支持热插拔](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_is_hotpluggable: 检查内存区块是否支持热插拔](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_is_mirror: 检查内存区块是否支持 mirror](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_is_mirror: 检查内存区块是否支持 mirror](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_is_nomap: 检查内存区块是否支持 nomap](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_is_nomap: 检查内存区块是否支持 nomap](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_get_region_node: 获得内存区块的 NUMA 号](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_get_region_node: 获得内存区块的 NUMA 号](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_set_region_node: 设置内存区块的 NUMA 号](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_set_region_node: 设置内存区块的 NUMA 号](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_bottom_up: 获得 MEMBLOCK 分配的方向](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_bottom_up: 获得 MEMBLOCK 分配的方向](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> - [memblock_set_bottom_up: 设置 MEMBLOCK 分配的方向](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> - [memblock_set_bottom_up: 设置 MEMBLOCK 分配的方向](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 
 --------------------------------------------------------------
 <span id="MEMBLOCK 源码分析"></span>
@@ -240,11 +244,11 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 
 > - [MEMBLOCK 内存分配器构建](#MEMBLOCK 内存分配器构建)
 >
->   - [第一层数据结构]
+>   - [第一层数据结构](#第一层数据结构)
 >
->   - [第二层数据结构]
+>   - [第二层数据结构](#第二层数据结构)
 >
->   - [第三层数据结构]
+>   - [第三层数据结构](#第三层数据结构)
 >
 > - [MEMBLOCK 内存分配器使用](#MEMBLOCK 内存分配器使用)
 >
@@ -1129,7 +1133,7 @@ enum memblock_flags {
 基于上面的分析，开发者可以通过一个实际的例子来认知这个问题，以及 MEMBLOCK 如何
 处理这个问题，具体实践请看:
 
-> [MEMBLOCK 内存块合并的分析与实践之 memblock_reserve](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
+> [MEMBLOCK 内存块合并的分析与实践之 memblock_reserve](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
 
 #### <span id="MEMBLOCK 内存块拆分的分析与实践">MEMBLOCK 内存块拆分的分析与实践</span>
 
@@ -1144,7 +1148,7 @@ MEMBLOCK 分配器的拆分问题。
 基于上面的介绍，开发者可以通过一个实际的例子来认知这个问题，以及 MEMBLOCK 如何
 处理这个问题，具体实践请看：
 
-> [MEMBLOCK 内存块拆分的分析与实践之 memblock_remove](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
+> [MEMBLOCK 内存块拆分的分析与实践之 memblock_remove](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
 
 
 -----------------------------------------------------
@@ -1154,76 +1158,98 @@ MEMBLOCK 分配器的拆分问题。
 
 # MEMBLOCK API List
 
-> [for_each_free_mem_range](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/)
+> [for_each_free_mem_range](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/)
 >
-> [for_each_free_mem_range_reverse](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/)
+> [for_each_free_mem_range_reverse](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/)
 >
-> [for_each_mem_range](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range/)
+> [for_each_mem_range](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range/)
 >
-> [for_each_mem_range_rev](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range_rev/)
+> [for_each_mem_range_rev](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range_rev/)
 >
-> [for_each_reserved_mem_region](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_reserved_mem_region/)
+> [for_each_reserved_mem_region](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_reserved_mem_region/)
 >
-> [memblock_add](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add/)
+> [memblock_add](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add/)
 >
-> [memblock_add_node](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_node/)
+> [memblock_add_node](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_node/)
 >
-> [memblock_add_range](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range)
+> [memblock_add_range](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range)
 >
-> [__memblock_alloc_base](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__memblock_alloc_base/)
+> [__memblock_alloc_base](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__memblock_alloc_base/)
 >
-> [memblock_alloc_base](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_base/)
+> [memblock_alloc_base](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_base/)
 >
-> [memblock_alloc_base_nid](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_base_nid/)
+> [memblock_alloc_base_nid](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_base_nid/)
 >
-> [memblock_alloc_range](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_range/)
+> [memblock_alloc_range](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_range/)
 >
-> [memblock_bottom_up](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_bottom_up](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_end_of_DRAM](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_end_of_DRAM](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_find_in_range](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_find_in_range/)
+> [memblock_find_in_range](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_find_in_range/)
 >
-> [memblock_find_in_range_node](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_find_in_range_node/)
+> [memblock_find_in_range_node](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_find_in_range_node/)
 >
-> [memblock_free](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_free/)
+> [memblock_free](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_free/)
 >
-> [memblock_get_current_limit](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_get_current_limit](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_get_region_node](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_get_region_node](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_is_hotpluggable](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_is_hotpluggable](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_is_memory](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_is_memory](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_is_mirror](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_is_mirror](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_is_nomap](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_is_nomap](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_is_region_memory](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_is_region_memory](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_is_region_reserved](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_is_region_reserved](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_phys_alloc_nid](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_phys_alloc_nid/)
+> [memblock_phys_alloc_nid](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_phys_alloc_nid/)
 >
-> [memblock_phys_alloc_try_nid](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_phys_alloc_try_nid/)
+> [memblock_phys_alloc_try_nid](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_phys_alloc_try_nid/)
 >
-> [memblock_phys_mem_size](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_phys_mem_size/)
+> [memblock_phys_mem_size](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_phys_mem_size/)
 >
-> [memblock_remove](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
+> [memblock_remove](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
 >
-> [memblock_reserve](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
+> [memblock_reserve](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
 >
-> [memblock_reserved_size](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_reserved_size](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_set_current_limit](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_set_current_limit](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_set_region_node](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_set_region_node](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [memblock_start_of_DRAM](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
+> [memblock_start_of_DRAM](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 >
-> [__next_mem_range](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__next_mem_range/)
+> [__next_mem_range](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__next_mem_range/)
 >
-> [__next_mem_range_rev](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__next_mem_range_rev/)
+> [__next_mem_range_rev](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__next_mem_range_rev/)
 >
-> [__next_reserved_mem_region](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__next_reserved_mem_region/)
+> [__next_reserved_mem_region](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__next_reserved_mem_region/)
+
+-----------------------------------------------
+
+# <span id="附录">附录</span>
+
+> [MEMBLOCK 内存分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+>
+> [BiscuitOS Home](https://biscuitos.github.io/)
+>
+> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+>
+> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+>
+> [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
+>
+> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+
+## 赞赏一下吧 🙂
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)

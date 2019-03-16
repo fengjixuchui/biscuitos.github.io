@@ -36,6 +36,10 @@ tags:
 
 ## Linux MMU
 
+> - [MEMBLOCK](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+>
+>   - [MEMBLOCK API list](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/#MEMBLOCK_API-LIST)
+>
 > - [Virtual Address](https://_Usermanual/)
 >
 >   - [Linux 1.0 Kernel Virtual Space](https://_Usermanual/)
