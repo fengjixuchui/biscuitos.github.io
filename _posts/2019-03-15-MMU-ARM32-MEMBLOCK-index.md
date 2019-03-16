@@ -16,20 +16,36 @@ tags:
 >
 > - [MEMBLOCK 内存分配器最小实践](#MEMBLOCK 内存分配器最小实践)
 >
-> - [MEMBLOCK 内存分配器的 API 使用](#MEMBLOCK 内存分配器的 API 使用)
+>   - [MEMBLOCK 分配可用物理内存](#)
+>
+>   - [MEMBLOCK 加入预留区](#)
+>
+>   - [MEMBLOCK 释放物理内存](#)
+>
+> - [MEMBLOCK 内存分配器的使用](#MEMBLOCK 内存分配器的使用)
 >
 > - [MEMBLOCK 内存分配器源码分析](#MEMBLOCK 源码分析)
 >
 > - [MEMBLOCK 内存分配器调试](#MEMBLOCK 调试)
+>
+> - [MEMBLOCK 内存分配器进阶实践](#内存分配器进阶实践)
+>
+>   - [MEMBLOCK 内存块合并的分析与实践](#MEMBLOCK 内存块合并的分析与实践)
+>
+>   - [MEMBLOCK 内存块拆分的分析与实践](#MEMBLOCK 内存块拆分的分析与实践)
+>
+>   - [MEMBLOCK 更多实践](#内存分配器进阶实践)
 >
 > - [MEMBLOCK API List](#MEMBLOCK_API-LIST)
 >
 > - [附录](#附录)
 
 --------------------------------------------------------------
+<span id="MEMBLOCK 原理"></span>
+
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
 
-# <span id="MEMBLOCK 原理">MEMBLOCK 内存分配器原理</span>
+# MEMBLOCK 内存分配器原理
 
 MEMBLOCK 内存分配器作为 arm32 早期的内存管理器，用于维护系统可用的物理内存。
 系统启动过程中，可以使用 MEMBLOCK 内存分配器获得所需的物理内存，也可以将特定
@@ -83,9 +99,11 @@ MEMBLOCK
 更多 MEMBLOCK 内存分配器原理，请看源码分析部分。
 
 --------------------------------------------------------------
+<span id="MEMBLOCK 内存分配器最小实践"></span>
+
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000G.jpg)
 
-# <span id="MEMBLOCK 内存分配器最小实践">MEMBLOCK 内存分配器最小实践</span>
+# MEMBLOCK 内存分配器最小实践
 
 为了让开发者对 MEMBLOCK 内存分配器有更多的认识，开发者可以选择下面任何一个
 实践主题进行实践，推荐多实践：
@@ -95,9 +113,11 @@ MEMBLOCK
 > - [MEMBLOCK 分配器 -- 从 MEMBLOCK 分配器中释放一块物理内存](#)
 
 ---------------------------------------------------------------
+<span id="MEMBLOCK 内存分配器的使用"></span>
+
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000R.jpg)
 
-# <span id="MEMBLOCK 内存分配器的 API 使用">MEMBLOCK 内存分配器的 API 使用</span>
+# MEMBLOCK 内存分配器的使用
 
 MEMBLOCK 分配器提供了很多接口供其他模块使用，开发者可以参考本节内容来
 了解 MEMBLOCK 分配器的使用方法。
@@ -212,9 +232,11 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 > - [memblock_set_bottom_up: 设置 MEMBLOCK 分配的方向](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_information/)
 
 --------------------------------------------------------------
+<span id="MEMBLOCK 源码分析"></span>
+
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000X.jpg)
 
-# <span id="MEMBLOCK 源码分析">MEMBLOCK 源码分析</span>
+# MEMBLOCK 源码分析
 
 > - [MEMBLOCK 内存分配器构建](#MEMBLOCK 内存分配器构建)
 >
@@ -911,11 +933,226 @@ void __init bootmem_init(void)
 页帧号，同理将 max_low 赋值给 max_low_pfn 代表 MEMBLOCK 最大可以分配的物理
 页帧号，最后将 max_high 赋值给 max_pfn 代表 DRAM 最大物理页帧号。
 
+-----------------------------------------------------
+# <span id="MEMBLOCK 调试"></span>
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000D.jpg)
+
+# MEMBLOCK 调试
+
+MEMBLOCK 分配器默认提供了 debug 功能，debug 功能主要让开发者能够更便捷的获得 MEMBLOCK
+分配器的信息，以及跟踪每次分配回收操作。开发者如果要开启 MEMBLOCK 的 debug 功能，需要
+使用 CMDLINE 的方式传递给 kernel 参数 “memblock=debug”。在本实践平台上，开发者
+可以通过两种方法开启这个功能，如下：
+
+##### 通过 DTS 方式
+
+DTS 的 chosen 节点就是用来传递 CMDLINE 参数给内核，所以可以子啊 chosen 根节点的
+bootargs 属性中加入这个参数。由于实践是基于 ARM32 Vexpress V2P-CA9 平台，所以开发
+者在源码中打开 "arch/arm/boot/dts/vexpress-v2p-ca9.dts" 文件，找到如下节点：
+
+{% highlight bash %}
+chosen {
+        bootargs = "memblock=debug";
+};
+{% endhighlight %}
+
+##### 通过 uboot 传入方式
+
+Uboot 加载 kernel 完毕之后，会向 Uboot 传入启动参数，所以开发者可以在 uboot 传入
+的参数列表中加入这个参数。对于本实践平台，开发者只需修改
+"BiscuitOS/output/linux-5.x/RunQemuKernel.sh" 文件即可，参数如下修改：
+
+{% highlight bash %}
+do_running()
+{
+	${QEMUT} -M vexpress-a9 -m ${MEM_SIZE}M -kernel ${ROOT}/linux/linux/arch/${ARCH}/boot/zImage -dtb ${ROOT}/linux/linux/arch/${ARCH}/boot/dts/vexpress-v2p-ca9.dtb -nodefaults -serial stdio -nographic -append "earlycon root=/dev/ram0 rw rootfstype=ext4 console=ttyAMA0 init=/linuxrc loglevel=8 memblock=debug" -initrd ${ROOT}/ramdisk.img
+}
+{% endhighlight %}
+
+##### debug 模式下的内核
+
+当开发者打开 MEMBLOCK 的 debug 功能之后，内核启动信息中就会出现更多有用的 debug
+信息。如下：
+
+{% highlight bash %}
+Booting Linux on physical CPU 0x0
+Linux version 5.0.0 (buddy@biscuitos) (gcc version 7.4.1 20181213 [linaro-7.4-2019.02 revision 56ec6f6b99cc167ff0c2f8e1a2eed33b1edc85d4] (Linaro GCC 7.4-2019.02)) #54 SMP Sat Mar 16 09:27:54 CST 2019
+CPU: ARMv7 Processor [410fc090] revision 0 (ARMv7), cr=10c5387d
+CPU: PIPT / VIPT nonaliasing data cache, VIPT nonaliasing instruction cache
+OF: fdt: Machine model: V2P-CA9
+Region: [0x64400000 - 0xa0000000]
+Region: [0x64100000 - 0x64300000]
+Region: [0x60000000 - 0x64000000]
+Malformed early option 'earlycon'
+Memory policy: Data cache writeback
+memblock_reserve: [0x60100000-0x60b90997] arm_memblock_init+0x30/0x160
+memblock_reserve: [0x68000000-0x69cf6fff] arm_memblock_init+0xec/0x160
+memblock_reserve: [0x60004000-0x60007fff] arm_memblock_init+0x108/0x160
+memblock_reserve: [0x69cf7000-0x69d02c2d] arm_memblock_init+0x11c/0x160
+memblock_remove: [0x4c000000-0x4c7fffff] __fdt_scan_reserved_mem+0x260/0x2dc
+Reserved memory: created DMA memory pool at 0x4c000000, size 8 MiB
+OF: reserved mem: initialized node vram@4c000000, compatible id shared-dma-pool
+memblock_reserve: [0x9f000000-0x9fffffff] memblock_alloc_range+0x54/0x6c
+cma: Reserved 16 MiB at 0x9f000000
+MEMBLOCK configuration:
+ memory size = 0x40000000 reserved size = 0x037975c6
+ memory.cnt  = 0x1
+ memory[0x0]	[0x60000000-0x9fffffff], 0x40000000 bytes flags: 0x0
+ reserved.cnt  = 0x5
+ reserved[0x0]	[0x60004000-0x60007fff], 0x00004000 bytes flags: 0x0
+ reserved[0x1]	[0x60100000-0x60b90997], 0x00a90998 bytes flags: 0x0
+ reserved[0x2]	[0x64000000-0x640fffff], 0x00100000 bytes flags: 0x0
+ reserved[0x3]	[0x68000000-0x69d02c2d], 0x01d02c2e bytes flags: 0x0
+ reserved[0x4]	[0x9f000000-0x9fffffff], 0x01000000 bytes flags: 0x0
+memblock_reserve: [0x9effffd8-0x9effffff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9effe000-0x9effefff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9effd000-0x9effdfff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9effc000-0x9effcfff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9effb000-0x9effbfff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9effa000-0x9effafff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9eff9000-0x9eff9fff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9eff8000-0x9eff8fff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9eff7000-0x9eff7fff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9eff4000-0x9eff5fff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9eff6000-0x9eff6fff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9eff3000-0x9eff3fff] memblock_alloc_base_nid+0x50/0x68
+memblock_reserve: [0x9eff2000-0x9eff2fff] memblock_alloc_base_nid+0x50/0x68
+On node 0 totalpages: 262144
+memblock_alloc_try_nid_nopanic: 8388608 bytes align=0x40 nid=0 from=0x00000000 max_addr=0x00000000 alloc_node_mem_map.constprop.10+0x68/0xa4
+memblock_reserve: [0x9e7f2000-0x9eff1fff] memblock_alloc_internal+0x120/0x1a8
+  Normal zone: 2048 pages used for memmap
+  Normal zone: 0 pages reserved
+  Normal zone: 262144 pages, LIFO batch:63
+memblock_alloc_try_nid_nopanic: 128 bytes align=0x40 nid=0 from=0x00000000 max_addr=0x00000000 setup_usemap.constprop.14+0x5c/0x68
+{% endhighlight %}
 
 -----------------------------------------------------
+# <span id="内存分配器进阶实践"></span>
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
+
+# 内存分配器进阶实践
+
+> - [MEMBLOCK 内存块合并的分析与实践](#MEMBLOCK 内存块合并的分析与实践)
+>
+> - [MEMBLOCK 内存块拆分的分析与实践](#MEMBLOCK 内存块拆分的分析与实践)
+
+#### <span id="MEMBLOCK 内存块合并的分析与实践">MEMBLOCK 内存块合并的分析与实践</span>
+
+MEMBLOCK 内存分配器将物理内存分作的可用物理内存和预留内存，不同物理内存维护在 MEMBLOCK
+分配器的不同链表上。每当往特定内存区中加入内存块的时候，就会出现新加入的内存块和原先存在
+内存区中的内存区块存在不同的位置关系，比如相邻，相交，重叠，包含的位置关系。对于这些关系，
+MEMBLOCK 分配器采用了一定的算法将这些内存块进行合并或新建等操作。本节研究的主题就是
+MEMBLOCK 分配器如何将一块新的内存区块添加到内存区。
+
+###### 预备知识：位置关系
+
+MEMBLOCK 分配器将特定内存区内的所用内存区块都按低地址到高地址的排序，这样的策略就会出现
+新加入的内存块会和已存在的内存块位置上存在前后关系。例如下面两种关系图(注：rbase,rend
+为已存在的内存区块；end,base 为新加入的内存区块)：
+
+{% highlight bash %}
+1） rbase > end
+
+ base                    end        rbase               rend
+ +-----------------------+          +-------------------+
+ |                       |          |                   |
+ | New region            |          | Exist regions     |
+ |                       |          |                   |
+ +-----------------------+          +-------------------+
+
+2）rbase == endi
+
+                         rbase                      rend
+                        | <----------------------> |
+ +----------------------+--------------------------+
+ |                      |                          |
+ | New region           | Exist regions            |
+ |                      |                          |
+ +----------------------+--------------------------+
+ | <------------------> |
+ base                   end
+{% endhighlight %}
+
+从上面的逻辑图可知，新加入的内存区块位于已存在内存区块的前面。类似的新加入的
+内存区块位于已存在内存区块的后面。
+
+###### 预备知识：种类
+
+MEMBLOCK 分配器将内存区块分为了以下几种类型：
+
+{% highlight c %}
+/**
+ * enum memblock_flags - definition of memory region attributes
+ * @MEMBLOCK_NONE: no special request
+ * @MEMBLOCK_HOTPLUG: hotpluggable region
+ * @MEMBLOCK_MIRROR: mirrored region
+ * @MEMBLOCK_NOMAP: don't add to kernel direct mapping
+ */
+enum memblock_flags {
+        MEMBLOCK_NONE           = 0x0,  /* No special request */
+        MEMBLOCK_HOTPLUG        = 0x1,  /* hotpluggable region */
+        MEMBLOCK_MIRROR         = 0x2,  /* mirrored region */
+        MEMBLOCK_NOMAP          = 0x4,  /* don't add to kernel direct mapping */
+};
+{% endhighlight %}
+
+从上面的定义可以看出，内存区块可以分为：普通内存区块，热插拔内存区块，镜像内存区块，
+不能映射的内存区块。由于这样的策略，就会导致当新加入的内存区块与已存在的内存区块如果存在
+包含或交叉的部分，两者的类型不同就不能进行合并。如下图逻辑图：
+
+{% highlight bash %}
+                 rbase     Exist regions        rend
+                 | <--------------------------> |
+ +---------------+--------+---------------------+
+ |               |        |                     |
+ |               |        |                     |
+ |               |        |                     |
+ +---------------+--------+---------------------+
+ | <--------------------> |
+ base   New region        end
+
+ rbase                     rend
+ | <---------------------> |
+ +----------------+--------+----------------------+
+ |                |        |                      |
+ | Exist regions  |        |                      |
+ |                |        |                      |
+ +----------------+--------+----------------------+
+                  | <---------------------------> |
+                  base      new region            end
+{% endhighlight %}
+
+##### 实践
+
+基于上面的分析，开发者可以通过一个实际的例子来认知这个问题，以及 MEMBLOCK 如何
+处理这个问题，具体实践请看:
+
+> [MEMBLOCK 内存块合并的分析与实践之 memblock_reserve](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
+
+#### <span id="MEMBLOCK 内存块拆分的分析与实践">MEMBLOCK 内存块拆分的分析与实践</span>
+
+MEMBLOCK 内存分配器将物理内存分作的可用物理内存和预留内存，不同物理内存维护在 MEMBLOCK
+分配器的不同链表上。当 MEMBLOCK 分配器执行释放，移除操作的时候，实际上从不同的内存区链表
+中移除指定长度的内存区块。这样的操作就会引入一个问题，如果移除的部分正好位于某块内存区块内存，
+在移除只有，原始的内存区块就会被拆分做两块新的内存区块，对于上述遇到的问题，本节重点研究
+MEMBLOCK 分配器的拆分问题。
+
+###### 实践
+
+基于上面的介绍，开发者可以通过一个实际的例子来认知这个问题，以及 MEMBLOCK 如何
+处理这个问题，具体实践请看：
+
+> [MEMBLOCK 内存块拆分的分析与实践之 memblock_remove](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
+
+
+-----------------------------------------------------
+# <span id="MEMBLOCK_API-LIST"></span>
+
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000J.jpg)
 
-# <span id="MEMBLOCK_API-LIST">MEMBLOCK API List</span>
+# MEMBLOCK API List
 
 > [for_each_free_mem_range](#https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/)
 >
