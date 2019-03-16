@@ -2095,3 +2095,25 @@ Region [0x60f00000 -- 0x63000000]
 [0x61000000，0x63000000]，当插入新的内存区块之后，MEMBLOCK 将两个内存区块合并为一个
 内存区块，其范围变为：[0x60f00000，0x63000000] ，但这样并未增加预留区中内存区块链表
 的节点。具体原理请看源码分析。
+
+-----------------------------------------------
+
+# <span id="附录">附录</span>
+
+> [MEMBLOCK 内存分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+>
+> [BiscuitOS Home](https://biscuitos.github.io/)
+>
+> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+>
+> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+>
+> [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
+>
+> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+
+## 赞赏一下吧 🙂
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)

@@ -827,3 +827,25 @@ Region: 0x9ff00000 - 0xa0000000
 从运行的结果可以知道，__memblock_alloc_base() 函数找到了一块起始地址为
 0x9ff00000, 长度为 0x100000 的内存区，再者，预留区内多了一块内存区块：
 [0x9ff00000, 0xa0000000], 因此分配成功。更多原理请看源码分析。
+
+-----------------------------------------------
+
+# <span id="附录">附录</span>
+
+> [MEMBLOCK 内存分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+>
+> [BiscuitOS Home](https://biscuitos.github.io/)
+>
+> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+>
+> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+>
+> [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
+>
+> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+
+## 赞赏一下吧 🙂
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)

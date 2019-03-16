@@ -726,3 +726,25 @@ for_each_free_mem_range_reverse(idx, NUMA_NO_NODE, flags,
 
 通过实践可知，分析的可用内存区段和实践获得物理内存区块是一致的。更多
 原理请看[for_each_free_mem_range_reverse() 源码分析](#源码分析)
+
+-----------------------------------------------
+
+# <span id="附录">附录</span>
+
+> [MEMBLOCK 内存分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+>
+> [BiscuitOS Home](https://biscuitos.github.io/)
+>
+> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+>
+> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+>
+> [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
+>
+> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+
+## 赞赏一下吧 🙂
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)

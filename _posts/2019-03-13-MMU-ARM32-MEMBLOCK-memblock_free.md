@@ -888,3 +888,25 @@ Region: 0x79000000 - 0x7a000000
 调用 memblock_free() 函数之后，0x79000000 到 0x7a000000 内存区块从预留区中移
 除了，但并没有将所有的预留区块移除，[0x79000000 - 0x7a000000] 没有被移除。更多
 原理分析，请看源码分析部分。
+
+-----------------------------------------------
+
+# <span id="附录">附录</span>
+
+> [MEMBLOCK 内存分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+>
+> [BiscuitOS Home](https://biscuitos.github.io/)
+>
+> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+>
+> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+>
+> [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
+>
+> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+
+## 赞赏一下吧 🙂
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
