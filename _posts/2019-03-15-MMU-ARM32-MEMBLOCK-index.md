@@ -337,9 +337,9 @@ struct memblock 数据结构从最顶层维护着整个 MEMBLOCK 分配器，各
 分配内存，即 bottom-up; 如果该值为 false，那么 MEMBLOCK 会从顶部到底部的
 方向分配内存，即 top-down.
 
-> memblock
+> memory
 
-memblock 成员是一个 struct memblock_type 结构，这个成员用于指向系统可用物理
+memory 成员是一个 struct memblock_type 结构，这个成员用于指向系统可用物理
 内存区，这个内存区维护着系统所有可用的物理内存，即系统 DRAM 对应的物理内存。
 
 > reserved
