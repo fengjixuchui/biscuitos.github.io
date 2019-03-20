@@ -8,7 +8,7 @@ tags:
   - MMU
 ---
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000206.gif)
+![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000204.gif)
 
 > [GitHub ARM Assembly Set](https://github.com/BiscuitOS/HardStack/tree/master/Language/Assembly/Inline-Assembly/ARM/Instruction)
 >
@@ -133,8 +133,6 @@ static int debug_stmea(void)
 	 *
 	 * Push register into empty ascending stack.
 	 */
-	__asm__ volatile ("stmea %0!, {%3, %2, %1}"
-			:: "r" (&R0[5]), "r" (R1), "r" (R2), "r" (R3));
 
 	/* Emulate Stack */
 	for (i = 0; i < 10; i++)
@@ -205,7 +203,7 @@ Device Driver--->
 --------------------------------------------------------------
 <span id="ARM_INS_LIST"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000N.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
 
 # ARM 汇编 List
 
