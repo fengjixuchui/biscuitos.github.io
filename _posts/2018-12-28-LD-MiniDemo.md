@@ -73,7 +73,7 @@ int write(int filedesc, char *buf, int size);
 
 {% highlight ruby %}
 gcc hello.c -c -fno-builtin -o hello.o
-ld helloc.o -static -s nomain -o a.out
+ld helloc.o -static -e nomain -o a.out
 {% endhighlight %}
 
 > 1. -fno-builtin： GCC 编译器提供了很多内置函数，它会把一些常用的 C 库函数替
