@@ -8,7 +8,7 @@ tags:
   - MMU
 ---
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000205.gif)
+![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000200.gif)
 
 > [GitHub ARM Assembly Set](https://github.com/BiscuitOS/HardStack/tree/master/Language/Assembly/Inline-Assembly/ARM/Instruction)
 >
