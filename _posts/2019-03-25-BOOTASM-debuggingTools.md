@@ -8,7 +8,7 @@ tags:
   - MMU
 ---
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000205.gif)
+![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000200.gif)
 
 > [GitHub ARM Assembly Set](https://github.com/BiscuitOS/HardStack/tree/master/Language/Assembly/Inline-Assembly/ARM/Instruction)
 >
@@ -44,7 +44,7 @@ ARM Boot Stage 1 指的是 Uboot 将压缩好的内核加载到内存之后，�
 ### First Terminal
 
 ```
-cd /xspace/OpenSource/BiscuitOS/BiscuitOS/output/linux-5.0-arm32
+cd BiscuitOS/output/linux-5.0-arm32
 ./RunQemuKernel.sh debug_boot
 ```
 
@@ -63,7 +63,7 @@ BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-lin
 根据上面的介绍，开发者首先打开一个终端，在中断中输入如下命令：
 
 {% highlight base %}
-cd /xspace/OpenSource/BiscuitOS/BiscuitOS/output/linux-5.0-arm32
+cd BiscuitOS/output/linux-5.0-arm32
 ./RunQemuKernel.sh debug_boot
 {% endhighlight %}
 
