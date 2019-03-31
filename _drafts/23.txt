@@ -748,3 +748,109 @@ restart () at arch/arm/boot/compressed/head.S:259
 259	restart:	adr	r0, LC0
 (gdb)
 {% endhighlight %}
+
+通过上面的代码，可以推断出有两种内存布局在这个时候，第一种就是当前指针运行的地址大于
+zImage 镜像解压的地址；第二种就是当前运行指针的地址小鱼 zImage 镜像解压的地址。如下图
+
+{% highlight bash %}
+PC > zImage
+
+                                      _end
++--------+-------------+---------------+-------+--------+-------+
+|        |             |               |       |        |       |
+|        |             |               |       |        |       |
+|        |             |               |       |        |       |
++--------+-------------+---------------+-------+--------+-------+
+         zImage        PC              | <---> | <----> |
+                                         16KB      1M
+                                       Page Table
+
+
+PC < zImage
+
+                             _end
++--+-----+--------------------+-------+--------+----------------+
+|  |     |                    |       |        |                |
+|  |     |                    |       |        |                |
+|  |     |                    |       |        |                |
++--+-----+--------------------+-------+--------+----------------+
+   PC    zImage               | <---> | <----> |
+                                16KB      1M
+                              Page Table
+
+PC:       Current instrction pointer
+zImage:   zImage decompression address
+_end:     End address of vmlinux
+{% endhighlight %}
+
+探测到 PC 与 zImage 之间的关系之后，计算好了 Page Table 的位置，接下来执行的代码
+如下：
+
+{% highlight bash %}
+restart:        adr     r0, LC0
+                ldmia   r0, {r1, r2, r3, r6, r10, r11, r12}
+                ldr     sp, [r0, #28]
+
+                /*
+                 * We might be running at a different address.  We need
+                 * to fix up various pointers.
+                 */
+                sub     r0, r0, r1              @ calculate the delta offset
+                add     r6, r6, r0              @ _edata
+                add     r10, r10, r0            @ inflated kernel size location
+{% endhighlight %}
+
+首先将 LC0 的地址存储到 r0 寄存器中，然后使用 ldmia 将 r0 对于地址的值按递增的方式，以此
+存储到 r1, r2, r3, r6, r10, r11, r12 寄存里，这里可以再看一下 LC0 的内容：
+
+{% highlight bash %}
+                .align  2
+                .type   LC0, #object
+LC0:            .word   LC0                     @ r1
+                .word   __bss_start             @ r2
+                .word   _end                    @ r3
+                .word   _edata                  @ r6
+                .word   input_data_end - 4      @ r10 (inflated size location)
+                .word   _got_start              @ r11
+                .word   _got_end                @ ip
+                .word   .L_user_stack_end       @ sp
+                .word   _end - restart + 16384 + 1024*1024
+                .size   LC0, . - LC0
+{% endhighlight %}
+
+所以 r1 寄存器里存储 LC0 的地址；r2 寄存器里存储的是 __bss_start 的值，也就是 .bss
+section 开始的地方； r3 寄存存储这 vmlinux 的结束地址; r6 寄存器存储的 vmlinux
+.data section 数据段的结束地址; r10 寄存器存储着 input_data_end - 4 的地址，
+input_data 位于 .piggydata section 内，这里通过链接脚本和编译脚本可知，这个
+地址指向 image 的大小; r11 存储着 .got.plt section 的开始地址； r12 寄存器存储着
+.got section 结束地址 。接着调用 "ldr sp, [r0, #28]" 命令，这条命令执行之后，
+堆栈就建立了，指向了 L_user_stack_end，其定义如下：
+
+{% highlight bash %}
+.align
+.section ".stack", "aw", %nobits
+.L_user_stack:  .space  4096
+.L_user_stack_end:
+{% endhighlight %}
+
+可以看出 zImage 自解压阶段的堆栈就是这样建立了。接下来的三条命令都是确认 r0, r6, r10
+寄存器对于的运行地址正确。r10 寄存器存储着 Image 实际的物理地址。接着执行如下命令：
+
+{% highlight bash %}
+/*
+ * The kernel build system appends the size of the
+ * decompressed kernel at the end of the compressed data
+ * in little-endian form.
+ */
+ldrb    r9, [r10, #0]
+ldrb    lr, [r10, #1]
+orr     r9, r9, lr, lsl #8
+ldrb    lr, [r10, #2]
+ldrb    r10, [r10, #3]
+orr     r9, r9, lr, lsl #16
+orr     r9, r9, r10, lsl #24
+{% endhighlight %}
+
+这里 r10 对于的是内核压缩镜像的结束地址，这里命令的作用是内核编译系统 Kbuild 将 Image
+的大小以 4 字节和小端形式添加到压缩内核的末尾。并将解压后的内核数据大小正确存放在 r9
+寄存器里。
