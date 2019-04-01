@@ -102,9 +102,9 @@ tags:
 
 ## <span id="Debug_tools">Debug/Performance/Test tools</span>
 
-> - [perf](https://biscuitos.github.io/blog/TOOLS-perf/)
+> - [perf: Linux 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-perf/)
 >
-> - [blktrace](https://biscuitos.github.io/blog/TOOLS-blktrace/)
+> - [blktrace： Block IO 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-blktrace/)
 
 ## My Hobbies
 
