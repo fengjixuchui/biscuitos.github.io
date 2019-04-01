@@ -100,7 +100,7 @@ tags:
 >
 > - [DTS](https://biscuitos.github.io/blog/DTS/)
 
-## <span id="Debug_tools">Debug/Performance/Test tools</span>
+## <span id="Debug_tools">Tools</span>
 
 > - [perf: Linux 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-perf/)
 >
