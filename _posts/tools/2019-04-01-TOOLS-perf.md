@@ -25,7 +25,7 @@ tags:
 --------------------------------------------------------------
 <span id="工具原理"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
 
 # 工具原理
 
@@ -34,8 +34,8 @@ Perf 是 Linux kernel 自带的系统性能优化工具，Perf 显现出它强�
 
 Perf 的优势在于与 Linux Kernel 的紧密结合，它可以最先应用到加入 Kernel 的
 new feature。而像 OProfile, GProf 等通常会 “慢一拍”。Perf 的基本原理跟
-OProfile 等类似，也是在 CPU 的 PMU registers 中 Get/Set performance 
-counters 来获得诸如 instructions executed, cache-missed suffered, branches 
+OProfile 等类似，也是在 CPU 的 PMU registers 中 Get/Set performance
+counters 来获得诸如 instructions executed, cache-missed suffered, branches
 mispredicted 等信息。Linux kernel 对这些 registers 进行了一系列抽象，所以你
 可以按进程，按 CPU 或者按 counter group 等不同类别来查看 Sample 信息.
 
@@ -51,36 +51,16 @@ mispredicted 等信息。Linux kernel 对这些 registers 进行了一系列抽�
 
 ##### 获取源码
 
-首先从 blktrace 的站点获取相应的源码，源码地址如下：
-
-> [blktrack: http://brick.kernel.dk/snaps/](http://brick.kernel.dk/snaps/)
-
-从 blktrack 站点上根据需求下载一个版本，例如本教程中选择下载 "blktrace-1.2.0.tar.gz"。
-将下载好的源码压缩包放到 BiscuitOS 项目的 dl 目录下，例如使用如下命令：
-
-{% highlight bash %}
-cp ~/Download/blktrace-1.2.0.tar.gz BiscuitOS/dl
-{% endhighlight %}
-
-##### 解压源码
-
-由于本教程是基于 BiscuitOS 制作的 Linux 5.0 开发环境，因此参考如下命令进行操作：
-
-{% highlight bash %}
-mkdir -p BiscuitOS/output/linux-5.0-arm32/package/blktrace
-cp -rf BiscuitOS/dl/blktrace-1.2.0.tar.gz  BiscuitOS/output/linux-5.0-arm32/package/blktrace
-cd BiscuitOS/output/linux-5.0-arm32/package/blktrace
-tar xf blktrace-1.2.0.tar.gz
-cd blktrace-1.2.0
-make clean
-{% endhighlight %}
+由于 perf 内核默认支持，开发者可以在内核源码中直接获得 perf 源码。源码位于
+BiscuitOS/output/linux-5.0-arm32/linux/linux/tools/perf 目录下。
 
 ##### 编译源码
 
-由于只需要 blktrace 和 blkparse 两个工具，开发者可以参考一下命令进行编译：
+perf 的编译特别简单，开发者只需在内核源码目录下执行如下命令即可：
 
 {% highlight bash %}
-make CC=BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gcc blktrace blkparse
+cd BiscuitOS/output/linux-5.0-arm32/linux/linux
+make ARCH=arm CROSS_COMPILE=BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi- tools/perf
 {% endhighlight %}
 
 这里由于工具运行在 arm32 平台上，所以需要使用交叉编译工具，开发者根据实际情况进行调整。
@@ -90,7 +70,7 @@ make CC=BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin
 由于本教程是基于 BiscuitOS 制作的 Linux 5.0 开发环境，因此参考如下命令进行行安装：
 
 {% highlight bash %}
-cp -rf blktrace blkparse BiscuitOS/output/linux-5.0-arm32/rootfs/rootfs/usr/bin
+cp -rf tools/perf/perf BiscuitOS/output/linux-5.0-arm32/rootfs/rootfs/usr/bin
 {% endhighlight %}
 
 ##### 更新 rootfs
@@ -105,13 +85,28 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 ##### 运行工具
 
+在 BiscuitOS 中直接执行 perf 命令即可，如下图：
+
+![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/TOOLS000000.png)
 
 -------------------------------------------------------------
 <span id="工具使用"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-### 统计事件 stat: statistics
+# perf 使用方法
+
+> - [统计事件 stat: statistics](#统计事件)
+>
+> - [剖析 Profiling](#剖析 Profiling)
+>
+> - [Static Tracing](#Static Tracing)
+>
+> - [Dynamic Tracing](#Dynamic Tracing)
+>
+> - [Reporting](#Reporting)
+
+### <span id="统计事件">统计事件 stat: statistics</span>
 
 {% highlight bash %}
 # CPU counter statistics for the specified command:
@@ -126,7 +121,7 @@ perf stat -a sleep 5
 perf stat -e cycles,instructions,cache-references,cache-misses,bus-cycles -a sleep 10
 {% endhighlight %}
 
-### 剖析 Profiling
+### <span id="剖析 Profiling">剖析 Profiling</span>
 
 {% highlight bash %}
 # Sample on-CPU functions for the specified command, at 99 Hertz:
@@ -148,7 +143,7 @@ perf record -F 99 -p PID -g -- sleep 10
 	-C：Collect samples only on the list of CPUs provided.
 {% endhighlight %}
 
-### Static Tracing
+### <span id="Static Tracing">Static Tracing</span>
 
 {% highlight bash %}
 # Trace new processes, until Ctrl-C:
@@ -163,7 +158,7 @@ perf record -e context-switches -ag
 perf record -e context-switches -ag -- sleep 10
 {% endhighlight %}
 
-### Dynamic Tracing
+### <span id="Dynamic Tracing">Dynamic Tracing</span>
 
 {% highlight bash %}
 # Add a tracepoint for the kernel tcp_sendmsg() function entry ("--add" is optional):
@@ -178,16 +173,16 @@ perf probe -V tcp_sendmsg
 perf probe -V tcp_sendmsg --externs
 {% endhighlight %}
 
-### Mixed
+### <span id="Mixed">Mixed</span>
 
 {% highlight bash %}
 # Sample stacks at 99 Hertz, and, context switches:
-perf record -F99 -e cpu-clock -e cs -a -g 
+perf record -F99 -e cpu-clock -e cs -a -g
 # Sample stacks to 2 levels deep, and, context switch stacks to 5 levels (needs 4.8):
-perf record -F99 -e cpu-clock/max-stack=2/ -e cs/max-stack=5/ -a -g 
+perf record -F99 -e cpu-clock/max-stack=2/ -e cs/max-stack=5/ -a -g
 {% endhighlight %}
 
-### Reporting
+### <span id="Reporting">Reporting</span>
 
 {% highlight bash %}
 # Show perf.data in an ncurses browser (TUI) if possible:
