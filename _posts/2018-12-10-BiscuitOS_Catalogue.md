@@ -100,11 +100,11 @@ tags:
 >
 > - [DTS](https://biscuitos.github.io/blog/DTS/)
 
-## <span id="Debug_tools">Debug_tools</span>
+## <span id="Debug_tools">Debug/Performance/Test tools</span>
 
-> - [perf]()
+> - [perf](https://biscuitos.github.io/blog/TOOLS-perf/)
 >
-> - [blktrace]()
+> - [blktrace](https://biscuitos.github.io/blog/TOOLS-blktrace/)
 
 ## My Hobbies
 
