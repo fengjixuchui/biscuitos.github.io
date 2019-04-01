@@ -27,6 +27,26 @@ tags:
 
 # 原理
 
+### 术语解析
+
+本段用于说明本文中使用的专业术语
+
+{% highlight base %}
+1) vmlinux(proper)
+   通过源码编译生成的完整内核镜像，位于源码目录下。
+2) Image
+   vmlinux(proper) 经过 OBJCOPY 命令，去掉无用的 section 之后的二进制文件
+3) piggy.gz/piggy_data
+   Image 经过压缩工具压缩后的文件
+4) piggy.o
+   piggy_data 经过汇编打包的 ELF 目标文件
+5) vmlinux(bootstrap)
+   arch/arm/boot/compressed/ 目录下，head.o, misc.o 的文件构成的 bootstrap loader
+   与 piggy_data 组成的 ELF 文件。
+6) zImage
+   vmlinux(bootstrap) 进过 OBJCOPY 工具去掉无用的 section 的二进制文件。
+{% endhighlight %}
+
 ##### Boot Stage 1 起始地址定位
 
 Boot Stage 1 是 uboot 将压缩好的内核加载到内核之后开始，到内核被解压出来结束。
@@ -659,9 +679,11 @@ ENTRY(BS_debug)
 #endif
 {% endhighlight %}
 
+这段代码主要用于计算内核的解压地址，并将解压地址存储到 r4 寄存器中。
 首先调用代码 "mov, r4, pc"，将当前 CPU 执行的地址存储到 r4 ，然后在将 0xf8000000
-的值与 r4 相与达到对齐的作用，确保 r4 按 128M 对齐，然后将 r4 寄存器的值加上
-TEXT_OFFSET，TEXT_OFFSET 定义在 arch/arm/Makefile 中，如下：
+的值与 r4 相与达到对齐的作用，确保之后的内核解压地址按 128M 对齐，然后将 r4 寄存器的
+值加上 TEXT_OFFSET，TEXT_OFFSET 代表内核的解压地址，这样 r4 寄存器就存储了内核的解压
+地址。TEXT_OFFSET 定义在 arch/arm/Makefile 中，如下：
 
 {% highlight bash %}
 # Text offset. This list is sorted numerically by address in order to
@@ -692,32 +714,29 @@ TEXT_OFFSET := $(textofs-y)
                 blcs    cache_on
 {% endhighlight %}
 
-运行到这里，首先获得 PC 寄存器的值，然后调用 "cmp r0, r4", 这里执行这条命令的含义
-是，如果 r0 < r4, 那么接下来将执行带 cc 后缀的指令，如果 r0 > r4，那么就执行
-cache_on 宏。此时从上面的分析可知，r0 < r4， 开发者们可以通过实际 GDB 调试代码
-可验证。接下在，将 LC0+32 对应的内容拷贝到 r0 寄存器。 LC0 的定义如下：
+这段代码的主要任务就是确认 zImage 自己建立的页表会不会被 zImage 镜像的重定位
+给覆盖掉。zImage 镜像如果不被自己给覆盖，需要满足两个条件中的任意一个：
 
-{% highlight bash %}
-                .align  2
-                .type   LC0, #object
-LC0:            .word   LC0                     @ r1
-                .word   __bss_start             @ r2
-                .word   _end                    @ r3
-                .word   _edata                  @ r6
-                .word   input_data_end - 4      @ r10 (inflated size location)
-                .word   _got_start              @ r11
-                .word   _got_end                @ ip
-                .word   .L_user_stack_end       @ sp
-                .word   _end - restart + 16384 + 1024*1024
-                .size   LC0, . - LC0
-{% endhighlight %}
+> r4 < PC
 
-LC0 定义为一个对象，其位于 .text section 内，其布局如上，LC0 作为此阶段一个简单
-的页表。为程序提供了各个 section 的位置。 所以 LC0 偏移 32 的位置
-对应的内容是 "_end - restart + 16384 + 1024*1024" ，这里的含义是此阶段 vmlinux
-的结束地址之后的 1M + 16K 的地址存放在 r0 寄存器中。接着对比 r4 和 r0 的值，如果
-此时 r4 < r0， 那么执行 "orrcc r4, r4, #1" 命令；反之执行 "blcs cache_on"。有上面
-的分析可知，r4 < r0，所以将 r4 的地址加 1 跳过 cache_on. 实际 GDB 运行效果如下：
+这种情况下，内核的解压地址小于当前 PC 运行物理地址。
+
+> r4 - 16k page directory > &_end
+
+这种情况下，内核的解压地址大于 zImage 结束地址之后的 16KB。一般情况下解压内核
+的地址大于 zImage 的结束地址是不太寻常的。这种情况下需要添加 1MB 的空间与链接在
+zImage 中的 DTB 隔开。
+
+运行到这里，首先获得 PC 寄存器的值，然后调用 "cmp r0, r4", 从之前的代码可知，
+r4 寄存器存储着解压内核的地址，这里执行这条命令的含义是，如果 r0 > r4，那么代表当前
+PC 执行地址大于内核解压地址，这种情况符合之前的讨论，所以那么就执行 cache_on 宏；
+如果 r0 < r4, 那么 zImage 的运行范围包含了要解压内核的地址，因此需要继续进行检测。
+这里执行命令 "ldrcc r0, LC0+32", 通过这个命令，将 LC0 偏移 32 个字节地址对应的内容
+拷贝到 r0 寄存器。从后面的讨论可以知道，"LC0+32" 处对应的内容是 zImage 需要重定位
+的长度再加上 "16K + 1M" 的长度。这里再加上 PC 的值，确保当前运行的代码也不会被覆盖。
+接着执行命令 "cmpcc r4, r0", 重新确定解压内核的物理地址与 zImage 重定位的物理地址
+是否存在重叠。如果存在，那么将 r4 寄存器的值加 1，以此标记 cache_on 被跳过；否则
+执行 "blcs cache_on" 打开缓存。开发者们可以通过实际 GDB 调试代码可验证。
 
 {% highlight bash %}
 (gdb) target remote :1234
@@ -749,42 +768,8 @@ restart () at arch/arm/boot/compressed/head.S:259
 (gdb)
 {% endhighlight %}
 
-通过上面的代码，可以推断出有两种内存布局在这个时候，第一种就是当前指针运行的地址大于
-zImage 镜像解压的地址；第二种就是当前运行指针的地址小鱼 zImage 镜像解压的地址。如下图
-
-{% highlight bash %}
-PC > zImage
-
-                                      _end
-+--------+-------------+---------------+-------+--------+-------+
-|        |             |               |       |        |       |
-|        |             |               |       |        |       |
-|        |             |               |       |        |       |
-+--------+-------------+---------------+-------+--------+-------+
-         zImage        PC              | <---> | <----> |
-                                         16KB      1M
-                                       Page Table
-
-
-PC < zImage
-
-                             _end
-+--+-----+--------------------+-------+--------+----------------+
-|  |     |                    |       |        |                |
-|  |     |                    |       |        |                |
-|  |     |                    |       |        |                |
-+--+-----+--------------------+-------+--------+----------------+
-   PC    zImage               | <---> | <----> |
-                                16KB      1M
-                              Page Table
-
-PC:       Current instrction pointer
-zImage:   zImage decompression address
-_end:     End address of vmlinux
-{% endhighlight %}
-
-探测到 PC 与 zImage 之间的关系之后，计算好了 Page Table 的位置，接下来执行的代码
-如下：
+从上面 GDB 的实际运行结果可以知道，当前实践的平台在创建页表的位置会被 zImage
+镜像进行重定位的时候覆盖，所以代码接下来执行的内容是：
 
 {% highlight bash %}
 restart:        adr     r0, LC0
@@ -800,8 +785,12 @@ restart:        adr     r0, LC0
                 add     r10, r10, r0            @ inflated kernel size location
 {% endhighlight %}
 
-首先将 LC0 的地址存储到 r0 寄存器中，然后使用 ldmia 将 r0 对于地址的值按递增的方式，以此
-存储到 r1, r2, r3, r6, r10, r11, r12 寄存里，这里可以再看一下 LC0 的内容：
+这段代码的主要任务就是将 LC0 对应的内容加载到制定的寄存器，并根据实际运行情况校正寄
+存器中值。首先将 LC0 的地址存储到 r0 寄存器中，然后使用 ldmia 将 r0 对于地址的值按
+递增的方式，以此存储到 r1, r2, r3, r6, r10, r11, r12 寄存里，这里可以再看一下 LC0
+的内容：
+
+<span id="LC0_Content"></span>
 
 {% highlight bash %}
                 .align  2
@@ -818,13 +807,37 @@ LC0:            .word   LC0                     @ r1
                 .size   LC0, . - LC0
 {% endhighlight %}
 
-所以 r1 寄存器里存储 LC0 的地址；r2 寄存器里存储的是 __bss_start 的值，也就是 .bss
-section 开始的地方； r3 寄存存储这 vmlinux 的结束地址; r6 寄存器存储的 vmlinux
-.data section 数据段的结束地址; r10 寄存器存储着 input_data_end - 4 的地址，
-input_data 位于 .piggydata section 内，这里通过链接脚本和编译脚本可知，这个
-地址指向 image 的大小; r11 存储着 .got.plt section 的开始地址； r12 寄存器存储着
-.got section 结束地址 。接着调用 "ldr sp, [r0, #28]" 命令，这条命令执行之后，
-堆栈就建立了，指向了 L_user_stack_end，其定义如下：
+> LC0 + 0
+
+该地址存储着 LC0 的物理地址
+
+> LC0 + 4
+
+该地址存储着 zImage 运行时 BSS 段的起始物理地址 __bss_start
+
+> LC0 + 8
+
+该地址存储着 zImage 运行时，镜像带 BSS 的结束物理地址 _end。
+
+> LC0 + 12
+
+该地址存储着 zImage 运行时，镜像不带 BSS 的结束物理地址 _edata。
+
+> LC0 + 16
+
+该地址存储着内核解压之后的长度
+
+> LC0 + 20
+
+该地址存储着 zImage 运行时 GOT 表的起始物理地址 _got_start。
+
+> LC0 + 24
+
+该地址存储着 zImage 运行时 GOT 表的结束物理地址 _got_end。
+
+> LC0 + 28
+
+该地址存储着 zImage 运行时堆栈的栈顶的物理地址 .L_user_stack_end，其定义如下：
 
 {% highlight bash %}
 .align
@@ -833,8 +846,14 @@ input_data 位于 .piggydata section 内，这里通过链接脚本和编译脚�
 .L_user_stack_end:
 {% endhighlight %}
 
-可以看出 zImage 自解压阶段的堆栈就是这样建立了。接下来的三条命令都是确认 r0, r6, r10
-寄存器对于的运行地址正确。r10 寄存器存储着 Image 实际的物理地址。接着执行如下命令：
+> LC0 + 32
+
+该地址存储着 zImage 需要重定位的长度。这个值在计算出 restart 和 _end 之间
+的差值之后，额外添加了 16K 和 1M 空间用于包含页表和与 DTB 之间的屏障距离。
+
+由于 LC0 中的地址是相对地址，需要校正获得正确的物理地址，接下来的三条命令都是校正
+r0, r6, r10 寄存器的物理地址。r10 寄存器存储着 Image 长度，也就是解压之后的内核长度。
+接着执行如下命令：
 
 {% highlight bash %}
 /*
@@ -851,6 +870,273 @@ orr     r9, r9, lr, lsl #16
 orr     r9, r9, r10, lsl #24
 {% endhighlight %}
 
-这里 r10 对于的是内核压缩镜像的结束地址，这里命令的作用是内核编译系统 Kbuild 将 Image
-的大小以 4 字节和小端形式添加到压缩内核的末尾。并将解压后的内核数据大小正确存放在 r9
-寄存器里。
+这段代码的的主要目的就是将被压缩内核 piggy_data 解压之后 Image 的长度，也就是
+将解压后内核的长度存储到 r9 寄存器。为什么 r10 处会存储着解压之后的内核长度呢？
+这里可以查看一下 Image 到 皮
+
+由 arch/arm/boot/compressed/ 目录下的 vmlinux.lds.S, piggy.S, Makefile 可知，
+"input_data_end - 4" 的地址存储着压缩之后内核的长度值。其地址存储在 vmlinux 的
+LC0 页表中，通过之前的代码可知，这个值已经存储到 r10 寄存器中了。接下来，由于在不同
+的硬件平台上使用大小端序的情况不同，需要兼容的将被压缩内核的长度值正确读出，所以
+就要上面的命令读出。首先调用 "ldrb r9, [r10, #0]" 命令将 r10 对应的最低位
+从 r10 寄存器读出放到 r9 寄存器中，接着调用 "ldrb lr, [r10, #1]" 命令将 r10
+寄存器对应的第二低字节读到 lr 寄存器中，再使用 "orr r9, r9, lr, lsl #8"
+命令将 lr 寄存器的内容先左移 8 位在和 r9 寄存器中的值相与，最后得到 r10 寄存器
+的 LSB 对应的值，这样做能确保 r10 原值是否采用大端还是小端值，都能被正确的读出。
+同理采用同样的方法将剩下的字节读出。最后 r9 寄存器存储了解压之后内核的长度值。使用
+GDB 调试结果如下：
+
+{% highlight bash %}
+(gdb) target remote :1234
+Remote debugging using :1234
+_text () at arch/arm/boot/compressed/head.S:161
+161			.endr
+(gdb) b BS_debug
+Breakpoint 1 at 0xe0: file arch/arm/boot/compressed/head.S, line 276.
+(gdb) c
+Continuing.
+
+Breakpoint 1, BS_debug () at arch/arm/boot/compressed/head.S:276
+276			ldrb	r9, [r10, #0]
+(gdb) info reg
+r0             0x0                 0
+r1             0x24c               588
+r2             0x42b9b8            4372920
+r3             0x42b9d0            4372944
+r4             0x8001              32769
+r5             0x0                 0
+r6             0x42b9b8            4372920
+r7             0x0                 0
+r8             0x0                 0
+r9             0x400001d3          1073742291
+r10            0x42b979            4372857
+Quit
+(gdb) n
+277			ldrb	lr, [r10, #1]
+(gdb) n
+278			orr	r9, r9, lr, lsl #8
+(gdb) n
+279			ldrb	lr, [r10, #2]
+(gdb) n
+280			ldrb	r10, [r10, #3]
+(gdb) n
+281			orr	r9, r9, lr, lsl #16
+(gdb) n
+282			orr	r9, r9, r10, lsl #24
+(gdb) n
+286			add	sp, sp, r0
+(gdb) info reg
+r0             0x0                 0
+r1             0x24c               588
+r2             0x42b9b8            4372920
+r3             0x42b9d0            4372944
+r4             0x8001              32769
+r5             0x0                 0
+r6             0x42b9b8            4372920
+r7             0x0                 0
+r8             0x0                 0
+r9             0xb611d8            11932120
+r10            0x0                 0
+{% endhighlight %}
+
+此时读出压缩内核的长度是 0xb611d8, 即这个值对应着 Image 的长度。接着继续执行
+下面代码：
+
+{% highlight bash %}
+#ifndef CONFIG_ZBOOT_ROM
+                /* malloc space is above the relocated stack (64k max) */
+                add     sp, sp, r0
+                add     r10, sp, #0x10000
+#else
+                /*
+                 * With ZBOOT_ROM the bss/stack is non relocatable,
+                 * but someone could still run this code from RAM,
+                 * in which case our reference is _edata.
+                 */
+                mov     r10, r6
+#endif
+
+                mov     r5, #0                  @ init dtb size to 0
+{% endhighlight %}
+
+接下来根据宏 CONFIG_ZBOOT_ROM, 如果这个宏没有定义，那么在堆栈之后分配 64K 空间；
+如果这个宏定义，那么 bss 和 stack 都不是重定位的，但有些程序可以一直在 RAM 上运行，
+那么就将 r6 寄存器的值存储到 r10 寄存器。处理完这个宏之后，将 r5 寄存器清零，以此
+用于存储 DTB 的长度。由于本实践采用的 DTB 方式是外挂方式而不是和内核打包在一起的
+方式，所以接着来关于 CONFIG_ARM_APPENDED_DTB 宏相关的代码不讲解，直接跳过，那么
+接下来的代码是：
+
+{% highlight bash %}
+/*
+ * Check to see if we will overwrite ourselves.
+ *   r4  = final kernel address (possibly with LSB set)
+ *   r9  = size of decompressed image
+ *   r10 = end of this image, including  bss/stack/malloc space if non XIP
+ * We basically want:
+ *   r4 - 16k page directory >= r10 -> OK
+ *   r4 + image length <= address of wont_overwrite -> OK
+ * Note: the possible LSB in r4 is harmless here.
+ */
+                add     r10, r10, #16384
+                cmp     r4, r10
+                bhs     wont_overwrite
+                add     r10, r4, r9
+                adr     r9, wont_overwrite
+                cmp     r10, r9
+                bls     wont_overwrite
+{% endhighlight %}
+
+执行这段代码之前，r4 寄存器里存储着内核解压缩的地址；r9 存储值被压缩内核的长度;
+r10 寄存器存储着 vmlinux 的长度包括压缩内核还有 bss/stack/malloc 空间。这里可以
+用一张图表达本次实践中，三个寄存器对应值的关系：
+
+
+{% highlight bash %}
+0    vmlinux (bss/stack/malloc/text/rodata)      r10
+| <--------------------------------------------> |
+|           r4                                   |
++----+------+--------------------+---------------+-------+----------+
+|    |      |                    |               |       |          |
+|    |      |                    |               |       |          |
+|    |      |                    |               |       |          |
++----+------+--------------------+---------------+-------+----------+
+     | <-----------------------> |               | <---> |
+        r9: Decompressed image                      16K
+{% endhighlight %}
+
+首先调用 "add r10, r10, #16384", 将 r10 指向当前地址之后的 16K，然后调用
+"cmp r4, r10" 命令对比 r4 与 r10 的值，如果 r4 大于 r10， 那么执行
+"bhs wont_overwrite" 命令，跳转到 wont_overwrite 处执行；如果 r4 小于 r10,
+那么继续执行下面的操作，执行命令 "add r10, r4, r9" 将 r4 加 r9 的值存储到 r10
+寄存器，并接着执行 "adr r9, wont_overwrite" 将 wont_overwrite 的地址存储到 r9
+寄存器，然后调用 cmp 指令，对比 r10 寄存器和 r9 寄存器大小关系。如何 r10 寄存器
+的值小于 r9 寄存器的值，那么跳转到 wont_overwrite 执行。
+
+通过上面源码分析，这里的主要目的：将当前的镜像重定位到解压后的内核之后的地址，与此
+确认重定位的内核会不会被解压之后的内核覆盖。因为要把当前镜像向后移动，所以必须由后
+向前复制代码，以防止原数据和目标数据的重叠。
+
+> r4 >= r10 + 16K
+
+r4 对应内核开始解压的地址，只要这个地址大于当前 vmlinux 最大运行地址之后 16K 还大，
+那么就没有必要覆盖。
+
+> r4 + image length <=  wont_overwrite
+
+r4 对应内核开始解压缩的地址，其加上被压缩内核的长度小于 wont_overwrite 的地址，那么
+就不用覆盖
+
+其余情况，都需要进行覆盖写。这里开发者们可以使用 GDB 调试这段代码，运行结果如下：
+
+{% highlight bash %}
+(gdb) b BS_debug
+Breakpoint 1 at 0x108: file arch/arm/boot/compressed/head.S, line 427.
+(gdb) c
+Continuing.
+
+Breakpoint 1, BS_debug () at arch/arm/boot/compressed/head.S:427
+427			add	r10, r10, #16384
+(gdb) info reg
+r0             0x0                 0
+r1             0x24c               588
+r2             0x42b9b8            4372920
+r3             0x42b9d0            4372944
+r4             0x8001              32769
+r5             0x0                 0
+r6             0x42b9b8            4372920
+r7             0x0                 0
+r8             0x0                 0
+r9             0xb611d8            11932120
+r10            0x43c9d0            4442576
+(gdb) n
+428			cmp	r4, r10
+(gdb) info reg
+r0             0x0                 0
+r1             0x24c               588
+r2             0x42b9b8            4372920
+r3             0x42b9d0            4372944
+r4             0x8001              32769
+r5             0x0                 0
+r6             0x42b9b8            4372920
+r7             0x0                 0
+r8             0x0                 0
+r9             0xb611d8            11932120
+r10            0x4409d0            4458960
+(gdb) n
+429			bhs	wont_overwrite
+(gdb) info reg
+r0             0x0                 0
+r1             0x24c               588
+r2             0x42b9b8            4372920
+r3             0x42b9d0            4372944
+r4             0x8001              32769
+r5             0x0                 0
+r6             0x42b9b8            4372920
+r7             0x0                 0
+r8             0x0                 0
+r9             0xb611d8            11932120
+r10            0x4409d0            4458960
+(gdb) n
+430			add	r10, r4, r9
+(gdb) n
+431			adr	r9, wont_overwrite
+(gdb) n
+432			cmp	r10, r9
+(gdb) n
+433			bls	wont_overwrite
+(gdb) n
+447			add	r10, r10, #((reloc_code_end - restart + 256) & ~255)
+(gdb)                     16K
+{% endhighlight %}
+
+因此从实践结果看出，这里需要进行覆盖写操作。那么接下来的代码如下：
+
+{% highlight bash %}
+/*
+ * Relocate ourselves past the end of the decompressed kernel.
+ *   r6  = _edata
+ *   r10 = end of the decompressed kernel
+ * Because we always copy ahead, we need to do it from the end and go
+ * backward in case the source and destination overlap.
+ */
+                /*
+                 * Bump to the next 256-byte boundary with the size of
+                 * the relocation code added. This avoids overwriting
+                 * ourself when the offset is small.
+                 */
+                add     r10, r10, #((reloc_code_end - restart + 256) & ~255)
+                bic     r10, r10, #255
+
+                /* Get start of code we want to copy and align it down. */
+                adr     r5, restart
+                bic     r5, r5, #31
+{% endhighlight %}
+
+解压后的内核结束地址
+
+{% highlight bash %}
+                sub     r9, r6, r5              @ size to copy
+                add     r9, r9, #31             @ rounded up to a multiple
+                bic     r9, r9, #31             @ ... of 32 bytes
+                add     r6, r9, r5
+                add     r9, r9, r10
+{% endhighlight %}
+
+在执行这些代码之前， r5 寄存器指向 restart 地址，代表重定位的起点地址; r6 寄存器
+代表了 vmlinux 当前结束地址，即 _edata 地址；代码首先调用 sub 指令，将 r6 寄存器
+的值减去 r5 寄存器的值，这样就可以计算出 vmlinux 镜像需要重定位的长度，接着调用
+add 和 bic 指令对长度值按 32 byte 对齐。接着调用 add 指令，将 r6 的值指向了
+重定位之后，vmlinux 的在内存布局中的结束地址。此时 r10 指向了 (内核解压的地址 +
+被压缩内核的长度 + reloc_code_end) 的地址，在执行上面的 add 指令之后，r9 寄存器
+指向了 (内核解压的地址 + 被压缩内核的长度 + reloc_code_end + vmlinux 在内存中的长度)。
+所以综上所述，r6 对应着当前需要搬运镜像的结束地址；r9 对应着当前镜像搬运的目的地地的
+结束地址。
+
+{% highlight bash %}
+1:              ldmdb   r6!, {r0 - r3, r10 - r12, lr}
+                cmp     r6, r5
+                stmdb   r9!, {r0 - r3, r10 - r12, lr}
+                bhi     1b
+{% endhighlight %}
+
+接下来这段代码用于搬运当前运行的镜像到目的地址。
