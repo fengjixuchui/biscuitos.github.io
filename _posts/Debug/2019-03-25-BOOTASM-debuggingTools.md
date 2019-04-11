@@ -10,7 +10,7 @@ tags:
 
 ![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000200.gif)
 
-> [GitHub ARM Assembly Set](https://github.com/BiscuitOS/HardStack/tree/master/Language/Assembly/Inline-Assembly/ARM/Instruction)
+> [GitHub BiscuitOS](https://github.com/BiscuitOS/BiscuitOS)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -41,7 +41,7 @@ Linux 内核源码经过编译链接生成 ELF 目标文件 vmlinux，vmlinux �
 是带了 bootstrap 的 vmlinux，vmlinux 在经过 OBJCOPY 工具之后，生成二进制文件
 zImage，这个 zImage 是可以直接加载到内存直接运行的。其原理如下图：
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BOOT000000.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BOOT000000.png)
 
 正如上图，Uboot 将 zImage 加载到内存之后，zImage 就开始运行 Linux 早期代码，
 这个阶段，zImage 主要任务就是将压缩的内核解压到制定的位置，然后将运行权转交给
@@ -70,7 +70,7 @@ cd BiscuitOS/output/linux-5.0-arm32
 ### Second Terminal
 
 ```
-BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb -x   BiscuitOS/output/linux-5.0-arm32/gdb/gdb_zImage
+BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb -x BiscuitOS/output/linux-5.0-arm32/gdb/gdb_zImage
 
 (gdb) b XXX_bk
 (gdb) c
@@ -89,7 +89,7 @@ cd BiscuitOS/output/linux-5.0-arm32
 然后再打开第二个终端，第二个终端中输入如下命令：
 
 {% highlight base %}
-BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb -x   BiscuitOS/output/linux-5.0-arm32/gdb/gdb_zImage
+BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb -x BiscuitOS/output/linux-5.0-arm32/gdb/gdb_zImage
 {% endhighlight %}
 
 此时第二个终端进入了 GDB 模式，开发者此时输入如下命令进行调试：

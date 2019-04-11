@@ -34,28 +34,11 @@ tags:
 >
 > - [Build Linux 5.X](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
-## Linux MMU
+## Linux Memory
 
-> - [MEMBLOCK](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+> - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
 >   <span id="MEMBLOCK"></span>
 >   - [MEMBLOCK API list](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/#MEMBLOCK_API-LIST)
->
-> - [Virtual Address](https://_Usermanual/)
->
->   - [Linux 1.0 Kernel Virtual Space](https://_Usermanual/)
->
->   - [Linux 1.0 User Vritual Space](https://_Usermanual/)
->
->   - [Linux 4.x User Virtual Space](https://_Usermanual/)
->
->   - [Linux 4.x Kernel Virtual Space](https://biscuitos.github.io/blog/MMU-Linux4x-KERNEL/)
->
-> - [Logical Address](https://_Usermanual/)
->
-> - [Linear Address](https://b_Usermanual/)
->
-> - [Physical Address](https:/_Usermanual/)
->
 
 ## Basic
 
@@ -110,6 +93,10 @@ tags:
 > - [CAN](https://biscuitos.github.io/blog/CAN/)
 >
 > - [DTS](https://biscuitos.github.io/blog/DTS/)
+
+## <span id="Debug">Debug</span>
+
+> - [ARM GDB debug Usermanual](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/)
 
 ## <span id="Debug_tools">Tools</span>
 
