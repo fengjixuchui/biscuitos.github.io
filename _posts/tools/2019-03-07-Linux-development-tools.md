@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "Linux 内核源码调试工具合集"
+title:  "Linux 内核源码开发工具合集"
 date:   2019-03-07 18:30:30 +0800
 categories: [Build]
-excerpt: Linux 内核源码调试工具及技巧.
+excerpt: Linux 内核源码开发工具合集.
 tags:
   - Linux
 ---
