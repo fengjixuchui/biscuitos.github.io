@@ -100,6 +100,8 @@ tags:
 
 ## <span id="Debug_tools">Tools</span>
 
+> - [Linux 内核开发工具合集](https://biscuitos.github.io/blog/Linux-development-tools/)
+>
 > - [perf: Linux 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-perf/)
 >
 > - [blktrace： Block IO 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-blktrace/)
