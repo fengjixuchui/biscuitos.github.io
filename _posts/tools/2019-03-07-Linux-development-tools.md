@@ -23,6 +23,9 @@ tags:
 >   - [hexdump](#hexdump)
 >
 >   - [hexedit](#hexedit)
+>
+> - [程序员计算器](#程序员计算器)
+
 
 
 
@@ -340,3 +343,28 @@ bless zImage
 {% endhighlight %}
 
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000004.png)
+
+---------------------------------------------------
+<span id="程序员计算器"></span>
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
+
+# 程序员计算器
+
+> - [Ubuntu Calculator](#Ubuntu Calculator)
+>
+> - [Windows Calculator](#Windows Calculator)
+
+### <span id="Ubuntu Calculator">Ubuntu Calculator</span>
+
+程序开发过程中，经常会遇到各种进制的数学运算，这里推荐一款程序员专用的计算器,
+Ubuntu 自带的 Calculator 就能切换成程序员模式进行各种进制的计算，如下图：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000005.png)
+
+### <span id="Windows Calculator">Windows Calculator</span>
+
+程序开发过程中，经常会遇到各种进制的数学运算，这里推荐一款程序员专用的计算器,
+Windows 自带的 Calculator 就能切换成程序员模式进行各种进制的计算，如下图：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000006.png)
