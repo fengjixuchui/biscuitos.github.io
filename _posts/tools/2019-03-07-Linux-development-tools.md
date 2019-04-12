@@ -41,58 +41,23 @@ tags:
 但在 Linux 发行版上如何搭建一个简单，高效的源码索引平台呢？这里推荐使用 Ctag
 和 Cscope 的组合，并结合一些技巧让平台简单，高效的运转。
 
-> Platform: Ubuntu
-
-### 安装工具
-
-推荐在 Ubuntu 上进行源码级别开发，该平台上安装工具使用如下命令：
-
-{% highlight bash %}
-sudo apt-get install ctags
-sudo apt-get install cscope
-{% endhighlight %}
-
 ### 准备源码
 
-在使用工具之前，开发者可以考虑一个问题，当查找一个函数定义的时候，如果这个函
-数与体系有关，那么函数会在不同的体系中进行定义，这会导致在查找函数的引用中会
-增加很多不必要的浪费，为了解决这个问题，开发者可以按如下办法进行处理，这个问
-题就能得到很好的解决。比如开发者使用的的源码是关于 arm 32 位系统的，那么
-arch/ 目录下其他平台的源码对调试来说就是多余的代码，所以可以删除 arch/ 目录下
-除 arm/ 和 Kconfig 之外的所有文件，这样做之后，也许第一次编译无法通过，可以通
-过编译提示的错误修改对应的 Kconfig 文件，将错误处注释掉即可。这样做有利于提供
-开发效率。
+Linux 内核源码默认就支持 ctags 和 cscope 工具，并根据 Linux 内核源码的特定做了优化，
+原生支持，所以可以轻松使用这两个工具搭建一个高效的 Linux 源码浏览工具。
 
 ### 配置工具
 
-首先准备 Linux 源码，源码目录假设位于 "BiscuitOS/output/linux-5.0/"，然后在终端中
-切换到源码目录，首先建立 ctags 数据库，使用如下命令：
+本教程基于 Linux 5.0 讲解，如果还没有搭建开发环境，可以参考文档：
+
+> [搭建基于 ARM 的 Linux 5.0 源码开发环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
 
 {% highlight bash %}
 cd BiscuitOS/output/linux-5.0/
 ctags -R
 {% endhighlight %}
 
-命令运行完之后会在源码目录下生成 tags 文件，为了加速内核开发，开发者可以将该 tags 作
-位默认的 ctags 的数据库，如果在将来有新的 ctags 数据库也可以参照这个方法进行修改。为
-了节省不必要的命令输入，开发者可以通过如下设置将该 tags 作为默认的数据库，修改主目录
-下的 vim 配置文件，如下：
 
-{% highlight bash %}
-vi ~/.vimrc
-
-向文件中添加如下内容：
-
-set tags=BiscuitOS/output/linux-5.0/tags
-{% endhighlight %}
-
-至此 ctags 配置完成，接下来配置 cscope，同样也是在源码目录下，使用如下命令来建立
-cscope 的数据库：
-
-{% highlight bash %}
-cd BiscuitOS/output/linux-5.0/
-cscope -Rbqk
-{% endhighlight %}
 
 执行完命令之后，会在源码目录下生成 cscope.out, cscope.in.out, 和 cscope.po.out 三个
 文件，同样，为了减少不必要的输入，也可以将这个 cscope.out 作为默认的数据库，将其添加
