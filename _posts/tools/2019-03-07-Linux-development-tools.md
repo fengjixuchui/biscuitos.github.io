@@ -25,7 +25,8 @@ tags:
 >   - [hexedit](#hexedit)
 >
 > - [程序员计算器](#程序员计算器)
-
+>
+> - [源码对比工具](#源码对比工具)
 
 
 
@@ -41,35 +42,42 @@ tags:
 但在 Linux 发行版上如何搭建一个简单，高效的源码索引平台呢？这里推荐使用 Ctag
 和 Cscope 的组合，并结合一些技巧让平台简单，高效的运转。
 
-### 准备源码
+##### 准备源码
 
 Linux 内核源码默认就支持 ctags 和 cscope 工具，并根据 Linux 内核源码的特定做了优化，
 原生支持，所以可以轻松使用这两个工具搭建一个高效的 Linux 源码浏览工具。
 
-### 配置工具
+##### 安装工具
 
 本教程基于 Linux 5.0 讲解，如果还没有搭建开发环境，可以参考文档：
 
 > [搭建基于 ARM 的 Linux 5.0 源码开发环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
 
+搭建好 Linux 5.0 开发环境后，可以在 Linux 5.0 源码中直接配置 ctags 和 cscope 工具，
+使用如下命令：
+
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0/
-ctags -R
+cd BiscuitOS/output/linux-5.0-arm32/linux/linux
+make ARCH=arm tags
+make ARCH=arm cscope
 {% endhighlight %}
 
-
-
-执行完命令之后，会在源码目录下生成 cscope.out, cscope.in.out, 和 cscope.po.out 三个
-文件，同样，为了减少不必要的输入，也可以将这个 cscope.out 作为默认的数据库，将其添加
-到默认 vim 配置文件中，使用如下命令：
+执行完命令之后，会在源码目录下生成 tags, cscope.out, cscope.in.out, 和 cscope.po.out
+等多个文件，同样，为了减少不必要的输入，也可以将这个 tags 和 cscope 作为 vim 默认的数据库，
+将其添加到默认 vim 配置文件中，使用如下命令：
 
 {% highlight bash %}
 vi ~/.vimrc
 
 向文件中添加如下内容：
 
-: cscope add BiscuitOS/output/linux-5.0/cscope.output
+" Ctags
+set tags=BiscuitOS/output/linux-5.0-arm32/linux/linux/tags
+" Cscope
+: cscope add BiscuitOS/output/linux-5.0-arm32/linux/linux/cscope.out
 set cscopetag
+set csto=1
+set cspc=1
 {% endhighlight %}
 
 ### 使用工具
@@ -86,26 +94,7 @@ cscope 工具会在按下 **Ctrl+]** 之后，在底部打印出函数所有的�
 位置。例如查找 early_fixmap_init() 函数的定义, 将光标移动到 early_fixmap_init()
 函数处，之后自动打印如下信息：
 
-{% highlight c %}
-early_fixmap_init();
-early_ioremap_init();
-
-parse_early_param();
-
-#ifdef CONFIG_MMU
-early_mm_init(mdesc);
-#endif
-setup_dma_zone(mdesc);
-xen_early_init();
-efi_init();
-Cscope tag: early_fixmap_init                                 1117,5-12     83%
-#   line  filename / context / line
-1     63  arch/arm/include/asm/fixmap.h <<early_fixmap_init>>
-     static inline void early_fixmap_init(void ) { }
-2    387  arch/arm/mm/mmu.c <<early_fixmap_init>>
-     void __init early_fixmap_init(void )
-Type number and <Enter> (empty cancels):
-{% endhighlight %}
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000008.png)
 
 输入 2 并按回车，vim 就跳转到 arch/arm/mm/mmu.c 第 387 行。
 
@@ -128,28 +117,9 @@ Type number and <Enter> (empty cancels):
 
 {% highlight c %}
 :cs find c adjust_lowmem_bounds
-
-输出内容：
-
-adjust_lowmem_bounds();
-arm_memblock_init(mdesc);
-/* Memory may have been removed so recalculate the bounds. */
-adjust_lowmem_bounds();
-
-early_ioremap_reset();
-
-paging_init(mdesc);
-request_standard_resources(mdesc);
-
-if (mdesc->restart)
-Cscope tag: adjust_lowmem_bounds
-#   line  filename / context / line
-1   1132  arch/arm/kernel/setup.c <<setup_arch>>
-     adjust_lowmem_bounds();
-2   1135  arch/arm/kernel/setup.c <<setup_arch>>
-     adjust_lowmem_bounds();
-Type number and <Enter> (empty cancels):
 {% endhighlight %}
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000009.png)
 
 但查看完一个函数的引用之后，需要返回上一次光标位置，可以使用 **Ctrl+T** 组合命令进行
 返回
@@ -333,3 +303,54 @@ Ubuntu 自带的 Calculator 就能切换成程序员模式进行各种进制的�
 Windows 自带的 Calculator 就能切换成程序员模式进行各种进制的计算，如下图：
 
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000006.png)
+
+---------------------------------------------------
+<span id="源码对比工具"></span>
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
+
+# 源码对比工具
+
+> - [图形化源码对比工具: meld](#meld)
+
+### <span id="meld">meld</span>
+
+在开发过程中，需要对比两次提交或者两个版本间源码的不同点，这时就需要源码对比工具。源码
+对比工具就是用于大到工程，小到源文件之间的对比。
+
+##### meld 安装
+
+Ubuntu 上安装 meld 可以使用如下命令：
+
+{% highlight bash %}
+sudo apt-get install meld
+{% endhighlight %}
+
+##### meld 使用
+
+meld 可以对比两个或者三个对象，可以使用命令行的方式启动 meld，也可以直接点击 meld 图标
+进行启动，例如使用命令行启动，如下格式：
+
+{% highlight bash %}
+meld file0 file1
+{% endhighlight %}
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000010.png)
+
+-----------------------------------------------
+
+# <span id="附录">附录</span>
+
+> [BiscuitOS Home](https://biscuitos.github.io/)
+>
+> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+>
+> [Linux Kernel](https://www.kernel.org/)
+>
+> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
+>
+> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+
+## 赞赏一下吧 🙂
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
