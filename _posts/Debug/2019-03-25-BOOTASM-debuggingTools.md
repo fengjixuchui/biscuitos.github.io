@@ -70,7 +70,7 @@ cd BiscuitOS/output/linux-5.0-arm32
 ### Second Terminal
 
 ```
-BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb -x BiscuitOS/output/linux-5.0-arm32/gdb/gdb_zImage
+BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb -x BiscuitOS/output/linux-5.0-arm32/package/gdb/gdb_zImage
 
 (gdb) b XXX_bk
 (gdb) c
@@ -89,7 +89,7 @@ cd BiscuitOS/output/linux-5.0-arm32
 然后再打开第二个终端，第二个终端中输入如下命令：
 
 {% highlight base %}
-BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb -x BiscuitOS/output/linux-5.0-arm32/gdb/gdb_zImage
+BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb -x BiscuitOS/output/linux-5.0-arm32/package/gdb/gdb_zImage
 {% endhighlight %}
 
 此时第二个终端进入了 GDB 模式，开发者此时输入如下命令进行调试：
