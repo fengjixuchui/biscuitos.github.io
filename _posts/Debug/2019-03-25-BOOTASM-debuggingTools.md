@@ -304,7 +304,7 @@ ENTRY(BS_debug)
 
 实际运行情况如下图：
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/ASM000031.png)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000031.png)
 
 ##### 拓展
 
