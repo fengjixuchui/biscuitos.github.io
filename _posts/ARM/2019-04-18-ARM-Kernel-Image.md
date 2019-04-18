@@ -642,7 +642,7 @@ $(obj)/zImage:  $(obj)/compressed/vmlinux FORCE
 ---------------------------------------------------------
 <span id="uImage"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000I.jpg)
 
 ## uImage 构建过程
 

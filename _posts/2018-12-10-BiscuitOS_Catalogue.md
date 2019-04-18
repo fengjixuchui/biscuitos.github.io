@@ -70,6 +70,14 @@ tags:
 
 > - [Build SeaBIOS](https://biscuitos.github.io/blog/BIOS_SeaBIOS/)
 
+## <span id="Architecture">Architecture</span>
+
+> - [ARM](https://biscuitos.github.io/blog/ARM-Kernel-Image/ARM-Catalogue/)
+>
+> - [ARM64]()
+>
+> - [X86]()
+
 ## <span id="Enginerring">Enginerring Practice</span>
 
 > - [I2C](https://biscuitos.github.io/blog/I2CBus/)
