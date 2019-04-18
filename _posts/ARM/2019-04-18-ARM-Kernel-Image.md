@@ -307,24 +307,6 @@ vmlinux 与源码顶层目录的 vmlinux 区分开来。这里的 vmlinux 是添
 是不能直接在 arm 上运行的，需要制作成 bin 文件才能在 arm 上运行，所以下一步就是 zImage
 的制作。
 
----------------------------------------------------------
-<span id="zImage"></span>
-
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
-
-## zImage 构建过程
-
-zImage 是通过带 bootstrap loader 的内核 ELF 文件经过 objcopy 命令之后制作生成
-的二进制文件，用于在 arm 上直接运行，其生成过程可以查看 arch/arm/boot/Makefile:
-
-{% highlight bash %}
-$(obj)/zImage:  $(obj)/compressed/vmlinux FORCE
-        $(call if_changed,objcopy)
-{% endhighlight %}
-
-同原始 vmlinux 转换为 Image 过程一致，具体细节可以参考上面章节。制作完 zImage 之后，
-可以将 zImage 在 arm 上运行。
-
 ## vmlinux.lds
 
 这里所介绍的 vmlinux.lds 是位于 arch/arm/boot/compressed/ 目录下的 vmlinux.lds，
@@ -638,6 +620,24 @@ Idx Name          Size      VMA       LMA       File off  Algn
  10 .ARM.attributes 0000002d  00000000  00000000  0044cfe4  2**0
                   CONTENTS, READONLY
 {% endhighlight %}
+
+---------------------------------------------------------
+<span id="zImage"></span>
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
+
+## zImage 构建过程
+
+zImage 是通过带 bootstrap loader 的内核 ELF 文件经过 objcopy 命令之后制作生成
+的二进制文件，用于在 arm 上直接运行，其生成过程可以查看 arch/arm/boot/Makefile:
+
+{% highlight bash %}
+$(obj)/zImage:  $(obj)/compressed/vmlinux FORCE
+        $(call if_changed,objcopy)
+{% endhighlight %}
+
+同原始 vmlinux 转换为 Image 过程一致，具体细节可以参考上面章节。制作完 zImage 之后，
+可以将 zImage 在 arm 上运行。
 
 ---------------------------------------------------------
 <span id="uImage"></span>
