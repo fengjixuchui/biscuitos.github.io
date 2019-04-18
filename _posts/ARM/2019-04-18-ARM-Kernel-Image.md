@@ -277,7 +277,7 @@ piggy.o 中的起始地址和终止地址，对链接脚本有用。至此，pig
 ---------------------------------------------------------
 <span id="Bootstrap ELF kernel"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000J.jpg)
 
 ## Bootstrap ELF kernel (vmlinux) 构建过程
 
