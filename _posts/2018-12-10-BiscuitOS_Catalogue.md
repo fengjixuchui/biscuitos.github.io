@@ -97,6 +97,16 @@ tags:
 ## <span id="Debug">Debug</span>
 
 > - [ARM GDB debug Usermanual](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/)
+>
+>   - [ARM zImage 重定位前 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#ARM Boot-Stage1)
+>
+>   - [ARM zImage 重定位后 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#ARM Boot-Stage2)
+>
+>   - [内核解压后 start_kernel 之前 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#Linux_decompress_before)
+>
+>   - [内核解压后 start_kernel 之后 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#Linux_decompress_after)
+>
+>   - [动态模块 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#MODULE_GDB)
 
 ## <span id="Debug_tools">Tools</span>
 
