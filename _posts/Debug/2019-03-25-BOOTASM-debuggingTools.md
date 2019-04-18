@@ -43,7 +43,7 @@ Linux 内核源码经过编译链接生成 ELF 目标文件 vmlinux，vmlinux �
 是带了 bootstrap 的 vmlinux，vmlinux 在经过 OBJCOPY 工具之后，生成二进制文件
 zImage，这个 zImage 是可以直接加载到内存直接运行的。其原理如下图：
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BOOT000000.png)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000036.png)
 
 正如上图，Uboot 将 zImage 加载到内存之后，zImage 就开始运行 Linux 早期代码，
 这个阶段，zImage 主要任务就是将压缩的内核解压到制定的位置，然后将运行权转交给
