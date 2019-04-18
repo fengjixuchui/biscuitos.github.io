@@ -72,7 +72,7 @@ tags:
 
 ## <span id="Architecture">Architecture</span>
 
-> - [ARM](https://biscuitos.github.io/blog/ARM-Kernel-Image/ARM-Catalogue/)
+> - [ARM](https://biscuitos.github.io/blog/ARM-Catalogue-Image/)
 >
 > - [ARM64]()
 >
