@@ -16,7 +16,7 @@ tags:
 
 > - [内核镜像介绍](#原理)
 >
-> - [vmlinux 构建过程](#vmlinux)
+> - [vmlinux 构建过程](#vmlinuxEE)
 >
 > - [Image 构建过程](#Image)
 >
@@ -97,7 +97,7 @@ uboot 为了启动内核，将 zImage 经过 mkimage 工具在 zImage 头部添�
 内核需要的信息。
 
 ---------------------------------------------------------
-<span id="vmlinux"></span>
+<span id="vmlinuxEE"></span>
 
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000M.jpg)
 
@@ -175,7 +175,7 @@ Kernel: arch/arm/boot/Image is ready
 ---------------------------------------------------------
 <span id="piggy.gz/piggy_data"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000O.jpg)
 
 ## piggy.gz/piggy_data 构建过程
 
