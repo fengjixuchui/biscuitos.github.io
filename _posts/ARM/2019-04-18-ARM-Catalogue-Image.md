@@ -17,6 +17,32 @@ tags:
 
 ## ARM Linux 5.0 源码实践
 
+> - [zImage Bootstrap kernel](https://biscuitos.github.io/blog/ARM-BOOT/)
+>
+>   - [zImage 重定位之前实践](https://biscuitos.github.io/blog/ARM-BOOT/#zImage 重定位之前实践)
+>
+>     - [bootstrap 第一行汇编代码](https://biscuitos.github.io/blog/ARM-BOOT/#v0.0.1)
+>
+>     - [建立 armv7 cache table](https://biscuitos.github.io/blog/ARM-BOOT/#v0.0.2)
+>
+>     - [建立 zImage 临时页表](https://biscuitos.github.io/blog/ARM-BOOT/#v0.0.3)
+>
+>     - [MMU/cache on](https://biscuitos.github.io/blog/ARM-BOOT/#v0.0.4)
+>
+>     - [cache flush](https://biscuitos.github.io/blog/ARM-BOOT/#v0.0.5)
+>
+>     - [cache flush done](https://biscuitos.github.io/blog/ARM-BOOT/#v0.0.6)
+>
+>   - [zImage 重定位之后实践](https://biscuitos.github.io/blog/ARM-BOOT/#zImage 重定位之后实践)
+>
+>     - [zImage 重定位起点](https://biscuitos.github.io/blog/ARM-BOOT/#v0.0.7)
+>
+>     - [开始解压内核](https://biscuitos.github.io/blog/ARM-BOOT/#v0.0.8)
+>
+>     - [关闭 MMU, 刷新 cache](https://biscuitos.github.io/blog/ARM-BOOT/#v0.0.9)
+>
+>     - [将执行权移交给内核](https://biscuitos.github.io/blog/ARM-BOOT/#v0.1.0)
+>
 > - [kernel boot]
 >
 >   - [head.S](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/)
