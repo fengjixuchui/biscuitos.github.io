@@ -12,8 +12,6 @@ tags:
 > - [ARM Linux: vmlinux, Image, zImage, uImage](https://biscuitos.github.io/blog/ARM-Kernel-Image/)
 >
 > - [ARM Linux deugging manual](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/)
->
-> - [从第一行代码编写/调试 ARM Linux 5.0 内核](https://biscuitos.github.io/blog/ARM-BOOT/)
 
 ## ARM Linux 5.0 源码实践
 
@@ -52,5 +50,13 @@ tags:
 >     - [__hyp_stub_install](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__hyp_stub_install)
 >
 >     - [__lookup_processor_type](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__lookup_processor_type)
+>
+>     - [__proc_info](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__proc_info)
+>
+>     - [__vet_atags](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__vet_atags)
+>
+>     - [__fixup_smp](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__fixup_smp)
+>
+>     - [__do_fixup_smp_on_up](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__do_fixup_smp_on_up)
 >
 >
