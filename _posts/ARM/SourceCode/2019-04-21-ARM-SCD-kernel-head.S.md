@@ -38,6 +38,10 @@ tags:
 # 实践
 
 > - [vmlinux 入口：第一行运行的代码](#vmlinux first code)
+>
+> - [__hyp_stub_install](#__hyp_stub_install)
+>
+> - [__lookup_processor_type](#__lookup_processor_type)
 
 ### <span id="vmlinux first code">vmlinux 入口：第一行运行的代码</span>
 
