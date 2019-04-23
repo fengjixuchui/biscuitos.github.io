@@ -59,4 +59,15 @@ tags:
 >
 >     - [__do_fixup_smp_on_up](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__do_fixup_smp_on_up)
 >
+>     - [__fixup_pv_table](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__fixup_pv_table)
+>
+>     - [__create_page_tables](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__create_page_tables)
+>
+>     - [swapper_pg_dir](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#swapper_pg_dir)
+>
+>     - [ARMv7 Cortex-A9 proc_info_list](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#ARMv7 Cortex-A9 proc_info_list)
+>
+>     - [__v7_setup](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__v7_setup)
+>
+>     - [v7_invalidate_l1](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#v7_invalidate_l1)
 >
