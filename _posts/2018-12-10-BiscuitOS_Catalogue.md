@@ -110,7 +110,9 @@ tags:
 >
 >   - [ARM zImage 重定位后 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#ARM Boot-Stage2)
 >
->   - [内核解压后 start_kernel 之前 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#Linux_decompress_before)
+>   - [内核解压后 (MMU OFF) start_kernel 之前 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#Linux_decompress_before)
+>
+>   - [内核解压后 (MMU ON) start_kernel 之前 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#Linux_decompress_before2)
 >
 >   - [内核解压后 start_kernel 之后 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#Linux_decompress_after)
 >

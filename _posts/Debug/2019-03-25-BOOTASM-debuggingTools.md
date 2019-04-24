@@ -20,7 +20,9 @@ tags:
 >
 > - [ARM zImage 重定位后 gdb 调试方法](#ARM Boot-Stage2)
 >
-> - [内核解压后 start_kernel 之前 gdb 调试方法](#Linux_decompress_before)
+> - [内核解压后 (MMU OFF) start_kernel 之前 gdb 调试方法](#Linux_decompress_before)
+>
+> - [内核解压后 (MMU ON) start_kernel 之前 gdb 调试方法](#Linux_decompress_before2)
 >
 > - [内核解压后 start_kernel 之后 gdb 调试方法](#Linux_decompress_after)
 >
@@ -418,7 +420,7 @@ printf "%#x\n", $final;
 
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
 
-# 内核解压后 start_kernel 之前 gdb 调试方法
+# 内核解压后 (MMU OFF) start_kernel 之前 gdb 调试方法
 
 zImage 将压缩的内核解压到指定位置之后，然后将 CPU 的执行权移交给解压之后的内核。内核
 获得 CPU 之后，就开始真正的初始化内核，由于此时 MMU 并未开启，内核没有将内存映射
@@ -432,7 +434,7 @@ zImage 将压缩的内核解压到指定位置之后，然后将 CPU 的执行�
 关于 Image 解压运行开始到 start_kernel 之前的调试介绍如下：
 
 {% highlight bash %}
-# Debugging kernel before start_kernel
+# Debugging kernel MMU OFF before start_kernel
 
 ### First Terminal
 
@@ -604,6 +606,176 @@ BiscuitOS 已经自动生成 gdb_Image 文件，开发者只需按照教程 READ
 就可以简单完成对该阶段代码的调试。
 
 --------------------------------------------------------------
+<span id="Linux_decompress_before2"></span>
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
+
+# 内核解压后 (MMU ON) start_kernel 之前 gdb 调试方法
+
+Image 已经进行基础的初始化，但 MMU 并未开启，所以使用的都是物理地址。但 Image
+初始化到后期，页表等寄存器设置完毕之后，内核启用 MMU 之后，开始使用虚拟地址，但
+按 1:1 仅仅映射了内核镜像到 .bss 段的地址，其他地址并未映射。在启用 MMU 之后，
+地址发生改变，所以之前重定位的符号表此处需要重新进行定位，因此从 MMU 启用到
+start_kernel 这个阶段的调试需要按如下的步骤。本节的所有内容都是基于 Linux 5.0
+进行讲解的，如果还未搭建 Linux 5.0 开发环境，请参看如下教程：
+
+> [Linux 5.0 arm 32 开发环境搭建手册](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+
+搭建完上面的教程之后，参考 BiscuitOS/output/linux-5.0-arm32/README.md ,其中
+关于 Image 解压运行开始 (MMU ON) 到 start_kernel 之前的调试介绍如下：
+
+{% highlight bash %}
+# Debugging kernel MMU ON before start_kernel
+
+### First Terminal
+
+```
+cd BiscuitOS/output/linux-5.0-arm32
+./RunQemuKernel.sh debug
+```
+
+### Second Terminal
+
+```
+BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb -x BiscuitOS/output/linux-5.0-arm32/package/gdb/gdb_RImage
+
+(gdb) b XXX_bk
+(gdb) c
+(gdb) info reg
+```
+{% endhighlight %}
+
+根据上面的介绍，开发者首先打开一个终端，在中断中输入如下命令：
+
+{% highlight base %}
+cd BiscuitOS/output/linux-5.0-arm32
+./RunQemuKernel.sh debug
+{% endhighlight %}
+
+然后再打开第二个终端，第二个终端中输入如下命令：
+
+{% highlight base %}
+BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb -x BiscuitOS/output/linux-5.0-arm32/package/gdb/gdb_RImage
+{% endhighlight %}
+
+此时第二个终端进入了 GDB 模式，开发者此时输入如下命令进行调试：
+
+{% highlight base %}
+(gdb) b BS_debug
+(gdb) c
+(gdb) info reg
+{% endhighlight %}
+
+其中 BS_debug 是断点的名字。运行如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000053.png)
+
+#### 打断点
+
+在实际调试过程中需要对不同的代码段打断点，以此提高调试效率。在 Image 初始化的阶段
+打断点请参考如下步骤：
+
+Image 初始化阶段 (MMU ON) 的代码大多位于 arch/arm/kernel/ 目录下，其中这个阶段
+的入口函数位于 arch/arm/kernel/head.S 里面。如下：
+
+{% highlight bash %}
+/*
+ * The following fragment of code is executed with the MMU on in MMU mode,
+ * and uses absolute addresses; this is not position independent.
+ *
+ *  r0  = cp#15 control register
+ *  r1  = machine ID
+ *  r2  = atags/dtb pointer
+ *  r9  = processor ID
+ */
+        __INIT
+__mmap_switched:
+        mov     r7, r1
+        mov     r8, r2
+        mov     r10, r0
+
+        adr     r4, __mmap_switched_data
+        mov     fp, #0
+{% endhighlight %}
+
+在上面的函数中，开发者可以使用 ENTRY() 宏来添加一个断点，例如：
+
+{% highlight bash %}
+/*
+ * The following fragment of code is executed with the MMU on in MMU mode,
+ * and uses absolute addresses; this is not position independent.
+ *
+ *  r0  = cp#15 control register
+ *  r1  = machine ID
+ *  r2  = atags/dtb pointer
+ *  r9  = processor ID
+ */
+        __INIT
+__mmap_switched:
+ENTRY(BS_debug)
+        mov     r7, r1
+        mov     r8, r2
+        mov     r10, r0
+
+        adr     r4, __mmap_switched_data
+        mov     fp, #0
+{% endhighlight %}
+
+在上面的代码中，添加了一个名为 BS_debug 的标签，可以再 GDB 中利用这个标签打
+断点。调试方法如下所述，在进入 GDB 模式后，使用如下命令：
+
+{% highlight bash %}
+(gdb) b BS_debug
+(gdb) c
+(gdb) list
+{% endhighlight %}
+
+实际运行情况如下图：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000053.png)
+
+##### 拓展
+
+由于 Image 初始化阶段，MMU 已经开启，需要将内核符号表加载到指定位置。 BiscuitOS 在该阶段
+默认使用的 .gdbinit 脚本位于 BiscuitOS/output/linux-5.0-arm32/package/gdb/gdb_RImage,
+其内容如下：
+
+{% highlight bash %}
+# Debug Image MMU on before start_kernel
+#
+# (C) 2019.04.11 BuddyZhang1 <buddy.zhang@aliyun.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as
+# published by the Free Software Foundation.
+
+# Remote to gdb
+#
+target remote :1234
+
+# Reload vmlinux for Image
+#
+add-symbol-file /xspace/OpenSource/BiscuitOS/BiscuitOS/output/linux-5.0-arm32/linux/linux/vmlinux 0x80100000 -s .head.text 0x80008000 -s .rodata 0x80800000 -s .init.text 0x80a002e0
+{% endhighlight %}
+
+获得数据如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000038.png)
+
+MMU 启用后，内核开始使用虚拟地址。从上面的数据可知，.head.text Addr 项对应的地址
+是 80008000, 因此 GDB 使用 add-symbol-file 重定位 vmlinux 的时候，需要使用
+-s 选项重新指定 .head.text section 的地址是 0x80008000; 同理，.rodata 的 Addr
+项是 80800000, 因此需要重新指定 .rodata section 的地址是 0x80800000. 最后，也是
+最关键的，在 GDB 中使用 add-symbol-file 命令重定位 vmlinux 的地址，这个地址就是
+vmlinux ELF 文件的 .text section 的地址，从图中可以看出，.text Addr 项是
+0x80100000, 因此加载地址就是 0x80100000, 通过这样的调整之后，vmlinux
+符号表就重定位到 Image 对应的位置上了。这里还要设计到 .init.text 的位置，和其他
+section 一样的设置方法。
+
+BiscuitOS 已经自动生成 gdb_RImage 文件，开发者只需按照教程 README 提示的步骤，
+就可以简单完成对该阶段代码的调试。
+
+--------------------------------------------------------------
 <span id="Linux_decompress_after"></span>
 
 ![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
@@ -620,21 +792,20 @@ BiscuitOS 已经自动生成 gdb_Image 文件，开发者只需按照教程 READ
 关于 start_kernel 之后的调试介绍如下：
 
 {% highlight bash %}
-# Debugging Linux Kernel
+# Debugging kernel after start_kernel
 
 ### First Terminal
 
 ```
-cd BiscuitOS/output/linux-5.0-arm32
+cd /xspace/OpenSource/BiscuitOS/BiscuitOS/output/linux-5.0-arm32
 ./RunQemuKernel.sh debug
 ```
 
 ### Second Terminal
 
 ```
-BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb BiscuitOS/output/linux-5.0-arm32/linux/linux/vmlinux
+BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb BiscuitOS/output/linux-5.0-arm32/linux/linux/vmlinux -x BiscuitOS/output/linux-5.0-arm32/package/gdb/gdb_Kernel
 
-(gdb) target remote :1234
 (gdb) b start_kernel
 (gdb) c
 (gdb) info reg
@@ -651,7 +822,7 @@ cd BiscuitOS/output/linux-5.0-arm32
 然后再打开第二个终端，第二个终端中输入如下命令：
 
 {% highlight bash %}
-BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb BiscuitOS/output/linux-5.0-arm32/linux/linux/vmlinux
+BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb BiscuitOS/output/linux-5.0-arm32/linux/linux/vmlinux -x BiscuitOS/output/linux-5.0-arm32/package/gdb/gdb_Kernel
 {% endhighlight %}
 
 此时第二个终端进入了 GDB 模式，开发者此时输入如下命令进行调试：
