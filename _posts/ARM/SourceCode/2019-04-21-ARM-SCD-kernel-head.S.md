@@ -62,6 +62,16 @@ tags:
 > - [__v7_setup](#__v7_setup)
 >
 > - [v7_invalidate_l1](#v7_invalidate_l1)
+>
+> - [__v7_setup_cont](#__v7_setup_cont)
+>
+> - [v7_ttb_setup](#v7_ttb_setup)
+>
+> - [__enable_mmu](#__enable_mmu)
+>
+> - [__mmap_switched](#__mmap_switched)
+>
+> - [start_kernel_last](#start_kernel_last)
 
 ### <span id="vmlinux first code">vmlinux 入口：第一行运行的代码</span>
 
@@ -2631,4 +2641,1111 @@ CSSIDR NumSets 域的值是 0x7f，代表 cache sets 的值为 0x80,；因此 ca
 
        and     r0, r0, #0x7
        add     r0, r0, #4      @ SetShift
+
+       clz     r1, r3          @ WayShift
+       add     r4, r3, #1      @ NumWays
 {% endhighlight %}
+
+代码首先将 0x7fff 的值存储在 r1 寄存器中，然后将 r0 寄存器的值右移 13 位，然后与
+0x7fff，并将相与的结果存储在 r2 寄存器中，以此获得 CCSIDR 寄存器 NumSets 域的值。
+接着用同样的办法，将 0x3ff 存储到 r1 寄存器中，然后将 r0 寄存器的值右移 3 位，
+然后与 r1 寄存器的值相与，结果存储在 r3 寄存器中，以此获得 CCSIDR 的 Associativity
+域值。将 r2 寄存器的值加 1 获得 Cache Set 的正确值。同理将 r0 寄存器的值与 0x7
+相与，以此获得 cache line 的值，然后将 r0 寄存器的值加 4。使用 clz 指令计算
+WayShift 的值，最后通过 add 指令，计算真实 Way 的值。开发者可以在适当的位置添加
+断点，然后使用 GDB 进行调试，调试结果如下：
+
+{% highlight haskell %}
+5.0-arm32/linux/linux/vmlinux" at
+	.text_addr = 0x60100000
+	.head.text_addr = 0x60008000
+	.rodata_addr = 0x60800000
+(gdb) b BS_debug
+Breakpoint 1 at 0x60118b58: file arch/arm/mm/cache-v7.S, line 41.
+(gdb) c
+Continuing.
+
+Breakpoint 1, v7_invalidate_l1 () at arch/arm/mm/cache-v7.S:41
+41	       movw    r1, #0x7fff
+(gdb) info reg r0
+r0             0xe00fe019          -535830503
+(gdb) n
+42	       and     r2, r1, r0, lsr #13
+(gdb) n
+44	       movw    r1, #0x3ff
+(gdb) info reg r2
+r2             0x7f                127
+(gdb) n
+46	       and     r3, r1, r0, lsr #3      @ NumWays - 1
+(gdb) n
+47	       add     r2, r2, #1              @ NumSets
+(gdb) info reg r3
+r3             0x3                 3
+(gdb) n
+49	       and     r0, r0, #0x7
+(gdb) info reg r2
+r2             0x80                128
+(gdb) n
+50	       add     r0, r0, #4      @ SetShift
+(gdb) info reg r0
+r0             0x1                 1
+(gdb) n
+52	       clz     r1, r3          @ WayShift
+(gdb) info reg r1 r3
+r1             0x3ff               1023
+r3             0x3                 3
+(gdb) n
+53	       add     r4, r3, #1      @ NumWays
+(gdb) info reg r1 r3
+r1             0x1e                30
+r3             0x3                 3
+(gdb) n
+54	1:     sub     r2, r2, #1      @ NumSets--
+(gdb) info reg r4
+r4             0x4                 4
+(gdb)
+{% endhighlight %}
+
+通过上面的实践已经知道内核是如何获得 Level 1 cache 的信息，至此，内核为什么要
+获得这些信息，以及内核如何 flush 所有的 cache line 呢？在讲其他代码之前，这里
+科普一下 ARMv7 flush 的方法，通过之前的介绍，ARMv7 使用 Cache Set/Way 的方式
+管理 cache，所以在 flush cache 的时候也是按 Set/Way 方式 flush cache。ARMv7
+提供了一个寄存器 DCCISW，只要往 DCCISW 寄存器中写入 Set 和 Way 信息之后，
+CPU 就会根据 DCCISW 中的信息去 flush 指定的 cache。DCCISW 的内存布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000029.png)
+
+通过寄存器的描述，知道上面的代码为什么要这样处理从 CSSIDR 寄存器中值，从 DCCISW
+的布局可以知道，只要往 DCCISW 最高位往地位写入 way 的信息，因此有了 "clz r1, r3"
+这行代码；同理， DCCISW Set 域指定需要刷新的 set，因此需要将指定的 Set 信息写入
+到这个域。因此接下来的代码如下：
+
+{% highlight haskell %}
+1:     sub     r2, r2, #1      @ NumSets--
+       mov     r3, r4          @ Temp = NumWays
+2:     subs    r3, r3, #1      @ Temp--
+       mov     r5, r3, lsl r1
+       mov     r6, r2, lsl r0
+       orr     r5, r5, r6      @ Reg = (Temp<<WayShift)|(NumSets<<SetShift)
+       mcr     p15, 0, r5, c7, c6, 2
+       bgt     2b
+       cmp     r2, #0
+       bgt     1b
+       dsb     st
+       isb
+       ret     lr
+{% endhighlight %}
+
+通过上面对 DCCISW 的描述，可以知道这段代码的主要任务就是按 Set/Way 的方式 flush
+cache，因此只要循环将 cache 按 Set/Way 方式写入，cache 就可以被 flush。
+首先 r2 寄存器存储着 cache set 的数量，这里可以将 set 理解为 “行” 的意思，然后
+r4 寄存器存储着 cache way 的数量，这里可以将 way 理解为 “列” 的意思。首先
+调用 "sub r2, r2, #1" 获得一个新的 set 号，再将 r4 寄存器的值也就是 way 的值
+存储到 r3 寄存器。通过 "subs r3, r3, #1" 获得一个新列，通过接下来几条命令，
+将 set 和 way 数据构造成 DCCISW 寄存器所需要的格式，然后调用
+"mcr p15, 0, r5, c7, c6, 2" 命令将值写入到 DCCISW 寄存器里，此时 CP15 c7 布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOTCP15C7.png)
+
+通过命令选中了 DCCISW 寄存器，然后通过 mcr 指令将数据写入到 DCCISW 寄存器里。
+以此反复，可以总结为每个 set 一共循环 way 次写 DCCISW 操作，因此总共循环了
+set * way - 1 次循环。执行完上面的命令之后，cache 已经被 flush 完毕，那么
+函数直接返回。
+
+再次回到 __v7_setup 即 __v7_ca9mp_setup, 继续执行代码如下：
+
+{% highlight haskell %}
+        ldmia   r12, {r1-r6, lr}
+#ifdef CONFIG_SMP
+        orr     r10, r10, #(1 << 6)             @ Enable SMP/nAMP mode
+        ALT_SMP(mrc     p15, 0, r0, c1, c0, 1)
+        ALT_UP(mov      r0, r10)                @ fake it for UP
+        orr     r10, r10, r0                    @ Set required bits
+        teq     r10, r0                         @ Were they already set?
+        mcrne   p15, 0, r10, c1, c0, 1          @ No, update register
+#endif
+{% endhighlight %}
+
+从调用 v7_invalidate_l1 中返回之后，调用 ldmia 指令将之前压入堆栈的寄存器
+全部返回给原有的寄存器。由于内核开启了 CONFIG_SMP 宏，那么系统支持 SMP，
+但也支持多核中单核心启动，因此上面代码的 ALT_SMP 代码将被丢弃，而使用 ALT_UP
+对应的代码。由之前的代码可以知道 r10 此时的值为 1，那么调用 orr 指令之后，r10
+寄存器变为了 0x40，再将 r10 寄存器的值存储到 r0 寄存器，接这几条命令之后使用
+teq 指令检查 r10 与 r0 是否相等，如果不相等，则执行 mcrne 指。通过上面的分析，
+r10 和 r0 在单 CPU 启动的时候是相等的，因此这段代码无实际意义。开发者可以在
+适当的位置添加断点，然后使用 GDB 进行调试，调试的结果如下：
+
+{% highlight haskell %}
+5.0-arm32/linux/linux/vmlinux" at
+	.text_addr = 0x60100000
+	.head.text_addr = 0x60008000
+	.rodata_addr = 0x60800000
+(gdb) b BS_debug
+Breakpoint 1 at 0x601196c8: file arch/arm/mm/proc-v7.S, line 299.
+(gdb) c
+Continuing.
+
+Breakpoint 1, BS_debug () at arch/arm/mm/proc-v7.S:299
+299		orr	r10, r10, #(1 << 6)		@ Enable SMP/nAMP mode
+(gdb) info reg r10
+r10            0x1                 1
+(gdb) n
+300		ALT_SMP(mrc	p15, 0, r0, c1, c0, 1)
+(gdb) info reg r10
+r10            0x41                65
+(gdb) info reg r0
+r0             0x5                 5
+(gdb) n
+302		orr	r10, r10, r0			@ Set required bits
+(gdb) info reg r0 r10
+r0             0x41                65
+r10            0x41                65
+(gdb) n
+303		teq	r10, r0				@ Were they already set?
+(gdb) info reg r0 r10
+r0             0x41                65
+r10            0x41                65
+(gdb) n
+304		mcrne	p15, 0, r10, c1, c0, 1		@ No, update register
+(gdb)
+{% endhighlight %}
+
+实践的结果和预期的一致。接下来执行的代码是：
+
+<span id="__v7_setup_cont"></span>
+{% highlight haskell %}
+__v7_setup_cont:
+        and     r0, r9, #0xff000000             @ ARM?
+        teq     r0, #0x41000000
+        bne     __errata_finish
+        and     r3, r9, #0x00f00000             @ variant
+        and     r6, r9, #0x0000000f             @ revision
+        orr     r6, r6, r3, lsr #20-4           @ combine variant and revision
+        ubfx    r0, r9, #4, #12                 @ primary part number
+
+        /* Cortex-A8 Errata */
+        ldr     r10, =0x00000c08                @ Cortex-A8 primary part number
+        teq     r0, r10
+        beq     __ca8_errata
+
+        /* Cortex-A9 Errata */
+        ldr     r10, =0x00000c09                @ Cortex-A9 primary part number
+        teq     r0, r10
+        beq     __ca9_errata
+{% endhighlight %}
+
+r9 寄存器存储着 CPUID 信息，通过 and 指令和 teq 指令联合使用，判断当前 CPU
+是不是 ARM，如果不是，直接跳转到 __errata_finish; 如果是则需要对特定的 ARM 系列进行
+处理。接着从 r9 寄存器中提取 24-27 bits 和 0-3 bits，然后组合成特定的数据，使用
+ubfx 继续拼凑数据并存储到 r0 寄存器。接着就是变量 Cortex-A 家族的表，使用 ldr 指令
+将 r10 寄存器设置为特定的值，然后检查 r0 与 r10 是否相等，如果相等则跳转到指定的
+处理函数。由于实践平台是 ARMv7 Cortex-A9MP，因此这里会跳转到 __ca9_errata，
+开发者可以在适当的位置添加断点，然后使用 GDB 进行调试，调试的情况如下：
+
+{% highlight haskell %}
+5.0-arm32/linux/linux/vmlinux" at
+	.text_addr = 0x60100000
+	.head.text_addr = 0x60008000
+	.rodata_addr = 0x60800000
+(gdb) b BS_debug
+Breakpoint 1 at 0x6011970c: file arch/arm/mm/proc-v7.S, line 476.
+(gdb) c
+Continuing.
+
+Breakpoint 1, __v7_setup () at arch/arm/mm/proc-v7.S:476
+476		and	r0, r9, #0xff000000		@ ARM?
+(gdb) n
+477		teq	r0, #0x41000000
+(gdb) info reg r9
+r9             0x410fc090          1091551376
+(gdb) n
+478		bne	__errata_finish
+(gdb) n
+479		and	r3, r9, #0x00f00000		@ variant
+(gdb) n
+480		and	r6, r9, #0x0000000f		@ revision
+(gdb) n
+481		orr	r6, r6, r3, lsr #20-4		@ combine variant and revision
+(gdb) n
+482		ubfx	r0, r9, #4, #12			@ primary part number
+(gdb) n
+485		ldr	r10, =0x00000c08		@ Cortex-A8 primary part number
+(gdb) n
+486		teq	r0, r10
+(gdb) n
+487		beq	__ca8_errata
+(gdb) n
+490		ldr	r10, =0x00000c09		@ Cortex-A9 primary part number
+(gdb) n
+491		teq	r0, r10
+(gdb) s
+492		beq	__ca9_errata
+(gdb) s
+__ca9_errata () at arch/arm/mm/proc-v7.S:368
+368		b	__errata_finish
+(gdb)
+{% endhighlight %}
+
+实践的结果和分析的一致，最后跳转到 __ca9_errata, 接下来的代码如下：
+
+{% highlight haskell %}
+__ca9_errata:
+#ifdef CONFIG_ARM_ERRATA_742230
+        cmp     r6, #0x22                       @ only present up to r2p2
+        mrcle   p15, 0, r0, c15, c0, 1          @ read diagnostic register
+        orrle   r0, r0, #1 << 4                 @ set bit #4
+        mcrle   p15, 0, r0, c15, c0, 1          @ write diagnostic register
+#endif
+#ifdef CONFIG_ARM_ERRATA_742231
+        teq     r6, #0x20                       @ present in r2p0
+        teqne   r6, #0x21                       @ present in r2p1
+        teqne   r6, #0x22                       @ present in r2p2
+        mrceq   p15, 0, r0, c15, c0, 1          @ read diagnostic register
+        orreq   r0, r0, #1 << 12                @ set bit #12
+        orreq   r0, r0, #1 << 22                @ set bit #22
+        mcreq   p15, 0, r0, c15, c0, 1          @ write diagnostic register
+#endif
+#ifdef CONFIG_ARM_ERRATA_743622
+        teq     r3, #0x00200000                 @ only present in r2p*
+        mrceq   p15, 0, r0, c15, c0, 1          @ read diagnostic register
+        orreq   r0, r0, #1 << 6                 @ set bit #6
+        mcreq   p15, 0, r0, c15, c0, 1          @ write diagnostic register
+#endif
+#if defined(CONFIG_ARM_ERRATA_751472) && defined(CONFIG_SMP)
+        ALT_SMP(cmp r6, #0x30)                  @ present prior to r3p0
+        ALT_UP_B(1f)
+        mrclt   p15, 0, r0, c15, c0, 1          @ read diagnostic register
+        orrlt   r0, r0, #1 << 11                @ set bit #11
+        mcrlt   p15, 0, r0, c15, c0, 1          @ write diagnostic register
+1:
+#endif
+        b       __errata_finish
+{% endhighlight %}
+
+由于 CONFIG_ARM_ERRATA_742230 宏，CONFIG_ARM_ERRATA_742231 宏，
+CONFIG_ARM_ERRATA_743622 宏，CONFIG_ARM_ERRATA_751472 宏在本实践中都为打开，
+因此 __ca9_errata 只执行了 "b __errata_finish"，那么接下来执行的代码如下：
+
+{% highlight haskell %}
+__errata_finish:
+        mov     r10, #0
+        mcr     p15, 0, r10, c7, c5, 0          @ I+BTB cache invalidate
+#ifdef CONFIG_MMU
+        mcr     p15, 0, r10, c8, c7, 0          @ invalidate I + D TLBs
+        v7_ttb_setup r10, r4, r5, r8, r3        @ TTBCR, TTBRx setup
+        ldr     r3, =PRRR                       @ PRRR
+        ldr     r6, =NMRR                       @ NMRR
+        mcr     p15, 0, r3, c10, c2, 0          @ write PRRR
+        mcr     p15, 0, r6, c10, c2, 1          @ write NMRR
+#endif
+        dsb
+{% endhighlight %}
+
+接下来这段代码就是 MMU 设置的核心代码，在分析代码之前，先讲解涉及的相关寄存器。
+"mcr p15, 0, r10, c7, c5, 0" 代码中，对 CP15 C7 中的寄存器操作，此时布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOTCP15C7.png)
+
+CP15 C7 是与 Cache 维护和地址转换有关的寄存器，此时选中寄存器：
+ICIALLU, Invalidate all instruction caches to PoU. 对该寄存器执行写操作会引起
+所有指令 cache 无效(PoU)。下一个涉及的寄存器位于 CP15 C8 里，其包含了很多 TLB 相关
+的寄存器，其布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOTCP15C8.png)
+
+"mcr p15, 0, r10, c8, c7, 0" 涉及的寄存器是：TLBIALL, invalidate unified TLB.
+往这个寄存器里面写操作会导致所有的 TLB 无效。下一个涉及的寄存器位于 CP15 c10 里，
+其包含了内存的重映射和 TLB 控制操作，其布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOTCP15C10.png)
+
+"mcr p15, 0, r3, c10, c2, 0" 涉及的寄存器是：PRRR, Primary Region Remap Register,
+其布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000046.png)
+
+接下来涉及的寄存器也在 CP15 c10 里，"mcr p15, 0, r6, c10, c2, 1" 涉及的寄存器是：
+NMRR, Normal Memory Remap Register, 其内存布局是：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000047.png)
+
+更多寄存器描述请看 ARMv7 Usermanual。接下来分析代码。首先将 r10 寄存器设置为 0，
+然后执行 "mcr p15, 0, r10, c7, c5, 0" 代码，向 ICIALLU 寄存器，这样会让
+I-BTB cache 无效。由于启用了 MMU，那么 CONFIG_MMU 宏启用，接下来执行
+"mcr p15, 0, r10, c8, c7, 0" 代码，向 TLBIALL 寄存器写入 0，导致
+I-TLBs 和 D-TLBs 无效。接下来执行代码 "v7_ttb_setup r10, r4, r5, r8, r3",
+其中 v7_ttb_setup 的定义如下：
+
+<span id="v7_ttb_setup"></span>
+{% highlight haskell %}
+        /*
+         * Macro for setting up the TTBRx and TTBCR registers.
+         * - \ttb0 and \ttb1 updated with the corresponding flags.
+         */
+        .macro  v7_ttb_setup, zero, ttbr0l, ttbr0h, ttbr1, tmp
+        mcr     p15, 0, \zero, c2, c0, 2        @ TTB control register
+        ALT_SMP(orr     \ttbr0l, \ttbr0l, #TTB_FLAGS_SMP)
+        ALT_UP(orr      \ttbr0l, \ttbr0l, #TTB_FLAGS_UP)
+        ALT_SMP(orr     \ttbr1, \ttbr1, #TTB_FLAGS_SMP)
+        ALT_UP(orr      \ttbr1, \ttbr1, #TTB_FLAGS_UP)
+        mcr     p15, 0, \ttbr1, c2, c0, 1       @ load TTB1
+        .endm
+{% endhighlight %}
+
+v7_ttb_setup 宏主要的作用是：
+v7_ttb_setup 首先执行的代码是 "mcr p15, 0, \zero, c2, c0, 2", 此时涉及 CP15 C2,
+其布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOTCP15C2.png)
+
+代码写入的寄存器是： TTBCR, Translation Table Base Control Register.
+TTBCR 寄存器用于控制地址转换，其布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000015.png)
+
+由于本实践平台支持 SMP 单核心启动，因此 v7_ttb_setup 宏中 ALT_SMP 代码不执行，只
+执行 ALT_UP 宏包含的代码，因此 v7_ttb_setup 宏首先向 TTBCR 寄存器中写入 0，初始化
+TTBCR 寄存器。接着使用两条 orr 指令对 ttbr0l 和 ttbr1 参数添加了 TTB_FLAGS_UP
+标志。然后执行 "mcr p15, 0, \ttbr1, c2, c0, 1", 其涉及到 TTBR1 寄存器，
+该寄存器 Translation Table Base Register 1. 所以 v7_ttb_setup 的作用就是
+清零 TTBCR 寄存器，然后向 TTB1 寄存器中写入带 TTB_FLAGS_UP 标志的值。回到
+__errata_finish，继续分析代码：
+
+{% highlight haskell %}
+#ifdef CONFIG_MMU
+        mcr     p15, 0, r10, c8, c7, 0          @ invalidate I + D TLBs
+        v7_ttb_setup r10, r4, r5, r8, r3        @ TTBCR, TTBRx setup
+        ldr     r3, =PRRR                       @ PRRR
+        ldr     r6, =NMRR                       @ NMRR
+        mcr     p15, 0, r3, c10, c2, 0          @ write PRRR
+        mcr     p15, 0, r6, c10, c2, 1          @ write NMRR
+#endif
+{% endhighlight %}
+
+继续上面的分析，调用 v7_ttb_setup 设置了 TTBCR 和 TTBR1 寄存器，然后将 r3 的值
+设置为 PRRR，这里可以分析对 PRRR 寄存器的设置，PRRR 宏的定义如下：
+
+{% highlight haskell %}
+        /*
+         * Memory region attributes with SCTLR.TRE=1
+         *
+         *   n = TEX[0],C,B
+         *   TR = PRRR[2n+1:2n]         - memory type
+         *   IR = NMRR[2n+1:2n]         - inner cacheable property
+         *   OR = NMRR[2n+17:2n+16]     - outer cacheable property
+         *
+         *                      n       TR      IR      OR
+         *   UNCACHED           000     00
+         *   BUFFERABLE         001     10      00      00
+         *   WRITETHROUGH       010     10      10      10
+         *   WRITEBACK          011     10      11      11
+         *   reserved           110
+         *   WRITEALLOC         111     10      01      01
+         *   DEV_SHARED         100     01
+         *   DEV_NONSHARED      100     01
+         *   DEV_WC             001     10
+         *   DEV_CACHED         011     10
+         *
+         * Other attributes:
+         *
+         *   DS0 = PRRR[16] = 0         - device shareable property
+         *   DS1 = PRRR[17] = 1         - device shareable property
+         *   NS0 = PRRR[18] = 0         - normal shareable property
+         *   NS1 = PRRR[19] = 1         - normal shareable property
+         *   NOS = PRRR[24+n] = 1       - not outer shareable
+         */
+.equ    PRRR,   0xff0a81a8
+.equ    NMRR,   0x40e040e0
+{% endhighlight %}
+
+首先解析 PRRR 对于 PRRR 寄存器的设置。每个页表项同包含了 TEX[0],C,B 三个位，这
+三个位按下表的方式组成一个 n 值：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000015.png)
+
+通过上面的 n 值可以在 PRRR 寄存器中找到对应的 NOSn 域和 TRn 域，这些域都说明了
+不同的内存类型的属性，由于这部分比较复杂，更多细节请看：
+
+> [ARMv7 Memory Manual]()
+
+NMRR 提供了附加的映射控制域，其也通过页表的 TEX[0],C,B 位决定，由于这部分比较复杂，
+更多详细内容，请看上面提供的文档。回到 __errata_finish，继续分析代码：
+
+{% highlight haskell %}
+#ifdef CONFIG_MMU
+        mcr     p15, 0, r10, c8, c7, 0          @ invalidate I + D TLBs
+        v7_ttb_setup r10, r4, r5, r8, r3        @ TTBCR, TTBRx setup
+        ldr     r3, =PRRR                       @ PRRR
+        ldr     r6, =NMRR                       @ NMRR
+        mcr     p15, 0, r3, c10, c2, 0          @ write PRRR
+        mcr     p15, 0, r6, c10, c2, 1          @ write NMRR
+#endif
+        dsb
+{% endhighlight %}
+
+接着两条 mcr 指令将 PRRR 的值写入了 PRRR 寄存器，同理将 NMRR 的值写入到 NMRR 寄存器，
+写入之后，页表映射的属性已经设置好了。通过上面的指令，内核已经设置好了页表转换需要
+的基地址寄存器 TTBR 和控制器 TTBCR，以及页表映射属性 PRRR 和控制指令 NMRR，更多
+页表内容请看：
+
+[ARMv7 分页原理及实践教程]()
+
+最后执行一条 dsb 内存屏蔽指令让上面的设置有效，接下来执行的代码是：
+
+{% highlight haskell %}
+#ifndef CONFIG_ARM_THUMBEE
+        mrc     p15, 0, r0, c0, c1, 0           @ read ID_PFR0 for ThumbEE
+        and     r0, r0, #(0xf << 12)            @ ThumbEE enabled field
+        teq     r0, #(1 << 12)                  @ check if ThumbEE is present
+        bne     1f
+        mov     r3, #0
+        mcr     p14, 6, r3, c1, c0, 0           @ Initialize TEEHBR to 0
+        mrc     p14, 6, r0, c0, c0, 0           @ load TEECR
+        orr     r0, r0, #1                      @ set the 1st bit in order to
+        mcr     p14, 6, r0, c0, c0, 0           @ stop userspace TEEHBR access
+1:
+#endif
+{% endhighlight %}
+
+这段代码的主要任务就是设置 ThumbEE，检查当前系统是否支持 ThumbEE, 如果支持就将
+TEEHBR 寄存器设置为 0，然后设置 TEECR 寄存器，使 Unprivileged access disabled。
+代码 "mrc p15, 0, r0, c0, c1, 0" 首先读取 ID_PFR0 寄存器，其寄存器布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000051.png)
+
+其中 State3 域 bits[15:12] 指明系统是否支持 ThumbEE, 该域为 1 代表支持 ThumbEE;
+如果该域为 0， 则代表不支持 ThumbEE。代码中获得该域之后，使用 teq 指令对该域进行对比，
+如果支持，则继续执行，如果不支持，则跳转到 1 处继续执行。由于 ARMv7 支持 ThumbEE，
+那么继续执行下面代码，首先将 r3 寄存器设置为 0， 然后调用 "mcr p14, 6, r3, c1, c0, 0"
+代码将 0 写入到 TEEHBR 寄存器，TEEHBR 寄存器的布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000049.png)
+
+将 TEEHBR 寄存器设置为了 0 之后，初始化了 TEEHBR 寄存器。接着执行代码
+"mrc p14, 6, r0, c0, c0, 0" 读取 TEECR 寄存器，寄存器布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000050.png)
+
+接着调用 orr 指令将 TEECR 的 bit0 置位，这样就会使 Unprivileged access disabled.
+最后将 r0 寄存器的写入到 TEECR 寄存器。开发者可以在适当的位置添加断点，然后使用
+GDB 进行调试，调试的情况如下：
+
+{% highlight haskell %}
+5.0-arm32/linux/linux/vmlinux" at
+	.text_addr = 0x60100000
+	.head.text_addr = 0x60008000
+	.rodata_addr = 0x60800000
+(gdb) b BS_debug
+Breakpoint 1 at 0x60119794: file arch/arm/mm/proc-v7.S, line 522.
+(gdb) c
+Continuing.
+
+Breakpoint 1, __v7_setup () at arch/arm/mm/proc-v7.S:522
+522		mrc	p15, 0, r0, c0, c1, 0		@ read ID_PFR0 for ThumbEE
+(gdb) n
+523		and	r0, r0, #(0xf << 12)		@ ThumbEE enabled field
+(gdb) info reg r0
+r0             0x1031              4145
+(gdb) n
+524		teq	r0, #(1 << 12)			@ check if ThumbEE is present
+(gdb) n
+525		bne	1f
+(gdb) n
+526		mov	r3, #0
+(gdb) n
+527		mcr	p14, 6, r3, c1, c0, 0		@ Initialize TEEHBR to 0
+(gdb) info reg r3
+r3             0x0                 0
+(gdb) n
+528		mrc	p14, 6, r0, c0, c0, 0		@ load TEECR
+(gdb) n
+529		orr	r0, r0, #1			@ set the 1st bit in order to
+(gdb) info reg r0
+r0             0x0                 0
+(gdb) n
+530		mcr	p14, 6, r0, c0, c0, 0		@ stop userspace TEEHBR access
+(gdb) info reg r0
+r0             0x1                 1
+(gdb) n
+533		adr	r3, v7_crval
+(gdb)
+{% endhighlight %}
+
+GDB 实践的结果符合预期，接下来执行的代码如下：
+
+{% highlight haskell %}
+        adr     r3, v7_crval
+        ldmia   r3, {r3, r6}
+ ARM_BE8(orr    r6, r6, #1 << 25)               @ big-endian page tables
+#ifdef CONFIG_SWP_EMULATE
+        orr     r3, r3, #(1 << 10)              @ set SW bit in "clear"
+        bic     r6, r6, #(1 << 10)              @ clear it in "mmuset"
+#endif
+        mrc     p15, 0, r0, c1, c0, 0           @ read control register
+        bic     r0, r0, r3                      @ clear bits them
+        orr     r0, r0, r6                      @ set them
+ THUMB( orr     r0, r0, #1 << 30        )       @ Thumb exceptions
+        ret     lr                              @ return to head.S:__ret
+{% endhighlight %}
+
+这段代码的主要任务就是构造一段数据，用于设置 SCTLR 寄存器。SCTLR 寄存器的布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000014.png)
+
+其中，ARMv7 中内核想将 SCTLR 寄存器设置为指定内容，将需要设置的内容存储在 v7_crval,
+其源码如下：
+
+{% highlight haskell %}
+        /*   AT
+         *  TFR   EV X F   I D LR    S
+         * .EEE ..EE PUI. .T.T 4RVI ZWRS BLDP WCAM
+         * rxxx rrxx xxx0 0101 xxxx xxxx x111 xxxx < forced
+         *   01    0 110       0011 1100 .111 1101 < we want
+         */
+        .align  2
+        .type   v7_crval, #object
+v7_crval:
+        crval   clear=0x2120c302, mmuset=0x10c03c7d, ucset=0x00c01c7c
+{% endhighlight %}
+
+从上面的定义可以看出，内核想将 SCTLR 寄存器设置为指定内容，即有些 bit 位必须
+设置为已知状态，那么就分析一下这些位的含义：
+
+{% highlight haskell %}
+M,bit[0] MMU enable.
+        该位置位之后， PL1&0 Stage 1 MMU 使能。
+A,bit[1] Alignment check enable.
+        该位清零，那么 Alignment fault checking disabled.
+C,bit[2] Cache enable.
+        该位置位，Data and unified cache 使能。
+Bits[4:3] Reserved,RAO/SBOP
+
+CP15BEN,bit[5] CP15 barrier enable.
+        该位置位，CP15 支持内存屏蔽操作。可以直接使用 isb，dsb，以及 dmb 指令。
+Bit[9:6] Reserved，RAO/SBOP
+
+SW,bit[10] SWP and SWPB enable.
+        该位置位，SWP 和 SWPB 指令可以使用。
+Z,bit[11] Branch prediction enable.
+        该位置位，程序分支预测使能。
+I,bit[12] Instruction cache enable.
+        该位置位，指令 cache 启用。
+V,bit[13] Vector bit.
+        该位置位，High exception vector (Hivecs), 基地址是 0xFFFF0000.
+RR,bit[14] Round Robin select.
+        该位清零，Cache 采用正常的替换策略，例如随机替换。
+Bit[15] Reserved, RAZ/SBZP
+
+FI,bit[21] Fast interrupts configuration enable.
+        该位清零，All performance features enabled。
+U,bit[23:22] RAO/SBOP.
+
+VE,bit[24], Interrupt Vector Enable.
+        该位清零，User the FIQ and IRQ vector from thevector table。
+TRE,bit[28] TEX remap enable.
+        该位置位，TEX remap 使能。TEX[0],C,B bits, with the MMU remap register
+        describe region attributes.
+AFE,bit[29] Access flag enable.
+        该位置位，在页表项中，AP[0] 是 Access 标志。
+{% endhighlight %}
+
+上面的代码中，就是够着了上面的 SCTLR 寄存器的描述，并存储在 r0 寄存器中，最后返回
+arch/arm/kernel/head.S 处继续执行，开发者可以在适当的位置添加断点，然后使用 GDB
+进行调试，调试的情况如下：
+
+{% highlight haskell %}
+5.0-arm32/linux/linux/vmlinux" at
+	.text_addr = 0x60100000
+	.head.text_addr = 0x60008000
+	.rodata_addr = 0x60800000
+(gdb) b BS_debug
+Breakpoint 1 at 0x601197b8: file arch/arm/mm/proc-v7.S, line 533.
+(gdb) c
+Continuing.
+
+Breakpoint 1, __v7_setup () at arch/arm/mm/proc-v7.S:533
+533		adr	r3, v7_crval
+(gdb) n
+534		ldmia	r3, {r3, r6}
+(gdb) n
+537		orr     r3, r3, #(1 << 10)              @ set SW bit in "clear"
+(gdb) info reg r3 r6
+r3             0x2120c302          555795202
+r6             0x10c03c7d          281033853
+(gdb) n
+538		bic     r6, r6, #(1 << 10)              @ clear it in "mmuset"
+(gdb) n
+540	   	mrc	p15, 0, r0, c1, c0, 0		@ read control register
+(gdb) info reg r3 r6
+r3             0x2120c702          555796226
+r6             0x10c0387d          281032829
+(gdb) n
+541		bic	r0, r0, r3			@ clear bits them
+(gdb) info reg r0 r3 r6
+r0             0xc55070            12931184
+r3             0x2120c702          555796226
+r6             0x10c0387d          281032829
+(gdb) n
+542		orr	r0, r0, r6			@ set them
+(gdb) info reg r0 r3 r6
+r0             0xc51070            12914800
+r3             0x2120c702          555796226
+r6             0x10c0387d          281032829
+(gdb) n
+544		ret	lr				@ return to head.S:__ret
+(gdb) info reg r0 r3 r6
+r0             0x10c5387d          281360509
+r3             0x2120c702          555796226
+r6             0x10c0387d          281032829
+(gdb)
+{% endhighlight %}
+
+通过实践可以知道最终 r0 寄存器的值是 0x10c5387d, 这正好与 v7_crval 中的设定是一
+致的，处理 bit[10] 与 v7_crval 不一致，是因为内核支持 CONFIG_SWP_EMULATE 宏，
+将该 bit 清零了。接着执行返回指令，返回到 arch/arm/kernel/head.S 处继续执行。
+
+<span id="__enable_mmu"></span>
+{% highlight haskell %}
+/*
+ * Setup common bits before finally enabling the MMU.  Essentially
+ * this is just loading the page table pointer and domain access
+ * registers.  All these registers need to be preserved by the
+ * processor setup function (or set in the case of r0)
+ *
+ *  r0  = cp#15 control register
+ *  r1  = machine ID
+ *  r2  = atags or dtb pointer
+ *  r4  = TTBR pointer (low word)
+ *  r5  = TTBR pointer (high word if LPAE)
+ *  r9  = processor ID
+ *  r13 = *virtual* address to jump to upon completion
+ */
+__enable_mmu:
+#if defined(CONFIG_ALIGNMENT_TRAP) && __LINUX_ARM_ARCH__ < 6
+        orr     r0, r0, #CR_A
+#else
+        bic     r0, r0, #CR_A
+#endif
+#ifdef CONFIG_CPU_DCACHE_DISABLE
+        bic     r0, r0, #CR_C
+#endif
+#ifdef CONFIG_CPU_BPREDICT_DISABLE
+        bic     r0, r0, #CR_Z
+#endif
+#ifdef CONFIG_CPU_ICACHE_DISABLE
+        bic     r0, r0, #CR_I
+#endif
+#ifdef CONFIG_ARM_LPAE
+        mcrr    p15, 0, r4, r5, c2              @ load TTBR0
+#else
+        mov     r5, #DACR_INIT
+        mcr     p15, 0, r5, c3, c0, 0           @ load domain access register
+        mcr     p15, 0, r4, c2, c0, 0           @ load page table pointer
+#endif
+        b       __turn_mmu_on
+ENDPROC(__enable_mmu)
+{% endhighlight %}
+
+__enable_mmu 主要任务就是打开 MMU，在这里主要就是加载页表和 domain 访问域。
+在执行到 __enable_mmu 的时候，r0 寄存器存储着 SCTLR 寄存器需要写入的值；r1 寄存
+器存储着 Mahine ID 信息；r2 寄存器存储着 ATAGS 或者 DTB 的地址；r4 存储着 TTBR0
+将要写入的值；r5 存储着 TTBR1 将要写入的值；r9 寄存器存储着处理器相关的 ID；r13 寄
+存器存储将要跳转到的位置。首先判断 CONFIG_ALIGNMENT_TRAP 宏和 __LINUX_ARM_ARCH__
+是否小于 6，由于 ARMv7 __LINUX_ARM_ARCH__ 大于 6，因此执行 "bic r0, r0, #CR_A",
+将 r0 寄存器 CR_A 对应的位清零，当写入 SCTLR 寄存时会影响
+"bit[1] Alignment check enable", 不启用对齐检测。接着由于都没有定义宏
+CONFIG_CPU_DCACHE_DISABLE，CONFIG_CPU_BPREDICT_DISABLE，CONFIG_CPU_ICACHE_DISABLE，
+以及 CONFIG_ARM_LPAE，因此接下来执行的代码是 "mov r5, #DACR_INIT", DACR_INIT
+定义如下：
+
+{% highlight haskell %}
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+#define DACR_INIT \
+        (domain_val(DOMAIN_USER, DOMAIN_NOACCESS) | \
+         domain_val(DOMAIN_KERNEL, DOMAIN_MANAGER) | \
+         domain_val(DOMAIN_IO, DOMAIN_CLIENT) | \
+         domain_val(DOMAIN_VECTORS, DOMAIN_CLIENT))
+#else
+#define DACR_INIT \
+        (domain_val(DOMAIN_USER, DOMAIN_CLIENT) | \
+         domain_val(DOMAIN_KERNEL, DOMAIN_MANAGER) | \
+         domain_val(DOMAIN_IO, DOMAIN_CLIENT) | \
+         domain_val(DOMAIN_VECTORS, DOMAIN_CLIENT))
+#endif
+{% endhighlight %}
+
+由于 CONFIG_CPU_SW_DOMAIN_PAN 宏定义，所以 r5 寄存器存储了 DOMAIN_USER，
+DOMAIN_NOACCESS，DOMAIN_KERNEL，DOMAIN_MANAGER，DOMAIN_IO，DOMAIN_CLIENT，
+DOMAIN_VECTORS，DOMAIN_CLIENT。接着将 r5 寄存器通过代码
+"mcr p15, 0, r5, c3, c0, 0" 写入了到寄存器，这里涉及到 CP15 C3 有关，其布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOTCP15C3.png)
+
+通过代码选中了 DACR, Domain Access Control Register. 其寄存器布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000052.png)
+
+向每个域中写入了访问权限。接着通过代码 "mcr p15, 0, r4, c2, c0, 0" 将 r4 寄存器
+的值写入到 TTBR0 寄存器，也就是写入页表的基地址。注意此时写入的是物理地址，而不是
+虚拟地址。开发者可以在适当的位置添加断点，然后使用断点调试，调试情况如下：
+
+{% highlight haskell %}
+5.0-arm32/linux/linux/vmlinux" at
+	.text_addr = 0x60100000
+	.head.text_addr = 0x60008000
+	.rodata_addr = 0x60800000
+(gdb) b BS_debug
+Breakpoint 1 at 0x6010254c: file arch/arm/kernel/head.S, line 454.
+(gdb) c
+Continuing.
+
+Breakpoint 1, __enable_mmu () at arch/arm/kernel/head.S:454
+454		bic	r0, r0, #CR_A
+(gdb) info reg r0 r1 r2 r4 r5 r9 r13
+r0             0x10c5387d          281360509
+r1             0x8e0               2272
+r2             0x69cff000          1775235072
+r4             0x60004059          1610629209
+r5             0x601               1537
+r9             0x410fc090          1091551376
+r13            0x80a002e0          0x80a002e0 <__mmap_switched>
+(gdb) n
+468		mov	r5, #DACR_INIT
+(gdb) n
+469		mcr	p15, 0, r5, c3, c0, 0		@ load domain access register
+(gdb) info reg r5
+r5             0x51                81
+(gdb) n
+470		mcr	p15, 0, r4, c2, c0, 0		@ load page table pointer
+(gdb) info reg r4
+r4             0x60004059          1610629209
+(gdb) n
+472		b	__turn_mmu_on
+(gdb)
+{% endhighlight %}
+
+调试情况和预期一致，接下来跳转到 __turn_mmu_on 处执行，代码如下：
+
+{% highlight haskell %}
+/*
+ * Enable the MMU.  This completely changes the structure of the visible
+ * memory space.  You will not be able to trace execution through this.
+ * If you have an enquiry about this, *please* check the linux-arm-kernel
+ * mailing list archives BEFORE sending another post to the list.
+ *
+ *  r0  = cp#15 control register
+ *  r1  = machine ID
+ *  r2  = atags or dtb pointer
+ *  r9  = processor ID
+ *  r13 = *virtual* address to jump to upon completion
+ *
+ * other registers depend on the function called upon completion
+ */
+        .align  5
+        .pushsection    .idmap.text, "ax"
+ENTRY(__turn_mmu_on)
+        mov     r0, r0
+        instr_sync
+        mcr     p15, 0, r0, c1, c0, 0           @ write control reg
+        mrc     p15, 0, r3, c0, c0, 0           @ read id reg
+        instr_sync
+        mov     r3, r3
+        mov     r3, r13
+        ret     r3
+__turn_mmu_on_end:
+ENDPROC(__turn_mmu_on)
+        .popsection
+{% endhighlight %}
+
+这段代码的主要任务就是向 SCTLR 寄存器写入设置好的值，然后就可以启用 MMU。
+代码首先执行了一条伪 nop 代码 "mov r0, r0", 然后调用 instr_sync 宏，这个宏
+起到 isb 的作用，定义如下：
+
+{% highlight haskell %}
+/*
+ * Instruction barrier
+ */
+        .macro  instr_sync
+#if __LINUX_ARM_ARCH__ >= 7
+        isb
+#elif __LINUX_ARM_ARCH__ == 6
+        mcr     p15, 0, r0, c7, c5, 4
+#endif
+        .endm
+{% endhighlight %}
+
+这里添加 isb 的作用就是在向 SCTLR 写入之前，让之前所有指令和流水线都同步完成之后
+才执行 isb 之后的指令。接下来执行 "mcr p15, 0, r0, c1, c0, 0", 将之前配置好
+的 SCTLR 内容都写到 SCTLR 寄存器里，然后读取 MIDR 寄存器，最后执行一条 isb 指令，
+使刚刚设置的内容都生效。至此，MMU 启动，虚拟地址开始使用。接下来将 r13 寄存器
+存储的虚拟地址赋值给 r3，然后直接跳转到 r3 对应的虚拟地址处执行。根据之前的实践
+分析可以知道，r3 对应的地址是 __mmap_switched 的虚拟地址。开发者可以在适当的位置
+添加断点，然后使用 GDB 进行调试，调试情况如下：
+
+{% highlight haskell %}
+5.0-arm32/linux/linux/vmlinux" at
+	.text_addr = 0x60100000
+	.head.text_addr = 0x60008000
+	.rodata_addr = 0x60800000
+(gdb) b BS_debug
+Breakpoint 1 at 0x60100000: file arch/arm/kernel/head.S, line 492.
+(gdb) c
+Continuing.
+
+Breakpoint 1, __turn_mmu_on () at arch/arm/kernel/head.S:492
+492		mov	r0, r0
+(gdb) n
+493		instr_sync
+(gdb) n
+494		mcr	p15, 0, r0, c1, c0, 0		@ write control reg
+(gdb) info reg r0
+r0             0x10c5387d          281360509
+(gdb) n
+495		mrc	p15, 0, r3, c0, c0, 0		@ read id reg
+(gdb) n
+496		instr_sync
+(gdb) info reg r3
+r3             0x410fc090          1091551376
+(gdb) n
+497		mov	r3, r3
+(gdb) n
+498		mov	r3, r13
+(gdb) n
+499		ret	r3
+(gdb) info reg r13
+r13            0x80a002e0          0x80a002e0 <__mmap_switched>
+(gdb) s
+0x80a002e0 in __mmap_switched ()
+(gdb) ni
+{% endhighlight %}
+
+通过上面的实践已经看到内核已经跳转到 __mmap_switched 处继续执行，那么接下来
+执行的代码是：
+
+<span id="__mmap_switched"></span>
+{% highlight haskell %}
+/*
+ * The following fragment of code is executed with the MMU on in MMU mode,
+ * and uses absolute addresses; this is not position independent.
+ *
+ *  r0  = cp#15 control register
+ *  r1  = machine ID
+ *  r2  = atags/dtb pointer
+ *  r9  = processor ID
+ */
+        __INIT
+__mmap_switched:
+ENTRY(BS_debug)
+        mov     r7, r1
+        mov     r8, r2
+        mov     r10, r0
+
+        adr     r4, __mmap_switched_data
+        mov     fp, #0
+{% endhighlight %}
+
+这里开始执行的代码 MMU 已经打开，所有使用的是虚拟地址，__mmap_switched 是为跳转到
+start_kernel 做准备。在执行这段代码之前，r0 寄存器存储着 SCTLR 控制器的配置内容；
+r1 寄存器存储着 machine ID；r2 寄存器存储着 DTB/ATAGS 的虚拟地址；r9 寄存存储着
+处理器 ID。代码首先将 r1,r2,r0 寄存器的值赋值给 r7,r8,r9 寄存器，然后使用 adr 指令
+获得 __mmap_switched_data 的虚拟地址，__mmap_switched_data 的定义如下：
+
+{% highlight haskell %}
+        .align  2
+        .type   __mmap_switched_data, %object
+__mmap_switched_data:
+        .long   __bss_start                     @ r0
+        .long   __bss_stop                      @ r1
+        .long   init_thread_union + THREAD_START_SP @ sp
+
+        .long   processor_id                    @ r0
+        .long   __machine_arch_type             @ r1
+        .long   __atags_pointer                 @ r2
+        .long   cr_alignment                    @ r3
+        .size   __mmap_switched_data, . - __mmap_switched_data
+{% endhighlight %}
+
+在 __mmap_switched_data 数据中，__bss_start 指向 .bss 段的起始地址；__bss_stop
+指向 .bss 段的终止地址；init_thread_union 是 init_task 使用其描述的内存区域作为
+该进程的堆栈空间，并且和自身的 thread_info 参数共用这部分内存空间。processor_id
+存储着处理器 ID；__machine_arch_type 变量用于存储 machine type; __atags_pointer
+指向 ATAGS 或者 DTB 的指针， cr_alignment 对齐信息。在回到 __mmap_switched，
+继续执行代码 "mov fp, #0" 将 fp 寄存器设置为 0。开发者可以在适当的位置添加断点，
+使用 GDB 进行调试，调试情况如下：
+
+{% highlight haskell %}
+5.0-arm32/linux/linux/vmlinux" at
+	.text_addr = 0x80100000
+	.head.text_addr = 0x80008000
+	.rodata_addr = 0x80800000
+	.init.text_addr = 0x80a002e0
+(gdb) b BS_debug
+Breakpoint 1 at 0x80a002e0: file arch/arm/kernel/head-common.S, line 83.
+(gdb) c
+Continuing.
+
+Breakpoint 1, __mmap_switched () at arch/arm/kernel/head-common.S:83
+83		mov	r7, r1
+(gdb) n
+84		mov	r8, r2
+(gdb) n
+85		mov	r10, r0
+(gdb) n
+87		adr	r4, __mmap_switched_data
+(gdb) info reg r0 r1 r2 r7 r8 r9 fp
+r0             0x10c5387d          281360509
+r1             0x8e0               2272
+r2             0x69cff000          1775235072
+r7             0x8e0               2272
+r8             0x69cff000          1775235072
+r9             0x410fc090          1091551376
+fp             0x80a002e0          0x80a002e0 <__mmap_switched>
+(gdb) n
+88		mov	fp, #0
+(gdb) n
+105	   ARM(	ldmia	r4!, {r0, r1, sp} )
+(gdb) info reg r4 fp
+r4             0x80a00324          -2136997084
+fp             0x80a002e0          0x80a002e0 <__mmap_switched>
+(gdb)
+{% endhighlight %}
+
+调试情况和预期一致，接下来执行的代码如下：
+
+{% highlight haskell %}
+   ARM( ldmia   r4!, {r0, r1, sp} )
+ THUMB( ldmia   r4!, {r0, r1, r3} )
+ THUMB( mov     sp, r3 )
+        sub     r2, r1, r0
+        mov     r1, #0
+        bl      memset                          @ clear .bss
+{% endhighlight %}
+
+这段的代码主要作用就是清除内核的 .bss 段。调用 "ldmia r4!, {r0, r1, sp}" 从
+__mmap_switched_data 中获得数据，并将 __bss_start 存储到 r0 寄存器，将
+__bss_stop 存储到 r1 寄存器，将 init_thread_union + THREAD_START_SP
+存储到 sp 寄存器，然后将 r1 寄存器减去 r0 寄存器可以获得 .bss 段的长度，
+然后将 r1 设置为 0， 然后跳转到 memset 进行清除动作，对于 memset 参数，
+r0 对应需要清除的起始地址；r1 代表设置的初始值；r2 代表清除字节数 ，接着调用
+arch/arm/lib/memset.S 中的 memset 进行清除动作。开发者可以在适当的位置
+加入断点，然后使用 GDB 进行调试，调试的结果如下：
+
+{% highlight haskell %}
+5.0-arm32/linux/linux/vmlinux" at
+	.text_addr = 0x80100000
+	.head.text_addr = 0x80008000
+	.rodata_addr = 0x80800000
+	.init.text_addr = 0x80a002e0
+(gdb) b BS_debug
+Breakpoint 1 at 0x80a002f4: file arch/arm/kernel/head-common.S, line 105.
+(gdb) c
+Continuing.
+
+Breakpoint 1, __mmap_switched () at arch/arm/kernel/head-common.S:105
+105	   ARM(	ldmia	r4!, {r0, r1, sp} )
+(gdb) n
+__mmap_switched () at arch/arm/kernel/head-common.S:108
+108		sub	r2, r1, r0
+(gdb) n
+109		mov	r1, #0
+(gdb) info reg r0 r1 r2
+r0             0x80b69128          -2135518936
+r1             0x80b90998          -2135357032
+r2             0x27870             161904
+(gdb) x/16x 0x80b69128
+0x80b69128:	0x00000000	0x00000000	0x00000000	0x00000000
+0x80b69138:	0x00000000	0x00000000	0x00000000	0x00000000
+0x80b69148 <ramdisk_execute_command>:	0x00000000	0x00000000	0x00000000	0x00000000
+0x80b69158 <initcall_command_line>:	0x00000000	0x00000000	0x00000000	0x00000000
+(gdb) b BS_IO
+Breakpoint 2 at 0x80a00304: file arch/arm/kernel/head-common.S, line 113.
+(gdb) c
+Continuing.
+
+Breakpoint 2, __mmap_switched () at arch/arm/kernel/head-common.S:113
+113		ldmia	r4, {r0, r1, r2, r3}
+(gdb) x/16x 0x80b69128
+0x80b69128:	0x00000000	0x00000000	0x00000000	0x00000000
+0x80b69138:	0x00000000	0x00000000	0x00000000	0x00000000
+0x80b69148 <ramdisk_execute_command>:	0x00000000	0x00000000	0x00000000	0x00000000
+0x80b69158 <initcall_command_line>:	0x00000000	0x00000000	0x00000000	0x00000000
+(gdb) quit
+{% endhighlight %}
+
+接下来执行的代码是：
+
+<span id="start_kernel_last"></span>
+{% highlight haskell %}
+        ldmia   r4, {r0, r1, r2, r3}
+        str     r9, [r0]                        @ Save processor ID
+        str     r7, [r1]                        @ Save machine type
+        str     r8, [r2]                        @ Save atags pointer
+        cmp     r3, #0
+        strne   r10, [r3]                       @ Save control register values
+        mov     lr, #0
+        b       start_kernel
+ENDPROC(__mmap_switched)
+{% endhighlight %}
+
+这段代码就是跳转到 start_kernel 之前最后一段代码。首先调用 ldmia 指令获得
+__mmap_switched_data 数据中对应的内容，然后将处理器 ID，机器类型，atags/DTB 信息
+写入到 __mmap_switched_data 指定的位置。最后将确认 r3 寄存器对应的位置是否存在，
+如果存在，则将 r10 寄存器的值写入里面，此时 r10 寄存器存储 SCTLR 寄存器的配置。
+最后将 lr 寄存器设置为 0 后，跳转到 start_kernel 处继续执行。开发者可以在适当
+位置添加断点，然后使用 GDB 进行调试，调试情况如下：
+
+{% highlight haskell %}
+5.0-arm32/linux/linux/vmlinux" at
+	.text_addr = 0x80100000
+	.head.text_addr = 0x80008000
+	.rodata_addr = 0x80800000
+	.init.text_addr = 0x80a002e0
+(gdb) b BS_debug
+Breakpoint 1 at 0x80a00304: file arch/arm/kernel/head-common.S, line 112.
+(gdb) c
+Continuing.
+
+Breakpoint 1, __mmap_switched () at arch/arm/kernel/head-common.S:112
+112		ldmia	r4, {r0, r1, r2, r3}
+(gdb) n
+113		str	r9, [r0]			@ Save processor ID
+(gdb) n
+114		str	r7, [r1]			@ Save machine type
+(gdb) n
+115		str	r8, [r2]			@ Save atags pointer
+(gdb) n
+116		cmp	r3, #0
+(gdb) info reg r0 r1 r2 r3 r7 r8 r9 r10
+r0             0x80b69554          -2135517868
+r1             0x80b08c1c          -2135913444
+r2             0x80a54a38          -2136651208
+r3             0x80b0cd94          -2135896684
+r7             0x8e0               2272
+r8             0x69cff000          1775235072
+r9             0x410fc090          1091551376
+r10            0x10c5387d          281360509
+(gdb) n
+117		strne	r10, [r3]			@ Save control register values
+(gdb) n
+118		mov	lr, #0
+(gdb) n
+119		b	start_kernel
+(gdb) n
+start_kernel () at init/main.c:538
+538	{
+(gdb) list
+533	{
+534		rest_init();
+535	}
+536
+537	asmlinkage __visible void __init start_kernel(void)
+538	{
+539		char *command_line;
+540		char *after_dashes;
+541
+542		set_task_stack_end_magic(&init_task);
+(gdb)
+{% endhighlight %}
+
+通过上面实践，可以看到最后调用 start_kernel 的情况。至此，kernel 汇编基础部分
+初始化已经结束。接下来将进入 C 函数 start_kernel 继续执行代码。

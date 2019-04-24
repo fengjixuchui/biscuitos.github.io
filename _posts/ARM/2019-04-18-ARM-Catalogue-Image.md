@@ -41,9 +41,9 @@ tags:
 >
 >     - [将执行权移交给内核](https://biscuitos.github.io/blog/ARM-BOOT/#v0.1.0)
 >
-> - [kernel boot]
+> - [内核初始化]
 >
->   - [head.S](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/)
+>   - [内核基础初始化，MMU，cache 均关闭]()
 >
 >     - [vmlinux 入口：第一行运行的代码](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#vmlinux first code)
 >
@@ -70,4 +70,16 @@ tags:
 >     - [__v7_setup](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__v7_setup)
 >
 >     - [v7_invalidate_l1](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#v7_invalidate_l1)
+>
+>     - [__v7_setup_cont](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__v7_setup_cont)
+>
+>     - [v7_ttb_setup](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#v7_ttb_setup)
+>
+>     - [__enable_mmu](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__enable_mmu)
+>
+>   - [MMU 初始化完毕，为跳转到 start_kernel 做准备]()
+>
+>     - [__mmap_switched](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__mmap_switched)
+>
+>     - [调用 start_kernel 之前](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#start_kernel_last)
 >
