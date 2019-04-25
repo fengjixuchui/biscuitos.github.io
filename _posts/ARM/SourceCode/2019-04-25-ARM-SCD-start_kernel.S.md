@@ -29,6 +29,10 @@ tags:
 > - [set_task_stack_end_magic](#set_task_stack_end_magic)
 >
 > - [smp_setup_processor_id](#smp_setup_processor_id)
+>
+> - [debug_objects_early_init](#debug_objects_early_init)
+>
+> - [cgroup_init_early](#cgroup_init_early)
 
 <span id="set_task_stack_end_magic"></span>
 
@@ -149,7 +153,7 @@ void __init smp_setup_processor_id(void)
 }
 {% endhighlight %}
 
-smp_setup_processor_id() 函数的主要任务就是；函数首先调用 is_smp() 函数判断
+smp_setup_processor_id() 函数的主要任务就是设置 boot CPU 信息；函数首先调用 is_smp() 函数判断
 当前系统是否支持 SMP，其定义如下：
 
 {% highlight haskell %}
@@ -245,3 +249,102 @@ static inline void set_my_cpu_offset(unsigned long off)
 位置以此听 thread identifying information. smp_setup_processor_id() 中将 0 写入
 该寄存器，以此清除 __my_cpu_offset 在 boot CPU 上避免由 percpu 变量引起的挂起。
 最后 smp_setup_processor_id() 调用 pr_info() 打印字符串 "Booting Linux on physical CPU".
+开发者可以在 smp_setup_processor_id() 处添加断点，然后使用 GDB 进行调试，调试
+情况如下：
+
+{% highlight haskell %}
+(gdb) b smp_setup_processor_id
+Breakpoint 1 at 0x80a009d0: smp_setup_processor_id. (2 locations)
+(gdb) c
+Continuing.
+
+Breakpoint 1, smp_setup_processor_id () at arch/arm/kernel/setup.c:591
+591		u32 mpidr = is_smp() ? read_cpuid_mpidr() & MPIDR_HWID_BITMASK : 0;
+(gdb) n
+589	{
+(gdb)
+591		u32 mpidr = is_smp() ? read_cpuid_mpidr() & MPIDR_HWID_BITMASK : 0;
+(gdb) n
+595		for (i = 1; i < nr_cpu_ids; ++i)
+(gdb) n
+594		cpu_logical_map(0) = cpu;
+(gdb) print __cpu_logical_map[0]
+$3 = 4278190080
+(gdb) n
+595		for (i = 1; i < nr_cpu_ids; ++i)
+(gdb) print __cpu_logical_map[0]
+$4 = 0
+(gdb) print __cpu_logical_map[1]
+$5 = 4278190080
+(gdb) n
+596			cpu_logical_map(i) = i == cpu ? 0 : i;
+(gdb) n 10
+595		for (i = 1; i < nr_cpu_ids; ++i)
+(gdb) print __cpu_logical_map[1]
+$6 = 1
+(gdb) print __cpu_logical_map[2]
+$7 = 2
+(gdb) print __cpu_logical_map[3]
+$8 = 3
+(gdb) n
+605		pr_info("Booting Linux on physical CPU 0x%x\n", mpidr);
+(gdb) print __cpu_logical_map[3]
+$9 = 3
+(gdb) info reg TPIDRPRW
+TPIDRPRW       0x0                 0
+(gdb)
+{% endhighlight %}
+
+通过实践，可以看到运行的结果和预期的一致。接下来运行的函数是：
+debug_objects_early_init() 函数，其定义如下：
+
+<span id="debug_objects_early_init"></span>
+{% highlight haskell %}
+#ifndef CONFIG_DEBUG_OBJECTS
+static inline void debug_objects_early_init(void) { }
+#endif
+{% endhighlight %}
+
+由于本系统不支持 CONFIG_DEBUG_OBJECTS 宏，因此 debug_objects_early_init() 定义
+为空。接下里执行的函数是：
+
+<span id="cgroup_init_early"></span>
+{% highlight haskell %}
+/**
+ * cgroup_init_early - cgroup initialization at system boot
+ *      
+ * Initialize cgroups at system boot, and initialize any
+ * subsystems that request early init.
+ */
+int __init cgroup_init_early(void)
+{
+        static struct cgroup_sb_opts __initdata opts;
+        struct cgroup_subsys *ss;
+        int i;
+
+        init_cgroup_root(&cgrp_dfl_root, &opts);
+        cgrp_dfl_root.cgrp.self.flags |= CSS_NO_REF;
+
+        RCU_INIT_POINTER(init_task.cgroups, &init_css_set);
+
+        for_each_subsys(ss, i) {
+                WARN(!ss->css_alloc || !ss->css_free || ss->name || ss->id,
+                     "invalid cgroup_subsys %d:%s css_alloc=%p css_free=%p id:name=%d:%s\n",
+                     i, cgroup_subsys_name[i], ss->css_alloc, ss->css_free,
+                     ss->id, ss->name);
+                WARN(strlen(cgroup_subsys_name[i]) > MAX_CGROUP_TYPE_NAMELEN,
+                     "cgroup_subsys_name %s too long\n", cgroup_subsys_name[i]);
+
+                ss->id = i;
+                ss->name = cgroup_subsys_name[i];
+                if (!ss->legacy_name)
+                        ss->legacy_name = cgroup_subsys_name[i];
+
+                if (ss->early_init)
+                        cgroup_init_subsys(ss, true);
+        }
+        return 0;
+}
+{% endhighlight %}
+
+cgroup_init_early() 函数的主要作用是在内核启动的早期，初始化 cgroup。

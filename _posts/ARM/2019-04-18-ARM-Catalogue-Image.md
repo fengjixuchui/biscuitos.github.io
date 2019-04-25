@@ -89,4 +89,8 @@ tags:
 >
 >   - [smp_setup_processor_id](https://biscuitos.github.io/blog/ARM-SCD-start_kernel.S/#smp_setup_processor_id)
 >
+>   - [debug_objects_early_init](https://biscuitos.github.io/blog/ARM-SCD-start_kernel.S/#debug_objects_early_init)
+>
+>   - [cgroup_init_early](https://biscuitos.github.io/blog/ARM-SCD-start_kernel.S/#cgroup_init_early)
+>
 >
