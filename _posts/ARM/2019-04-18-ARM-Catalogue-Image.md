@@ -83,3 +83,10 @@ tags:
 >
 >     - [调用 start_kernel 之前](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#start_kernel_last)
 >
+> - [内核初始化 start_kernel]
+>
+>   - [set_task_stack_end_magic](https://biscuitos.github.io/blog/ARM-SCD-start_kernel.S/#set_task_stack_end_magic)
+>
+>   - [smp_setup_processor_id](https://biscuitos.github.io/blog/ARM-SCD-start_kernel.S/#smp_setup_processor_id)
+>
+>

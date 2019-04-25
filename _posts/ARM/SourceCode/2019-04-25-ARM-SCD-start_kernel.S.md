@@ -28,6 +28,7 @@ tags:
 
 > - [set_task_stack_end_magic](#set_task_stack_end_magic)
 >
+> - [smp_setup_processor_id](#smp_setup_processor_id)
 
 <span id="set_task_stack_end_magic"></span>
 
@@ -123,4 +124,124 @@ $4 = (<data variable, no debug info> *) 0x80b02000 <vdso_data_store>
 由于 struct thread_info 的大小为 0x210, 从调试的情况看出，init_stack 的地址是
 0x80b00000, 那么 end_of_stack(&init_task) 返回的地址就是 0x80b00210, 所有
 开发者就观察 0x80b00210 地址对应内容的变化，最后调试结果显示，STACK_END_MAGIC
-被写入到这个地址。
+被写入到这个地址。接下来运行的函数如下：
+
+<span id="smp_setup_processor_id"></span>
+{% highlight haskell %}
+void __init smp_setup_processor_id(void)
+{
+        int i;
+        u32 mpidr = is_smp() ? read_cpuid_mpidr() & MPIDR_HWID_BITMASK : 0;
+        u32 cpu = MPIDR_AFFINITY_LEVEL(mpidr, 0);
+
+        cpu_logical_map(0) = cpu;
+        for (i = 1; i < nr_cpu_ids; ++i)
+                cpu_logical_map(i) = i == cpu ? 0 : i;
+
+        /*
+         * clear __my_cpu_offset on boot CPU to avoid hang caused by
+         * using percpu variable early, for example, lockdep will
+         * access percpu variable inside lock_release
+         */
+        set_my_cpu_offset(0);
+
+        pr_info("Booting Linux on physical CPU 0x%x\n", mpidr);
+}
+{% endhighlight %}
+
+smp_setup_processor_id() 函数的主要任务就是；函数首先调用 is_smp() 函数判断
+当前系统是否支持 SMP，其定义如下：
+
+{% highlight haskell %}
+arch/arm/include/asm/smp_plat.h
+
+/*
+ * Return true if we are running on a SMP platform
+ */     
+static inline bool is_smp(void)
+{       
+#ifndef CONFIG_SMP
+        return false;
+#elif defined(CONFIG_SMP_ON_UP)
+        extern unsigned int smp_on_up;
+        return !!smp_on_up;
+#else   
+        return true;
+#endif
+}
+
+arch/arm/kernel/head.S
+
+        .pushsection .data
+        .align  2
+        .globl  smp_on_up
+smp_on_up:
+        ALT_SMP(.long   1)
+        ALT_UP(.long    0)
+        .popsection
+{% endhighlight %}
+
+本实践中，宏 CONFIG_SMP_ON_UP 和 CONFIG_SMP 都启用，因此，smp 的支持情况存储
+在 smp_on_up 里，由于 CONFIG_SMP_ON_UP 的定义，因此 smp_on_up 的设置为
+"ALT_UP(.long 0)", 因此 is_smp() 将会返回 0。回到 smp_setup_processor_id()
+函数，在通过 is_smp() 函数返回 0 之后，mpidr 局部变量的值为 0。然后通过
+MPIDR_AFFINITY_LEVEL() 与 mpidr 获得 CPU 号，MPIDR_AFFINITY_LEVEL 的定义如下：
+
+{% highlight haskell %}
+arch/arm/include/asm/cputype.h
+
+#define MPIDR_AFFINITY_LEVEL(mpidr, level) \
+        ((mpidr >> (MPIDR_LEVEL_BITS * level)) & MPIDR_LEVEL_MASK)
+
+#define MPIDR_LEVEL_BITS 8
+#define MPIDR_LEVEL_MASK ((1 << MPIDR_LEVEL_BITS) - 1)
+{% endhighlight %}
+
+在执行这段代码之前，先看一下 MPIDR 寄存器，通过 ARMv7 手册可以找到其内存布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000055.png)
+
+MPIDR 寄存器的主要作用是在 SMP 系统中，为调度提供了一个附加的处理器识别机制。其中
+每个 Affn 占用 8 bit， Aff0 bits[7:0] 代表 Affinity level 0，Aff1 bits[15:8]
+代表 Affinity level 1，Aff2 bits[23:6] 代表 Affinity level 2，因此
+MPIDR_AFFINITY_LEVEL() 要将对应 level 的 Affinity 读取出来就需要将 MPIDR
+特定 level 向右移动 "MPIDR_LEVEL_BITS * level" 获得，然后与 MPIDR_LEVEL_MASK
+相与就可以读出 MPIDR 中特定的 Affn。回到 smp_setup_processor_id() 中，由于
+获得的 mpidr 为 0，那么通过 MPIDR_AFFINITY_LEVEL() 处理之后的值为 0。内核创建了
+一个 u32 的数组 __cpu_logical_map[] 用于管理逻辑 CPU 的映射，其定义如下：
+
+{% highlight haskell %}
+/*
+ * Logical CPU mapping.
+ */     
+extern u32 __cpu_logical_map[];
+#define cpu_logical_map(cpu)    __cpu_logical_map[cpu]
+
+arch/arm/kernel/setup.c
+
+u32 __cpu_logical_map[NR_CPUS] = { [0 ... NR_CPUS-1] = MPIDR_INVALID };
+#define MPIDR_INVALID (~MPIDR_HWID_BITMASK)
+{% endhighlight %}
+
+内核定义了 u32 数组 __cpu_logical_map， 其长度与 NR_CPUS 有关，每个成员初始化为
+MPIDR_INVALID。smp_setup_processor_id() 函数中，将获得的 cpu 号写入数组的第一个
+成员里，接着在 for 循环中，先判断 i 的值是否与 cpu 的值相等，如果相等，则将
+__cpu_logical_map[i] 对应的值设置为 0,；反之如果不等，则将  __cpu_logical_map[i]
+设置为 i。接着调用函数 set_my_cpu_offset()，其定义如下：
+
+{% highlight haskell %}
+static inline void set_my_cpu_offset(unsigned long off)
+{             
+        /* Set TPIDRPRW */
+        asm volatile("mcr p15, 0, %0, c13, c0, 4" : : "r" (off) : "memory");
+}
+{% endhighlight %}
+
+这里使用内嵌汇编将汇编，会对 ARMv7 的 CP15 寄存器操作，此时的 CP15 c13 布局如下：
+
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOTCP15C13.png)
+
+选中的 TPIDRPRW 寄存器，该寄存器的作用是当系统运行在 PL1 或者更高的级别，提供一个
+位置以此听 thread identifying information. smp_setup_processor_id() 中将 0 写入
+该寄存器，以此清除 __my_cpu_offset 在 boot CPU 上避免由 percpu 变量引起的挂起。
+最后 smp_setup_processor_id() 调用 pr_info() 打印字符串 "Booting Linux on physical CPU".
