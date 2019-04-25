@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "INIT_LIST_HEAD"
-date:   2019-04-25 18:52:30 +0800
+title:  "__list_add_valid"
+date:   2019-04-26 07:07:30 +0800
 categories: [HW]
-excerpt: Bidirect-list INIT_LIST_HEAD().
+excerpt: Bidirect-list __list_add_valid().
 tags:
   - Bidirect-list
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-> [Github: INIT_LIST_HEAD](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/INIT_LIST_HEAD)
+> [Github: __list_add_valid](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/__list_add_valid)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -27,16 +27,44 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-static inline void INIT_LIST_HEAD(struct list_head *list)
+#ifdef CONFIG_DEBUG_LIST
+extern bool __list_add_valid(struct list_head *new,
+                              struct list_head *prev,
+                              struct list_head *next);
+#else
+static inline bool __list_add_valid(struct list_head *new,
+                                struct list_head *prev,
+                                sst_add_validtruct list_head *next)
 {
-        WRITE_ONCE(list->next, list);
-        list->prev = list;
+        return true;
 }
+#endif
 {% endhighlight %}
 
-INIT_LIST_HEAD() 函数用于给一个 struct list_head 进行初始化。函数首先调用、
-WRITE_ONCE() 以确保在多线程的情况下，数据可以被正确写入，此处调用 WRITE_ONCE()
-让 list->next 指向自己，然后将 list->prev 也指向自己。
+__list_add_valid() 函数用于添加一个节点的时候，检查新加的节点是否可用。其定义
+与 CONFIG_DEBUG_LIST 宏有关。如果 CONFIG_DEBUG_LIST 宏开启，那么 __list_add_valid()
+的实现如下：
+
+{% highlight ruby %}
+bool __list_add_valid(struct list_head *new, struct list_head *prev,
+                      struct list_head *next)
+{
+        if (CHECK_DATA_CORRUPTION(next->prev != prev,
+                        "list_add corruption. next->prev should be prev (%px), but was %px. (next=%px).\n",
+                        prev, next->prev, next) ||
+            CHECK_DATA_CORRUPTION(prev->next != next,
+                        "list_add corruption. prev->next should be next (%px), but was %px. (prev=%px).\n",
+                        next, prev->next, prev) ||
+            CHECK_DATA_CORRUPTION(new == prev || new == next,
+                        "list_add double add: new=%px, prev=%px, next=%px.\n",
+                        new, prev, next))
+                return false;
+
+        return true;
+}
+EXPORT_SYMBOL(__list_add_valid);
+{% endhighlight %}
+
 
 --------------------------------------------------
 
@@ -58,7 +86,7 @@ WRITE_ONCE() 以确保在多线程的情况下，数据可以被正确写入，�
 
 {% highlight c %}
 /*
- * bindirect-list:
+ * bindirect-list
  *
  * (C) 20179.04.25 <buddy.zhang@aliyun.com>
  *
@@ -69,7 +97,7 @@ WRITE_ONCE() 以确保在多线程的情况下，数据可以被正确写入，�
 
 /*
  * bidirect-list
-*
+ *
  * +-----------+<--o    +-----------+<--o    +-----------+<--o    +-----------+
  * |           |   |    |           |   |    |           |   |    |           |
  * |      prev |   o----| prev      |   o----| prev      |   o----| prev      |
@@ -88,37 +116,26 @@ WRITE_ONCE() 以确保在多线程的情况下，数据可以被正确写入，�
 
 /* private structure */
 struct node {
-	const char *name;
-	struct list_head list;
+    const char *name;
+    struct list_head list;
 };
 
 /* Initialize a group node structure */
 static struct node node0 = { .name = "BiscuitOS_node0", };
-static struct node node1 = { .name = "BiscuitOS_node1", };
-static struct node node2 = { .name = "BiscuitOS_node2", };
-static struct node node3 = { .name = "BiscuitOS_node3", };
-static struct node node4 = { .name = "BiscuitOS_node4", };
-static struct node node5 = { .name = "BiscuitOS_node5", };
-static struct node node6 = { .name = "BiscuitOS_node6", };
 
-/* Declaration a bindirect-list */
-static struct list_head BiscuitOS_list;
+/* Declaration and implement a bindirect-list */
+LIST_HEAD(BiscuitOS_list);
 
 static __init int bindirect_demo_init(void)
 {
 	struct node *np;
 
-	/* Implement a bidirect-list */
-	INIT_LIST_HEAD(&BiscuitOS_list);
-
-	/* add a new entry on back */
-	list_add_tail(&node0.list, &BiscuitOS_list);
-	list_add_tail(&node1.list, &BiscuitOS_list);
-	list_add_tail(&node2.list, &BiscuitOS_list);
-	list_add_tail(&node3.list, &BiscuitOS_list);
-	list_add_tail(&node4.list, &BiscuitOS_list);
-	list_add_tail(&node5.list, &BiscuitOS_list);
-	list_add_tail(&node6.list, &BiscuitOS_list);
+	/* Check new entry whether is valid. */
+	if (__list_add_valid(&node0.list, &BiscuitOS_list,
+					BiscuitOS_list.next)) {
+		/* add a new entry on special entry */
+		__list_add(&node0.list, &BiscuitOS_list, BiscuitOS_list.next);
+	}
 
 	/* Traverser all node on bindirect-list */
 	list_for_each_entry(np, &BiscuitOS_list, list)
@@ -148,7 +165,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_LIST
 +
 +config DEBUG_BISCUITOS_LIST
-+       bool "INIT_LIST_HEAD"
++       bool "__list_add_valid"
 +
 +endif # BISCUITOS_LIST
 +
@@ -176,7 +193,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]Bindirect-list
-            [*]INIT_LIST_HEAD()
+            [*]__list_add_valid()
 {% endhighlight %}
 
 具体过程请参考：
@@ -198,18 +215,18 @@ Device Driver--->
 启动内核，并打印如下信息：
 
 {% highlight ruby %}
+ledtrig-cpu: registered to indicate activity on CPUs
+usbcore: registered new interface driver usbhid
+usbhid: USB HID core driver
 BiscuitOS_node0
-BiscuitOS_node1
-BiscuitOS_node2
-BiscuitOS_node3
-BiscuitOS_node4
-BiscuitOS_node5
-BiscuitOS_node6
+input: AT Raw Set 2 keyboard as /devices/platform/smb@4000000/smb@4000000:motherboard/smb@4000000:motherboard:iofpga@7,00000000/10006000.kmi/serio0/input/input0
+aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
+aaci-pl041 10004000.aaci: FIFO 512 entries
 {% endhighlight %}
 
 #### <span id="驱动分析">驱动分析</span>
 
-在多线程的情况下，使用这个函数初始化比较安全。
+每次添加新的节点时候，使用 __list_add_valid() 去检查一个节点是否可用。
 
 -----------------------------------------------
 
