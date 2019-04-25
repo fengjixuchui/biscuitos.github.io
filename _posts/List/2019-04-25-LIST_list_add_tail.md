@@ -46,7 +46,7 @@ list_add_tail() 函数将一个新节点加入到链表的末尾。函数通过�
 
 ##### __list_add
 
-> [list_add](https://biscuitos.github.io/blog/LIST_list_add)
+> [__list_add 源码](https://biscuitos.github.io/blog/LIST___list_add)
 >
 > [__list_add 源码](https://biscuitos.github.io/blog/LIST___list_add)
 
