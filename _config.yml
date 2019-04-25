@@ -20,11 +20,11 @@ sass:
   style:            compressed
 
 # Comment
-comment:
-  disqus: BiscuitOS    
-  # duoshuo: 
-  # youyan: 
-  laibili: MTAyMC8yODgzNC81NDA0
+#comment:
+#  disqus: BiscuitOS
+  # duoshuo:
+  # youyan:
+#  laibili: MTAyMC8yODgzNC81NDA0
 
 # Website analytics
 google_analytics: UA-82494501-1
@@ -35,7 +35,7 @@ author:
   #resume: /resume
   name: BiscuitOS     #the name of Blog section
   about_me: BiscuitOS is a simple tools to build 0.x, 1.x, 2.x, 3.x, 4.x, and 5.x Linux-distro.
- 
+
 # Social Links
 email:               buddy.zhang@aliyun.com
 #google.plus:        username
