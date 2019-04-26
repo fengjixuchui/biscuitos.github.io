@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "__list_add"
-date:   2019-04-26 07:12:30 +0800
+title:  "__list_del"
+date:   2019-04-26 07:55:30 +0800
 categories: [HW]
-excerpt: Bidirect-list __list_add().
+excerpt: Bidirect-list __list_del().
 tags:
   - Bidirect-list
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-> [Github: __list_add](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/__list_add)
+> [Github: __list_del](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/__list_del)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,32 +28,21 @@ tags:
 
 {% highlight ruby %}
 /*
- * Insert a new entry between two known consecutive entries.
+ * Delete a list entry by making the prev/next entries
+ * point to each other.
  *
  * This is only for internal list manipulation where we know
  * the prev/next entries already!
  */
-static inline void __list_add(struct list_head *new,
-                              struct list_head *prev,
-                              struct list_head *next)
+static inline void __list_del(struct list_head * prev, struct list_head * next)
 {
-        if (!__list_add_valid(new, prev, next))
-                return;
-
-        next->prev = new;
-        new->next = next;
-        new->prev = prev;
-        WRITE_ONCE(prev->next, new);
+        next->prev = prev;
+        WRITE_ONCE(prev->next, next);
 }
 {% endhighlight %}
 
-__list_add() 函数用于向 list 里添加一个新的节点。调用这个函数添加节点会检查该
-节点是否可用，如果不可用直接返回；如果检查可用，就将新的节点插入参数 prev 和 next
-之间。最后调用 WRITE_ONCE() 函数将 prev->next 进行修正。
-
-##### __list_add_valid
-
-> [\_\_list_add_valid 源码解析](https://biscuitos.github.io/blog/LIST___list_add_valid/)
+__list_del() 函数用于从链表中删除指定的节点。向函数中传入需要操作节点的 prev 和
+next 指针。从上面的定义可以知道，__list_del 可以安全的删除一个节点。
 
 --------------------------------------------------
 
@@ -111,6 +100,12 @@ struct node {
 
 /* Initialize a group node structure */
 static struct node node0 = { .name = "BiscuitOS_node0", };
+static struct node node1 = { .name = "BiscuitOS_node1", };
+static struct node node2 = { .name = "BiscuitOS_node2", };
+static struct node node3 = { .name = "BiscuitOS_node3", };
+static struct node node4 = { .name = "BiscuitOS_node4", };
+static struct node node5 = { .name = "BiscuitOS_node5", };
+static struct node node6 = { .name = "BiscuitOS_node6", };
 
 /* Declaration and implement a bindirect-list */
 LIST_HEAD(BiscuitOS_list);
@@ -119,19 +114,22 @@ static __init int bindirect_demo_init(void)
 {
 	struct node *np;
 
-
 	/* add a new entry on special entry */
-	__list_add(&node0.list, &BiscuitOS_list, BiscuitOS_list.next);
-	__list_add(&node1.list, &BiscuitOS_list, BiscuitOS_list.next);
-	__list_add(&node2.list, &BiscuitOS_list, BiscuitOS_list.next);
-	__list_add(&node3.list, &BiscuitOS_list, BiscuitOS_list.next);
-	__list_add(&node4.list, &BiscuitOS_list, BiscuitOS_list.next);
-	__list_add(&node5.list, &BiscuitOS_list, BiscuitOS_list.next);
-  __list_add(&node6.list, &BiscuitOS_list, BiscuitOS_list.next);
+	list_add_tail(&node0.list, &BiscuitOS_list);
+	list_add_tail(&node1.list, &BiscuitOS_list);
+	list_add_tail(&node2.list, &BiscuitOS_list);
+	list_add_tail(&node3.list, &BiscuitOS_list);
+	list_add_tail(&node4.list, &BiscuitOS_list);
+	list_add_tail(&node5.list, &BiscuitOS_list);
+	list_add_tail(&node6.list, &BiscuitOS_list);
+
+	/* Delete a entry */
+	__list_del(node6.list.prev, node6.list.next);
 
 	/* Traverser all node on bindirect-list */
 	list_for_each_entry(np, &BiscuitOS_list, list)
 		printk("%s\n", np->name);
+
 
 	return 0;
 }
@@ -157,7 +155,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_LIST
 +
 +config DEBUG_BISCUITOS_LIST
-+       bool "__list_add"
++       bool "__list_del"
 +
 +endif # BISCUITOS_LIST
 +
@@ -185,7 +183,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]Bindirect-list
-            [*]__list_add()
+            [*]__list_del()
 {% endhighlight %}
 
 具体过程请参考：
@@ -209,20 +207,20 @@ Device Driver--->
 {% highlight ruby %}
 usbcore: registered new interface driver usbhid
 usbhid: USB HID core driver
-BiscuitOS_node6
-BiscuitOS_node5
-BiscuitOS_node4
-BiscuitOS_node3
-BiscuitOS_node2
-BiscuitOS_node1
 BiscuitOS_node0
+BiscuitOS_node1
+BiscuitOS_node2
+BiscuitOS_node3
+BiscuitOS_node4
+BiscuitOS_node5
 aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 aaci-pl041 10004000.aaci: FIFO 512 entries
+
 {% endhighlight %}
 
 #### <span id="驱动分析">驱动分析</span>
 
-可用使用 __list_add() 函数添加一个节点到链表的指定位置。
+从实践的结果可以看出，使用 __list_del() 函数可以删除一个指定的节点或多个节点。
 
 -----------------------------------------------
 

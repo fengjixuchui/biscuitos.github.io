@@ -46,7 +46,7 @@ list_add() 函数用于将一个节点添加到链表的头部。参数 new 指�
 
 ##### __list_add
 
-> [__list_add 源码分析](https://biscuitos.github.io/blog/LIST___list_add/)
+> [\_\_list_add 源码分析](https://biscuitos.github.io/blog/LIST___list_add/)
 
 --------------------------------------------------
 
