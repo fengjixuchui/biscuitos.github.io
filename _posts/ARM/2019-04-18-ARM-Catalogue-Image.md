@@ -15,6 +15,20 @@ tags:
 
 ## ARM Linux 5.0 源码实践
 
+> - [实践准备](https://biscuitos.github.io/blog/ARM-BOOT/#%E7%AE%80%E4%BB%8B)
+>
+>   - [实践简介](https://biscuitos.github.io/blog/ARM-BOOT/#文章简介)
+>
+>   - [实践原理](https://biscuitos.github.io/blog/ARM-BOOT/#实践原理)
+>
+>   - [实践准备](https://biscuitos.github.io/blog/ARM-BOOT/#实践准备)
+>
+>   - [芯片手册及文档使用](https://biscuitos.github.io/blog/ARM-BOOT/#芯片手册及文档使用)
+>
+>   - [调试准备](https://biscuitos.github.io/blog/ARM-BOOT/#调试准备)
+>
+>   - [zImage 实践选择](#zImage 实践选择)
+>
 > - [zImage Bootstrap kernel](https://biscuitos.github.io/blog/ARM-BOOT/)
 >
 >   - [zImage 重定位之前实践](https://biscuitos.github.io/blog/ARM-BOOT/#zImage 重定位之前实践)
