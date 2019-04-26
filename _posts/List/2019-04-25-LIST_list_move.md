@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "list_del_init"
-date:   2019-04-26 14:55:30 +0800
+title:  "list_move"
+date:   2019-04-26 09:23:30 +0800
 categories: [HW]
-excerpt: Bidirect-list list_del_init().
+excerpt: Bidirect-list list_move().
 tags:
   - Bidirect-list
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-> [Github: list_del_init](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_del_init)
+> [Github: list_move](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_move)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -26,29 +26,30 @@ tags:
 
 # <span id="源码分析">源码分析</span>
 
-{% highlight c %}
+{% highlight ruby %}
 /**
- * list_del_init - deletes entry from list and reinitialize it.
- * @entry: the element to delete from the list.
+ * list_move - delete from one list and add as another's head
+ * @list: the entry to move
+ * @head: the head that will precede our entry
  */
-static inline void list_del_init(struct list_head *entry)
+static inline void list_move(struct list_head *list, struct list_head *head)
 {
-        __list_del_entry(entry);
-        INIT_LIST_HEAD(entry);
+        __list_del_entry(list);
+        list_add(list, head);
 }
 {% endhighlight %}
 
-list_del_init() 函数用于将一个节点从链表中移除，并初始化这个节点。函数将节点
-传入 __list_del_entry() 函数，移除将节点从链表中移除，然后调用 INIT_LIST_HEAD()
-函数初始化这个节点。
+list_move() 函数将节点从一个链表中移除，并加入另外一个链表的头部。函数首先调用
+__list_del_entry() 将节点从当前链表中移除，然后调用 list_add() 函数将节点
+加入到新链表的头部。
 
 ###### __list_del_entry
 
-> [\_\_list_del_entry 源码](https://biscuitos.github.io/blog/LIST___list_del_entry/)
+> [\_\_list_del_entry](https://biscuitos.github.io/blog/LIST___list_del_entry/)
 
-###### INIT_LIST_HEAD
+###### list_add
 
-> [INIT_LIST_HEAD 源码](https://biscuitos.github.io/blog/LIST_INIT_LIST_HEAD/)
+> [list_add](https://biscuitos.github.io/blog/LIST_list_add/)
 
 --------------------------------------------------
 
@@ -115,6 +116,7 @@ static struct node node6 = { .name = "BiscuitOS_node6", };
 
 /* Declaration and implement a bindirect-list */
 LIST_HEAD(BiscuitOS_list);
+LIST_HEAD(BiscuitOS_blist);
 
 static __init int bindirect_demo_init(void)
 {
@@ -132,8 +134,23 @@ static __init int bindirect_demo_init(void)
 	/* remove a special node and init it */
 	list_del_init(&node6.list);
 
+	printk("BiscuitOS_list:\n");
 	/* Traverser all node on bindirect-list */
 	list_for_each_entry(np, &BiscuitOS_list, list)
+		printk("%s\n", np->name);
+
+	/* Delect from one list and add as another's head */
+	list_move(&node2.list, &BiscuitOS_blist);
+	list_move(&node5.list, &BiscuitOS_blist);
+
+	printk("Remove BiscuitOS_list:\n");
+	/* Traverser all node on bindirect-list */
+	list_for_each_entry(np, &BiscuitOS_list, list)
+		printk("%s\n", np->name);
+
+	printk("Remove BiscuitOS_blist:\n");
+	/* Traverser all node on bindirect-list */
+	list_for_each_entry(np, &BiscuitOS_blist, list)
 		printk("%s\n", np->name);
 
 	return 0;
@@ -160,7 +177,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_LIST
 +
 +config DEBUG_BISCUITOS_LIST
-+       bool "list_del_init"
++       bool "list_move"
 +
 +endif # BISCUITOS_LIST
 +
@@ -188,7 +205,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]Bindirect-list
-            [*]list_del_init()
+            [*]list_move()
 {% endhighlight %}
 
 具体过程请参考：
@@ -212,20 +229,28 @@ Device Driver--->
 {% highlight ruby %}
 usbcore: registered new interface driver usbhid
 usbhid: USB HID core driver
+BiscuitOS_list:
 BiscuitOS_node0
 BiscuitOS_node1
 BiscuitOS_node2
 BiscuitOS_node3
 BiscuitOS_node4
 BiscuitOS_node5
-input: AT Raw Set 2 keyboard as /devices/platform/smb@4000000/smb@4000000:motherboard/smb@4000000:motherboard:iofpga@7,00000000/10006000.kmi/serio0/input/input0
+Remove BiscuitOS_list:
+BiscuitOS_node0
+BiscuitOS_node1
+BiscuitOS_node3
+BiscuitOS_node4
+Remove BiscuitOS_blist:
+BiscuitOS_node5
+BiscuitOS_node2
 aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 aaci-pl041 10004000.aaci: FIFO 512 entries
 {% endhighlight %}
 
 #### <span id="驱动分析">驱动分析</span>
 
-list_del_init() 函数可以将节点从链表中移除，并初始化这个节点。
+list_move() 函数将节点从当前链表中移除，然后添加到新的链表头部。
 
 -----------------------------------------------
 
