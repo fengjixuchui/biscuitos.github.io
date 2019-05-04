@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "BBBXXX"
+title:  "list_for_each_entry_safe_continue"
 date:   2019-05-04 14:55:30 +0800
 categories: [HW]
-excerpt: Bidirect-list BBBXXX().
+excerpt: Bidirect-list list_for_each_entry_safe_continue().
 tags:
   - Bidirect-list
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-> [Github: BBBXXX](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/BBBXXX)
+> [Github: list_for_each_entry_safe_continue](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_for_each_entry_safe_continue)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -171,7 +171,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_LIST
 +
 +config DEBUG_BISCUITOS_LIST
-+       bool "BBBXXX"
++       bool "list_for_each_entry_safe_continue"
 +
 +endif # BISCUITOS_LIST
 +
@@ -199,7 +199,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]Bindirect-list
-            [*]BBBXXX()
+            [*]list_for_each_entry_safe_continue()
 {% endhighlight %}
 
 具体过程请参考：
