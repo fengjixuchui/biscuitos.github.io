@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "list_for_each_safe"
-date:   2019-05-04 11:23:30 +0800
+title:  "list_for_each_prev_safe"
+date:   2019-05-04 11:39:30 +0800
 categories: [HW]
-excerpt: Bidirect-list list_for_each_safe().
+excerpt: Bidirect-list list_for_each_prev_safe().
 tags:
   - Bidirect-list
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-> [Github: list_for_each_safe](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_for_each_safe)
+> [Github: list_for_each_prev_safe](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_for_each_prev_safe)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,22 +28,21 @@ tags:
 
 {% highlight ruby %}
 /**
- * list_for_each_safe - iterate over a list safe against removal of list entry
+ * list_for_each_prev_safe - iterate over a list backwards safe against removal of list entry
  * @pos:        the &struct list_head to use as a loop cursor.
  * @n:          another &struct list_head to use as temporary storage
  * @head:       the head for your list.
  */
-#define list_for_each_safe(pos, n, head) \
-        for (pos = (head)->next, n = pos->next; pos != (head); \
-                pos = n, n = pos->next)
+#define list_for_each_prev_safe(pos, n, head) \
+        for (pos = (head)->prev, n = pos->prev; \
+             pos != (head); \
+             pos = n, n = pos->prev)
 {% endhighlight %}
 
-list_for_each_safe() 函数用于正序遍历双链表中的节点。参数 pos 指向当前遍历到的节点；
-参数 n 指向下一个节点；参数 head 指向链表的表头。list_for_each_safe() 与
-list_for_each() 类似，但在使用 list_for_each() 遍历节点的过程中，如果执行 list_del()
-函数删除当前遍历到的节点，那么会因此下一个节点成为未知态，导致 panic，因此这里多添加一个
-n 参数，当遍历到当前节点的时候，然后执行 list_del() 操作之后，下一个节点还缓存在 n 中，
-因此当遍历过程中删除节点的操作应该使用 list_for_each_safe() 函数进行遍历。
+list_for_each_prev_safe() 函数用于倒叙遍历双链表中的节点。如果遍历节点的目的是为了
+删除遍历到的节点，那么使用这个函数是安全的。参数 pos 指向当前遍历的节点；参数 n 指向前一个
+遍历的节点；head 指向双链表的表头。函数使用 for 循环从 head 链表的末尾开始倒叙遍历链表，
+以此将 n 指向当前遍历到节点的前一个，以防止当前节点删除后，前一个节点状态未知。
 
 --------------------------------------------------
 
@@ -127,10 +126,10 @@ static __init int bindirect_demo_init(void)
 
 	printk("BiscuitOS_list:\n");
 	/* Traverser all node on bindirect-list */
-	list_for_each_safe(np, n, &BiscuitOS_list) {
+	list_for_each_prev_safe(np, n, &BiscuitOS_list) {
 		printk("%s\n", list_entry(np, struct node, list)->name);
-    list_del(np);
-  }
+		list_del(np);
+	}
 
 	return 0;
 }
@@ -156,7 +155,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_LIST
 +
 +config DEBUG_BISCUITOS_LIST
-+       bool "list_for_each_safe"
++       bool "list_for_each_prev_safe"
 +
 +endif # BISCUITOS_LIST
 +
@@ -184,7 +183,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]Bindirect-list
-            [*]list_for_each_safe()
+            [*]list_for_each_prev_safe()
 {% endhighlight %}
 
 具体过程请参考：
@@ -206,23 +205,26 @@ Device Driver--->
 启动内核，并打印如下信息：
 
 {% highlight ruby %}
+ledtrig-cpu: registered to indicate activity on CPUs
 usbcore: registered new interface driver usbhid
 usbhid: USB HID core driver
 BiscuitOS_list:
-BiscuitOS_node0
-BiscuitOS_node1
-BiscuitOS_node2
-BiscuitOS_node3
-BiscuitOS_node4
-BiscuitOS_node5
 BiscuitOS_node6
+BiscuitOS_node5
+BiscuitOS_node4
+BiscuitOS_node3
+BiscuitOS_node2
+BiscuitOS_node1
+BiscuitOS_node0
 aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 aaci-pl041 10004000.aaci: FIFO 512 entries
+oprofile: using arm/armv7-ca9
 {% endhighlight %}
 
 #### <span id="驱动分析">驱动分析</span>
 
-在遍历过程中执行 list_del() 操作，应该使用 list_for_each_safe() 进行遍历。
+当遍历节点中涉及删除遍历到的节点，应该使用  list_for_each_prev_safe() 函数。这不会
+引起内核 panic。
 
 -----------------------------------------------
 
