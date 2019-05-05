@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-> [Github: BBBXXX](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/BBBXXX)
+> [Github: Bidirect-list core list](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/core)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 

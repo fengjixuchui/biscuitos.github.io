@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "alias_prop"
-date:   2019-04-26 14:55:30 +0800
+date:   2019-05-05 08:10:30 +0800
 categories: [HW]
 excerpt: Bidirect-list alias_prop().
 tags:

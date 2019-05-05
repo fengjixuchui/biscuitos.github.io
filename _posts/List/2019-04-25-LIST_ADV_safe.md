@@ -30,7 +30,7 @@ tags:
 
 # <span id="简介">简介</span>
 
-Linux 内核提供了一套完整的双链表机制，是开发者可以在内核私有数据结构中轻松
+Linux 内核提供了一套完整的双链表机制，使开发者可以在内核私有数据结构中轻松
 构建双链表。双链表的操作包括很多种，其中遍历双链表是按正序或者倒序的方式遍历
 双链表中的节点。Linux 提供的遍历接口如下：
 
@@ -229,7 +229,7 @@ Exception stack(0x9e48ffb0 to 0x9e48fff8)
 ffa0:                                     00000000 00000000 00000000 00000000
 ffc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
 ffe0: 00000000 00000000 00000000 00000000 00000013 00000000
-Code: ebdcbbde e5944000 e1540006 0a00000b (e5141004) 
+Code: ebdcbbde e5944000 e1540006 0a00000b (e5141004)
 ---[ end trace 6ae005fe4fe2c634 ]---
 Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
 ---[ end Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b ]---

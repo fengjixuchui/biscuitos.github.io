@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-> [Github: BBBXXX](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/BBBXXX)
+> [Github: Bidirect-list](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -37,6 +37,12 @@ tags:
 >   - [双链表的遍历操作](#双链表的遍历操作)
 >
 > - [内核双链表进阶研究](#内核双链表进阶研究)
+>
+>   - [内核双链表遍历：带 safe 和不带 safe 的区别](https://biscuitos.github.io/blog/LIST_ADV_safe/#header)
+>
+>   - [内核中核心双链表](https://biscuitos.github.io/blog/LIST_core_list/)
+>
+> - [内核双链表 API](#LISTAPI)
 >
 > - [附录](#附录)
 
@@ -432,7 +438,125 @@ Linux 内核为双链表提供了丰富的接口函数，以满足不同的使�
 >
 > - [list_safe_reset_next: 安全获得下一个入口](https://biscuitos.github.io/blog/LIST_list_safe_reset_next/)
 
+---------------------------------------------
+<span id="内核双链表进阶研究"></span>
 
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+
+### 内核双链表进阶研究
+
+> - [内核双链表遍历：带 safe 和不带 safe 的区别](https://biscuitos.github.io/blog/LIST_ADV_safe/#header)
+>
+> - [内核中核心双链表](https://biscuitos.github.io/blog/LIST_core_list/)
+
+---------------------------------------------
+<span id="LISTAPI">内核双链表 API</span>
+
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
+
+> [INIT_LIST_HEAD](https://biscuitos.github.io/blog/LIST_INIT_LIST_HEAD/)
+>
+> [\_\_list_add](https://biscuitos.github.io/blog/LIST___list_add/)
+>
+> [list_add](https://biscuitos.github.io/blog/LIST_list_add/)
+>
+> [list_add_tail](https://biscuitos.github.io/blog/LIST_list_add_tail/)
+>
+> [\_\_list_add_valid](https://biscuitos.github.io/blog/LIST___list_add_valid/)
+>
+> [list_bulk_move_tail](https://biscuitos.github.io/blog/LIST_list_bulk_move_tail/)
+>
+> [list_cut_before](https://biscuitos.github.io/blog/LIST_list_cut_before/)
+>
+> [\_\_list_cut_position](https://biscuitos.github.io/blog/LIST___list_cut_position/)
+>
+> [list_cut_position](https://biscuitos.github.io/blog/LIST_list_cut_position/)
+>
+> [\_\_list_del](https://biscuitos.github.io/blog/LIST___list_del/)
+>
+> [list_del](https://biscuitos.github.io/blog/LIST_list_del/)
+>
+> [\_\_list_del_entry](https://biscuitos.github.io/blog/LIST___list_del_entry/)
+>
+> [\_\_list_del_entry_valid](https://biscuitos.github.io/blog/LIST___list_del_entry_valid/)
+>
+> [list_del_init](https://biscuitos.github.io/blog/LIST_list_del_init/)
+>
+> [list_empty](https://biscuitos.github.io/blog/LIST_list_empty/)
+>
+> [list_empty_careful](https://biscuitos.github.io/blog/LIST_list_empty_careful/)
+>
+> [list_entry](https://biscuitos.github.io/blog/LIST_list_entry/)
+>
+> [list_first_entry](https://biscuitos.github.io/blog/LIST_list_first_entry/)
+>
+> [list_first_entry_or_null](https://biscuitos.github.io/blog/LIST_list_first_entry_or_null/)
+>
+> [list_for_each](https://biscuitos.github.io/blog/LIST_list_for_each/)
+>
+> [list_for_each_entry](https://biscuitos.github.io/blog/LIST_list_for_each_entry/)
+>
+> [list_for_each_entry_continue](https://biscuitos.github.io/blog/LIST_list_for_each_entry_continue/)
+>
+> [list_for_each_entry_continue_reverse](https://biscuitos.github.io/blog/LIST_list_for_each_entry_continue_reverse/)
+>
+> [list_for_each_entry_from](https://biscuitos.github.io/blog/LIST_list_for_each_entry_from/)
+>
+> [list_for_each_entry_from_reverse](https://biscuitos.github.io/blog/LIST_list_for_each_entry_from_reverse/)
+>
+> [list_for_each_entry_reverse](https://biscuitos.github.io/blog/LIST_list_for_each_entry_reverse/)
+>
+> [list_for_each_entry_safe](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe/)
+>
+> [list_for_each_entry_safe_continue](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe_continue/)
+>
+> [list_for_each_entry_safe_from](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe_from/)
+>
+> [list_for_each_entry_safe_reverse](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe_reverse/)
+>
+> [list_for_each_prev](https://biscuitos.github.io/blog/LIST_list_for_each_prev/)
+>
+> [list_for_each_prev_safe](https://biscuitos.github.io/blog/LIST_list_for_each_prev_safe/)
+>
+> [list_for_each_safe](https://biscuitos.github.io/blog/LIST_list_for_each_safe/)
+>
+> [LIST_HEAD](https://biscuitos.github.io/blog/LIST_LIST_HEAD/)
+>
+> [LIST_HEAD_INIT](https://biscuitos.github.io/blog/LIST_LIST_HEAD_INIT/)
+>
+> [list_is_last](https://biscuitos.github.io/blog/LIST_list_is_last/)
+>
+> [list_is_singular](https://biscuitos.github.io/blog/LIST_list_is_singular/)
+>
+> [list_last_entry](https://biscuitos.github.io/blog/LIST_list_last_entry/)
+>
+> [list_move](https://biscuitos.github.io/blog/LIST_list_move/)
+>
+> [list_move_tail](https://biscuitos.github.io/blog/LIST_list_move_tail/)
+>
+> [list_next_entry](https://biscuitos.github.io/blog/LIST_list_next_entry/)
+>
+> [list_prepare_entry](https://biscuitos.github.io/blog/LIST_list_prepare_entry/)
+>
+> [list_prev_entry](https://biscuitos.github.io/blog/LIST_list_prev_entry/)
+>
+> [list_replace](https://biscuitos.github.io/blog/LIST_list_replace/)
+>
+> [list_replace_init](https://biscuitos.github.io/blog/LIST_list_replace_init/)
+>
+> [list_rotate_left](https://biscuitos.github.io/blog/LIST_list_rotate_left/)
+>
+> [list_safe_reset_next](https://biscuitos.github.io/blog/LIST_list_safe_reset_next/)
+>
+> [\_\_list_splice](https://biscuitos.github.io/blog/LIST___list_splice/)
+>
+> [list_splice](https://biscuitos.github.io/blog/LIST_list_splice/)
+>
+> [list_splice_init](https://biscuitos.github.io/blog/LIST_list_splice_init/)
+>
+> [list_splice_tail](https://biscuitos.github.io/blog/LIST_list_splic_tail/)
+>
+> [list_splice_tail_init](https://biscuitos.github.io/blog/LIST_list_splice_tail_init/)
 
 -----------------------------------------------
 
