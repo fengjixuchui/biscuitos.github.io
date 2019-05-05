@@ -450,7 +450,7 @@ Linux 内核为双链表提供了丰富的接口函数，以满足不同的使�
 > - [内核中核心双链表](https://biscuitos.github.io/blog/LIST_core_list/)
 
 ---------------------------------------------
-<span id="LISTAPI">内核双链表 API</span>
+<span id="LISTAPI"></span>
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
 
