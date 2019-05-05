@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "__READ_ONCE"
-date:   2019-05-05 14:55:30 +0800
+title:  "READ_ONCE"
+date:   2019-05-05 13:30:30 +0800
 categories: [HW]
-excerpt: ATOMIC __READ_ONCE().
+excerpt: ATOMIC READ_ONCE().
 tags:
   - ATOMIC
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-> [Github: __READ_ONCE](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/__READ_ONCE)
+> [Github: READ_ONCE](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/READ_ONCE)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 >
@@ -29,34 +29,15 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-#define __READ_ONCE(x, check)                                           \
-({                                                                      \
-        union { typeof(x) __val; char __c[1]; } __u;                    \
-        if (check)                                                      \
-                __read_once_size(&(x), __u.__c, sizeof(x));             \
-        else                                                            \
-                __read_once_size_nocheck(&(x), __u.__c, sizeof(x));     \
-        smp_read_barrier_depends(); /* Enforce dependency ordering from x */ \
-        __u.__val;                                                      \
-})
+#define READ_ONCE(x) __READ_ONCE(x, 1)
 {% endhighlight %}
 
-__READ_ONCE() 函数用于从内存中读取一个变量，并支持检测。参数 x 指向需要读取内存
-变量；check 参数用于指明 x 是否需要检查。函数首先定义一个联合体 __u，__u 包含两个
-成员 __val 和 __c 共同使用这个联合体。函数首先检查 check 是否为真，如果为真，则
-代表在从内存中读取数据的时候，需要检查；如果 check 为假，则代表在从内存中读取数据
-的时候，不需要检查。__read_once_size() 和 __read_once_size_nocheck() 都是从
-内存中读取数据到缓存 __u.__c 中。接着调用 smp_read_barrier_depends() 函数强制
-依赖顺序，对于 ARMv7 平台，没有具体作用，最后将 __u.__val 返回。整个函数确保数据
-都是从内存中读取。而不是从缓存，cache 或者寄存器中读取。
+READ_ONCE() 用于从内存中读取变量的值。变量 x 的类型可以是任意类型，函数直接调用
+__READ_ONCE() 进行内存读取。
 
-###### __read_once_size
+###### __READ_ONCE
 
-> [\_\_read_once_size 源码分析](https://biscuitos.github.io/blog/ATOMIC___read_once_size/)
-
-###### __read_once_size_nocheck
-
-> [\_\_read_once_size_nocheck 源码分析](https://biscuitos.github.io/blog/ATOMIC___read_once_size_nocheck/)
+> [\_\_READ_ONCE](https://biscuitos.github.io/blog/ATOMIC___READ_ONCE/)
 
 --------------------------------------------------
 
@@ -93,13 +74,14 @@ __READ_ONCE() 函数用于从内存中读取一个变量，并支持检测。参
 /* READ_ONCE/WRITE_ONCE */
 #include <linux/compiler.h>
 
+volatile char ch = 'A';
+
 static __init int atomic_demo_init(void)
 {
-        volatile char ch = 'A';
         char cb;
 
         /* Read from memory not cache nor register */
-        cb = __READ_ONCE(ch, 1);
+        cb = READ_ONCE(ch);
 
         printk("cb: %c\n", cb);
 
@@ -127,7 +109,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_ATOMIC
 +
 +config DEBUG_BISCUITOS_ATOMIC
-+       bool "__READ_ONCE"
++       bool "READ_ONCE"
 +
 +endif # BISCUITOS_ATOMIC
 +
@@ -155,7 +137,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]atomic
-            [*]__READ_ONCE()
+            [*]READ_ONCE()
 {% endhighlight %}
 
 具体过程请参考：
@@ -185,7 +167,7 @@ aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 
 #### <span id="驱动分析">驱动分析</span>
 
-函数确保数据都是从内存中读取。
+READ_ONCE() 确保了数据是从内存中读取。
 
 -----------------------------------------------
 
