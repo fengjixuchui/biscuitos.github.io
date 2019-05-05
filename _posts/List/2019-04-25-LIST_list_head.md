@@ -49,7 +49,7 @@ tags:
 ---------------------------------------------
 <span id="内核双链表原理"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
 
 ### 链表
 
@@ -112,7 +112,7 @@ struct list_head {
 ---------------------------------------------
 <span id="内核双链表最小实践"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
 
 ### 内核双链表最小实践
 
@@ -250,7 +250,6 @@ Device Driver--->
 
 > [Linux 5.0 开发环境搭建 -- 驱动配置](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E9%85%8D%E7%BD%AE)
 
-
 配置完驱动之后，进行驱动编译。驱动编译也请参考下面文章关于驱动编译一节：
 
 > [Linux 5.0 开发环境搭建 -- 驱动编译](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E7%BC%96%E8%AF%91%E9%A9%B1%E5%8A%A8)
@@ -280,7 +279,7 @@ aaci-pl041 10004000.aaci: FIFO 512 entries
 ---------------------------------------------
 <span id="内核双链表基本操作"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
 
 ### 内核双链表基本操作
 
@@ -441,7 +440,7 @@ Linux 内核为双链表提供了丰富的接口函数，以满足不同的使�
 ---------------------------------------------
 <span id="内核双链表进阶研究"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000J.jpg)
 
 ### 内核双链表进阶研究
 
