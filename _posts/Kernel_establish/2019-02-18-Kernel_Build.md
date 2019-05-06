@@ -84,4 +84,7 @@ tags:
 > - [Build Linux 5.0 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
 >
 > - [Build Linux 5.0 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.0-arm64-Usermanual/)
-
+>
+> - [Build Linux 5.1 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.1-arm32-Usermanual/)
+>
+> - [Build Linux 5.1 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.1-arm64-Usermanual/)
