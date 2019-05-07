@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "atomic_add"
-date:   2019-05-06 17:55:30 +0800
+title:  "atomic_fetch_andnot"
+date:   2019-05-07 07:55:30 +0800
 categories: [HW]
-excerpt: ATOMIC atomic_add().
+excerpt: ATOMIC atomic_fetch_andnot().
 tags:
   - ATOMIC
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
 
-> [Github: atomic_add](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/atomic_add)
+> [Github: atomic_fetch_andnot](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/atomic_fetch_andnot)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 >
@@ -29,49 +29,53 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
+{% highlight ruby %}
 #define ATOMIC_OPS(op, c_op, asm_op)                                    \
         ATOMIC_OP(op, c_op, asm_op)                                     \
         ATOMIC_OP_RETURN(op, c_op, asm_op)                              \
         ATOMIC_FETCH_OP(op, c_op, asm_op)
 
-ATOMIC_OPS(add, +=, add)
+ATOMIC_OPS(andnot, &= ~, andnot)
 {% endhighlight %}
 
-atomic_add() 用于给 atomic_t 变量做加法。在 ARMv7 中，使用 ATOMIC_OPS 宏定义
-了 atomic_add() 函数。开发者可以通过编译之后的结果查看 atomic_add() 函数的实现，
-如下：
+atomic_fetch_andnot() 用于获得 atomic_t 变量的原始值，并清除 atomic_t 变量的指定位。
+在 ARMv7 中，使用 ATOMIC_OPS 宏定义了 atomic_fetch_andnot() 函数。开
+发者可以通过编译之后的结果查看 atomic_fetch_andnot() 函数的实现，如下：
 
 {% highlight ruby %}
-static inline void atomic_add(int i, atomic_t *v)
+static inline void atomic_fetch_andnot(int i, atomic_t *v)
 {
         unsigned long tmp;
-        int result;
+        int result, val;
 
         prefetchw(&v->counter);
         __asm__ volatile ("\n\t"
-        "@ atomic_add\n\t"
-"1:      ldrex   %0, [%3]\n\t"        @ result, tmp115
-"        add     %0, %0, %4\n\t"      @ result,
-"        strex   %1, %0, [%3]\n\t"    @ tmp, result, tmp115
-"        teq     %1, #0\n\t"          @ tmp
+        "@ atomic_fetch\n\t"
+"1:      ldrex   %0, [%4]\n\t"        @ result, tmp115
+"        bic     %1, %0, %5\n\t"      @ result,
+"        strex   %2, %1, [%4]\n\t"    @ tmp, result, tmp115
+"        teq     %2, #0\n\t"          @ tmp
 "        bne     1b"
-         : "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
+         : "=&r" (result), "=&r" (val), "=&r" (tmp), "+Qo" (v->counter)
          : "r" (&v->counter), "Ir" (i)
          : "cc");
+
+         return result;
 }
 {% endhighlight %}
 
-atomic_add() 函数的定义如上，参数 i 指明 atomic 变量需要增加的值；参数 v 指向
-atomic_t 变量。函数首先使用 prefetchw() 函数将 v->counter 的值预读到 cache，
-然后调用一个内嵌汇编，汇编首先调用 ldrex 指令首先对 v->counter 对应的内存地址
-设置独占标志，同时从内存中读取 v->counter 的值到 result。接着调用 add 指令，
-将 result 中的值添加 i 对应的值。然后调用 strex 指令准备将 result 中的值写入
+atomic_fetch_andnot() 函数的定义如上，参数 i 指明 atomic 变量需要清除的位；
+参数 v 指向 atomic_t 变量。函数首先使用 prefetchw() 函数将 v->counter 的值预读到
+cache，然后调用一个内嵌汇编，汇编首先调用 ldrex 指令首先对 v->counter 对应的内存地
+址设置独占标志，同时从内存中读取 v->counter 的值到 result。接着调用 andnot 指令，
+将 result 中的值清除 i 对应的位。然后调用 strex 指令准备将 result 中的值写入
 到 v->counter 对应的内存地址，如果此时独占标志还存在，表示写内存的操作不存在抢占
 问题，可以直接写入，并将 tmp 的值设置为 0；如果此时独占标志已经被清除，那么
 此时没有权限往内存写入值，那么 strex 会放弃写入值，并将 tmp 设置为 1。strex
 指令执行完之后，调用 teq 指令检查 tmp 的值，如果是 0，那么表示写入成功，直接返回；
 如果是 1，那么调用 bne 跳转到 1，重新执行之前的代码，直到 strex 将数据写入到
-内存。上面的逻辑确保 SMP 模式下，多线程对共享的数据实现了锁机制。
+内存。上面的逻辑确保 SMP 模式下，多线程对共享的数据实现了锁机制。函数最后返回的
+是之前的值。
 
 --------------------------------------------------
 
@@ -125,24 +129,26 @@ atomic_t 变量。函数首先使用 prefetchw() 函数将 v->counter 的值预�
  */
 
 /*
- * atomic_add (ARMv7 Cotex-A9MP)
+ * atomic_andnot_* (ARMv7 Cotex-A9MP)
  *
- * static inline void atomic_add(int i, atomic_t *v)
+ * static inline int atomic_fetch_andnot(int i, atomic_t *v)
  * {
  *         unsigned long tmp;
- *         int result;
+ *         int result, val;
  *
  *         prefetchw(&v->counter);
  *         __asm__ volatile ("\n\t"
- *         "@ atomic_add\n\t"
- * "1:      ldrex   %0, [%3]\n\t"        @ result, tmp115
- * "        add     %0, %0, %4\n\t"      @ result,
- * "        strex   %1, %0, [%3]\n\t"    @ tmp, result, tmp115
- * "        teq     %1, #0\n\t"          @ tmp
+ *         "@ atomic_andnot\n\t"
+ * "1:      ldrex   %0, [%4]\n\t"        @ result, tmp115
+ * "        bic     %1, %0, %5\n\t"      @ result,
+ * "        strex   %2, %1, [%4]\n\t"    @ tmp, result, tmp115
+ * "        teq     %2, #0\n\t"          @ tmp
  * "        bne     1b"
- *          : "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
+ *          : "=&r" (result), "=&r" (val), "=&r" (tmp), "+Qo" (v->counter)
  *          : "r" (&v->counter), "Ir" (i)
  *          : "cc");
+ *
+ *         return result;
  * }
  */
 
@@ -154,10 +160,12 @@ static atomic_t BiscuitOS_counter = ATOMIC_INIT(8);
 /* atomic_* */
 static __init int atomic_demo_init(void)
 {
-	/* Atomic add */
-	atomic_add(1, &BiscuitOS_counter);
+	int val;
 
-	printk("Atomic: %d\n", atomic_read(&BiscuitOS_counter));
+	/* Atomic andnot */
+	val = atomic_fetch_andnot(1, &BiscuitOS_counter);
+
+	printk("Atomic: %d\n", val);
 
 	return 0;
 }
@@ -183,7 +191,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_ATOMIC
 +
 +config DEBUG_BISCUITOS_ATOMIC
-+       bool "atomic_add"
++       bool "atomic_fetch_andnot"
 +
 +endif # BISCUITOS_ATOMIC
 +
@@ -211,7 +219,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]atomic
-            [*]atomic_add()
+            [*]atomic_fetch_andnot()
 {% endhighlight %}
 
 具体过程请参考：
@@ -235,7 +243,7 @@ Device Driver--->
 {% highlight ruby %}
 usbcore: registered new interface driver usbhid
 usbhid: USB HID core driver
-Atomic: 9
+Atomic: 8
 aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 aaci-pl041 10004000.aaci: FIFO 512 entries
 oprofile: using arm/armv7-ca9
@@ -243,7 +251,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-当需要对一个 atomic_t 变量做加法的时候，可以使用 atomic_add() 函数。
+atomic_fetch_andnot() 函数可以用于获得清除特定位之前 atomic_t 变量的值。
 
 -----------------------------------------------
 

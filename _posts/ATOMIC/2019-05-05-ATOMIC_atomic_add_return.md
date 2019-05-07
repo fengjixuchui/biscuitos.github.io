@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "atomic_add"
-date:   2019-05-06 17:55:30 +0800
+title:  "atomic_add_return"
+date:   2019-05-07 06:39:30 +0800
 categories: [HW]
-excerpt: ATOMIC atomic_add().
+excerpt: ATOMIC atomic_add_return().
 tags:
   - ATOMIC
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
 
-> [Github: atomic_add](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/atomic_add)
+> [Github: atomic_add_return](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/atomic_add_return)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 >
@@ -37,12 +37,13 @@ tags:
 ATOMIC_OPS(add, +=, add)
 {% endhighlight %}
 
-atomic_add() 用于给 atomic_t 变量做加法。在 ARMv7 中，使用 ATOMIC_OPS 宏定义
-了 atomic_add() 函数。开发者可以通过编译之后的结果查看 atomic_add() 函数的实现，
+atomic_add_return() 用于给 atomic_t 变量做加法并返回增加之后的值。在 ARMv7 中，
+使用 ATOMIC_OPS 宏定义了 atomic_add_return() 函数。开发者可以通过编译之后的结果
+查看 atomic_add_return() 函数的实现，
 如下：
 
 {% highlight ruby %}
-static inline void atomic_add(int i, atomic_t *v)
+static inline int atomic_add_return(int i, atomic_t *v)
 {
         unsigned long tmp;
         int result;
@@ -58,10 +59,12 @@ static inline void atomic_add(int i, atomic_t *v)
          : "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
          : "r" (&v->counter), "Ir" (i)
          : "cc");
+
+         return result;
 }
 {% endhighlight %}
 
-atomic_add() 函数的定义如上，参数 i 指明 atomic 变量需要增加的值；参数 v 指向
+atomic_add_return() 函数的定义如上，参数 i 指明 atomic 变量需要增加的值；参数 v 指向
 atomic_t 变量。函数首先使用 prefetchw() 函数将 v->counter 的值预读到 cache，
 然后调用一个内嵌汇编，汇编首先调用 ldrex 指令首先对 v->counter 对应的内存地址
 设置独占标志，同时从内存中读取 v->counter 的值到 result。接着调用 add 指令，
@@ -71,7 +74,8 @@ atomic_t 变量。函数首先使用 prefetchw() 函数将 v->counter 的值预�
 此时没有权限往内存写入值，那么 strex 会放弃写入值，并将 tmp 设置为 1。strex
 指令执行完之后，调用 teq 指令检查 tmp 的值，如果是 0，那么表示写入成功，直接返回；
 如果是 1，那么调用 bne 跳转到 1，重新执行之前的代码，直到 strex 将数据写入到
-内存。上面的逻辑确保 SMP 模式下，多线程对共享的数据实现了锁机制。
+内存，最后返回 result 的值。上面的逻辑确保 SMP 模式下，多线程对共享的数据实现了
+锁机制。
 
 --------------------------------------------------
 
@@ -127,7 +131,7 @@ atomic_t 变量。函数首先使用 prefetchw() 函数将 v->counter 的值预�
 /*
  * atomic_add (ARMv7 Cotex-A9MP)
  *
- * static inline void atomic_add(int i, atomic_t *v)
+ * static inline int atomic_add_return(int i, atomic_t *v)
  * {
  *         unsigned long tmp;
  *         int result;
@@ -143,6 +147,8 @@ atomic_t 变量。函数首先使用 prefetchw() 函数将 v->counter 的值预�
  *          : "=&r" (result), "=&r" (tmp), "+Qo" (v->counter)
  *          : "r" (&v->counter), "Ir" (i)
  *          : "cc");
+ *
+ *         return result;
  * }
  */
 
@@ -154,10 +160,12 @@ static atomic_t BiscuitOS_counter = ATOMIC_INIT(8);
 /* atomic_* */
 static __init int atomic_demo_init(void)
 {
-	/* Atomic add */
-	atomic_add(1, &BiscuitOS_counter);
+	int val;
 
-	printk("Atomic: %d\n", atomic_read(&BiscuitOS_counter));
+	/* Atomic add */
+	val = atomic_add_return(1, &BiscuitOS_counter);
+
+	printk("Atomic: %d\n", val);
 
 	return 0;
 }
@@ -183,7 +191,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_ATOMIC
 +
 +config DEBUG_BISCUITOS_ATOMIC
-+       bool "atomic_add"
++       bool "atomic_add_return"
 +
 +endif # BISCUITOS_ATOMIC
 +
@@ -211,7 +219,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]atomic
-            [*]atomic_add()
+            [*]atomic_add_return()
 {% endhighlight %}
 
 具体过程请参考：
@@ -243,7 +251,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-当需要对一个 atomic_t 变量做加法的时候，可以使用 atomic_add() 函数。
+在需要对 atomic_t 变量进行加法之后并获得结果，可以使用 atomic_add_return
 
 -----------------------------------------------
 

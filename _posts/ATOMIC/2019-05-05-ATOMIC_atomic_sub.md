@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "atomic_add"
-date:   2019-05-06 17:55:30 +0800
+title:  "atomic_sub"
+date:   2019-05-06 07:07:30 +0800
 categories: [HW]
-excerpt: ATOMIC atomic_add().
+excerpt: ATOMIC atomic_sub().
 tags:
   - ATOMIC
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
 
-> [Github: atomic_add](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/atomic_add)
+> [Github: atomic_sub](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/atomic_sub)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 >
@@ -34,24 +34,24 @@ tags:
         ATOMIC_OP_RETURN(op, c_op, asm_op)                              \
         ATOMIC_FETCH_OP(op, c_op, asm_op)
 
-ATOMIC_OPS(add, +=, add)
+ATOMIC_OPS(sub, +=, sub)
 {% endhighlight %}
 
-atomic_add() 用于给 atomic_t 变量做加法。在 ARMv7 中，使用 ATOMIC_OPS 宏定义
-了 atomic_add() 函数。开发者可以通过编译之后的结果查看 atomic_add() 函数的实现，
+atomic_sub() 用于给 atomic_t 变量做减法。在 ARMv7 中，使用 ATOMIC_OPS 宏定义
+了 atomic_sub() 函数。开发者可以通过编译之后的结果查看 atomic_sub() 函数的实现，
 如下：
 
 {% highlight ruby %}
-static inline void atomic_add(int i, atomic_t *v)
+static inline void atomic_sub(int i, atomic_t *v)
 {
         unsigned long tmp;
         int result;
 
         prefetchw(&v->counter);
         __asm__ volatile ("\n\t"
-        "@ atomic_add\n\t"
+        "@ atomic_sub\n\t"
 "1:      ldrex   %0, [%3]\n\t"        @ result, tmp115
-"        add     %0, %0, %4\n\t"      @ result,
+"        sub     %0, %0, %4\n\t"      @ result,
 "        strex   %1, %0, [%3]\n\t"    @ tmp, result, tmp115
 "        teq     %1, #0\n\t"          @ tmp
 "        bne     1b"
@@ -61,10 +61,10 @@ static inline void atomic_add(int i, atomic_t *v)
 }
 {% endhighlight %}
 
-atomic_add() 函数的定义如上，参数 i 指明 atomic 变量需要增加的值；参数 v 指向
+atomic_sub() 函数的定义如上，参数 i 指明 atomic 变量需要减少的值；参数 v 指向
 atomic_t 变量。函数首先使用 prefetchw() 函数将 v->counter 的值预读到 cache，
 然后调用一个内嵌汇编，汇编首先调用 ldrex 指令首先对 v->counter 对应的内存地址
-设置独占标志，同时从内存中读取 v->counter 的值到 result。接着调用 add 指令，
+设置独占标志，同时从内存中读取 v->counter 的值到 result。接着调用 sub 指令，
 将 result 中的值添加 i 对应的值。然后调用 strex 指令准备将 result 中的值写入
 到 v->counter 对应的内存地址，如果此时独占标志还存在，表示写内存的操作不存在抢占
 问题，可以直接写入，并将 tmp 的值设置为 0；如果此时独占标志已经被清除，那么
@@ -125,18 +125,18 @@ atomic_t 变量。函数首先使用 prefetchw() 函数将 v->counter 的值预�
  */
 
 /*
- * atomic_add (ARMv7 Cotex-A9MP)
+ * atomic_sub (ARMv7 Cotex-A9MP)
  *
- * static inline void atomic_add(int i, atomic_t *v)
+ * static inline void atomic_sub(int i, atomic_t *v)
  * {
  *         unsigned long tmp;
  *         int result;
  *
  *         prefetchw(&v->counter);
  *         __asm__ volatile ("\n\t"
- *         "@ atomic_add\n\t"
+ *         "@ atomic_sub\n\t"
  * "1:      ldrex   %0, [%3]\n\t"        @ result, tmp115
- * "        add     %0, %0, %4\n\t"      @ result,
+ * "        sub     %0, %0, %4\n\t"      @ result,
  * "        strex   %1, %0, [%3]\n\t"    @ tmp, result, tmp115
  * "        teq     %1, #0\n\t"          @ tmp
  * "        bne     1b"
@@ -154,8 +154,8 @@ static atomic_t BiscuitOS_counter = ATOMIC_INIT(8);
 /* atomic_* */
 static __init int atomic_demo_init(void)
 {
-	/* Atomic add */
-	atomic_add(1, &BiscuitOS_counter);
+	/* Atomic sub */
+	atomic_sub(1, &BiscuitOS_counter);
 
 	printk("Atomic: %d\n", atomic_read(&BiscuitOS_counter));
 
@@ -183,7 +183,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_ATOMIC
 +
 +config DEBUG_BISCUITOS_ATOMIC
-+       bool "atomic_add"
++       bool "atomic_sub"
 +
 +endif # BISCUITOS_ATOMIC
 +
@@ -211,7 +211,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]atomic
-            [*]atomic_add()
+            [*]atomic_sub()
 {% endhighlight %}
 
 具体过程请参考：
@@ -235,7 +235,7 @@ Device Driver--->
 {% highlight ruby %}
 usbcore: registered new interface driver usbhid
 usbhid: USB HID core driver
-Atomic: 9
+Atomic: 7
 aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 aaci-pl041 10004000.aaci: FIFO 512 entries
 oprofile: using arm/armv7-ca9
@@ -243,7 +243,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-当需要对一个 atomic_t 变量做加法的时候，可以使用 atomic_add() 函数。
+当需要对一个 atomic_t 变量做减法的时候，可以使用 atomic_sub() 函数。
 
 -----------------------------------------------
 
