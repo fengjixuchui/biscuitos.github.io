@@ -29,7 +29,6 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-{% highlight ruby %}
 #define ATOMIC_OPS(op, c_op, asm_op)                                    \
         ATOMIC_OP(op, c_op, asm_op)                                     \
         ATOMIC_OP_RETURN(op, c_op, asm_op)                              \
