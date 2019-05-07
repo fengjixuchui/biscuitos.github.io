@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "atomic_sub_not_test"
+title:  "atomic_sub_and_test"
 date:   2019-05-07 13:46:30 +0800
 categories: [HW]
-excerpt: ATOMIC atomic_sub_not_test().
+excerpt: ATOMIC atomic_sub_and_test().
 tags:
   - ATOMIC
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
 
-> [Github: atomic_sub_not_test](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/atomic_sub_not_test)
+> [Github: atomic_sub_and_test](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/atomic_sub_and_test)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 >
@@ -145,7 +145,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_ATOMIC
 +
 +config DEBUG_BISCUITOS_ATOMIC
-+       bool "atomic_sub_not_test"
++       bool "atomic_sub_and_test"
 +
 +endif # BISCUITOS_ATOMIC
 +
@@ -173,7 +173,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]atomic
-            [*]atomic_sub_not_test()
+            [*]atomic_sub_and_test()
 {% endhighlight %}
 
 具体过程请参考：
