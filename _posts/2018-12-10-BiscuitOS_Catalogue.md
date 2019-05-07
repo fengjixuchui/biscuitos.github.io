@@ -65,6 +65,16 @@ tags:
 >     - [内核双链表 API 列表](https://biscuitos.github.io/blog/LIST_list_head/#LISTAPI)
 >
 >   - 红黑树
+>
+> - [锁/同步]
+>
+>   - [atomic 原子操作](https://biscuitos.github.io/blog/ATOMIC/)
+>
+>     - [atomic 原子操作函数说明](https://biscuitos.github.io/blog/ATOMIC/#Usage)
+>
+>     - [atomic 原子操 API 列表](https://biscuitos.github.io/blog/ATOMIC/#LIST)
+>
+>   - spinlock
 
 ## <span id="Uboot">Uboot</span>
 
