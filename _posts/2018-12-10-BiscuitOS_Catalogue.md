@@ -139,6 +139,18 @@ tags:
 >   - [内核解压后 start_kernel 之后 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#Linux_decompress_after)
 >
 >   - [动态模块 gdb 调试方法](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#MODULE_GDB)
+>
+> - [Linux 0.11 调试手册](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/#linux%200.11%20%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95)
+>
+>   - [bootsect.s 0x7c00 调试方法](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/#debug0)
+>
+>   - [bootsect.s 0x90000 调试方法](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/#debug1)
+>
+>   - [setup.s 调试方法](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/#debug2)
+>
+>   - [head.s 调试方法](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/#debug3)
+>
+>   - [main 函数之后调试方法](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/#debug4)
 
 ## <span id="Debug_tools">Tools</span>
 
