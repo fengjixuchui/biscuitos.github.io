@@ -1,16 +1,16 @@
 ---
 layout: post
 title:  "BBBXXX"
-date:   2019-05-08 14:55:30 +0800
+date:   2019-05-09 14:55:30 +0800
 categories: [HW]
-excerpt: SPINLOCK BBBXXX().
+excerpt: RBTREE BBBXXX().
 tags:
-  - SPINLOCK
+  - RBTREE
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
 
-> [Github: BBBXXX](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/spinlock/API/BBBXXX)
+> [Github: BBBXXX](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/rbtree/API/BBBXXX)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -56,7 +56,7 @@ tags:
 
 #### <span id="驱动安装">驱动安装</span>
 
-驱动的安装很简单，首先将驱动放到 drivers/BiscuitOS/ 目录下，命名为 spinlock.c，
+驱动的安装很简单，首先将驱动放到 drivers/BiscuitOS/ 目录下，命名为 rbtree.c，
 然后修改 Kconfig 文件，添加内容参考如下：
 
 {% highlight bash %}
@@ -67,15 +67,15 @@ index 4edc5a5..1a9abee 100644
 @@ -6,4 +6,14 @@ if BISCUITOS_DRV
 config BISCUITOS_MISC
         bool "BiscuitOS misc driver"
-+config BISCUITOS_SPINLOCK
-+       bool "SPINLOCK"
++config BISCUITOS_RBTREE
++       bool "RBTREE"
 +
-+if BISCUITOS_SPINLOCK
++if BISCUITOS_RBTREE
 +
-+config DEBUG_BISCUITOS_SPINLOCK
++config DEBUG_BISCUITOS_RBTREE
 +       bool "BBBXXX"
 +
-+endif # BISCUITOS_SPINLOCK
++endif # BISCUITOS_RBTREE
 +
 endif # BISCUITOS_DRV
 {% endhighlight %}
@@ -89,7 +89,7 @@ index 82004c9..9909149 100644
 +++ b/drivers/BiscuitOS/Makefile
 @@ -1 +1,2 @@
 obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
-+obj-$(CONFIG_BISCUITOS_SPINLOCK)  += SPINLOCK.o
++obj-$(CONFIG_BISCUITOS_RBTREE)  += rbtree.o
 --
 {% endhighlight %}
 
@@ -100,7 +100,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 {% highlight bash %}
 Device Driver--->
     [*]BiscuitOS Driver--->
-        [*]SPINLOCK
+        [*]RBTREE
             [*]BBBXXX()
 {% endhighlight %}
 

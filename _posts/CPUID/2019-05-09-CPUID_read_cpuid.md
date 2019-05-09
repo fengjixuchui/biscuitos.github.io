@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "BBBXXX"
-date:   2019-05-08 14:55:30 +0800
+title:  "read_cpuid"
+date:   2019-05-09 14:55:30 +0800
 categories: [HW]
-excerpt: SPINLOCK BBBXXX().
+excerpt: CPUID read_cpuid().
 tags:
-  - SPINLOCK
+  - CPUID
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000C.jpg)
 
-> [Github: BBBXXX](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/spinlock/API/BBBXXX)
+> [Github: read_cpuid](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/read_cpuid)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,9 +28,21 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-
+#define read_cpuid(reg)                                                 \
+        ({                                                              \
+                unsigned int __val;                                     \
+                asm("mrc        p15, 0, %0, c0, c0, " __stringify(reg)  \
+                    : "=r" (__val)                                      \
+                    :                                                   \
+                    : "cc");                                            \
+                __val;                                                  \
+        })
 {% endhighlight %}
 
+read_cpuid() 函数用于从 CP15 C0 里面读取特定的寄存器。函数使用 MRC 指令从 CP15
+写处理器的 C0 簇里面读取特定的寄存器。CP15 C0 布局如下：
+
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOTCP15C0.png)
 
 --------------------------------------------------
 
@@ -51,12 +63,37 @@ tags:
 #### <span id="驱动源码">驱动源码</span>
 
 {% highlight c %}
+/*
+ * cpuid
+ *
+ * (C) 2019.05.08 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
 
+#include <linux/kernel.h>
+#include <linux/init.h>
+
+#include <asm/cputype.h>
+
+static __init int cpuid_demo_init(void)
+{
+	unsigned int cpuid;
+
+	cpuid = read_cpuid(CPUID_ID);
+
+	printk("CPUID: %#lx\n", cpuid);
+
+	return 0;
+}
+device_initcall(cpuid_demo_init);
 {% endhighlight %}
 
 #### <span id="驱动安装">驱动安装</span>
 
-驱动的安装很简单，首先将驱动放到 drivers/BiscuitOS/ 目录下，命名为 spinlock.c，
+驱动的安装很简单，首先将驱动放到 drivers/BiscuitOS/ 目录下，命名为 cpuid.c，
 然后修改 Kconfig 文件，添加内容参考如下：
 
 {% highlight bash %}
@@ -67,15 +104,15 @@ index 4edc5a5..1a9abee 100644
 @@ -6,4 +6,14 @@ if BISCUITOS_DRV
 config BISCUITOS_MISC
         bool "BiscuitOS misc driver"
-+config BISCUITOS_SPINLOCK
-+       bool "SPINLOCK"
++config BISCUITOS_CPUID
++       bool "CPUID"
 +
-+if BISCUITOS_SPINLOCK
++if BISCUITOS_CPUID
 +
-+config DEBUG_BISCUITOS_SPINLOCK
-+       bool "BBBXXX"
++config DEBUG_BISCUITOS_CPUID
++       bool "read_cpuid"
 +
-+endif # BISCUITOS_SPINLOCK
++endif # BISCUITOS_CPUID
 +
 endif # BISCUITOS_DRV
 {% endhighlight %}
@@ -89,7 +126,7 @@ index 82004c9..9909149 100644
 +++ b/drivers/BiscuitOS/Makefile
 @@ -1 +1,2 @@
 obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
-+obj-$(CONFIG_BISCUITOS_SPINLOCK)  += SPINLOCK.o
++obj-$(CONFIG_BISCUITOS_CPUID)  += cpuid.o
 --
 {% endhighlight %}
 
@@ -100,8 +137,8 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 {% highlight bash %}
 Device Driver--->
     [*]BiscuitOS Driver--->
-        [*]SPINLOCK
-            [*]BBBXXX()
+        [*]CPUID
+            [*]read_cpuid()
 {% endhighlight %}
 
 具体过程请参考：
@@ -123,10 +160,17 @@ Device Driver--->
 启动内核，并打印如下信息：
 
 {% highlight ruby %}
-
+usbcore: registered new interface driver usbhid
+usbhid: USB HID core driver
+CPUID: 0x410fc090
+aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
+aaci-pl041 10004000.aaci: FIFO 512 entries
+oprofile: using arm/armv7-ca9
 {% endhighlight %}
 
 #### <span id="驱动分析">驱动分析</span>
+
+可以便捷的读出 CPUID 信息。
 
 -----------------------------------------------
 
