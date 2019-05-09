@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "read_cpuid_cachetype"
+title:  "read_cpuid_mputype"
 date:   2019-05-09 14:55:30 +0800
 categories: [HW]
-excerpt: CPUID read_cpuid_cachetype().
+excerpt: CPUID read_cpuid_mputype().
 tags:
   - CPUID
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000C.jpg)
 
-> [Github: read_cpuid_cachetype](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/read_cpuid_cachetype)
+> [Github: read_cpuid_mputype](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/read_cpuid_mputype)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,17 +28,17 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-#define CPUID_CACHETYPE 1
+#define CPUID_MPUIR     4
 
-static inline unsigned int __attribute_const__ read_cpuid_cachetype(void)
+static inline unsigned int __attribute_const__ read_cpuid_mputype(void)
 {
-        return read_cpuid(CPUID_CACHETYPE);
+        return read_cpuid(CPUID_MPUIR);
 }
 {% endhighlight %}
 
-read_cpuid_cachetype() 函数用于获得体系使用的 cache 信息。函数直接调用 read_cpuid()
-函数操作。在 ARMv7 中 read_cpuid_cachetype() 函数主要操作的是 CTR (Cache Type Register, VMSA)
-寄存器。这个寄存器描述了体系所使用的 cache 类型信息。具体可以查看 ARMv7 手册：
+read_cpuid_mputype() 函数用于获得 MPU 类型，在 ARMv7 中主要操作的 MIDR (Main ID register),
+在 ARMv7 中该寄存器主要包含了：Implementation by ARM, Major revision number, Architecture code,
+ARM part number, Minor revision number. 具体可以查看 ARMv7 手册：
 
 > - [ARMv7 Architecture Reference Manual](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/ARM/ARMv7_architecture_reference_manual.pdf)
 
@@ -82,11 +82,11 @@ read_cpuid_cachetype() 函数用于获得体系使用的 cache 信息。函数�
 
 static __init int cpuid_demo_init(void)
 {
-	unsigned int cache;
+	unsigned int type;
 
-	cache = read_cpuid_cachetype();
+	type = read_cpuid_mputype();
 
-	printk("cache: %#x\n", cache);
+	printk("mputype: %#x\n", type);
 
 	return 0;
 }
@@ -112,7 +112,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_CPUID
 +
 +config DEBUG_BISCUITOS_CPUID
-+       bool "read_cpuid_cachetype"
++       bool "read_cpuid_mputype"
 +
 +endif # BISCUITOS_CPUID
 +
@@ -140,7 +140,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]CPUID
-            [*]read_cpuid_cachetype()
+            [*]read_cpuid_mputype()
 {% endhighlight %}
 
 具体过程请参考：
@@ -164,7 +164,7 @@ Device Driver--->
 {% highlight ruby %}
 usbcore: registered new interface driver usbhid
 usbhid: USB HID core driver
-cache: 0x80038003
+mputype: 0x410fc090
 aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 aaci-pl041 10004000.aaci: FIFO 512 entries
 oprofile: using arm/armv7-ca9
@@ -172,7 +172,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-读取 cache type 可以使用这个函数。
+在 ARM7 中该函数的实现与 read_cpuid_id() 效果一致。
 
 -----------------------------------------------
 

@@ -41,6 +41,10 @@ ARM part number, Minor revision number. 具体可以查看 ARMv7 手册：
 
 > - [ARMv7 Architecture Reference Manual](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/ARM/ARMv7_architecture_reference_manual.pdf)
 
+###### read_cpuid
+
+> [read_cpuid 源码分析](https://biscuitos.github.io/blog/CPUID_read_cpuid/)
+
 --------------------------------------------------
 
 # <span id="实践">实践</span>

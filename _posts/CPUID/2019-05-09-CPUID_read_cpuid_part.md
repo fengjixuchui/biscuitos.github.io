@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "read_cpuid_cachetype"
+title:  "read_cpuid_part"
 date:   2019-05-09 14:55:30 +0800
 categories: [HW]
-excerpt: CPUID read_cpuid_cachetype().
+excerpt: CPUID read_cpuid_part().
 tags:
   - CPUID
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000C.jpg)
 
-> [Github: read_cpuid_cachetype](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/read_cpuid_cachetype)
+> [Github: read_cpuid_part](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/read_cpuid_part)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,19 +28,23 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-#define CPUID_CACHETYPE 1
+#define ARM_CPU_PART_MASK               0xff00fff0
 
-static inline unsigned int __attribute_const__ read_cpuid_cachetype(void)
+/*
+ * The CPU part number is meaningless without referring to the CPU
+ * implementer: implementers are free to define their own part numbers
+ * which are permitted to clash with other implementer part numbers.
+ */
+static inline unsigned int __attribute_const__ read_cpuid_part(void)
 {
-        return read_cpuid(CPUID_CACHETYPE);
+        return read_cpuid_id() & ARM_CPU_PART_MASK;
 }
 {% endhighlight %}
 
-read_cpuid_cachetype() 函数用于获得体系使用的 cache 信息。函数直接调用 read_cpuid()
-函数操作。在 ARMv7 中 read_cpuid_cachetype() 函数主要操作的是 CTR (Cache Type Register, VMSA)
-寄存器。这个寄存器描述了体系所使用的 cache 类型信息。具体可以查看 ARMv7 手册：
+read_cpuid_part() 函数用于读取 CPU 的 part 号，ARMv7 中，其存储在 MIDR 寄存器中，
+更多信息请参考：
 
-> - [ARMv7 Architecture Reference Manual](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/ARM/ARMv7_architecture_reference_manual.pdf)
+> [B5.1.105 MIDR,Main ID Register,VMSA](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/ARM/ARMv7_architecture_reference_manual.pdf)
 
 ###### read_cpuid
 
@@ -82,11 +86,11 @@ read_cpuid_cachetype() 函数用于获得体系使用的 cache 信息。函数�
 
 static __init int cpuid_demo_init(void)
 {
-	unsigned int cache;
+	unsigned int info;
 
-	cache = read_cpuid_cachetype();
+	info = read_cpuid_part();
 
-	printk("cache: %#x\n", cache);
+	printk("CPU part number: %#x\n", info);
 
 	return 0;
 }
@@ -112,7 +116,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_CPUID
 +
 +config DEBUG_BISCUITOS_CPUID
-+       bool "read_cpuid_cachetype"
++       bool "read_cpuid_part"
 +
 +endif # BISCUITOS_CPUID
 +
@@ -140,7 +144,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]CPUID
-            [*]read_cpuid_cachetype()
+            [*]read_cpuid_part()
 {% endhighlight %}
 
 具体过程请参考：
@@ -164,7 +168,8 @@ Device Driver--->
 {% highlight ruby %}
 usbcore: registered new interface driver usbhid
 usbhid: USB HID core driver
-cache: 0x80038003
+CPU part number: 0x4100c090
+input: AT Raw Set 2 keyboard as /devices/platform/smb@4000000/smb@4000000:motherboard/smb@4000000:motherboard:iofpga@7,00000000/10006000.kmi/serio0/input/input0
 aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 aaci-pl041 10004000.aaci: FIFO 512 entries
 oprofile: using arm/armv7-ca9
@@ -172,7 +177,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-读取 cache type 可以使用这个函数。
+读取 CPU part number 的函数。
 
 -----------------------------------------------
 

@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "read_cpuid_cachetype"
+title:  "Bread_cpuid_mpidrX"
 date:   2019-05-09 14:55:30 +0800
 categories: [HW]
-excerpt: CPUID read_cpuid_cachetype().
+excerpt: CPUID Bread_cpuid_mpidrX().
 tags:
   - CPUID
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000C.jpg)
 
-> [Github: read_cpuid_cachetype](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/read_cpuid_cachetype)
+> [Github: Bread_cpuid_mpidrX](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/Bread_cpuid_mpidrX)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,19 +28,18 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-#define CPUID_CACHETYPE 1
+#define CPUID_MPIDR     5
 
-static inline unsigned int __attribute_const__ read_cpuid_cachetype(void)
+static inline unsigned int __attribute_const__ read_cpuid_mpidr(void)
 {
-        return read_cpuid(CPUID_CACHETYPE);
+        return read_cpuid(CPUID_MPIDR);
 }
 {% endhighlight %}
 
-read_cpuid_cachetype() 函数用于获得体系使用的 cache 信息。函数直接调用 read_cpuid()
-函数操作。在 ARMv7 中 read_cpuid_cachetype() 函数主要操作的是 CTR (Cache Type Register, VMSA)
-寄存器。这个寄存器描述了体系所使用的 cache 类型信息。具体可以查看 ARMv7 手册：
+read_cpuid_mpidr() 用于读取 MPIDR 寄存器的值，在 ARMv7 中最终读取的是
+MPIDR (Multiprocessor Affinity Register, VMSA) 寄存器，更多信息请看：
 
-> - [ARMv7 Architecture Reference Manual](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/ARM/ARMv7_architecture_reference_manual.pdf)
+> [B4.1.106 MPIDR, Multiprocessor Affinity Register, VMSA](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/ARM/ARMv7_architecture_reference_manual.pdf)
 
 ###### read_cpuid
 
@@ -82,11 +81,11 @@ read_cpuid_cachetype() 函数用于获得体系使用的 cache 信息。函数�
 
 static __init int cpuid_demo_init(void)
 {
-	unsigned int cache;
+	unsigned int info;
 
-	cache = read_cpuid_cachetype();
+	info = read_cpuid_mpidr();
 
-	printk("cache: %#x\n", cache);
+	printk("CPU MPIDR: %#x\n", info);
 
 	return 0;
 }
@@ -112,7 +111,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_CPUID
 +
 +config DEBUG_BISCUITOS_CPUID
-+       bool "read_cpuid_cachetype"
++       bool "Bread_cpuid_mpidrX"
 +
 +endif # BISCUITOS_CPUID
 +
@@ -140,7 +139,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]CPUID
-            [*]read_cpuid_cachetype()
+            [*]Bread_cpuid_mpidrX()
 {% endhighlight %}
 
 具体过程请参考：
@@ -164,15 +163,13 @@ Device Driver--->
 {% highlight ruby %}
 usbcore: registered new interface driver usbhid
 usbhid: USB HID core driver
-cache: 0x80038003
+CPU MPIDR: 0x80000000
 aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 aaci-pl041 10004000.aaci: FIFO 512 entries
 oprofile: using arm/armv7-ca9
 {% endhighlight %}
 
 #### <span id="驱动分析">驱动分析</span>
-
-读取 cache type 可以使用这个函数。
 
 -----------------------------------------------
 

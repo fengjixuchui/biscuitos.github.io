@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "read_cpuid_cachetype"
+title:  "read_cpuid_tcmstatus"
 date:   2019-05-09 14:55:30 +0800
 categories: [HW]
-excerpt: CPUID read_cpuid_cachetype().
+excerpt: CPUID read_cpuid_tcmstatusX().
 tags:
   - CPUID
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000C.jpg)
 
-> [Github: read_cpuid_cachetype](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/read_cpuid_cachetype)
+> [Github: read_cpuid_tcmstatus](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/read_cpuid_tcmstatus)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -28,23 +28,19 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-#define CPUID_CACHETYPE 1
+#define CPUID_TCM       2
 
-static inline unsigned int __attribute_const__ read_cpuid_cachetype(void)
+static inline unsigned int __attribute_const__ read_cpuid_tcmstatus(void)
 {
-        return read_cpuid(CPUID_CACHETYPE);
+        return read_cpuid(CPUID_TCM);
 }
 {% endhighlight %}
 
-read_cpuid_cachetype() 函数用于获得体系使用的 cache 信息。函数直接调用 read_cpuid()
-函数操作。在 ARMv7 中 read_cpuid_cachetype() 函数主要操作的是 CTR (Cache Type Register, VMSA)
-寄存器。这个寄存器描述了体系所使用的 cache 类型信息。具体可以查看 ARMv7 手册：
+read_cpuid_tcmstatus() 用于读取 TCM 的状态。对于 ARMv7 架构，其操纵的是
+TCMTR (TCM Type Register, VMSA) 寄存器，里面存储着 TCM 状态信息。更多信息
+可以查看：
 
-> - [ARMv7 Architecture Reference Manual](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/ARM/ARMv7_architecture_reference_manual.pdf)
-
-###### read_cpuid
-
-> [read_cpuid 源码分析](https://biscuitos.github.io/blog/CPUID_read_cpuid/)
+> [B4.1.132 TCMT, TCM Type Register, VMSA](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/ARM/ARMv7_architecture_reference_manual.pdf)
 
 --------------------------------------------------
 
@@ -82,11 +78,11 @@ read_cpuid_cachetype() 函数用于获得体系使用的 cache 信息。函数�
 
 static __init int cpuid_demo_init(void)
 {
-	unsigned int cache;
+	unsigned int info;
 
-	cache = read_cpuid_cachetype();
+	info = read_cpuid_tcmstatus();
 
-	printk("cache: %#x\n", cache);
+	printk("CPU TCM status: %#x\n", info);
 
 	return 0;
 }
@@ -112,7 +108,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_CPUID
 +
 +config DEBUG_BISCUITOS_CPUID
-+       bool "read_cpuid_cachetype"
++       bool "read_cpuid_tcmstatus"
 +
 +endif # BISCUITOS_CPUID
 +
@@ -140,7 +136,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]CPUID
-            [*]read_cpuid_cachetype()
+            [*]read_cpuid_tcmstatus()
 {% endhighlight %}
 
 具体过程请参考：
@@ -164,7 +160,7 @@ Device Driver--->
 {% highlight ruby %}
 usbcore: registered new interface driver usbhid
 usbhid: USB HID core driver
-cache: 0x80038003
+CPU TCM status: 0x0
 aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 aaci-pl041 10004000.aaci: FIFO 512 entries
 oprofile: using arm/armv7-ca9
@@ -172,7 +168,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-读取 cache type 可以使用这个函数。
+该函数可以查看 TCM 的状态信息。
 
 -----------------------------------------------
 
