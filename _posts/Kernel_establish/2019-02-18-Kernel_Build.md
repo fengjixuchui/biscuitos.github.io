@@ -60,7 +60,6 @@ tags:
 > - [Build Linux 3.18.134 Running on ARM64](https://biscuitos.github.io/blog/Linux-3.18.134-arm64-Usermanual/)
 
 
-
 ## <span id="Linux_4X">Linux 4.X</span>
 
 > - [Build Linux 4.0.1 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.0.1-arm32-Usermanual/)
@@ -88,3 +87,9 @@ tags:
 > - [Build Linux 5.1 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.1-arm32-Usermanual/)
 >
 > - [Build Linux 5.1 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.1-arm64-Usermanual/)
+
+## <span id="Userspace">Userspace</span>
+
+> - [移植应用程序到 BiscuitOS](https://biscuitos.github.io/blog/APP-Usermanual/)
+>
+> - [移植动态库到 BiscuitOS](https://biscuitos.github.io/blog/APP-Usermanual/#APP1)
