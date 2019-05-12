@@ -39,37 +39,37 @@ tags:
 
 > - [vmlinux 入口：第一行运行的代码](#vmlinux first code)
 >
-> - [__hyp_stub_install](#__hyp_stub_install)
+> - [\_\_hyp_stub_install](#__hyp_stub_install)
 >
-> - [__lookup_processor_type](#__lookup_processor_type)
+> - [\_\_lookup_processor_type](#__lookup_processor_type)
 >
-> - [__proc_info](#__proc_info)
+> - [\_\_proc_info](#__proc_info)
 >
-> - [__vet_atags](#__vet_atags)
+> - [\_\_vet_atags](#__vet_atags)
 >
-> - [__fixup_smp](#__fixup_smp)
+> - [\_\_fixup_smp](#__fixup_smp)
 >
-> - [__do_fixup_smp_on_up](#__do_fixup_smp_on_up)
+> - [\_\_do_fixup_smp_on_up](#__do_fixup_smp_on_up)
 >
-> - [__fixup_pv_table](#__fixup_pv_table)
+> - [\_\_fixup_pv_table](#__fixup_pv_table)
 >
-> - [__create_page_tables](#__create_page_tables)
+> - [\_\_create_page_tables](#__create_page_tables)
 >
 > - [swapper_pg_dir](#swapper_pg_dir)
 >
 > - [ARMv7 Cortex-A9 proc_info_list](#ARMv7 Cortex-A9 proc_info_list)
 >
-> - [__v7_setup](#__v7_setup)
+> - [\_\_v7_setup](#__v7_setup)
 >
 > - [v7_invalidate_l1](#v7_invalidate_l1)
 >
-> - [__v7_setup_cont](#__v7_setup_cont)
+> - [\_\_v7_setup_cont](#__v7_setup_cont)
 >
 > - [v7_ttb_setup](#v7_ttb_setup)
 >
-> - [__enable_mmu](#__enable_mmu)
+> - [\_\_enable_mmu](#__enable_mmu)
 >
-> - [__mmap_switched](#__mmap_switched)
+> - [\_\_mmap_switched](#__mmap_switched)
 >
 > - [start_kernel_last](#start_kernel_last)
 
@@ -1713,7 +1713,7 @@ ENDPROC(__fixup_a_pv_table)
 首先调用 adr 获得 3f 对应的物理地址存储到 r0 寄存器中，然后将 __pv_offset 的地址
 加载到 r6 寄存器，接着再通过 r3 寄存器调整为 __pv_offset 对应的物理地址。
 
-<span id="__create_page_table"></span>
+<span id="__create_page_tables"></span>
 {% highlight haskell %}
 /*
  * Setup the initial page tables.  We only setup the barest
@@ -1775,7 +1775,7 @@ r8             0x60000000          1610612736
 从上面的实践可以知道，全局页目录的物理地址是 0x60004000。在分析代码之前，这里补充
 一个重要的知识点 swapp_pg_dir 变量，其定义如下：
 
-<span id="swapp_pg_dir"></span>
+<span id="swapper_pg_dir"></span>
 {% highlight haskell %}
 /*
  * swapper_pg_dir is the virtual address of the initial page table.

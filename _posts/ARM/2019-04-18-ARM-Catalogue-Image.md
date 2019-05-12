@@ -55,45 +55,45 @@ tags:
 >
 >     - [将执行权移交给内核](https://biscuitos.github.io/blog/ARM-BOOT/#v0.1.0)
 >
-> - [内核初始化]
+> - 内核初始化
 >
->   - [内核基础初始化，MMU，cache 均关闭]()
+>   - 内核基础初始化，MMU，cache 均关闭
 >
 >     - [vmlinux 入口：第一行运行的代码](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#vmlinux first code)
 >
->     - [__hyp_stub_install](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__hyp_stub_install)
+>     - [\_\_hyp_stub_install](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__hyp_stub_install)
 >
->     - [__lookup_processor_type](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__lookup_processor_type)
+>     - [\_\_lookup_processor_type](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__lookup_processor_type)
 >
->     - [__proc_info](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__proc_info)
+>     - [\_\_proc_info](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__proc_info)
 >
->     - [__vet_atags](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__vet_atags)
+>     - [\_\_vet_atags](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__vet_atags)
 >
->     - [__fixup_smp](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__fixup_smp)
+>     - [\_\_fixup_smp](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__fixup_smp)
 >
->     - [__do_fixup_smp_on_up](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__do_fixup_smp_on_up)
+>     - [\_\_do_fixup_smp_on_up](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__do_fixup_smp_on_up)
 >
->     - [__fixup_pv_table](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__fixup_pv_table)
+>     - [\_\_fixup_pv_table](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__fixup_pv_table)
 >
->     - [__create_page_tables](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__create_page_tables)
+>     - [\_\_create_page_tables](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__create_page_tables)
 >
 >     - [swapper_pg_dir](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#swapper_pg_dir)
 >
 >     - [ARMv7 Cortex-A9 proc_info_list](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#ARMv7 Cortex-A9 proc_info_list)
 >
->     - [__v7_setup](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__v7_setup)
+>     - [\_\_v7_setup](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__v7_setup)
 >
 >     - [v7_invalidate_l1](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#v7_invalidate_l1)
 >
->     - [__v7_setup_cont](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__v7_setup_cont)
+>     - [\_\_v7_setup_cont](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__v7_setup_cont)
 >
 >     - [v7_ttb_setup](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#v7_ttb_setup)
 >
->     - [__enable_mmu](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__enable_mmu)
+>     - [\_\_enable_mmu](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__enable_mmu)
 >
 >   - [MMU 初始化完毕，为跳转到 start_kernel 做准备]()
 >
->     - [__mmap_switched](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__mmap_switched)
+>     - [\_\_mmap_switched](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__mmap_switched)
 >
 >     - [调用 start_kernel 之前](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#start_kernel_last)
 >

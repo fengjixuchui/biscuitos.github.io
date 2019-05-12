@@ -168,7 +168,7 @@ ENTRY(BS_debug)
 ##### 拓展
 
 由于 zImage 阶段的汇编代码调试都需要在 GDB 中进行符号表的重定位，BiscuitOS 在该阶段
-默认使用的 .gdbinit 脚本位于 BiscuitOS/output/linux-5.5-arm32/package/gdb/gdb_zImage,
+默认使用的 .gdbinit 脚本位于 BiscuitOS/output/linux-5.0-arm32/package/gdb/gdb_zImage,
 其内容如下：
 
 {% highlight bash %}
