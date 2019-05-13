@@ -519,13 +519,13 @@ struct binary_node {
 -----------------------------------
 # <span id="二叉树的分类"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000W.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000E.jpg)
 
 # 二叉树的分类
 
 二叉树是节点度不大于 2 的树，根据不同的属性，将二叉树分作不同的类别
 
-> - [完美二叉树/满二叉树: Perfect Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_PerfectBinaryTree/)
+> - [完美二叉树: Perfect Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_PerfectBinaryTree/)
 >
 > - [完全二叉树: Complete Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_CompleteBinaryTree/)
 >
