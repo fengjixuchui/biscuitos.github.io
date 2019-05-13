@@ -35,6 +35,12 @@ tags:
 >
 > - [二叉树的分类](#二叉树的分类)
 >
+>   - [完美二叉树/满二叉树: Perfect Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_PerfectBinaryTree/)
+>
+>   - [完全二叉树: Complete Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_CompleteBinaryTree/)
+>
+>   - [完满二叉树: Full Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_FullBinaryTree/)
+>
 > - [附录](#附录)
 
 -----------------------------------
@@ -517,9 +523,9 @@ struct binary_node {
 
 > - [完美二叉树/满二叉树: Perfect Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_PerfectBinaryTree/)
 >
-> - [完全二叉树: Complete Binary Tree]
+> - [完全二叉树: Complete Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_CompleteBinaryTree/)
 >
-> - [完满二叉树: Full Binary Tree]
+> - [完满二叉树: Full Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_FullBinaryTree/)
 
 -----------------------------------------------
 

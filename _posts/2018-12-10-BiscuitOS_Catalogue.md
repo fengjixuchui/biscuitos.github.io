@@ -56,7 +56,7 @@ tags:
 >   <span id="ARM_ASM"></span>
 >   - [ASM Instruction List](https://biscuitos.github.io/blog/MMU-ARM32-ASM-index/#ARM_INS_LIST)
 >
-> - [链表/树]
+> - 链表
 >
 >   - Single list
 >
@@ -66,7 +66,9 @@ tags:
 >
 >     - [内核双链表 API 列表](https://biscuitos.github.io/blog/LIST_list_head/#LISTAPI)
 >
->   - 红黑树
+> - 树
+>
+>   - [二叉树](https://biscuitos.github.io/blog/Tree_binarytree/)
 >
 > - [锁/同步]
 >
