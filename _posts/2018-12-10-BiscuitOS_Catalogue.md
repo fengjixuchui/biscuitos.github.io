@@ -70,7 +70,17 @@ tags:
 >
 >   - [二叉树](https://biscuitos.github.io/blog/Tree_binarytree/)
 >
-> - [锁/同步]
+>     - [完美二叉树/满二叉树: Perfect Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_PerfectBinaryTree/)
+>
+>     - [完全二叉树: Complete Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_CompleteBinaryTree/)
+>
+>     - [完满二叉树: Full Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_FullBinaryTree/)
+>
+>     - [二叉查找树: Binary Search Tree](https://biscuitos.github.io/blog/Tree_binarytree_Binary_Search_Tree/)
+>
+>     - [AVL 平衡二叉查找树](https://biscuitos.github.io/blog/Tree_binarytree_AVLTree/)
+>
+> - 锁/同步
 >
 >   - [atomic 原子操作](https://biscuitos.github.io/blog/ATOMIC/)
 >

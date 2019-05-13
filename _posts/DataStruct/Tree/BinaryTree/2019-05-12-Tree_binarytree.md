@@ -43,6 +43,10 @@ tags:
 >
 >   - [完满二叉树: Full Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_FullBinaryTree/)
 >
+>   - [二叉查找树: Binary Search Tree](https://biscuitos.github.io/blog/Tree_binarytree_Binary_Search_Tree/)
+>
+>   - [AVL 平衡二叉查找树](https://biscuitos.github.io/blog/Tree_binarytree_AVLTree/)
+>
 > - [附录](#附录)
 
 -----------------------------------
@@ -495,7 +499,7 @@ struct binary_node {
 >
 > - [后序遍历二叉树](https://biscuitos.github.io/blog/Tree_binarytree_PostIterateOver/)
 >
-> - [层序遍历二叉树]()
+> - [层序遍历二叉树](#二叉树遍历)
 
 -----------------------------------
 
@@ -530,6 +534,10 @@ struct binary_node {
 > - [完全二叉树: Complete Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_CompleteBinaryTree/)
 >
 > - [完满二叉树: Full Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_FullBinaryTree/)
+>
+> - [二叉查找树: Binary Search Tree](https://biscuitos.github.io/blog/Tree_binarytree_Binary_Search_Tree/)
+>
+> - [AVL 平衡二叉查找树](https://biscuitos.github.io/blog/Tree_binarytree_AVLTree/)
 
 -----------------------------------------------
 
