@@ -21,7 +21,19 @@ tags:
 >
 > - [二叉树最小实践](#二叉树最小实践)
 >
-> - [实践](#实践)
+> - [二叉树的实现](#二叉树的实现)
+>
+>   - [二叉树的先、中、后、线序遍历](#二叉树先中后线序)
+>
+>   - [二叉树私有结构定义](#二叉树私有结构定义)
+>
+>   - [创建二叉树](#创建二叉树)
+>
+>   - [删除二叉树](#删除二叉树)
+>
+>   - [统计二叉树叶子数](#统计二叉树叶子数)
+>
+> - [二叉树的分类](#二叉树的分类)
 >
 > - [附录](#附录)
 
@@ -132,11 +144,11 @@ tags:
 
 深度为 k 的二叉树至多有 2{k}-1 个结点 (k≥1)
 
-###### 性质3
+> 性质3
 
 包含 n 个结点的二叉树的高度至少为 log2 (n+1)
 
-###### 性质4
+> 性质4
 
 在任意一棵二叉树中，若终端结点的个数为 n0，度为 2 的结点数为 n2，则 n0 = n2 + 1
 
@@ -152,9 +164,9 @@ tags:
 
 > - [源码获取](#源码获取)
 >
-> - [源码编译运行](#源码编译运行)
+> - [源码编译](#源码编译)
 >
-> - [源码分析](#源码分析)
+> - [二叉树运行](#二叉树运行)
 
 ### <span id="源码获取">源码获取</span>
 
@@ -355,14 +367,15 @@ int main()
 }
 {% endhighlight %}
 
-### <span id="源码编译运行">源码编译运行</span>
+### <span id="源码编译">源码编译</span>
 
 在获得源码之后，开发者通过上面的命令进行编译并运行，如下：
 
 {% highlight ruby %}
 gcc binary.c -o binary
-./binary
 {% endhighlight %}
+
+### <span id="二叉树运行">二叉树运行</span>
 
 运行情况如下：
 
@@ -379,14 +392,26 @@ The Binary-Tree Deep: 4
 The Binary-Tree leaf: 8
 {% endhighlight %}
 
-### <span id="源码分析">源码分析</span>
+-----------------------------------
+# <span id="二叉树的实现"></span>
+
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000C.jpg)
+
+# 二叉树的实现
+
+二叉树的实现有多种方式，这里介绍使用递归实现二叉树。
 
 > - [二叉树的先、中、后、线序遍历](#二叉树先中后线序)
 >
 > - [二叉树私有结构定义](#二叉树私有结构定义)
+>
+> - [创建二叉树](#创建二叉树)
+>
+> - [删除二叉树](#删除二叉树)
+>
+> - [统计二叉树叶子数](#统计二叉树叶子数)
 
-
-##### <span id="二叉树先中后线序">二叉树的先、中、后、线序遍历</span>
+### <span id="二叉树先中后线序">二叉树的先、中、后、线序遍历</span>
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000071.png)
 
@@ -412,7 +437,9 @@ The Binary-Tree leaf: 8
 
 线序，即层次，按层次遍历，先遍历第一层，从左到右，再第二层，继续遍历下去。
 
-##### <span id="二叉树私有结构定义">二叉树私有结构定义</span>
+-----------------------------------
+
+### <span id="二叉树私有结构定义">二叉树私有结构定义</span>
 
 在实践代码中，定义了一个二叉树节点如下：
 
@@ -425,8 +452,74 @@ struct binary_node {
 };
 {% endhighlight %}
 
-节点
+一个典型的二叉树节点必须包含两个指针，两个指针有左右之分，并且指向节点的左右孩子。
+节点 binary_node 典型的包含了两个指针，并且这两个指针有左右之分。节点还定义了一个
+私有数据，因此，开发者也可以在 binary_node 节点中嵌套私有数据。
 
+-----------------------------------
+
+### <span id="创建二叉树">创建二叉树</span>
+
+二叉树的创建有多种方式，就本实践而言，实践中使用了递归的方式进行二叉树创建。递归
+的基本原理就是函数调用函数本身，由于递归存在这个特性，因此在创建二叉树的时候，开发者
+可以使用递归进行创建。但递归需要按照一定的规则去递归，不然会形成死循环，接着之前
+先序，层序，后序的介绍，可以使用其中一种规则去创建二叉树。(注意！中序是不能创建一棵
+唯一的二叉树)。
+
+> - [先序创建二叉树](https://biscuitos.github.io/blog/Tree_binarytree_PreCreate/#%E5%AE%9E%E8%B7%B5%E6%BA%90%E7%A0%81)
+>
+> - [后序创建二叉树](https://biscuitos.github.io/blog/Tree_binarytree_PostCreate/)
+>
+> - [层序创建二叉树](#层序创建二叉树)
+
+-----------------------------------
+
+### <span id="遍历二叉树">遍历二叉树</span>
+
+二叉树的遍历方式有很多种，包括先序遍历二叉树，中序遍历二叉树，后序遍历二叉树，以及
+层序遍历二叉树。
+
+> - [先序遍历二叉树](https://biscuitos.github.io/blog/Tree_binarytree_PreIterateOver/)
+>
+> - [中序遍历二叉树](https://biscuitos.github.io/blog/Tree_binarytree_MiddIterateOver/)
+>
+> - [后序遍历二叉树](https://biscuitos.github.io/blog/Tree_binarytree_PostIterateOver/)
+>
+> - [层序遍历二叉树]()
+
+-----------------------------------
+
+### <span id="删除二叉树">删除二叉树</span>
+
+二叉树的删除应该先删除节点对应的孩子，然后才能删除当前节点，因此开发者需要找到一种
+遍历二叉树的方法，该方法先遍历孩子，然后才遍历当前节点。后序遍历满足这个要求，因此
+这里使用后序遍历的逻辑去删除所有节点。
+
+> - [后序删除二叉树](https://biscuitos.github.io/blog/Tree_binarytree_PostDelete/)
+
+-----------------------------------
+
+### <span id="统计二叉树叶子数">统计二叉树叶子数</span>
+
+二叉树中没有孩子的结点 (也就是度为 0 的结点) 称为叶子 (Leaf) 或终端结点。因此只要遍历
+二叉树的所有的节点，只要节点的度为 0，那么这个节点就是叶子。
+
+> - [统计二叉树的叶子数](https://biscuitos.github.io/blog/Tree_binarytree_Leafcount/)
+
+-----------------------------------
+# <span id="二叉树的分类"></span>
+
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000W.jpg)
+
+# 二叉树的分类
+
+二叉树是节点度不大于 2 的树，根据不同的属性，将二叉树分作不同的类别
+
+> - [完美二叉树/满二叉树: Perfect Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_PerfectBinaryTree/)
+>
+> - [完全二叉树: Complete Binary Tree]
+>
+> - [完满二叉树: Full Binary Tree]
 
 -----------------------------------------------
 
