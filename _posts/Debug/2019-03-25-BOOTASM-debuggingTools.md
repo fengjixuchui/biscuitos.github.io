@@ -105,7 +105,7 @@ BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-lin
 
 其中 XXX_bk 是断点的名字。运行如下：
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/ASM000000.png)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000066.png)
 
 #### 打断点
 

@@ -1,23 +1,23 @@
 ---
 layout: post
-title:  "完全二叉树 Complete Binary Tree"
+title:  "完满二叉树 Full Binary Tree"
 date:   2019-05-12 05:30:30 +0800
 categories: [HW]
-excerpt: TREE 完全二叉树().
+excerpt: TREE 完满二叉树().
 tags:
   - Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
 
-> [Github: 完全二叉树](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/binary-tree/Class/Complete_BinaryTree)
+> [Github: 完满二叉树](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/binary-tree/Class/Full_BinaryTree)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
 
 # 目录
 
-> - [完全二叉树原理](#原理)
+> - [完满二叉树原理](#原理)
 >
 > - [完美二叉树实践](#实践)
 >
@@ -25,13 +25,11 @@ tags:
 
 -----------------------------------
 
-# <span id="原理">完全二叉树原理</span>
+# <span id="原理">完满二叉树原理</span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000070.png)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000072.png)
 
-在二叉树中，完全二叉树从根结点到倒数第二层满足完美二叉树，最后一层可以不完全填充，
-其叶子结点都靠左对齐。如上图中的二叉树就是一个完美二叉树。接下来通过一个实践进一
-步认识完美二叉树。
+在二叉树中，所有非叶子结点的度都是 2。接下来通过一个实践进一步认识完美二叉树。
 
 --------------------------------------------------
 
@@ -47,12 +45,12 @@ tags:
 
 #### <span id="实践源码">实践源码</span>
 
-> [实践源码 binary.c on GitHub](https://github.com/BiscuitOS/HardStack/blob/master/Algorithem/tree/binary-tree/Class/Complete_BinaryTree/binary.c)
+> [实践源码 binary.c on GitHub](https://github.com/BiscuitOS/HardStack/blob/master/Algorithem/tree/binary-tree/Class/Full_BinaryTree/binary.c)
 
 开发者也可以使用如下命令获得：
 
 {% highlight ruby %}
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/binary-tree/Class/Complete_BinaryTree/binary.c
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/binary-tree/Class/Full_BinaryTree/binary.c
 {% endhighlight %}
 
 实践源码具体内容如下：
@@ -77,28 +75,27 @@ struct binary_node {
 	struct binary_node *right;
 };
 
-/* Complete Binary Tree
+/* Full Binary Tree
  *                               (200)
  *                                 |
  *                 o---------------+---------------o
  *                 |                               |
  *               (143)                           (876)
- *                 |                               |
- *          o------+-----o                  o------+-----o
- *          |            |                  |            |
- *        (754)        (386)              (486)        (740)
- *          |
- *      o---+---o
- *      |       |
- *     (6)     (3)
+ *                 |
+ *          o------+-----o
+ *          |            |
+ *        (754)        (386)
+ *                       |
+ *                   o---+---o
+ *                   |       |
+ *                  (7)     (9)
  */
-static int Complete_BinaryTree_data[] = {
-                                   200, 143, 754, 6, -1, -1, 3, -1, -1,
-                                   386, -1, -1, 876, 486, -1, -1,
-                                   740, -1, -1 };
+static int Full_BinaryTree_data[] = {
+                               200, 143, 754, -1, -1, 386, 7, -1, -1,
+                               9, -1, -1, 876, -1, -1 };
 
 static int counter = 0;
-static int *BinaryTree_data = Complete_BinaryTree_data;
+static int *BinaryTree_data = Full_BinaryTree_data;
 
 /* Preorder Create Binary-tree */
 static struct binary_node *Preorder_Create_BinaryTree(struct binary_node *node)
@@ -256,16 +253,16 @@ gcc bianry.c -o binary
 实践源码的运行很简单，可以使用如下命令，并且运行结果如下：
 
 {% highlight ruby %}
-binary-tree/Class/Complete_BinaryTree$ ./binary
+binary-tree/Class/Full_BinaryTree$ ./binary
 Preorder Create BinaryTree
 Preorder Traverse Binary-Tree:
-200 143 754 6 3 386 876 486 740
+200 143 754 386 7 9 876
 Middorder Traverse Binary-Tree:
-6 754 3 143 386 200 486 876 740
+754 143 7 386 9 200 876
 Postorder Traverse Binary-Tree:
-6 3 754 386 143 486 740 876 200
-The Binary-Tree Deep: 4
-The Binary-Tree leaf: 5
+754 7 9 386 143 876 200
+The Binary-Tree Deep: 3
+The Binary-Tree leaf: 4
 {% endhighlight %}
 
 --------------------------------------
