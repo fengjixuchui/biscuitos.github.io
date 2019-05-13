@@ -37,7 +37,7 @@ tags:
 >
 > - [二叉树的分类](#二叉树的分类)
 >
->   - [完美二叉树/满二叉树: Perfect Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_PerfectBinaryTree/)
+>   - [完美二叉树: Perfect Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_PerfectBinaryTree/)
 >
 >   - [完全二叉树: Complete Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_CompleteBinaryTree/)
 >
