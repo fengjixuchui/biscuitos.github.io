@@ -1,50 +1,40 @@
 ---
 layout: post
-title:  "二叉查找树"
+title:  "AVL 平衡二叉搜索树"
 date:   2019-05-12 05:30:30 +0800
 categories: [HW]
-excerpt: TREE 二叉查找树().
+excerpt: TREE AVL 树.
 tags:
   - Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
 
-> [Github: 二叉查找树](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/binary-tree/Class/Binary_Search_Tree)
+> [Github: AVL 树](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/binary-tree/Class/AVL)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
 
 # 目录
 
-> - [二叉查找树原理](#原理)
+> - [AVL 树原理](#原理)
 >
-> - [二叉查找树实践](#实践)
+> - [AVL 树实践](#实践)
 >
 > - [附录](#附录)
 
 -----------------------------------
 
-# <span id="原理">二叉查找树原理</span>
+# <span id="原理">AVL 树原理</span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000073.png)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000074.png)
 
-对于二叉树中任意一个元素, 若其左子树中所有元素的值都小于该元素的值, 并且其右子树中
-所有元素的值都大于该元素的值, 这个二叉树就叫做搜索二叉树。二叉搜索树中序遍历后的结
-果是从小到大依次排列的, 这也是判断一个二叉树是不是二叉搜索树的依据。二叉查找树具有以下性质
-
-{% highlight ruby %}
-1) 若任意节点的左子树不空，则左子树上所有结点的值均小于它的根结点的值；
-
-2) 若任意节点的右子树不空，则右子树上所有结点的值均大于它的根结点的值；
-
-3) 任意节点的左、右子树也分别为二叉查找树；
-
-4) 没有键值相等的节点。
-{% endhighlight %}
-
-接下来通过一个
-实践进一步认识二叉查找树
+平衡二叉搜索树，又被称为 AVL 树，且具有以下性质：它是一棵空树或它的左右两个子树的高度
+差的绝对值不超过 1，并且左右两个子树都是一棵平衡二叉树。由于普通的二叉查找树会容易失去
+"平衡，极端情况下，二叉查找树会退化成线性的链表，导致插入和查找的复杂度下降到 O(n) ，
+所以，这也是平衡二叉树设计的初衷。平衡二叉树保持平衡的方法，根据定义，有两个重点，
+一是左右两子树的高度差的绝对值不能超过 1，二是左右两子树也是一颗平衡二叉树。下面
+通过一个实践进一步认知 AVL 树。
 
 --------------------------------------------------
 
@@ -60,12 +50,12 @@ tags:
 
 #### <span id="实践源码">实践源码</span>
 
-> [实践源码 binary.c on GitHub](https://github.com/BiscuitOS/HardStack/blob/master/Algorithem/tree/binary-tree/Class/Binary_Search_Tree/binary.c)
+> [实践源码 binary.c on GitHub](https://github.com/BiscuitOS/HardStack/blob/master/Algorithem/tree/binary-tree/Class/AVL/binary.c)
 
 开发者也可以使用如下命令获得：
 
 {% highlight ruby %}
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/binary-tree/Class/Binary_Search_Tree/binary.c
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/binary-tree/Class/AVL/binary.c
 {% endhighlight %}
 
 实践源码具体内容如下：
@@ -90,29 +80,27 @@ struct binary_node {
 	struct binary_node *right;
 };
 
-/* Binary Search Tree
+/* AVL Tree
  *                               (200)
  *                                 |
  *                 o---------------+---------------o
  *                 |                               |
  *                (7)                            (289)
  *                 |                               |
- *          o------+-----o                  o------+-----o
- *          |            |                  |            |
- *         (3)          (9)               (220)        (740)
- *          |            |                  |            |
- *      o---+---o    o---+---o          o---+---o    o---+---o
- *      |       |    |       |          |       |    |       |
- *     (1)     (5)  (8)    (12)       (202)   (240)(300)   (791)
+ *          o------+-----o                         +-----o
+ *          |            |                               |
+ *         (3)          (9)                            (740)
+ *          |            |
+ *      o---+            +---o
+ *      |                    |
+ *     (1)                 (12)
  */
-static int Binary_Search_Tree_data[] = {
-                                   200, 7, 3, 1, -1, -1, 5, -1, -1,
-                                   9, 8, -1, -1, 12, -1, -1, 289,
-                                   220, 202, -1, -1, 240, -1, -1,
-                                   740, 300, -1, -1, 791, -1, -1 };
+static int AVL_data[] = {
+                                  200, 7, 3, 1, -1, -1, -1, 9, -1,
+                                  12, -1, -1, 289, -1, 740, -1, -1 };
 
 static int counter = 0;
-static int *BinaryTree_data = Binary_Search_Tree_data;
+static int *BinaryTree_data = AVL_data;
 
 /* Preorder Create Binary-tree */
 static struct binary_node *Preorder_Create_BinaryTree(struct binary_node *node)
@@ -197,10 +185,10 @@ gcc bianry.c -o binary
 实践源码的运行很简单，可以使用如下命令，并且运行结果如下：
 
 {% highlight ruby %}
-binary-tree/Class/Binary_Search_Tree$ ./binary
+binary-tree/Class/AVL$ ./binary
 Preorder Create BinaryTree
 Middorder Traverse Binary-Tree:
-1 3 5 7 8 9 12 200 202 220 240 289 300 740 791
+1 3 7 9 12 200 289 740
 {% endhighlight %}
 
 --------------------------------------
@@ -208,7 +196,7 @@ Middorder Traverse Binary-Tree:
 #### <span id="运行分析">运行分析</span>
 
 从运行的结果可以看出，在使用中序遍历二叉树的时候，所以的数据都是从小到大排序的，因此
-这棵树是一棵二叉查找树。
+这棵树是一棵 AVL 树。
 
 -----------------------------------------------
 
