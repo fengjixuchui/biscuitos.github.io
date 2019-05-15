@@ -1,70 +1,70 @@
 ---
 layout: post
-title:  "红黑树左旋实践"
+title:  "红黑树右旋实践"
 date:   2019-05-15 05:30:30 +0800
 categories: [HW]
-excerpt: TREE 红黑树左旋实践.
+excerpt: TREE 红黑树右旋实践.
 tags:
   - Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-> [Github: 红黑树左旋实践](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Rotate/Left_Rotate)
+> [Github: 红黑树右旋实践](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Rotate/Right_Rotate)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
 
 # 目录
 
-> - [红黑树左旋](#原理分析)
+> - [红黑树右旋](#原理分析)
 >
-> - [红黑树左旋实践](#实践)
+> - [红黑树右旋实践](#实践)
 >
 > - [附录](#附录)
 
 -----------------------------------
 
-# <span id="原理分析">红黑树左旋</span>
+# <span id="原理分析">红黑树右旋</span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT100000.gif)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT100001.gif)
 
-对结点 E 做左旋操作时，其右孩子为 S 而不是 T.nil，那么以 E 到 S 的链为
-"支轴" 进行。使 S 成为该子树新的根结点，E 成为 S 的左孩子，E 的左孩子成为 S 的
-右孩子.
+对结点 S 做右旋操作时，假设其左孩子为 E 而不是T.nil, 以 S 到 E 的链为 “支轴” 进
+行。使 E 成为该子树新的根结点， S 成为 E 的右孩子，E 的右孩子成为 S 的左孩子。
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000075.png)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000077.png)
 
-如上图，当插入 6 之后，红黑树 5 节点需要进行左旋达到平衡，那么以 4 到 5 的链为
-"支轴" 进行。使用 5 节点称为 6 的新的根节点，4 称为 5 的左孩子，6 称为 5 的右
+如上图，当插入 4 之后，红黑树 5 节点需要进行右旋达到平衡，那么以 5 到 6 的链为
+"支轴" 进行。使用 5 节点成为新的根节点， 6 成为 5 的右孩子，4 称为 5 的左
 孩子。如下图：
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000076.png)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000078.png)
 
 ##### 核心代码实现
 
-为了实现左旋操作，参考内核中的实现进行分析，位于 lib/rbtree.c 文件中，关于左旋的
+为了实现右旋操作，参考内核中的实现进行分析，位于 lib/rbtree.c 文件中，关于右旋的
 实现如下：
 
 {% highlight ruby %}
 		tmp = gparent->rb_right;
-		if (parent == tmp) { /* parent == gparent->rb_right */
-			tmp = parent->rb_left;
+		if (parent != tmp) { /* parent == gparent->rb_left */
+			tmp = parent->rb_right;
 
-			gparent->rb_right = tmp;
-			parent->rb_left = gparent;
+			gparent->rb_left = tmp;
+			parent->rb_right = gparent;
 			if (tmp)
 				rb_set_parent_color(tmp, gparent, RB_BLACK);
 			__rb_rotate_set_parents(gparent, parent, root, RB_RED);
+			augment_rotate(gparent, parent);
 			break;
 		}
 {% endhighlight %}
 
-核心代码首先判断 gparent (gparent 为 parent 的父节点) 的右孩子是否存在，对于需要左
-旋的部分，gparent 的右孩子是存在的。接着按照左旋的原理，以 gparent 节点到 parent 节
-点为支轴进行左旋。此时 parent 的左孩子变成了 gparent 的右孩子，对应的代码就是：
-"gparent->rb_right = tmp", gparent 自己变成了 parent 的左孩子, 对应的代码就是：
-"parent->rb_left = gparent"。如果此时 tmp 存在，也就是原先 parent 的左孩子存在，
+核心代码首先判断 gparent (gparent 为 parent 的父节点) 的左孩子是否存在，对于需要右
+旋的部分，gparent 的左孩子是存在的。接着按照右旋的原理，以 gparent 节点到 parent 节
+点为支轴进行右旋。此时 parent 的右孩子变成了 gparent 的左孩子，对应的代码就是：
+"gparent->rb_left = tmp", gparent 自己变成了 parent 的右孩子, 对应的代码就是：
+"parent->rb_right = gparent"。如果此时 tmp 存在，也就是原先 parent 的右孩子存在，
 那么，设置 tmp 的父节点为 gparent。接着调用 __rb_rotate_set_parents() 函数修改
 gparent 和 parent 之间的关系，代码如下：
 
@@ -103,12 +103,12 @@ __rb_change_child(struct rb_node *old, struct rb_node *new,
 左孩子或右孩子指向 parent 节点。如果 gparent 的父节点不存在，那么 gparent 原先是
 root 节点，那么就将 root 节点指向 parent 节点。
 
-通过上面的源码，rbtree 已经完成左旋操作，并设置好了各个节点之间的关系，使红黑树再一次
+通过上面的源码，rbtree 已经完成右旋操作，并设置好了各个节点之间的关系，使红黑树再一次
 达到平衡。
 
 --------------------------------------------------
 
-# <span id="实践">红黑树左旋实践</span>
+# <span id="实践">红黑树右旋实践</span>
 
 > - [实践源码](#实践源码)
 >
@@ -120,18 +120,18 @@ root 节点，那么就将 root 节点指向 parent 节点。
 
 #### <span id="实践源码">实践源码</span>
 
-> [实践源码 GitHub](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Rotate/Left_Rotate)
+> [实践源码 GitHub](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Rotate/Right_Rotate)
 
 开发者可以从上面的链接中获得所有的实践代码，也可以使用如下命令获得：
 
 {% highlight ruby %}
-mkdir -p Left_Rotate
-cd Left_Rotate
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Rotate/Left_Rotate/Makefile
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Rotate/Left_Rotate/README.md
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Rotate/Left_Rotate/rb_run.c
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Rotate/Left_Rotate/rbtree.c
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Rotate/Left_Rotate/rbtree.h
+mkdir -p Right_Rotate
+cd Right_Rotate
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Rotate/Right_Rotate/Makefile
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Rotate/Right_Rotate/README.md
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Rotate/Right_Rotate/rb_run.c
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Rotate/Right_Rotate/rbtree.c
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Rotate/Right_Rotate/rbtree.h
 {% endhighlight %}
 
 实践源码具体内容如下：
@@ -160,9 +160,9 @@ struct node {
 /* n points to a rb_node */
 #define node_entry(n) container_of(n, struct node, node)
 
-static struct node node0 = { .runtime = 0x4 };
+static struct node node0 = { .runtime = 0x6 };
 static struct node node1 = { .runtime = 0x5 };
-static struct node node2 = { .runtime = 0x6 };
+static struct node node2 = { .runtime = 0x4 };
 
 /* rbroot */
 static struct rb_root BiscuitOS_rb = RB_ROOT;
@@ -248,7 +248,7 @@ make
 实践源码的运行很简单，可以使用如下命令，并且运行结果如下：
 
 {% highlight ruby %}
-rb-tree/Rotate/Left_Rotate$ ./rbtree
+rb-tree/Rotate/Right_Rotate$ ./rbtree
 0x4 0x5 0x6
 {% endhighlight %}
 
