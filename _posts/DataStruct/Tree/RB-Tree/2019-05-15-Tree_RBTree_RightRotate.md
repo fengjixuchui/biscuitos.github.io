@@ -263,7 +263,7 @@ rb-tree/Rotate/Right_Rotate$ ./rbtree
 --------------------------------------
 <span id="RB23"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Z.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
 
 # 红黑树与 2-3 树的关系
 
