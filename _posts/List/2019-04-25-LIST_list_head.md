@@ -1,132 +1,64 @@
 ---
 layout: post
-title:  "内核双链表"
-date:   2019-05-04 16:55:30 +0800
+title:  "LIST_HEAD"
+date:   2019-04-25 18:23:30 +0800
 categories: [HW]
-excerpt: 内核双链表.
+excerpt: Bidirect-list LIST_HEAD().
 tags:
   - Bidirect-list
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-> [Github: Bidirect-list](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list)
+> [Github: LIST_HEAD](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/LIST_HEAD)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
 # 目录
 
-> - [内核双链表原理](#内核双链表原理)
+> - [源码分析](#源码分析)
 >
-> - [内核双链表最小实践](#内核双链表最小实践)
->
-> - [内核双链表基本操作](#内核双链表基本操作)
->
->   - [双链表表头相关操作](#双链表表头相关操作)
->
->   - [双链表状态检查操作](#双链表状态检查操作)
->
->   - [双链表的节点增加操作](#双链表的节点增加操作)
->
->   - [双链表的节点删除操作](#双链表的节点删除操作)
->
->   - [双链表的节点修改操作](#双链表的节点修改操作)
->
->   - [双链表的合并操作](#双链表的合并操作)
->
->   - [双链表的遍历操作](#双链表的遍历操作)
->
-> - [内核双链表进阶研究](#内核双链表进阶研究)
->
->   - [内核双链表遍历：带 safe 和不带 safe 的区别](https://biscuitos.github.io/blog/LIST_ADV_safe/#header)
->
->   - [内核中核心双链表](https://biscuitos.github.io/blog/LIST_core_list/)
->
-> - [内核双链表 API](#LISTAPI)
+> - [实践](#实践)
 >
 > - [附录](#附录)
 
----------------------------------------------
-<span id="内核双链表原理"></span>
+-----------------------------------
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
-
-### 链表
-
-链表是 Linux 内核中最简单、最普通的数据结构。链表是一种存放和操作可变数量元素(常称为节点)
-的数据结构。链表和静态数组的不同之处在于，它所包含的元素都是动态创建并插入链表的，在编译时
-不必知道具体需要创建多少个元素。另外也因为链表中每个元素的创建时间各不相同，所以它们在内存
-中无须占用连续内存区。正是因为元素不连续地存放，所以各元素需要通过某种方式被连接在一起。
-由于链接的方式不同，链表又分为单链表、双链表、环形链表等。
-
-##### 单链表
-
-正是因为元素不连续地存放，所以各元素需要通过某种方式被连接在一起，于是每个元素都包含一个
-指向下一个元素的指针，当有元素加入链表或从链表中删除元素时，简单的调整指向下一个节点的指针
-就可以，这样简单的链表称为单链表。单链表可以简单定义如下：
+# <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-struct list_elem {
-  struct list_elem *next;
-};
+#define LIST_HEAD(name) \
+        struct list_head name = LIST_HEAD_INIT(name)
 {% endhighlight %}
 
-单链表中只包含一个指向下一个节点的指针，单链表组织如下图：
+LIST_HEAD 宏创建了一个 struct list_head 实例，并将使用 LIST_HEAD_INIT 宏
+初始化了实例。
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000056.png)
+##### LIST_HEAD_INIT
 
-##### 双链表
+> [LIST_HEAD_INIT](https://biscuitos.github.io/blog/LIST_LIST_HEAD_INIT/#header)
 
-正是因为元素不连续地存放，所以各元素需要通过某种方式被连接在一起，于是每个元素都包含一个
-指向下一个元素的指针，以及一个指向前一个节点的指针，因为他们可以同时向前或向后相互链接，
-所以这种链表被称为双链表。当有元素加入链表或从链表中删除元素时，需要对链表的前一个节点和后
-一个节点都需要进行修改。双链表可以简单定义如下：
+--------------------------------------------------
 
-{% highlight ruby %}
-struct list_elem {
-  struct list_elem *next;
-  struct list_elem *prev;
-};
-{% endhighlight %}
+# <span id="实践">实践</span>
 
-双链表中包含一个指向下一个节点的指针和一个指向前一个节点的指针，双链表组织如下图：
+> - [驱动源码](#驱动源码)
+>
+> - [驱动安装](#驱动安装)
+>
+> - [驱动配置](#驱动配置)
+>
+> - [驱动编译](#驱动编译)
+>
+> - [驱动运行](#驱动运行)
+>
+> - [驱动分析](#驱动分析)
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000057.png)
-
-### 内核双链表
-
-Linux 内核提供了一种双链表的实现方式，以此双链表为众多数据结构提供了链表支持，其定义如下：
-
-{% highlight ruby %}
-include/linux/list.h
-
-struct list_head {
-  struct list_head *next;
-  struct list_head *prev;
-};
-{% endhighlight %}
-
-内核使用 struct list_head 结构定义了双链表的基础元数据，结构只包含了两个指针，用于
-之前前一个节点和后一个节点。内核将这个结构嵌入多众多数据结构中，以此构造复杂的功能。
-
----------------------------------------------
-<span id="内核双链表最小实践"></span>
-
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
-
-### 内核双链表最小实践
-
-内核提供了 struct list_head 作为双链表的元数据，并提供了一整套的链表操作函数，开发者
-可以将双链表内嵌到私有数据结构中，然后使用内核提供的接口在私有数据结构中使用双链表。本节
-的最小实践基于 Linux 5.0，如果还未搭建 Linux 5.0 开发环境，请参考文档：
-
-> [Linux 5.0 内核开发环境快速搭建](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
-
-准备好开发环境后，开发者编写一个独立的驱动，以此实践内核双链表。驱动源码如下：
+#### <span id="驱动源码">驱动源码</span>
 
 {% highlight c %}
 /*
- * bindirect-list
+ * bindirect-list:
  *
  * (C) 20179.04.25 <buddy.zhang@aliyun.com>
  *
@@ -137,7 +69,7 @@ struct list_head {
 
 /*
  * bidirect-list
- *
+*
  * +-----------+<--o    +-----------+<--o    +-----------+<--o    +-----------+
  * |           |   |    |           |   |    |           |   |    |           |
  * |      prev |   o----| prev      |   o----| prev      |   o----| prev      |
@@ -170,37 +102,34 @@ static struct node node5 = { .name = "BiscuitOS_node5", };
 static struct node node6 = { .name = "BiscuitOS_node6", };
 
 /* Declaration and implement a bindirect-list */
-LIST_HEAD(BiscuitOS_list);
+static LIST_HEAD(BiscuitOS_list);
 
 static __init int bindirect_demo_init(void)
 {
-	struct node *np;
+    struct node *np;
 
-	/* add a new entry on special entry */
-	list_add(&node0.list, &BiscuitOS_list);
-	list_add(&node1.list, &BiscuitOS_list);
-	list_add(&node2.list, &BiscuitOS_list);
-	list_add(&node3.list, &BiscuitOS_list);
-	list_add(&node4.list, &BiscuitOS_list);
-	list_add(&node5.list, &BiscuitOS_list);
-	list_add(&node6.list, &BiscuitOS_list);
+    /* add a new entry on back */
+    list_add_tail(&node0.list, &BiscuitOS_list);
+    list_add_tail(&node1.list, &BiscuitOS_list);
+    list_add_tail(&node2.list, &BiscuitOS_list);
+    list_add_tail(&node3.list, &BiscuitOS_list);
+    list_add_tail(&node4.list, &BiscuitOS_list);
+    list_add_tail(&node5.list, &BiscuitOS_list);
+    list_add_tail(&node6.list, &BiscuitOS_list);
 
-	/* Traverser all node on bindirect-list */
-	list_for_each_entry(np, &BiscuitOS_list, list)
-		printk("%s\n", np->name);
+    /* Traverser all node on bindirect-list */
+    list_for_each_entry(np, &BiscuitOS_list, list)
+        printk("%s\n", np->name);
 
-	return 0;
+    return 0;
 }
 device_initcall(bindirect_demo_init);
 {% endhighlight %}
 
-驱动中，创建了一个私有数据结构 struct node, 该结构中内嵌了一个双链表 struct list_head
-实例，接着创建了一个双链表的表头 BiscuitOS_list, 以及初始化了 7 个 struct node 实例。
-最后调用 list_add() 函数将私有 node 实例添加到双链表中，并使用 list_for_each_entry()
-函数遍历所有的节点。
+#### <span id="驱动安装">驱动安装</span>
 
-编写好驱动之后，进行驱动的安装。驱动的安装很简单，首先将驱动放到源码的 drivers/BiscuitOS/
-目录下，命名为 list.c，然后修改 Kconfig 文件，添加内容参考如下：
+驱动的安装很简单，首先将驱动放到 drivers/BiscuitOS/ 目录下，命名为 list.c，
+然后修改 Kconfig 文件，添加内容参考如下：
 
 {% highlight bash %}
 diff --git a/drivers/BiscuitOS/Kconfig b/drivers/BiscuitOS/Kconfig
@@ -216,7 +145,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_LIST
 +
 +config DEBUG_BISCUITOS_LIST
-+       bool "list mini practice"
++       bool "LIST_HEAD"
 +
 +endif # BISCUITOS_LIST
 +
@@ -236,326 +165,48 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 --
 {% endhighlight %}
 
-安装完驱动之后，进行驱动配置，以此将驱动编译进内核。驱动配置请参考下面文章中关于驱动配置一节。
-在配置中，勾选如下选项，如下：
+#### <span id="驱动配置">驱动配置</span>
+
+驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选如下选项，如下：
 
 {% highlight bash %}
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]Bindirect-list
-            [*]list mini practice
+            [*]LIST_HEAD()
 {% endhighlight %}
 
 具体过程请参考：
 
 > [Linux 5.0 开发环境搭建 -- 驱动配置](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E9%85%8D%E7%BD%AE)
 
-配置完驱动之后，进行驱动编译。驱动编译也请参考下面文章关于驱动编译一节：
+#### <span id="驱动编译">驱动编译</span>
+
+驱动编译也请参考下面文章关于驱动编译一节：
 
 > [Linux 5.0 开发环境搭建 -- 驱动编译](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E7%BC%96%E8%AF%91%E9%A9%B1%E5%8A%A8)
 
-驱动编译完之后就是驱动运行。驱动的运行，请参考下面文章中关于驱动运行一节：
+#### <span id="驱动运行">驱动运行</span>
+
+驱动的运行，请参考下面文章中关于驱动运行一节：
 
 > [Linux 5.0 开发环境搭建 -- 驱动运行](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E8%BF%90%E8%A1%8C)
 
 启动内核，并打印如下信息：
 
 {% highlight ruby %}
-usbcore: registered new interface driver usbhid
-usbhid: USB HID core driver
-BiscuitOS_node6
-BiscuitOS_node5
-BiscuitOS_node4
-BiscuitOS_node3
-BiscuitOS_node2
-BiscuitOS_node1
 BiscuitOS_node0
-aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
-aaci-pl041 10004000.aaci: FIFO 512 entries
+BiscuitOS_node1
+BiscuitOS_node2
+BiscuitOS_node3
+BiscuitOS_node4
+BiscuitOS_node5
+BiscuitOS_node6
 {% endhighlight %}
 
-通过上面的步骤，就可以完成内核双链表的最小实践。在实践中，创建一个
+#### <span id="驱动分析">驱动分析</span>
 
----------------------------------------------
-<span id="内核双链表基本操作"></span>
-
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
-
-### 内核双链表基本操作
-
-Linux 内核为双链表提供了丰富的接口函数，以满足不同的使用需求。双链表的操作基本分为以下几类：
-
-> - [双链表表头相关操作](#双链表表头相关操作)
->
-> - [双链表状态检查操作](#双链表状态检查操作)
->
-> - [双链表的节点增加操作](#双链表的节点增加操作)
->
-> - [双链表的节点删除操作](#双链表的节点删除操作)
->
-> - [双链表的节点修改操作](#双链表的节点修改操作)
->
-> - [双链表的合并操作](#双链表的合并操作)
->
-> - [双链表的遍历操作](#双链表的遍历操作)
-
-### <span id="双链表表头相关操作">双链表表头相关操作</span>
-
-在使用双链表之前，内核需要建立一个双链表表头，内核提供了多种接口用于表头的声明、定义，以及
-初始化，具体接口如下：
-
-> - [INIT_LIST_HEAD: 初始化双链表表头](https://biscuitos.github.io/blog/LIST_INIT_LIST_HEAD/)
->
-> - [LIST_HEAD: 声明并初始化一个双链表表头](https://biscuitos.github.io/blog/LIST_LIST_HEAD/)
->
-> - [LIST_HEAD_INIT: 初始化双链表表头](https://biscuitos.github.io/blog/LIST_LIST_HEAD_INIT/)
-
-### <span id="双链表状态检查操作">双链表状态检查操作</span>
-
-在使用双链表过程中，需要获得双链表的状态信息，内核提供了很多接口用于获得双链表的状态信息，
-具体接口如下：
-
-> - [\_\_list_add_valid: 添加一个节点之前，检查节点是否可用](https://biscuitos.github.io/blog/LIST___list_add_valid/)
->
-> - [\_\_list_del_entry_valid: 删除一个节点之前，检查检点是否可用](https://biscuitos.github.io/blog/LIST___list_del_entry_valid/)
->
-> - [list_is_last: 检查节点是否位于链表末尾](https://biscuitos.github.io/blog/LIST_list_is_last/)
->
-> - [list_empty: 检查链表是否为空](https://biscuitos.github.io/blog/LIST_list_empty/)
->
-> - [list_empty_careful: 函数判断一个链表是否为空链表，并确定其他 CPU 并未修改过链表](https://biscuitos.github.io/blog/LIST_list_empty_careful/)
->
-> - [list_is_singular: 判断链表是否只含有一个节点](https://biscuitos.github.io/blog/LIST_list_is_singular/)
-
-### <span id="双链表的节点增加操作">双链表的节点增加操作</span>
-
-内核提供一系列的接口用于向双链表中添加节点，具体接口如下：
-
-> - [\_\_list_add: 向链表中添加一个节点](https://biscuitos.github.io/blog/LIST___list_add/)
->
-> - [list_add: 向链表头部添加一个节点](https://biscuitos.github.io/blog/LIST_list_add/)
->
-> - [list_add_tail: 向链表的末尾添加一个节点](https://biscuitos.github.io/blog/LIST_list_add_tail/)
-
-### <span id="双链表的节点删除操作">双链表的节点删除操作</span>
-
-内核提供了一系列接口用于从双链表中删除节点，具体接口如下：
-
-> - [\_\_list_del: 从双链表中删除指定节点](https://biscuitos.github.io/blog/LIST___list_del/)
->
-> - [\_\_list_del_entry: 从双链表中删除指定节点](https://biscuitos.github.io/blog/LIST___list_del_entry/)
->
-> - [list_del: 从链表中删除一个节点](https://biscuitos.github.io/blog/LIST_list_del/)
->
-> - [list_move: 从链表中移除一个节点并加入另一个链表的表头](https://biscuitos.github.io/blog/LIST_list_move/)
->
-> - [list_move_tail: 将节点从当前链表移动到新链表](https://biscuitos.github.io/blog/LIST_list_move_tail/)
->
-> - [list_del_init: 从链表中移除节点并初始化节点](https://biscuitos.github.io/blog/LIST_list_del_init/)
-
-### <span id="双链表的节点修改操作">双链表的节点修改操作</span>
-
-内核提供了链表节点的修改操作，包括移动链表中的节点，替换节点等操作，具体如下：
-
-> - [list_replace: 替换特定的节点](https://biscuitos.github.io/blog/LIST_list_replace/)
->
-> - [list_replace_init: 替换特定的节点，并初始化被替换的节点](https://biscuitos.github.io/blog/LIST_list_replace_init/)
->
-> - [list_move: 将节点移动到新链表的头部](https://biscuitos.github.io/blog/LIST_list_move/)
->
-> - [list_bulk_move_tail: 将链表中多个节点移动到新链表的尾部](https://biscuitos.github.io/blog/LIST_list_bulk_move_tail/)
->
-> - [list_rotate_left: 将链表中的第一个节点移动链表末尾](https://biscuitos.github.io/blog/LIST_list_rotate_left/)
->
-> - [\_\_list_cut_position: 将链表从特定位置剪断成两个链表](https://biscuitos.github.io/blog/LIST___list_cut_position/)
->
-> - [list_cut_position: 将链表从特定位置剪断成两个链表](https://biscuitos.github.io/blog/LIST_list_cut_position/)
->
-> - [list_cut_before: 将链表从特定位置剪断从两个链表，保留前段](https://biscuitos.github.io/blog/LIST_list_cut_before/)
->
-> - []
-
-### <span id="双链表的合并操作">双链表的合并操作</span>
-
-内核也提供了链表合并操作，具体接口如下：
-
-> - [list_splice_init: 将新链表合并到链表头部，并初始化新链表表头](https://biscuitos.github.io/blog/LIST_list_splice_init/)
->
-> - [\_\_list_splice: 将链表插入到链表里](https://biscuitos.github.io/blog/LIST___list_splice/)
->
-> - [list_splice: 将链表插入到链表头部](https://biscuitos.github.io/blog/LIST_list_splice/)
->
-> - [list_splice_tail: 将链表插入到链表尾部](https://biscuitos.github.io/blog/LIST_list_splic_tail/)
->
-> - [list_splice_tail_init: 将链表插入到链表末尾，并初始化链表](https://biscuitos.github.io/blog/LIST_list_splice_tail_init/)
-
-### <span id="双链表的遍历操作">双链表的遍历操作</span>
-
-内核提供了多种方式的遍历链表的接口，(嵌套节点的数据结构称为入口)具体如下：
-
-> - [list_entry: 获得节点对应的入口](https://biscuitos.github.io/blog/LIST_list_entry/)
->
-> - [list_first_entry: 获得第一个入口](https://biscuitos.github.io/blog/LIST_list_first_entry/)
->
-> - [list_last_entry: 获得最后一个入口](https://biscuitos.github.io/blog/LIST_list_last_entry/)
->
-> - [list_first_entry_or_null: 获得第一个入口或 NULL](https://biscuitos.github.io/blog/LIST_list_first_entry_or_null/)
->
-> - [list_next_entry: 获得下一个入口](https://biscuitos.github.io/blog/LIST_list_next_entry/)
->
-> - [list_prev_entry: 获得前一个入口](https://biscuitos.github.io/blog/LIST_list_prev_entry/)
->
-> - [list_for_each: 正序遍历所有节点](https://biscuitos.github.io/blog/LIST_list_for_each/)
->
-> - [list_for_each_prev: 倒叙遍历所有节点](https://biscuitos.github.io/blog/LIST_list_for_each_prev/)
->
-> - [list_for_each_safe: 安全正序遍历所有节点](https://biscuitos.github.io/blog/LIST_list_for_each_safe/)
->
-> - [list_for_each_prev_safe: 安全倒叙遍历所有节点](https://biscuitos.github.io/blog/LIST_list_for_each_prev_safe/)
->
-> - [list_for_each_entry: 正序遍历所有入口](https://biscuitos.github.io/blog/LIST_list_for_each_entry/)
->
-> - [list_for_each_entry_reverse: 倒叙遍历所有入口](https://biscuitos.github.io/blog/LIST_list_for_each_entry_reverse/)
->
-> - [list_prepare_entry: 获得指定入口](https://biscuitos.github.io/blog/LIST_list_prepare_entry/)
->
-> - [list_for_each_entry_continue: 从指定入口开始正序遍历剩余的入口](https://biscuitos.github.io/blog/LIST_list_for_each_entry_continue/)
->
-> - [list_for_each_entry_continue_reverse: 从指定入口开始倒叙遍历剩余的入口](https://biscuitos.github.io/blog/LIST_list_for_each_entry_continue_reverse/)
->
-> - [list_for_each_entry_from: 从指定入口正序遍历剩余入口](https://biscuitos.github.io/blog/LIST_list_for_each_entry_from/)
->
-> - [list_for_each_entry_from_reverse: 从指定入口倒序遍历剩余入口](https://biscuitos.github.io/blog/LIST_list_for_each_entry_from_reverse/)
->
-> - [list_for_each_entry_safe: 安全正序遍历所有入口](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe/)
->
-> - [list_for_each_entry_safe_continue: 安全从指定入口正序遍历剩余入口](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe_continue/)
->
-> - [list_for_each_entry_safe_from: 安全从指定入口正序遍历剩余入口](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe_from/)
->
-> - [list_for_each_entry_safe_reverse: 安全从指定入口倒序遍历剩余入口](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe_reverse/)
->
-> - [list_safe_reset_next: 安全获得下一个入口](https://biscuitos.github.io/blog/LIST_list_safe_reset_next/)
-
----------------------------------------------
-<span id="内核双链表进阶研究"></span>
-
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000J.jpg)
-
-### 内核双链表进阶研究
-
-> - [内核双链表遍历：带 safe 和不带 safe 的区别](https://biscuitos.github.io/blog/LIST_ADV_safe/#header)
->
-> - [内核中核心双链表](https://biscuitos.github.io/blog/LIST_core_list/)
-
----------------------------------------------
-<span id="LISTAPI"></span>
-
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
-
-> [INIT_LIST_HEAD](https://biscuitos.github.io/blog/LIST_INIT_LIST_HEAD/)
->
-> [\_\_list_add](https://biscuitos.github.io/blog/LIST___list_add/)
->
-> [list_add](https://biscuitos.github.io/blog/LIST_list_add/)
->
-> [list_add_tail](https://biscuitos.github.io/blog/LIST_list_add_tail/)
->
-> [\_\_list_add_valid](https://biscuitos.github.io/blog/LIST___list_add_valid/)
->
-> [list_bulk_move_tail](https://biscuitos.github.io/blog/LIST_list_bulk_move_tail/)
->
-> [list_cut_before](https://biscuitos.github.io/blog/LIST_list_cut_before/)
->
-> [\_\_list_cut_position](https://biscuitos.github.io/blog/LIST___list_cut_position/)
->
-> [list_cut_position](https://biscuitos.github.io/blog/LIST_list_cut_position/)
->
-> [\_\_list_del](https://biscuitos.github.io/blog/LIST___list_del/)
->
-> [list_del](https://biscuitos.github.io/blog/LIST_list_del/)
->
-> [\_\_list_del_entry](https://biscuitos.github.io/blog/LIST___list_del_entry/)
->
-> [\_\_list_del_entry_valid](https://biscuitos.github.io/blog/LIST___list_del_entry_valid/)
->
-> [list_del_init](https://biscuitos.github.io/blog/LIST_list_del_init/)
->
-> [list_empty](https://biscuitos.github.io/blog/LIST_list_empty/)
->
-> [list_empty_careful](https://biscuitos.github.io/blog/LIST_list_empty_careful/)
->
-> [list_entry](https://biscuitos.github.io/blog/LIST_list_entry/)
->
-> [list_first_entry](https://biscuitos.github.io/blog/LIST_list_first_entry/)
->
-> [list_first_entry_or_null](https://biscuitos.github.io/blog/LIST_list_first_entry_or_null/)
->
-> [list_for_each](https://biscuitos.github.io/blog/LIST_list_for_each/)
->
-> [list_for_each_entry](https://biscuitos.github.io/blog/LIST_list_for_each_entry/)
->
-> [list_for_each_entry_continue](https://biscuitos.github.io/blog/LIST_list_for_each_entry_continue/)
->
-> [list_for_each_entry_continue_reverse](https://biscuitos.github.io/blog/LIST_list_for_each_entry_continue_reverse/)
->
-> [list_for_each_entry_from](https://biscuitos.github.io/blog/LIST_list_for_each_entry_from/)
->
-> [list_for_each_entry_from_reverse](https://biscuitos.github.io/blog/LIST_list_for_each_entry_from_reverse/)
->
-> [list_for_each_entry_reverse](https://biscuitos.github.io/blog/LIST_list_for_each_entry_reverse/)
->
-> [list_for_each_entry_safe](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe/)
->
-> [list_for_each_entry_safe_continue](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe_continue/)
->
-> [list_for_each_entry_safe_from](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe_from/)
->
-> [list_for_each_entry_safe_reverse](https://biscuitos.github.io/blog/LIST_list_for_each_entry_safe_reverse/)
->
-> [list_for_each_prev](https://biscuitos.github.io/blog/LIST_list_for_each_prev/)
->
-> [list_for_each_prev_safe](https://biscuitos.github.io/blog/LIST_list_for_each_prev_safe/)
->
-> [list_for_each_safe](https://biscuitos.github.io/blog/LIST_list_for_each_safe/)
->
-> [LIST_HEAD](https://biscuitos.github.io/blog/LIST_LIST_HEAD/)
->
-> [LIST_HEAD_INIT](https://biscuitos.github.io/blog/LIST_LIST_HEAD_INIT/)
->
-> [list_is_last](https://biscuitos.github.io/blog/LIST_list_is_last/)
->
-> [list_is_singular](https://biscuitos.github.io/blog/LIST_list_is_singular/)
->
-> [list_last_entry](https://biscuitos.github.io/blog/LIST_list_last_entry/)
->
-> [list_move](https://biscuitos.github.io/blog/LIST_list_move/)
->
-> [list_move_tail](https://biscuitos.github.io/blog/LIST_list_move_tail/)
->
-> [list_next_entry](https://biscuitos.github.io/blog/LIST_list_next_entry/)
->
-> [list_prepare_entry](https://biscuitos.github.io/blog/LIST_list_prepare_entry/)
->
-> [list_prev_entry](https://biscuitos.github.io/blog/LIST_list_prev_entry/)
->
-> [list_replace](https://biscuitos.github.io/blog/LIST_list_replace/)
->
-> [list_replace_init](https://biscuitos.github.io/blog/LIST_list_replace_init/)
->
-> [list_rotate_left](https://biscuitos.github.io/blog/LIST_list_rotate_left/)
->
-> [list_safe_reset_next](https://biscuitos.github.io/blog/LIST_list_safe_reset_next/)
->
-> [\_\_list_splice](https://biscuitos.github.io/blog/LIST___list_splice/)
->
-> [list_splice](https://biscuitos.github.io/blog/LIST_list_splice/)
->
-> [list_splice_init](https://biscuitos.github.io/blog/LIST_list_splice_init/)
->
-> [list_splice_tail](https://biscuitos.github.io/blog/LIST_list_splic_tail/)
->
-> [list_splice_tail_init](https://biscuitos.github.io/blog/LIST_list_splice_tail_init/)
+使用 LIST_HEAD 可以便捷的创建并初始化一个双链表表头。
 
 -----------------------------------------------
 
