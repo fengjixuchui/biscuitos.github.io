@@ -115,7 +115,7 @@ if (parent != tmp) { /* parent == gparent->rb_left */
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000D.jpg)
 
-# 红黑树插入一个红节点引起左旋转实践
+## 红黑树插入一个红节点引起左旋转实践
 
 > - [实践源码](#实践源码)
 >

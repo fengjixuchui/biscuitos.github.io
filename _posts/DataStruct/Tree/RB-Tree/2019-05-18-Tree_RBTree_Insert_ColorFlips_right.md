@@ -27,6 +27,8 @@ tags:
 -----------------------------------
 <span id="原理分析"></span>
 
+## 红黑树插入一个红节点引起颜色翻转
+
 父节点是祖父节点的右孩子，新插入一个红节点，与父节点和祖父节点构成一个
 临时的 4-node 的时候，即一个节点的两个子节点均为红色，此时需要颜色翻转。
 颜色翻转的触发场景：
@@ -98,7 +100,7 @@ if (parent == tmp) { /* parent == gparent->rb_right */
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
 
-### 红黑树插入一个红节点引起右旋转与 2-3 树的关系
+### 红黑树插入一个红节点引起颜色翻转与 2-3 树的关系
 
 毕竟红黑树是 2-3 树的一种表现形式，因此插入一个红节点到引起红黑树颜色翻转原理也符合 2-3 树
 的原理。由于父节点是祖父节点的右孩子，那么祖父节点是一个 2- 节点。父节点此时是一个黑节点，
@@ -122,7 +124,7 @@ n1、p0、n2 节点构成了一个零时的 4- 节点，需要分裂和提取操
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000D.jpg)
 
-# 红黑树插入一个红节点引起右旋转实践
+# 红黑树插入一个红节点引起颜色翻转实践
 
 > - [实践源码](#实践源码)
 >

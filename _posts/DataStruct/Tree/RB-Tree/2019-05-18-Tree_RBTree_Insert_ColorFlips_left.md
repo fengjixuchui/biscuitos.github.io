@@ -126,7 +126,7 @@ n1、p0、n2 节点构成了一个零时的 4- 节点，需要分裂和提取操
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000D.jpg)
 
-# 红黑树插入一个红节点引起右旋转实践
+# 红黑树插入一个红节点引起颜色翻转实践
 
 > - [实践源码](#实践源码)
 >
