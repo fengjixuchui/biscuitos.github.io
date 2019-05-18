@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "红黑树插入操作之：父节点是祖父的左孩子，引起的右旋转"
+title:  "红黑树右旋：父节点是祖父的右孩子，引起的右旋转"
 date:   2019-05-18 05:30:30 +0800
 categories: [HW]
-excerpt: TREE 红黑树插入操作之：父节点是祖父的左孩子，引起的右旋转.
+excerpt: TREE 红黑树插入操作之：父节点是祖父的右孩子，引起的右旋转.
 tags:
   - Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000R.jpg)
 
-> [Github: 插入一个红节点引起右旋转](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Insert/Case2)
+> [Github: 插入一个红节点引起右旋转](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Insert/Case7)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -51,65 +51,36 @@ tags:
 实现如下：
 
 {% highlight ruby %}
-		tmp = gparent->rb_right;
-		if (parent != tmp) { /* parent == gparent->rb_left */
-			tmp = parent->rb_right;
-
-			gparent->rb_left = tmp;
-			parent->rb_right = gparent;
-			if (tmp)
-				rb_set_parent_color(tmp, gparent, RB_BLACK);
-			__rb_rotate_set_parents(gparent, parent, root, RB_RED);
-			augment_rotate(gparent, parent);
-			break;
-		}
+tmp = parent->rb_left;
+if (node == tmp) {
+        /* Case 2 - right rotate at parent
+         *
+         *      G             G
+         *     / \           / \
+         *    U   p  -->    U   n
+         *       /               \
+         *      n                 p
+         *
+         * This still leaves us in violation of 4), the
+         * continuation into Case 3 will fix that.
+         */
+        tmp = node->rb_right;
+        parent->rb_left = tmp;
+        node->rb_right = parent;
+        if (tmp)
+                rb_set_parent_color(tmp, parent,
+                                        RB_BLACK);
+        rb_set_parent_color(parent, node, RB_RED);
+        augment_rotate(parent, node);
+        parent = node;
+        tmp = node->rb_left;
 {% endhighlight %}
 
-核心代码首先判断 gparent (gparent 为 parent 的父节点) 的左孩子是否存在，对于需要右
-旋的部分，gparent 的左孩子是存在的。接着按照右旋的原理，以 gparent 节点到 parent 节
-点为支轴进行右旋。此时 parent 的右孩子变成了 gparent 的左孩子，对应的代码就是：
-"gparent->rb_left = tmp", gparent 自己变成了 parent 的右孩子, 对应的代码就是：
-"parent->rb_right = gparent"。如果此时 tmp 存在，也就是原先 parent 的右孩子存在，
-那么，设置 tmp 的父节点为 gparent。接着调用 __rb_rotate_set_parents() 函数修改
-gparent 和 parent 之间的关系，代码如下：
-
-{% highlight ruby %}
-static inline void
-__rb_rotate_set_parents(struct rb_node *old, struct rb_node *new,
-		       struct rb_root *root, int color)
-{
-	struct rb_node *parent = rb_parent(old);
-	new->__rb_parent_color = old->__rb_parent_color;
-	rb_set_parent_color(old, new, color);
-	__rb_change_child(old, new, parent, root);
-}
-{% endhighlight %}
-
-首先获得 gparent 的父节点，然后将 parent 在红黑树 __rb_parent_color 成员继承
-gparent 的 __rb_parent_color. 然后设置 gparent 的 __rb_parent_color 为
-parent。最后修改 gparent 原先的父节点的节点信息，函数如下：
-
-{% highlight ruby %}
-static inline void
-__rb_change_child(struct rb_node *old, struct rb_node *new,
-		  struct rb_node *parent, struct rb_root *root)
-{
-	if (parent) {
-		if (parent->rb_left == old)
-			parent->rb_left = new;
-		else
-			parent->rb_right = new;
-	} else
-		root->rb_node = new;
-}
-{% endhighlight %}
-
-逻辑很简单，就是判断 gpraent 是原始父节点的左孩子还是右孩子，然后将原始父节点的
-左孩子或右孩子指向 parent 节点。如果 gparent 的父节点不存在，那么 gparent 原先是
-root 节点，那么就将 root 节点指向 parent 节点。
-
-通过上面的源码，rbtree 已经完成右旋操作，并设置好了各个节点之间的关系，使红黑树再一次
-达到平衡。
+核心代码如上，此时父节点是祖父节点的右节点，新加入的红节点是父节点的左孩子。首先将 tmp
+指向插入节点的右孩子，然后进行右旋转操作，将父节点的左孩子指向 tmp，然后插入节点的右孩子
+指向父节点，如果插入节点的右孩子存在，那么将其父节点指向 parent，并设置为黑色，最后将
+node 节点设置为红节点，以此向上融合。进过上面的操作，只能暂时然红黑树局部达到平衡，由于
+此时新的父节点已经变成红色，需要父节点继续和祖父节点进行融合或者分离操作。
 
 -----------------------------------
 <span id="23Tree"></span>
@@ -119,20 +90,19 @@ root 节点，那么就将 root 节点指向 parent 节点。
 ### 红黑树插入一个红节点引起右旋转与 2-3 树的关系
 
 毕竟红黑树是 2-3 树的一种表现形式，因此插入一个红节点到引起红黑树右旋转的原理也符合 2-3 树
-的原理。当插入一个红节点之后，父节点此时已经是一个 3- 节点，向最左边插入红节点的时候，父
-节点已经变成一个零时的 4- 节点，此时需要对 2-3 树进行分裂操作，将 4- 节点中，中间节点
-提取，将一个 4- 节点拆分成 3 个 2- 节点，由于提取之后的节点需要向上融合，因此需要将该节点
-设置为 RED，而子节点都是 2- 节点，因此子节点的颜色都是 BLACK。在分裂过程中，由于新增加
-的红节点从最左边插入，因此在分裂的时候，零时 4- 节点的最右侧的两个孩子归 4- 节点最右节点
-所有，这样就完成了一次 2-3 树的提取，分离，合并操作，对应到红黑树就是一次右旋转操作。
+的原理。由于父节点是祖父节点的右孩子，那么祖父节点是一个 2- 节点。父节点此时是一个红节点，
+在向其左侧添加一个红节点，那么此时父节点和子节点都是红节点，不符合 2-3 树的要求，引起需要
+对此处进行分裂，分裂的逻辑就是提起左孩子作为父节点，右边的节点成为父节点的右孩子，从红黑树
+角度来看，就是一次右旋操作。
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000093.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000094.png)
 
-如上图，在 2-3 树中，当向一个 3- (n0:R|p0:B) 节点的左边插入一个红节点 n1，此时变成一个
-零时的 4- (n1:R|n0:R|p0:B) 节点，此时需要进行分离，将 n0:R 节点向上提取，由于要和
-上一层节点进行融合，那么需要将 n0 节点变成红色，但由于上图中父节点已经是根节点了，所有
-将 n0 设置为黑色，n1 继续保持红色，n1 与 n0 同时构成一个 3- 节点。由于分裂，n0 的右孩子
-成为了 p0 的左孩子。p0 自己成为了 n0 的右孩子。对应的红黑树如右边。更多红黑树与 2-3 树
+如上图，在 2-3 树中，祖父节点 p0 是一个黑节点，n0 是其右孩子，且是一个红孩子，此时插入 n1
+节点，此时 n1 也是一个红孩子，那么 n1 和 n0 构成一个零时的节点，这个节点都是红色，不符合
+2-3 树的要求，因此需要分裂成两个 2- 节点，因此将节点右旋转，让 n1 成为父节点，n0 成为 n1
+的右孩子，n1 的右孩子在右旋转过程中，变成了 n0 的左孩子，并且是一个 2- 节点，因此是一个
+黑节点。经过右旋转之后，形成新的布局，此时并未满足 2-3 树的要求，需要将 n1 节点继续和 p0
+节点做左旋转操作，但是本文只介绍右旋转，因此这里不继续讨论。更多红黑树与 2-3 树
 的关系请看文档：
 
 > [红黑树与 2-3 树的关系分析](https://biscuitos.github.io/blog/Tree_2-3-tree/)
@@ -154,18 +124,18 @@ root 节点，那么就将 root 节点指向 parent 节点。
 
 #### <span id="实践源码">实践源码</span>
 
-> [实践源码 GitHub](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Insert/Case2)
+> [实践源码 GitHub](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Insert/Case7)
 
 开发者可以从上面的链接中获得所有的实践代码，也可以使用如下命令获得：
 
 {% highlight ruby %}
 mkdir -p Insert_ROOT
 cd Insert_ROOT
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Insert/Case2/Makefile
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Insert/Case2/README.md
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Insert/Case2/rb_run.c
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Insert/Case2/rbtree.c
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Insert/Case2/rbtree.h
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Insert/Case7/Makefile
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Insert/Case7/README.md
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Insert/Case7/rb_run.c
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Insert/Case7/rbtree.c
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Insert/Case7/rbtree.h
 {% endhighlight %}
 
 实践源码具体内容如下：
@@ -195,8 +165,8 @@ struct node {
 #define node_entry(n) container_of(n, struct node, node)
 
 static struct node node0 = { .runtime = 0x20 };
-static struct node node1 = { .runtime = 0x15 };
-static struct node node2 = { .runtime = 0x10 };
+static struct node node1 = { .runtime = 0x30 };
+static struct node node2 = { .runtime = 0x25 };
 
 /* rbroot */
 static struct rb_root BiscuitOS_rb = RB_ROOT;
@@ -283,7 +253,7 @@ make
 
 {% highlight ruby %}
 rb-tree/Insert/Case0$ ./rbtree
-0x10 0x15 0x20
+0x20 0x25 0x30
 {% endhighlight %}
 
 --------------------------------------
