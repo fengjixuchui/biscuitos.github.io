@@ -80,6 +80,8 @@ tags:
 >
 >     - [AVL 平衡二叉查找树](https://biscuitos.github.io/blog/Tree_binarytree_AVLTree/)
 >
+>   - [2-3-4 树](https://biscuitos.github.io/blog/Tree_2-3-tree/)
+>
 > - 锁/同步
 >
 >   - [atomic 原子操作](https://biscuitos.github.io/blog/ATOMIC/)
