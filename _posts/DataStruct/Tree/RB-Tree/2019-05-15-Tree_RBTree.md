@@ -39,7 +39,7 @@ tags:
 >
 >   - [红黑树的删除操作](#红黑树的插入操作)
 >
-> - [红黑树在内核中的应用]
+> - [红黑树在内核中的应用](#红黑树在内核中的应用)
 >
 >   - [内核中创建一棵红黑树](#内核中创建一棵红黑树)
 >
@@ -66,7 +66,7 @@ tags:
 -----------------------------------
 <span id="原理"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
 
 ## 红黑树原理
 
