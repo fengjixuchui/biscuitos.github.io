@@ -43,7 +43,7 @@ tags:
 >
 >   - [红黑树的删除操作](#红黑树的插入操作)
 >
-> - [红黑树在内核中的应用](#红黑树在内核中的应用)
+> - [红黑树在内核中的应用](#AAPI)
 >
 >   - [内核中创建一棵红黑树](#内核中创建一棵红黑树)
 >
@@ -845,7 +845,7 @@ Iterate over by postorder.
 > [父节点是祖父的左孩子，引起颜色翻转](https://biscuitos.github.io/blog/Tree_RBTree_Insert_ColorFlips_left/)
 
 --------------------------------------
-<span id="红黑树在内核中的应用"></span>
+<span id="AAPI"></span>
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
 

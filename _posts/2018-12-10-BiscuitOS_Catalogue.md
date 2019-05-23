@@ -82,6 +82,14 @@ tags:
 >
 >   - [2-3-4 树](https://biscuitos.github.io/blog/Tree_2-3-tree/)
 >
+>   - [红黑树](https://biscuitos.github.io/blog/Tree_2-3-tree/)
+>
+>     - [红黑树在内核中的应用](https://biscuitos.github.io/blog/Tree_RBTree/#AAPI)
+>
+>     - [红黑树在应用程序的部署](https://biscuitos.github.io/blog/Tree_RBTREE_UserArrange/)
+>
+>     - [红黑树内核接口函数列表](https://biscuitos.github.io/blog/Tree_RBTree/#LIST)
+>
 > - 锁/同步
 >
 >   - [atomic 原子操作](https://biscuitos.github.io/blog/ATOMIC/)
