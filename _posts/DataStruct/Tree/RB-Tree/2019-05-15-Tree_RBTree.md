@@ -19,7 +19,11 @@ tags:
 
 > - [红黑树原理](#原理)
 >
->   - [红黑树与 2-3 树的关系](#红黑树与 2-3 树的关系)
+>   - [红黑树原理](#红黑树原理)
+>
+>   - [红黑树性质](#红黑树性质)
+>
+>   - [红黑树的术语](#红黑树的术语)
 >
 > - [红黑树最小实践](#实践)
 >
@@ -1015,71 +1019,33 @@ Linux 也提供了多个用于遍历红黑树的函数。根据红黑树的遍�
 
 ## 红黑树内核接口函数列表
 
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
->
-> []()
+[\_\_rb_change_child](https://biscuitos.github.io/blog/Tree_RBTREE___rb_change_child)
+[RB_CLEAR_NODE](https://biscuitos.github.io/blog/Tree_RBTREE_RB_CLEAR_NODE)
+[\_\_rb_color](https://biscuitos.github.io/blog/Tree_RBTREE___rb_color)
+[rb_color](https://biscuitos.github.io/blog/Tree_RBTREE_rb_color)
+[RB_EMPTY_NODE](https://biscuitos.github.io/blog/Tree_RBTREE_RB_EMPTY_NODE)
+[RB_EMPTY_ROOT](https://biscuitos.github.io/blog/Tree_RBTREE_RB_EMPTY_ROOT)
+[rb_entry](https://biscuitos.github.io/blog/Tree_RBTREE_rb_entry)
+[rb_entry_safe](https://biscuitos.github.io/blog/Tree_RBTREE_rb_entry_safe)
+[rb_erase](https://biscuitos.github.io/blog/Tree_RBTREE_rb_erase)
+[rb_first](https://biscuitos.github.io/blog/Tree_RBTREE_rb_first)
+[rb_first_postorder](https://biscuitos.github.io/blog/Tree_RBTREE_rb_first_postorder)
+[rb_insert_color](https://biscuitos.github.io/blog/Tree_RBTREE_rb_insert_color)
+[\_\_rb_is_black](https://biscuitos.github.io/blog/Tree_RBTREE___rb_is_black)
+[rb_is_black](https://biscuitos.github.io/blog/Tree_RBTREE_rb_is_black)
+[\_\_rb_is_red](https://biscuitos.github.io/blog/Tree_RBTREE___rb_is_red)
+[rb_is_red](https://biscuitos.github.io/blog/Tree_RBTREE_rb_is_red)
+[rb_last](https://biscuitos.github.io/blog/Tree_RBTREE_rb_last)
+[rb_link_node](https://biscuitos.github.io/blog/Tree_RBTREE_rb_link_node)
+[rb_next](https://biscuitos.github.io/blog/Tree_RBTREE_rb_next)
+[rb_next_postorder](https://biscuitos.github.io/blog/Tree_RBTREE_rb_next_postorder)
+[rb_parent](https://biscuitos.github.io/blog/Tree_RBTREE_rb_parent)
+[rb_prev](https://biscuitos.github.io/blog/Tree_RBTREE_rb_prev)
+[rb_replace_node](https://biscuitos.github.io/blog/Tree_RBTREE_rb_replace_node)
+[RB_ROOT](https://biscuitos.github.io/blog/Tree_RBTREE_RB_ROOT)
+[rb_set_parent](https://biscuitos.github.io/blog/Tree_RBTREE_rb_set_parent)
+[rb_set_parent_color](https://biscuitos.github.io/blog/Tree_RBTREE_rb_set_parent_color)
+[rbtree_postorder_for_each_entry_safe](https://biscuitos.github.io/blog/Tree_RBTREE_rbtree_postorder_for_each_entry_safe)
 
 -------------------------------------
 
