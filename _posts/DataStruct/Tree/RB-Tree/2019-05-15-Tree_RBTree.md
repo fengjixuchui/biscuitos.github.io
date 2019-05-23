@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "红黑树 Red Black Tree"
-date:   2019-05-14 05:30:30 +0800
+date:   2019-05-23 05:30:30 +0800
 categories: [HW]
 excerpt: TREE 红黑树 Red Black Tree.
 tags:
@@ -19,16 +19,56 @@ tags:
 
 > - [红黑树原理](#原理)
 >
+>   - [红黑树与 2-3 树的关系](#红黑树与 2-3 树的关系)
+>
 > - [红黑树最小实践](#实践)
 >
+>   - [红黑树内核中最小实践](#红黑树内核中最小实践)
+>
+>   - [红黑树在应用程序中最小实践](#红黑树在应用程序中最小实践)
+>
 > - [红黑树的操作](#操作)
+>
+>   - [红黑树旋转](#红黑树旋转)
+>
+>   - [红黑树颜色翻转](#红黑树颜色翻转)
+>
+>   - [红黑树颜色翻转](#红黑树颜色翻转)
+>
+>   - [红黑树的插入操作](#红黑树的插入操作)
+>
+>   - [红黑树的删除操作](#红黑树的插入操作)
+>
+> - [红黑树在内核中的应用]
+>
+>   - [内核中创建一棵红黑树](#内核中创建一棵红黑树)
+>
+>   - [内核中插入红黑树节点](#内核中插入红黑树节点)
+>
+>   - [内核中删除红黑树节点](#内核中删除红黑树节点)
+>
+>   - [内核中修改红黑树节点](#内核中修改红黑树节点)
+>
+>   - [内核中查找红黑树节点](#内核中查找红黑树节点)
+>
+>   - [内核中遍历红黑树](#内核中遍历红黑树)
+>
+> - [红黑树在应用程序的部署](https://biscuitos.github.io/blog/Tree_RBTREE_UserArrange/)
+>
+> - [红黑树进阶研究](https://biscuitos.github.io/blog/Tree_RBTREE_Advance/)
+>
+> - [使用 Data Structure Visualizations 动态分析红黑树](https://www.cs.usfca.edu/~galles/visualization/RedBlack.html)
+>
+> - [红黑树内核接口函数列表](#LIST)
 >
 > - [附录](#附录)
 
 -----------------------------------
-# <span id="原理"></span>
+<span id="原理"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000R.jpg)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
+
+## 红黑树原理
 
 > - [红黑树原理](#红黑树原理)
 >
@@ -51,7 +91,7 @@ tags:
 位(bit)保存颜色（仅为红、黑两种）属性，除此以外，红黑树不需要保存其他信息，所以红黑
 树与普通二叉搜索树（BST）的内存开销基本一样，不会占用太多内存。
 
-##### 红黑树与 2-3 树的关系
+##### <span id="红黑树与 2-3 树的关系">红黑树与 2-3 树的关系</span>
 
 红黑树的主要是想对 2-3 查找树进行编码，尤其是对 2-3 查找树中的 3-nodes 节点添加
 额外的信息。红黑树中将节点之间的链接分为两种不同类型，红色链接，他用来链接两个
@@ -62,7 +102,7 @@ tags:
 
 根据以上红黑树与 2-3 树的描述，红黑树定义如下：
 
-{% highlight ruby %}
+{% highlight c %}
 红黑树是一种具有红色和黑色链接的平衡查找树，同时满足：
 
 1) 红色节点向左倾斜
@@ -130,8 +170,294 @@ tags:
 变树中某些结点的颜色以及指针结构来保持对红黑树进行插入和删除操作后的红黑性质.
 
 --------------------------------------------------
+<span id="实践"></span>
 
-# <span id="实践">实践</span>
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
+
+## 红黑树实践
+
+> - [红黑树内核中最小实践](#红黑树内核中最小实践)
+>
+> - [红黑树在应用程序中最小实践](#红黑树在应用程序中最小实践)
+
+--------------------------------------
+<span id="红黑树内核中最小实践"></span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000C.jpg)
+
+### 红黑树内核中最小实践
+
+> - [驱动源码](#AA驱动源码)
+>
+> - [驱动安装](#AA驱动安装)
+>
+> - [驱动配置](#AA驱动配置)
+>
+> - [驱动编译](#AA驱动编译)
+>
+> - [驱动运行](#AA驱动运行)
+>
+> - [驱动分析](#AA驱动分析)
+
+#### <span id="AA驱动源码">驱动源码</span>
+
+> [实践源码 RBTree on GitHub](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/API/mini)
+
+{% highlight c %}
+/*
+ * rbtree
+ *
+ * (C) 2019.05.20 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/kernel.h>
+#include <linux/init.h>
+
+/* header of rbtree */
+#include <linux/rbtree.h>
+
+/* rbtree */
+struct node {
+	struct rb_node node;
+	unsigned long runtime;
+};
+
+/*
+ * RB-Tree
+ *
+ *                                                        [] Black node
+ *                                                        () Red node
+ *                    [4]
+ *                     |
+ *          o----------o----------o
+ *          |                     |
+ *         (2)                   (7)
+ *          |                     |
+ *   o------o------o      o-------o-------o
+ *   |             |      |               |             
+ *  [1]           [3]    [5]             [9]
+ *                                        |
+ *                                o-------o-------o
+ *                                |               |
+ *                               (8)            (129)
+ *                      
+ *
+ */
+static struct node node0 = { .runtime = 0x1 };
+static struct node node1 = { .runtime = 0x2 };
+static struct node node2 = { .runtime = 0x3 };
+static struct node node3 = { .runtime = 0x5 };
+static struct node node4 = { .runtime = 0x4 };
+static struct node node5 = { .runtime = 0x7 };
+static struct node node6 = { .runtime = 0x8 };
+static struct node node7 = { .runtime = 0x9 };
+static struct node node8 = { .runtime = 0x129 };
+
+/* root for rbtree */
+struct rb_root BiscuitOS_rb = RB_ROOT;
+
+/* Insert private node into rbtree */
+static int rbtree_insert(struct rb_root *root, struct node *node)
+{
+	struct rb_node **new = &(root->rb_node), *parent = NULL;
+
+	/* Figure out where to put new node */
+	while (*new) {
+		struct node *this = container_of(*new, struct node, node);
+		int result;
+
+		/* Compare runtime */
+		result = this->runtime - node->runtime;
+
+		/* setup parent */
+		parent = *new;
+
+		if (result > 0)
+			new = &((*new)->rb_left);
+		else if (result < 0)
+			new = &((*new)->rb_right);
+		else
+			return 0;
+	}
+
+	/* Add new node and rebalance tree */
+	rb_link_node(&node->node, parent, new);
+	rb_insert_color(&node->node, root);
+
+	return 1;
+}
+
+/* Search private node on rbtree */
+struct node *rbtree_search(struct rb_root *root, unsigned long runtime)
+{
+	struct rb_node *node = root->rb_node;
+
+	while (node) {
+		struct node *this = container_of(node, struct node, node);
+		int result;
+
+		result = this->runtime - runtime;
+
+		if (result > 0)
+			node = node->rb_left;
+		else if (result < 0)
+			node = node->rb_right;
+		else
+			return this;
+	}
+	return NULL;
+}
+
+static __init int rbtree_demo_init(void)
+{
+	struct rb_node *np;
+	struct node *this;
+
+	/* Insert rb_node */
+	rbtree_insert(&BiscuitOS_rb, &node0);
+	rbtree_insert(&BiscuitOS_rb, &node1);
+	rbtree_insert(&BiscuitOS_rb, &node2);
+	rbtree_insert(&BiscuitOS_rb, &node3);
+	rbtree_insert(&BiscuitOS_rb, &node4);
+	rbtree_insert(&BiscuitOS_rb, &node5);
+	rbtree_insert(&BiscuitOS_rb, &node6);
+	rbtree_insert(&BiscuitOS_rb, &node7);
+	rbtree_insert(&BiscuitOS_rb, &node8);
+
+	/* Traverser all node on rbtree */
+	for (np = rb_first(&BiscuitOS_rb); np; np = rb_next(np))
+		printk("RB: %#lx\n", rb_entry(np, struct node, node)->runtime);
+
+	/* Search node by runtime */
+	this = rbtree_search(&BiscuitOS_rb, 0x5);
+	if (this) {
+		struct rb_node *parent;
+
+		/* Obtain rb_node's parent */
+		parent = rb_parent(&this->node);
+		if (parent)
+			printk("%#lx's parent is %#lx\n", this->runtime,
+				rb_entry(parent, struct node, node)->runtime);
+		else
+			printk("illegae child\n");
+
+	} else
+		printk("Invalid data on rbtree\n");
+
+	/* Erase rb_node */
+	rb_erase(&node0.node, &BiscuitOS_rb);
+	rb_erase(&node3.node, &BiscuitOS_rb);
+	rb_erase(&node4.node, &BiscuitOS_rb);
+	rb_erase(&node6.node, &BiscuitOS_rb);
+	printk("Remove: %#lx %#lx %#lx %#lx\n", node0.runtime, node3.runtime,
+				node4.runtime, node6.runtime);
+
+	printk("Iterate over all node again\n");
+	/* Traverser all node again */
+	for (np = rb_first(&BiscuitOS_rb); np; np = rb_next(np))
+		printk("RB: %#lx\n", rb_entry(np, struct node, node)->runtime);
+
+	return 0;
+}
+device_initcall(rbtree_demo_init);
+{% endhighlight %}
+
+#### <span id="驱动安装">驱动安装</span>
+
+驱动的安装很简单，首先将驱动放到 drivers/BiscuitOS/ 目录下，命名为 rbtree.c，
+然后修改 Kconfig 文件，添加内容参考如下：
+
+{% highlight bash %}
+diff --git a/drivers/BiscuitOS/Kconfig b/drivers/BiscuitOS/Kconfig
+index 4edc5a5..1a9abee 100644
+--- a/drivers/BiscuitOS/Kconfig
++++ b/drivers/BiscuitOS/Kconfig
+@@ -6,4 +6,14 @@ if BISCUITOS_DRV
+config BISCUITOS_MISC
+        bool "BiscuitOS misc driver"
++config BISCUITOS_RBTREE
++       bool "rbtree"
++
++if BISCUITOS_RBTREE
++
++config DEBUG_BISCUITOS_RBTREE
++       bool "rb_first"
++
++endif # BISCUITOS_RBTREE
++
+endif # BISCUITOS_DRV
+{% endhighlight %}
+
+接着修改 Makefile，请参考如下修改：
+
+{% highlight bash %}
+diff --git a/drivers/BiscuitOS/Makefile b/drivers/BiscuitOS/Makefile
+index 82004c9..9909149 100644
+--- a/drivers/BiscuitOS/Makefile
++++ b/drivers/BiscuitOS/Makefile
+@@ -1 +1,2 @@
+obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
++obj-$(CONFIG_BISCUITOS_RBTREE)  += rbtree.o
+--
+{% endhighlight %}
+
+#### <span id="驱动配置">驱动配置</span>
+
+驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选如下选项，如下：
+
+{% highlight bash %}
+Device Driver--->
+    [*]BiscuitOS Driver--->
+        [*]rbtree
+            [*]rb_first()
+{% endhighlight %}
+
+具体过程请参考：
+
+> [Linux 5.0 开发环境搭建 -- 驱动配置](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E9%85%8D%E7%BD%AE)
+
+#### <span id="AA驱动编译">驱动编译</span>
+
+驱动编译也请参考下面文章关于驱动编译一节：
+
+> [Linux 5.0 开发环境搭建 -- 驱动编译](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E7%BC%96%E8%AF%91%E9%A9%B1%E5%8A%A8)
+
+#### <span id="AA驱动运行">驱动运行</span>
+
+驱动的运行，请参考下面文章中关于驱动运行一节：
+
+> [Linux 5.0 开发环境搭建 -- 驱动运行](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E8%BF%90%E8%A1%8C)
+
+启动内核，并打印如下信息：
+
+{% highlight ruby %}
+usbcore: registered new interface driver usbhid
+usbhid: USB HID core driver
+RB: 0x1
+RB: 0x2
+RB: 0x3
+RB: 0x4
+RB: 0x5
+RB: 0x7
+RB: 0x8
+RB: 0x9
+RB: 0x129
+Last rb_node: 0x129
+aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
+aaci-pl041 10004000.aaci: FIFO 512 entries
+oprofile: using arm/armv7-ca9
+{% endhighlight %}
+
+--------------------------------------
+<span id="红黑树在应用程序中最小实践"></span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000E.jpg)
+
+### 红黑树在应用程序中最小实践
 
 > - [实践源码](#实践源码)
 >
@@ -148,13 +474,133 @@ tags:
 开发者也可以使用如下命令获得：
 
 {% highlight ruby %}
-wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/binary-tree/Class/Full_BinaryTree/binary.c
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Basic/Makefile
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Basic/README.md
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Basic/rb_run.c
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Basic/rbtree.c
+wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/Algorithem/tree/rb-tree/Basic/rbtree.h
 {% endhighlight %}
 
 实践源码具体内容如下：
 
 {% highlight c %}
+/*
+ * RB-Tree Manual.
+ *
+ * (C) 2019.05.14 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+#include <stdio.h>
+#include <stdlib.h>
 
+/* rbtree */
+#include <rbtree.h>
+
+struct node {
+	struct rb_node node;
+	unsigned long runtime;
+};
+
+/*
+ * RB-Tree
+ *
+ *                                                        [] Black node
+ *                                                        () Red node
+ *                    [4]
+ *                     |
+ *          o----------o----------o
+ *          |                     |
+ *         (2)                   (7)
+ *          |                     |
+ *   o------o------o      o-------o-------o
+ *   |             |      |               |             
+ *  [1]           [3]    [5]             [9]
+ *                                        |
+ *                                o-------o-------o
+ *                                |               |
+ *                               (8)            (129)
+ *                      
+ *
+ */
+static struct node node0 = { .runtime = 0x1 };
+static struct node node1 = { .runtime = 0x2 };
+static struct node node2 = { .runtime = 0x3 };
+static struct node node3 = { .runtime = 0x5 };
+static struct node node4 = { .runtime = 0x4 };
+static struct node node5 = { .runtime = 0x7 };
+static struct node node6 = { .runtime = 0x8 };
+static struct node node7 = { .runtime = 0x9 };
+static struct node node8 = { .runtime = 0x129 };
+
+/* rbroot */
+static struct rb_root BiscuitOS_rb = RB_ROOT;
+
+/* Insert private node into rbtree */
+static int rbtree_insert(struct rb_root *root, struct node *node)
+{
+	struct rb_node **new = &(root->rb_node), *parent = NULL;
+
+	/* Figure out where to put new node */
+	while (*new) {
+		struct node *this = rb_entry(*new, struct node, node);
+		int result;
+
+		/* Compare runtime */
+		result = this->runtime - node->runtime;
+
+		/* setup parent */
+		parent = *new;
+
+		/*
+		 *        (this)
+		 *         /  \
+		 *        /    \
+		 *  (little)   (big)
+		 *
+		 */
+		if (result < 0)
+			new = &((*new)->rb_right);
+		else if (result > 0)
+			new = &((*new)->rb_left);
+		else
+			return 0;
+	}
+
+	/* Add new node and rebalance tree */
+	rb_link_node(&node->node, parent, new);
+	rb_insert_color(&node->node, root);
+}
+
+int main()
+{
+	struct node *np, *n;
+	struct rb_node *node;
+
+	/* Insert rb_node */
+	rbtree_insert(&BiscuitOS_rb, &node0);
+	rbtree_insert(&BiscuitOS_rb, &node1);
+	rbtree_insert(&BiscuitOS_rb, &node2);
+	rbtree_insert(&BiscuitOS_rb, &node3);
+	rbtree_insert(&BiscuitOS_rb, &node5);
+	rbtree_insert(&BiscuitOS_rb, &node6);
+	rbtree_insert(&BiscuitOS_rb, &node7);
+	rbtree_insert(&BiscuitOS_rb, &node8);
+
+	printf("Iterate over RBTree.\n");
+	for (node = rb_first(&BiscuitOS_rb); node; node = rb_next(node))
+		printf("%#lx ", rb_entry(node, struct node, node)->runtime);
+	printf("\n");
+
+	printf("Iterate over by postorder.\n");
+	rbtree_postorder_for_each_entry_safe(np, n, &BiscuitOS_rb, node)
+		printf("%#lx ", np->runtime);
+	printf("\n");
+
+	return 0;
+}
 {% endhighlight %}
 
 --------------------------------------
@@ -175,19 +621,17 @@ make
 实践源码的运行很简单，可以使用如下命令，并且运行结果如下：
 
 {% highlight ruby %}
-
+rb-tree/Basic$ ./rbtree
+Iterate over RBTree.
+0x1 0x2 0x3 0x5 0x7 0x8 0x9 0x129
+Iterate over by postorder.
+0x1 0x3 0x2 0x7 0x129 0x9 0x8 0x5
 {% endhighlight %}
-
---------------------------------------
-
-#### <span id="运行分析">运行分析</span>
-
-从运行的结果可以看出，在使用先序遍历二叉树的时候，二叉树遍历结果和预期一致
 
 -----------------------------------
 # <span id="操作"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000U.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
 
 # 红黑树的操作
 
@@ -198,7 +642,8 @@ make
 > - [红黑树颜色翻转](#红黑树颜色翻转)
 >
 > - [红黑树的插入操作](#红黑树的插入操作)
-
+>
+> - [红黑树的删除操作](#红黑树的删除操作)
 
 ------------------------------------
 
@@ -395,8 +840,248 @@ make
 
 > [父节点是祖父的左孩子，引起颜色翻转](https://biscuitos.github.io/blog/Tree_RBTree_Insert_ColorFlips_left/)
 
+--------------------------------------
+<span id="红黑树在内核中的应用"></span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
+
+## 红黑树在内核中的应用
+
+> - [内核中创建一棵红黑树](#内核中创建一棵红黑树)
+>
+> - [内核中插入红黑树节点](#内核中插入红黑树节点)
+>
+> - [内核中删除红黑树节点](#内核中删除红黑树节点)
+>
+> - [内核中修改红黑树节点](#内核中修改红黑树节点)
+>
+> - [内核中查找红黑树节点](#内核中查找红黑树节点)
+>
+> - [内核中遍历红黑树](#内核中遍历红黑树)
+
+-----------------------------------
+
+#### <span id="内核中创建一棵红黑树">内核中创建一棵红黑树</span>
+
+Linux 内核提供了一套完整的红黑树结构，便于开发者在自己的程序中使用红黑树，
+Linux 使用 struct rb_root 结构定义了一棵红黑树的根节点，开发者只需定义
+一个 struct rb_root 结构就可以建立一棵红黑树。内核还提供了一些接口用于
+初始化红黑树，已经和红黑树相关的操作，如下：
+
+> [RB_ROOT: 初始化一棵红黑树](https://biscuitos.github.io/blog/Tree_RBTREE_RB_ROOT/)
+>
+> [RB_EMPTY_ROOT: 判断红黑树是否为空](https://biscuitos.github.io/blog/Tree_RBTREE_RB_EMPTY_ROOT/)
+
+-------------------------------------
+
+#### <span id="内核中插入红黑树节点">内核中插入红黑树节点</span>
+
+Linux 内核提供了一套完整的红黑树结构，便于开发者在自己的程序中使用红黑树，
+Linux 使用 struct rb_node 结构定义了一棵红黑树的根节点，并且 struct rb_node
+结构一般内嵌在更大的数据结构之中，内核虽然提供了红黑树的插入操作，但由于 rb_node
+是嵌套在其他数据结构中，所以开发者应该自行建立最外层的插入操作，如下：
+
+{% highlight ruby %}
+/* Insert private node into rbtree */
+static int rbtree_insert(struct rb_root *root, struct node *node)
+{
+	struct rb_node **new = &(root->rb_node), *parent = NULL;
+
+	/* Figure out where to put new node */
+	while (*new) {
+		struct node *this = rb_entry(*new, struct node, node);
+		int result;
+
+		/* Compare runtime */
+		result = this->runtime - node->runtime;
+
+		/* setup parent */
+		parent = *new;
+
+		/*
+		 *        (this)
+		 *         /  \
+		 *        /    \
+		 *  (little)   (big)
+		 *
+		 */
+		if (result < 0)
+			new = &((*new)->rb_right);
+		else if (result > 0)
+			new = &((*new)->rb_left);
+		else
+			return 0;
+	}
+
+	/* Add new node and rebalance tree */
+	rb_link_node(&node->node, parent, new);
+	rb_insert_color(&node->node, root);
+}
+{% endhighlight %}
+
+从 rbtree_insert() 函数的实现可以看出一些二叉树的基本原理，开发者根据某些规则
+将红黑树的节点按前序、中序、后序、或者层序的方式插入到红黑树中，此时仅仅是插入，
+但红黑树未平衡，所以接着调用内核提供的接口函数实现红黑树节点的最终插入操作，
+具体接口如下：
+
+> [rb_insert_color: 将红黑树节点插入到红黑树，并使红黑树平衡](https://biscuitos.github.io/blog/Tree_RBTREE_rb_insert_color/)
+
+-------------------------------------
+
+#### <span id="内核中删除红黑树节点">内核中删除红黑树节点</span>
+
+Linux 内核提供了一套完整的红黑树结构，便于开发者在自己的程序中使用红黑树，
+Linux 使用 struct rb_node 结构定义了一棵红黑树的根节点，并且 struct rb_node
+结构一般内嵌在更大的数据结构之中。相比插入操作，内核提供了删除操作可以
+简单的删除特定的红黑树节点，并使红黑树再次平衡，如下：
+
+> [rb_erase: 将红黑树节点从红黑树中删除，并使红黑树平衡](https://biscuitos.github.io/blog/Tree_RBTREE_rb_erase/)
+
+-------------------------------------
+
+#### <span id="内核中修改红黑树节点">内核中修改红黑树节点</span>
+
+Linux 内核提供了一套完整的红黑树结构，便于开发者在自己的程序中使用红黑树，
+Linux 使用 struct rb_node 结构定义了一棵红黑树的根节点，并且 struct rb_node
+结构一般内嵌在更大的数据结构之中。相比插入操作，内核提供了修改操作可以
+简单的修改特定的红黑树节点，但不能确保红黑树再次平衡。内核还提供了修改红黑树
+节点的内容，如下：
+
+> - [rb_replace_node: 替换红黑树中指定的节点](https://biscuitos.github.io/blog/Tree_RBTREE_rb_replace_node/)
+>
+> - [\_\_rb_chnage_child: 修改红黑树节点的孩子](https://biscuitos.github.io/blog/Tree_RBTREE___rb_change_child/)
+>
+> - [RB_CLEAR_NODE: 将节点从红黑树中移除](https://biscuitos.github.io/blog/Tree_RBTREE_RB_CLEAR_NODE/)
+>
+> - [rb_link_node: 初始化一个红黑树节点](https://biscuitos.github.io/blog/Tree_RBTREE_rb_link_node/)
+>
+> - [rb_set_parent: 修改红黑树节点的父节点](https://biscuitos.github.io/blog/Tree_RBTREE_rb_set_parent/)
+>
+> - [rb_set_parent_color: 修改红黑树节点的颜色和父节点](https://biscuitos.github.io/blog/Tree_RBTREE_rb_set_parent_color/)
+
+-------------------------------------
+
+#### <span id="内核中查找红黑树节点">内核中查找红黑树节点</span>
+
+Linux 内核提供了一套完整的红黑树结构，便于开发者在自己的程序中使用红黑树，
+Linux 使用 struct rb_node 结构定义了一棵红黑树的根节点，并且 struct rb_node
+结构一般内嵌在更大的数据结构之中。内核并未直接提供查找相关的函数，开发者只能
+更具实际情况进行编写，红黑树是标准的二叉树，可以按前序、中序、后序、或者
+层序进行节点的查找，参考如下：
+
+{% highlight ruby %}
+/* Search private node on rbtree */
+struct node *rbtree_search(struct rb_root *root, unsigned long runtime)
+{
+	struct rb_node *node = root->rb_node;
+
+	while (node) {
+		struct node *this = rb_entry(node, struct node, node);
+		int result;
+
+		result = this->runtime - runtime;
+
+		if (result > 0)
+			node = node->rb_left;
+		else if (result < 0)
+			node = node->rb_right;
+		else
+			return this;
+	}
+	return NULL;
+}
+{% endhighlight %}
+
+rbtree_search() 函数中，按着中序的方法查找执行的节点。
 
 -----------------------------------------------
+
+#### <span id="内核中遍历红黑树">内核中遍历红黑树</span>
+
+Linux 内核提供了一套完整的红黑树结构，便于开发者在自己的程序中使用红黑树，
+Linux 也提供了多个用于遍历红黑树的函数。根据红黑树的遍历可以知道有：
+前序、中序、后序、以及层序遍历的方法，具体如下：
+
+> [中序遍历红黑树](https://biscuitos.github.io/blog/Tree_RBTREE_rb_next/)
+>
+> [与中序颠倒的方式遍历红黑树](https://biscuitos.github.io/blog/Tree_RBTREE_rb_prev/)
+>
+> [后序遍历红黑树](https://biscuitos.github.io/blog/Tree_RBTREE_RB_EMPTY_ROOT/)
+
+-----------------------------------
+<span id="LIST"></span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+
+## 红黑树内核接口函数列表
+
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+>
+> []()
+
+-------------------------------------
 
 # <span id="附录">附录</span>
 
