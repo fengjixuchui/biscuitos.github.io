@@ -82,7 +82,7 @@ tags:
 >
 >   - [2-3-4 树](https://biscuitos.github.io/blog/Tree_2-3-tree/)
 >
->   - [红黑树](https://biscuitos.github.io/blog/Tree_2-3-tree/)
+>   - [红黑树](https://biscuitos.github.io/blog/Tree_RBTree/)
 >
 >     - [红黑树在内核中的应用](https://biscuitos.github.io/blog/Tree_RBTree/#AAPI)
 >
