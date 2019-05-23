@@ -1088,6 +1088,18 @@ Linux 也提供了多个用于遍历红黑树的函数。根据红黑树的遍�
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
 > [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+>
+> [从2-3树理解红黑树](https://www.jianshu.com/p/08024d26c152)
+>
+> [红黑树-基于等价2-3树分析](https://www.jianshu.com/p/04d321502ae7?utm_campaign=maleskine&utm_content=note&utm_medium=seo_notes&utm_source=recommendation)
+>
+> [红黑树 03 添加元素（二）颜色翻转 & 右旋转](https://www.jianshu.com/p/a8216c7debe9)
+>
+> [2-3树](https://www.jianshu.com/p/57a0329b2801)
+>
+> [浅谈算法和数据结构: 八 平衡查找树之2-3树](http://www.cnblogs.com/yangecnu/p/Introduce-2-3-Search-Tree.html)
+>
+> [浅谈算法和数据结构: 九 平衡查找树之红黑树](https://www.cnblogs.com/yangecnu/p/Introduce-Red-Black-Tree.html)
 
 ## 赞赏一下吧 🙂
 
