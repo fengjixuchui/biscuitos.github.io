@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "rb_color_parent_color"
+title:  "rb_set_parent_color"
 date:   2019-05-23 05:30:30 +0800
 categories: [HW]
-excerpt: RB-Tree rb_color_parent_color().
+excerpt: RB-Tree rb_set_parent_color().
 tags:
   - RBTREE
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
 
-> [Github: rb_color_parent_color](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/API/rb_color_parent_color)
+> [Github: rb_set_parent_color](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/API/rb_set_parent_color)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -214,7 +214,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_RBTREE
 +
 +config DEBUG_BISCUITOS_RBTREE
-+       bool "rb_color_parent_color"
++       bool "rb_set_parent_color"
 +
 +endif # BISCUITOS_RBTREE
 +
@@ -242,7 +242,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]rbtree
-            [*]rb_color_parent_color()
+            [*]rb_set_parent_color()
 {% endhighlight %}
 
 具体过程请参考：
