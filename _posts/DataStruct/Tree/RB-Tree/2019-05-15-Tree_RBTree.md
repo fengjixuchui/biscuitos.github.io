@@ -10,7 +10,7 @@ tags:
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
 
-> [Github: 红黑树 Red Black Tree](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/binary-tree/Class/Full_BinaryTree)
+> [Github: 红黑树 Red Black Tree](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -686,7 +686,7 @@ Iterate over by postorder.
 
 ------------------------------------
 
-###### </span id="红黑树右旋">红黑树右旋</span>
+###### <span id="红黑树右旋">红黑树右旋</span>
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT100001.gif)
 
