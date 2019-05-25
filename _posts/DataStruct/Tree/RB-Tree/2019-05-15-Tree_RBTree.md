@@ -269,7 +269,7 @@ static int rbtree_insert(struct rb_root *root, struct node *node)
 
 	/* Figure out where to put new node */
 	while (*new) {
-		struct node *this = container_of(*new, struct node, node);
+		struct node *this = rb_entry(*new, struct node, node);
 		int result;
 
 		/* Compare runtime */
@@ -286,7 +286,7 @@ static int rbtree_insert(struct rb_root *root, struct node *node)
 			return 0;
 	}
 
-	/* Add new node and rebalance tree */
+	/* Add new node and reba&node0lance tree */
 	rb_link_node(&node->node, parent, new);
 	rb_insert_color(&node->node, root);
 
@@ -299,7 +299,7 @@ struct node *rbtree_search(struct rb_root *root, unsigned long runtime)
 	struct rb_node *node = root->rb_node;
 
 	while (node) {
-		struct node *this = container_of(node, struct node, node);
+		struct node *this = rb_entry(node, struct node, node);
 		int result;
 
 		result = this->runtime - runtime;
@@ -317,7 +317,6 @@ struct node *rbtree_search(struct rb_root *root, unsigned long runtime)
 static __init int rbtree_demo_init(void)
 {
 	struct rb_node *np;
-	struct node *this;
 
 	/* Insert rb_node */
 	rbtree_insert(&BiscuitOS_rb, &node0);
@@ -334,32 +333,10 @@ static __init int rbtree_demo_init(void)
 	for (np = rb_first(&BiscuitOS_rb); np; np = rb_next(np))
 		printk("RB: %#lx\n", rb_entry(np, struct node, node)->runtime);
 
-	/* Search node by runtime */
-	this = rbtree_search(&BiscuitOS_rb, 0x5);
-	if (this) {
-		struct rb_node *parent;
-
-		/* Obtain rb_node's parent */
-		parent = rb_parent(&this->node);
-		if (parent)
-			printk("%#lx's parent is %#lx\n", this->runtime,
-				rb_entry(parent, struct node, node)->runtime);
-		else
-			printk("illegae child\n");
-
-	} else
-		printk("Invalid data on rbtree\n");
-
-	/* Erase rb_node */
-	rb_erase(&node0.node, &BiscuitOS_rb);
-	rb_erase(&node3.node, &BiscuitOS_rb);
-	rb_erase(&node4.node, &BiscuitOS_rb);
+	/* erase rb_node */
 	rb_erase(&node6.node, &BiscuitOS_rb);
-	printk("Remove: %#lx %#lx %#lx %#lx\n", node0.runtime, node3.runtime,
-				node4.runtime, node6.runtime);
 
-	printk("Iterate over all node again\n");
-	/* Traverser all node again */
+	printk("Re- Iterate over RBTree.\n");
 	for (np = rb_first(&BiscuitOS_rb); np; np = rb_next(np))
 		printk("RB: %#lx\n", rb_entry(np, struct node, node)->runtime);
 
