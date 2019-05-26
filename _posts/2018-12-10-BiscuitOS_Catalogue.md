@@ -60,11 +60,11 @@ tags:
 >
 >   - Single list
 >
->   - [Bidirect list](https://biscuitos.github.io/blog/LIST_list_head/#header)
+>   - [Bidirect list](https://biscuitos.github.io/blog/LIST/)
 >
->     - [内核核心双链表列表](https://biscuitos.github.io/blog/LIST_core_list/#LIST)
+>     - [内核核心双链表列表](https://biscuitos.github.io/blog/LIST_core_list/)
 >
->     - [内核双链表 API 列表](https://biscuitos.github.io/blog/LIST_list_head/#LISTAPI)
+>     - [内核双链表 API 列表](https://biscuitos.github.io/blog/LIST/#LISTAPI)
 >
 > - 树
 >
