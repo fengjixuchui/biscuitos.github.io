@@ -66,6 +66,8 @@ tags:
 >
 >     - [内核双链表 API 列表](https://biscuitos.github.io/blog/LIST/#LISTAPI)
 >
+>     - [内核双链表部署到应用程序](https://biscuitos.github.io/blog/Tree_LIST_UserArrange/)
+>
 > - 树
 >
 >   - [二叉树](https://biscuitos.github.io/blog/Tree_binarytree/)
