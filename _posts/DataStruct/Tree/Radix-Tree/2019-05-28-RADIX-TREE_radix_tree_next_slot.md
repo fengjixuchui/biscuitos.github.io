@@ -110,7 +110,7 @@ radix tree 中。
 也是一个内部节点，则调用 __radix_tree_next_slot() 函数获得一下层的节点；
 反之直接返回可用的节点 slot。
 
-> [radix_tree_chunk_size 源码解析]()
+> [radix_tree_chunk_size 源码解析](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_chunk_size/)
 
 --------------------------------------------------
 
