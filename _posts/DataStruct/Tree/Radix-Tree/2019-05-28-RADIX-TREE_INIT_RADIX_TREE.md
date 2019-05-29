@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "RADIX_TREE_INIT"
+title:  "INIT_RADIX_TREE"
 date:   2019-05-28 05:30:30 +0800
 categories: [HW]
-excerpt: Radix-Tree RADIX_TREE_INIT().
+excerpt: Radix-Tree INIT_RADIX_TREE().
 tags:
   - Radix-Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
 
-> [Github: RADIX_TREE_INIT](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree/API/RADIX_TREE_INIT)
+> [Github: INIT_RADIX_TREE](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree/API/INIT_RADIX_TREE)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -27,16 +27,16 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-#define RADIX_TREE_INIT(name, mask)     {                               \
-        .xa_lock = __SPIN_LOCK_UNLOCKED(name.xa_lock),                  \
-        .gfp_mask = (mask),                                             \
-        .rnode = NULL,                                                  \
-}
+#define INIT_RADIX_TREE(root, mask)                                     \
+do {                                                                    \
+        spin_lock_init(&(root)->xa_lock);                               \
+        (root)->gfp_mask = (mask);                                      \
+        (root)->rnode = NULL;                                           \
+} while (0)
 {% endhighlight %}
 
-RADIX_TREE_INIT 宏用于初始化一个 struct radix_tree_root 结构。该宏初始化
-xa_lock，设置 gfp_mask 为 mask，并设置 rnode 为空，这样这颗 radix-tree 就是
-一棵空树。
+INIT_RADIX_TREE 宏用于初始一个 struct radix_tree_root 结构。向 INIT_RADIX_TREE
+传入一个 struct radix_tree_root 的指针，并初始化其成员。
 
 --------------------------------------------------
 
@@ -106,8 +106,7 @@ struct node {
 };
 
 /* Radix-tree root */
-static struct radix_tree_root BiscuitOS_root =
-	RADIX_TREE_INIT(BiscuitOS_root, GFP_ATOMIC);
+static struct radix_tree_root BiscuitOS_root;
 
 /* node */
 static struct node node0 = { .name = "IDA", .id = 0x20000 };
@@ -120,6 +119,9 @@ static __init int radix_demo_init(void)
 {
 	struct radix_tree_iter iter;
 	void __rcu **slot;
+
+	/* Initialize radix-tree root */
+	INIT_RADIX_TREE(&BiscuitOS_root, GFP_ATOMIC);
 
 	/* Insert node into Radix-tree */
 	radix_tree_insert(&BiscuitOS_root, node0.id, &node0);
@@ -156,7 +158,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_RADIX_TREE
 +
 +config DEBUG_BISCUITOS_RADIX_TREE
-+       bool "RADIX_TREE_INIT"
++       bool "INIT_RADIX_TREE"
 +
 +endif # BISCUITOS_RADIX_TREE
 +
@@ -184,7 +186,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]radix-tree
-            [*]RADIX_TREE_INIT()
+            [*]INIT_RADIX_TREE()
 {% endhighlight %}
 
 具体过程请参考：
@@ -220,7 +222,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-初始化 struct radix_tree_root 结构。
+初始化一个 radix_tree_root 根节点。
 
 -----------------------------------------------
 

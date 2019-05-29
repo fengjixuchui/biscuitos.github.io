@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "RADIX_TREE_INIT"
+title:  "RADIX_TREE"
 date:   2019-05-28 05:30:30 +0800
 categories: [HW]
-excerpt: Radix-Tree RADIX_TREE_INIT().
+excerpt: Radix-Tree RADIX_TREE().
 tags:
   - Radix-Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
 
-> [Github: RADIX_TREE_INIT](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree/API/RADIX_TREE_INIT)
+> [Github: RADIX_TREE](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree/API/RADIX_TREE)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -27,16 +27,14 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-#define RADIX_TREE_INIT(name, mask)     {                               \
-        .xa_lock = __SPIN_LOCK_UNLOCKED(name.xa_lock),                  \
-        .gfp_mask = (mask),                                             \
-        .rnode = NULL,                                                  \
-}
+#define RADIX_TREE(name, mask) \
+        struct radix_tree_root name = RADIX_TREE_INIT(name, mask)
 {% endhighlight %}
 
-RADIX_TREE_INIT 宏用于初始化一个 struct radix_tree_root 结构。该宏初始化
-xa_lock，设置 gfp_mask 为 mask，并设置 rnode 为空，这样这颗 radix-tree 就是
-一棵空树。
+RADIX_TREE 宏用于定义并初始化一个 struct radix_tree_root 结构。其定义一个
+radix_tree_root 之后，调用 RADIX_TREE_INIT 宏进行初始化。
+
+> [RADIX_TREE_INIT 源码分析](https://biscuitos.github.io/blog/RADIX-TREE_RADIX_TREE_INIT/)
 
 --------------------------------------------------
 
@@ -106,8 +104,7 @@ struct node {
 };
 
 /* Radix-tree root */
-static struct radix_tree_root BiscuitOS_root =
-	RADIX_TREE_INIT(BiscuitOS_root, GFP_ATOMIC);
+RADIX_TREE(BiscuitOS_root, GFP_ATOMIC);
 
 /* node */
 static struct node node0 = { .name = "IDA", .id = 0x20000 };
@@ -156,7 +153,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_RADIX_TREE
 +
 +config DEBUG_BISCUITOS_RADIX_TREE
-+       bool "RADIX_TREE_INIT"
++       bool "RADIX_TREE"
 +
 +endif # BISCUITOS_RADIX_TREE
 +
@@ -184,7 +181,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]radix-tree
-            [*]RADIX_TREE_INIT()
+            [*]RADIX_TREE()
 {% endhighlight %}
 
 具体过程请参考：
@@ -220,7 +217,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-初始化 struct radix_tree_root 结构。
+声明并初始哈 struct radix_tree_root 结构。
 
 -----------------------------------------------
 

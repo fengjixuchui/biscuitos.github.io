@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "RADIX_TREE_INIT"
-date:   2019-05-28 05:30:30 +0800
+title:  "radix_tree_iter_init"
+date:   2019-05-29 05:30:30 +0800
 categories: [HW]
-excerpt: Radix-Tree RADIX_TREE_INIT().
+excerpt: Radix-Tree radix_tree_iter_init().
 tags:
   - Radix-Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
 
-> [Github: RADIX_TREE_INIT](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree/API/RADIX_TREE_INIT)
+> [Github: radix_tree_iter_init](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree/API/radix_tree_iter_init)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -27,16 +27,34 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-#define RADIX_TREE_INIT(name, mask)     {                               \
-        .xa_lock = __SPIN_LOCK_UNLOCKED(name.xa_lock),                  \
-        .gfp_mask = (mask),                                             \
-        .rnode = NULL,                                                  \
+/**
+ * radix_tree_iter_init - initialize radix tree iterator
+ *
+ * @iter:       pointer to iterator state
+ * @start:      iteration starting index
+ * Returns:     NULL
+ */
+static __always_inline void __rcu **
+radix_tree_iter_init(struct radix_tree_iter *iter, unsigned long start)
+{
+        /*
+         * Leave iter->tags uninitialized. radix_tree_next_chunk() will fill it
+         * in the case of a successful tagged chunk lookup.  If the lookup was
+         * unsuccessful or non-tagged then nobody cares about ->tags.
+         *
+         * Set index to zero to bypass next_index overflow protection.
+         * See the comment in radix_tree_next_chunk() for details.
+         */
+        iter->index = 0;
+        iter->next_index = start;
+        return NULL;
 }
 {% endhighlight %}
 
-RADIX_TREE_INIT 宏用于初始化一个 struct radix_tree_root 结构。该宏初始化
-xa_lock，设置 gfp_mask 为 mask，并设置 rnode 为空，这样这颗 radix-tree 就是
-一棵空树。
+radix_tree_iter_init() 函数用于初始化一个 struct radix_tree_iter 结构。struct
+radix_tree_iter 结构用于遍历 radix_tree 的时候，存储每一个 slot。函数直接将
+iter 的 index 成员设置为 0， next_index 成员用于指向下一个 slot 的索引值，最后
+返回 NULL。
 
 --------------------------------------------------
 
@@ -106,8 +124,7 @@ struct node {
 };
 
 /* Radix-tree root */
-static struct radix_tree_root BiscuitOS_root =
-	RADIX_TREE_INIT(BiscuitOS_root, GFP_ATOMIC);
+static struct radix_tree_root BiscuitOS_root;
 
 /* node */
 static struct node node0 = { .name = "IDA", .id = 0x20000 };
@@ -121,12 +138,17 @@ static __init int radix_demo_init(void)
 	struct radix_tree_iter iter;
 	void __rcu **slot;
 
+	/* Initialize radix-tree root */
+	INIT_RADIX_TREE(&BiscuitOS_root, GFP_ATOMIC);
+
 	/* Insert node into Radix-tree */
 	radix_tree_insert(&BiscuitOS_root, node0.id, &node0);
 	radix_tree_insert(&BiscuitOS_root, node1.id, &node1);
 	radix_tree_insert(&BiscuitOS_root, node2.id, &node2);
 	radix_tree_insert(&BiscuitOS_root, node3.id, &node3);
 	radix_tree_insert(&BiscuitOS_root, node4.id, &node4);
+
+	radix_tree_iter_init(&iter, 0);
 
 	/* Iterate over radix tree slot */
 	radix_tree_for_each_slot(slot, &BiscuitOS_root, &iter, 0)
@@ -156,7 +178,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_RADIX_TREE
 +
 +config DEBUG_BISCUITOS_RADIX_TREE
-+       bool "RADIX_TREE_INIT"
++       bool "radix_tree_iter_init"
 +
 +endif # BISCUITOS_RADIX_TREE
 +
@@ -184,7 +206,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]radix-tree
-            [*]RADIX_TREE_INIT()
+            [*]radix_tree_iter_init()
 {% endhighlight %}
 
 具体过程请参考：
@@ -220,7 +242,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-初始化 struct radix_tree_root 结构。
+radix_tree 的迭代器 struct  radix_tree_iter 
 
 -----------------------------------------------
 

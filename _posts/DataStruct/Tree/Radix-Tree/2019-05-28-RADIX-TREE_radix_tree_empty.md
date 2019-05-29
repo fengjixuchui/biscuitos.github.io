@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "RADIX_TREE_INIT"
+title:  "radix_tree_empty"
 date:   2019-05-28 05:30:30 +0800
 categories: [HW]
-excerpt: Radix-Tree RADIX_TREE_INIT().
+excerpt: Radix-Tree radix_tree_empty().
 tags:
   - Radix-Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
 
-> [Github: RADIX_TREE_INIT](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree/API/RADIX_TREE_INIT)
+> [Github: radix_tree_empty](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree/API/radix_tree_empty)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -27,16 +27,15 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight ruby %}
-#define RADIX_TREE_INIT(name, mask)     {                               \
-        .xa_lock = __SPIN_LOCK_UNLOCKED(name.xa_lock),                  \
-        .gfp_mask = (mask),                                             \
-        .rnode = NULL,                                                  \
+static inline bool radix_tree_empty(const struct radix_tree_root *root)
+{
+        return root->rnode == NULL;
 }
 {% endhighlight %}
 
-RADIX_TREE_INIT 宏用于初始化一个 struct radix_tree_root 结构。该宏初始化
-xa_lock，设置 gfp_mask 为 mask，并设置 rnode 为空，这样这颗 radix-tree 就是
-一棵空树。
+radix_tree_empty() 函数用于检查一棵 radix tree 是否为空树。函数通过判断
+struct radix_tree_root 的 rnode 成员是否 NULL，如果是，则 radix tree 为
+空；反之不空。
 
 --------------------------------------------------
 
@@ -106,8 +105,7 @@ struct node {
 };
 
 /* Radix-tree root */
-static struct radix_tree_root BiscuitOS_root =
-	RADIX_TREE_INIT(BiscuitOS_root, GFP_ATOMIC);
+static struct radix_tree_root BiscuitOS_root;
 
 /* node */
 static struct node node0 = { .name = "IDA", .id = 0x20000 };
@@ -120,6 +118,12 @@ static __init int radix_demo_init(void)
 {
 	struct radix_tree_iter iter;
 	void __rcu **slot;
+
+	/* Initialize radix-tree root */
+	INIT_RADIX_TREE(&BiscuitOS_root, GFP_ATOMIC);
+
+	if (radix_tree_empty(&BiscuitOS_root))
+		printk("Radix-tree is empty!\n");
 
 	/* Insert node into Radix-tree */
 	radix_tree_insert(&BiscuitOS_root, node0.id, &node0);
@@ -156,7 +160,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_RADIX_TREE
 +
 +config DEBUG_BISCUITOS_RADIX_TREE
-+       bool "RADIX_TREE_INIT"
++       bool "radix_tree_empty"
 +
 +endif # BISCUITOS_RADIX_TREE
 +
@@ -184,7 +188,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]radix-tree
-            [*]RADIX_TREE_INIT()
+            [*]radix_tree_empty()
 {% endhighlight %}
 
 具体过程请参考：
@@ -208,6 +212,7 @@ Device Driver--->
 {% highlight ruby %}
 usbcore: registered new interface driver usbhid
 usbhid: USB HID core driver
+Radix-tree is empty!
 Radix-Tree: 20000
 Radix-Tree: 30000
 Radix-Tree: 60000
@@ -220,7 +225,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-初始化 struct radix_tree_root 结构。
+判断一棵 radix tree 是否为空。
 
 -----------------------------------------------
 
