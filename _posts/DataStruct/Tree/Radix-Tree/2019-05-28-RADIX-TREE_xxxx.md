@@ -34,19 +34,51 @@ tags:
 
 > - [all_tag_set](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#all_tag_set)
 >
+> - [delete_node](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#delete_node)
+>
 > - [entry_to_node](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#entry_to_node)
+>
+> - [insert_entries](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#insert_entries)
 >
 > - [is_idr](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#is_idr)
 >
 > - [node_maxindex](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#node_maxindex)
 >
+> - [\_\_radix_tree_create](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#___radix_tree_create)
+>
+> - [\_\_radix_tree_delete](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#___radix_tree_delete)
+>
+> - [radix_tree_delete](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_delete/)
+>
+> - [radix_tree_delete_item](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_delete_item/)
+>
+> - [radix_tree_descend](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_descend)
+>
+> - [radix_tree_extend](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_extend)
+>
 > - [radix_tree_exceptional_entry](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_exceptional_entry/)
+>
+> - [\_\_radix_tree_insert](https://biscuitos.github.io/blog/RADIX-TREE___radix_tree_insert/)
+>
+> - [radix_tree_insert](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_insert/)
 >
 > - [radix_tree_is_internal_node](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_is_internal_node/)
 >
 > - [radix_tree_load_root](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_load_root)
 >
+> - [\_\_radix_tree_lookup](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#___radix_tree_lookup)
+>
+> - [radix_tree_lookup](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_lookup/)
+>
 > - [radix_tree_node_alloc](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_node_alloc)
+>
+> - [radix_tree_node_free](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_node_free)
+>
+> - [radix_tree_node_rcu_free](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_node_rcu_free)
+>
+> - [radix_tree_shrink](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_shrink)
+>
+> - [replace_slot](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#replace_slot)
 >
 > - [root_tag_clear](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#root_tag_clear)
 >
