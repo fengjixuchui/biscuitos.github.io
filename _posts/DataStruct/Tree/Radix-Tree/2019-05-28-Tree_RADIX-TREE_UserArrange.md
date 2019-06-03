@@ -182,7 +182,7 @@ int main()
 
 > [Data Structure Visualizations](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
 >
-> [Red Black Tress](https://biscuitos.github.io/blog/Tree_RBTree/)
+> [Radix Tree](https://biscuitos.github.io/blog/RADIX-TREE/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
