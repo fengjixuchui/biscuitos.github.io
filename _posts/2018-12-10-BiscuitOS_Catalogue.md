@@ -92,7 +92,7 @@ tags:
 >
 >     - [红黑树内核接口函数列表](https://biscuitos.github.io/blog/Tree_RBTree/#LIST)
 >
->   - [Radix Tree 基数树](https://biscuitos.github.io/blog/Tree_RBTree/)
+>   - [Radix Tree 基数树](https://biscuitos.github.io/blog/RADIX-TREE/)
 >
 >     - [Radix Tree 在内核中的应用](https://biscuitos.github.io/blog/RADIX-TREE/#CS01)
 >
