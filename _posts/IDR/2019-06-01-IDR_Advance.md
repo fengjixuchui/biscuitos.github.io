@@ -42,7 +42,7 @@ IDR 机制
 
 > [Data Structure Visualizations](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
 >
-> [IDR](https://biscuitos.github.io/blog/RADIX-TREE/)
+> [IDR](https://biscuitos.github.io/blog/IDR/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >

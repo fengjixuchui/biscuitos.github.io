@@ -100,6 +100,14 @@ tags:
 >
 >     - [Radix Tree 内核接口函数列表](https://biscuitos.github.io/blog/RADIX-TREE/#LIST)
 >
+> - [IDR: ID Radix](https://biscuitos.github.io/blog/IDR/)
+>
+>   - [IDR 在内核中的应用](https://biscuitos.github.io/blog/IDR/#CS01)
+>
+>   - [IDR 在应用程序的部署](https://biscuitos.github.io/blog/IDR_UserArrange/)
+>
+>   - [IDR 内核接口函数列表](https://biscuitos.github.io/blog/IDR/#LIST)
+>
 > - 锁/同步
 >
 >   - [atomic 原子操作](https://biscuitos.github.io/blog/ATOMIC/)
