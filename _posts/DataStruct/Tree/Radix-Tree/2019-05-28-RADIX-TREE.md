@@ -738,6 +738,8 @@ struct radix_tree_iter 数据结构用于存储每次遍历的数据，每次遍
 >
 > - [radix_tree_extend](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_extend)
 >
+> - [radix_tree_empty](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_empty/)
+>
 > - [radix_tree_exceptional_entry](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_exceptional_entry/)
 >
 > - [radix_tree_find_next_bit](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_find_next_bit)
@@ -747,6 +749,8 @@ struct radix_tree_iter 数据结构用于存储每次遍历的数据，每次遍
 > - [RADIX_TREE_INIT](https://biscuitos.github.io/blog/RADIX-TREE_RADIX_TREE_INIT/)
 >
 > - [radix_tree_iter_tag_clear](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_iter_tag_clear)
+>
+> - [radix_tree_iter_find](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_iter_find)
 >
 > - [radix_tree_iter_init](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_iter_init/)
 >

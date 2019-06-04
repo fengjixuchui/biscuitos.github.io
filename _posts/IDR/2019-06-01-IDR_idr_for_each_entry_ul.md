@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "IDR_INIT_BASE"
+title:  "idr_for_each_entry_ul"
 date:   2019-06-01 05:30:30 +0800
 categories: [HW]
-excerpt: IDR IDR_INIT_BASE().
+excerpt: IDR idr_for_each_entry_ul().
 tags:
   - Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
 
-> [Github: IDR_INIT_BASE](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/IDR/API/IDR_INIT_BASE)
+> [Github: idr_for_each_entry_ul](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/IDR/API/idr_for_each_entry_ul)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -27,26 +27,26 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight bash %}
-/*
- * The IDR API does not expose the tagging functionality of the radix tree
- * to users.  Use tag 0 to track whether a node has free space below it.
+/**
+ * idr_for_each_entry_ul() - Iterate over an IDR's elements of a given type.
+ * @idr: IDR handle.
+ * @entry: The type * to use as cursor.
+ * @id: Entry ID.
+ *
+ * @entry and @id do not need to be initialized before the loop, and
+ * after normal termination @entry is left with the value NULL.  This
+ * is convenient for a "not found" value.
  */
-#define IDR_FREE        0
-
-/* Set the IDR flag and the IDR_FREE tag */
-#define IDR_RT_MARKER   (ROOT_IS_IDR | (__force gfp_t)                  \
-                                        (1 << (ROOT_TAG_SHIFT + IDR_FREE)))
-
-#define IDR_INIT_BASE(name, base) {                                     \
-        .idr_rt = RADIX_TREE_INIT(name, IDR_RT_MARKER),                 \
-        .idr_base = (base),                                             \
-        .idr_next = 0,                                                  \
-}
+#define idr_for_each_entry_ul(idr, entry, id)                   \
+        for (id = 0; ((entry) = idr_get_next_ul(idr, &(id))) != NULL; ++id)
 {% endhighlight %}
 
-IDR_INIT_BASE 宏用于初始化 IDR。调用 RADIX_TREE_INIT 宏初始化 struct idr 中的 idr_rt， 并且将 radix-tree 标记为 IDR_RT_MARKER, IDR_RT_MARKER 首先 设置 radix-tree 的 gfp_mask 为 ROOT_IS_IDR，以此将 radix-tree 作为 IDR 使用。然后设置 radix-tree 的 tag 域的 IDR_FREE。以此告诉内核该 radix-tree 不能给其他功能使用，标记 IDR_FREE 之后，以便跟踪一个 radix-tree 的一个节点 是否有空闲的空间。IDR_INIT_BASE 宏继续将 idr_base 设置为 base，以此 ID 的 分配从 base 开始，idr_next 设置为 0.
+idr_for_each_entry_ul() 函数用于遍历 IDR 中所有与 ID 绑定的指针。idr 参数指向
+IDR 根节点；参数 entry 指向私有数据指针；参数 id 指向与之绑定的 ID。函数从
+id 0 开始遍历，通过 idr_get_next_ul() 函数获得下一个绑定的节点，遍历直到
+找不到下一个节点为止。
 
-> - [INIT_RADIX_TREE](https://biscuitos.github.io/blog/RADIX-TREE_INIT_RADIX_TREE/)
+> - [idr_get_next_ul](https://biscuitos.github.io/blog/IDR_idr_get_next_ul/)
 
 --------------------------------------------------
 
@@ -90,7 +90,7 @@ struct node {
 };
 
 /* Root of IDR */
-static struct idr BiscuitOS_idr = IDR_INIT_BASE(BiscuitOS_idr, 0);
+static DEFINE_IDR(BiscuitOS_idr);
 
 /* node set */
 static struct node node0 = { .name = "IDA" };
@@ -106,7 +106,7 @@ static int idr_array[IDR_ARRAY_SIZE];
 static __init int idr_demo_init(void)
 {
 	struct node *np;
-	int id;
+	unsigned long id;
 
 	/* proload for idr_alloc */
 	idr_preload(GFP_KERNEL);
@@ -124,8 +124,8 @@ static __init int idr_demo_init(void)
 							INT_MAX, GFP_ATOMIC);
 
 	/* Interate over all slots */
-	idr_for_each_entry(&BiscuitOS_idr, np, id)
-		printk("%s's ID %d\n", np->name, id);
+	idr_for_each_entry_ul(&BiscuitOS_idr, np, id)
+		printk("%s's ID %ld\n", np->name, id);
 
 	/* end preload section started with idr_preload() */
 	idr_preload_end();
@@ -154,7 +154,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_IDR
 +
 +config DEBUG_BISCUITOS_IDR
-+       bool "IDR_INIT_BASE"
++       bool "idr_for_each_entry_ul"
 +
 +endif # BISCUITOS_IDR
 +
@@ -182,7 +182,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]IDR
-            [*]IDR_INIT_BASE()
+            [*]idr_for_each_entry_ul()
 {% endhighlight %}
 
 具体过程请参考：
@@ -218,7 +218,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-初始化一个 IDR。
+遍历 IDR 中所有与 ID 绑定的指针。
 
 -----------------------------------------------
 

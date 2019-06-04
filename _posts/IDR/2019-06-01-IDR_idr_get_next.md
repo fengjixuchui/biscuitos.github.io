@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "IDR_INIT_BASE"
+title:  "idr_get_next"
 date:   2019-06-01 05:30:30 +0800
 categories: [HW]
-excerpt: IDR IDR_INIT_BASE().
+excerpt: IDR idr_get_next().
 tags:
   - Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
 
-> [Github: IDR_INIT_BASE](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/IDR/API/IDR_INIT_BASE)
+> [Github: idr_get_next](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/IDR/API/idr_get_next)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -27,26 +27,44 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight bash %}
-/*
- * The IDR API does not expose the tagging functionality of the radix tree
- * to users.  Use tag 0 to track whether a node has free space below it.
+/**
+ * idr_get_next() - Find next populated entry.
+ * @idr: IDR handle.
+ * @nextid: Pointer to an ID.
+ *
+ * Returns the next populated entry in the tree with an ID greater than
+ * or equal to the value pointed to by @nextid.  On exit, @nextid is updated
+ * to the ID of the found value.  To use in a loop, the value pointed to by
+ * nextid must be incremented by the user.
  */
-#define IDR_FREE        0
+void *idr_get_next(struct idr *idr, int *nextid)
+{
+        struct radix_tree_iter iter;
+        void __rcu **slot;
+        unsigned long base = idr->idr_base;
+        unsigned long id = *nextid;
 
-/* Set the IDR flag and the IDR_FREE tag */
-#define IDR_RT_MARKER   (ROOT_IS_IDR | (__force gfp_t)                  \
-                                        (1 << (ROOT_TAG_SHIFT + IDR_FREE)))
+        id = (id < base) ? 0 : id - base;
+        slot = radix_tree_iter_find(&idr->idr_rt, &iter, id);
+        if (!slot)
+                return NULL;
+        id = iter.index + base;
 
-#define IDR_INIT_BASE(name, base) {                                     \
-        .idr_rt = RADIX_TREE_INIT(name, IDR_RT_MARKER),                 \
-        .idr_base = (base),                                             \
-        .idr_next = 0,                                                  \
+        if (WARN_ON_ONCE(id > INT_MAX))
+                return NULL;
+
+        *nextid = id;
+        return rcu_dereference_raw(*slot);
 }
+EXPORT_SYMBOL(idr_get_next);
 {% endhighlight %}
 
-IDR_INIT_BASE 宏用于初始化 IDR。调用 RADIX_TREE_INIT 宏初始化 struct idr 中的 idr_rt， 并且将 radix-tree 标记为 IDR_RT_MARKER, IDR_RT_MARKER 首先 设置 radix-tree 的 gfp_mask 为 ROOT_IS_IDR，以此将 radix-tree 作为 IDR 使用。然后设置 radix-tree 的 tag 域的 IDR_FREE。以此告诉内核该 radix-tree 不能给其他功能使用，标记 IDR_FREE 之后，以便跟踪一个 radix-tree 的一个节点 是否有空闲的空间。IDR_INIT_BASE 宏继续将 idr_base 设置为 base，以此 ID 的 分配从 base 开始，idr_next 设置为 0.
+idr_get_next() 函数用于获得下一个 ID 绑定的入口地址。参数 idr 指向 IDR 的根；
+参数 nextid 指向下一个可用的 ID。函数通过调用 radix_tree_iter_find() 函数
+找到 id 对应的下一个可用父节点，之后跟新 id 的值指向 iter.index + base.
+接着将 id 存储到 nextid 里，最后返回 *slot 的值。
 
-> - [INIT_RADIX_TREE](https://biscuitos.github.io/blog/RADIX-TREE_INIT_RADIX_TREE/)
+> - [radix_tree_iter_find](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_iter_find)
 
 --------------------------------------------------
 
@@ -90,7 +108,7 @@ struct node {
 };
 
 /* Root of IDR */
-static struct idr BiscuitOS_idr = IDR_INIT_BASE(BiscuitOS_idr, 0);
+static DEFINE_IDR(BiscuitOS_idr);
 
 /* node set */
 static struct node node0 = { .name = "IDA" };
@@ -127,6 +145,9 @@ static __init int idr_demo_init(void)
 	idr_for_each_entry(&BiscuitOS_idr, np, id)
 		printk("%s's ID %d\n", np->name, id);
 
+	idr_get_next(&BiscuitOS_idr, &id);
+	printk("Next ID: %d\n", id);
+
 	/* end preload section started with idr_preload() */
 	idr_preload_end();
 
@@ -154,7 +175,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_IDR
 +
 +config DEBUG_BISCUITOS_IDR
-+       bool "IDR_INIT_BASE"
++       bool "idr_get_next"
 +
 +endif # BISCUITOS_IDR
 +
@@ -182,7 +203,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]IDR
-            [*]IDR_INIT_BASE()
+            [*]idr_get_next()
 {% endhighlight %}
 
 具体过程请参考：
@@ -211,6 +232,7 @@ IDB's ID 2
 IDC's ID 3
 IDD's ID 4
 IDE's ID 5
+Next ID: 6
 aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 aaci-pl041 10004000.aaci: FIFO 512 entries
 oprofile: using arm/armv7-ca9
@@ -218,7 +240,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-初始化一个 IDR。
+获得下一个绑定的 ID。
 
 -----------------------------------------------
 

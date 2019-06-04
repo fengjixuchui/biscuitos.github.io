@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "IDR_INIT_BASE"
+title:  "idr_is_empty"
 date:   2019-06-01 05:30:30 +0800
 categories: [HW]
-excerpt: IDR IDR_INIT_BASE().
+excerpt: IDR idr_is_empty().
 tags:
   - Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
 
-> [Github: IDR_INIT_BASE](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/IDR/API/IDR_INIT_BASE)
+> [Github: idr_is_empty](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/IDR/API/idr_is_empty)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -27,26 +27,26 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight bash %}
-/*
- * The IDR API does not expose the tagging functionality of the radix tree
- * to users.  Use tag 0 to track whether a node has free space below it.
+/**
+ * idr_is_empty() - Are there any IDs allocated?
+ * @idr: IDR handle.
+ *
+ * Return: %true if any IDs have been allocated from this IDR.
  */
-#define IDR_FREE        0
-
-/* Set the IDR flag and the IDR_FREE tag */
-#define IDR_RT_MARKER   (ROOT_IS_IDR | (__force gfp_t)                  \
-                                        (1 << (ROOT_TAG_SHIFT + IDR_FREE)))
-
-#define IDR_INIT_BASE(name, base) {                                     \
-        .idr_rt = RADIX_TREE_INIT(name, IDR_RT_MARKER),                 \
-        .idr_base = (base),                                             \
-        .idr_next = 0,                                                  \
+static inline bool idr_is_empty(const struct idr *idr)
+{
+        return radix_tree_empty(&idr->idr_rt) &&
+                radix_tree_tagged(&idr->idr_rt, IDR_FREE);
 }
 {% endhighlight %}
 
-IDR_INIT_BASE 宏用于初始化 IDR。调用 RADIX_TREE_INIT 宏初始化 struct idr 中的 idr_rt， 并且将 radix-tree 标记为 IDR_RT_MARKER, IDR_RT_MARKER 首先 设置 radix-tree 的 gfp_mask 为 ROOT_IS_IDR，以此将 radix-tree 作为 IDR 使用。然后设置 radix-tree 的 tag 域的 IDR_FREE。以此告诉内核该 radix-tree 不能给其他功能使用，标记 IDR_FREE 之后，以便跟踪一个 radix-tree 的一个节点 是否有空闲的空间。IDR_INIT_BASE 宏继续将 idr_base 设置为 base，以此 ID 的 分配从 base 开始，idr_next 设置为 0.
+idr_is_empty() 函数用于判断 IDR 是否为空，如果为空，则返回 true；反之返回 false。
+函数通过 radix_tree_empty() 判断 IDR 的 radix-tree 是否为空，并且调用
+radix_tree_tagged() 函数判断 IDR 是否标记为 IDR_FREE。
 
-> - [INIT_RADIX_TREE](https://biscuitos.github.io/blog/RADIX-TREE_INIT_RADIX_TREE/)
+> - [radix_tree_empty](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_empty/)
+>
+> - [radix_tree_tagged](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_tagged)
 
 --------------------------------------------------
 
@@ -90,7 +90,7 @@ struct node {
 };
 
 /* Root of IDR */
-static struct idr BiscuitOS_idr = IDR_INIT_BASE(BiscuitOS_idr, 0);
+static DEFINE_IDR(BiscuitOS_idr);
 
 /* node set */
 static struct node node0 = { .name = "IDA" };
@@ -110,6 +110,9 @@ static __init int idr_demo_init(void)
 
 	/* proload for idr_alloc */
 	idr_preload(GFP_KERNEL);
+
+	if (idr_is_empty(&BiscuitOS_idr))
+		printk("IDR is empty.\n");
 
 	/* Allocate a id from IDR */
 	idr_array[0] = idr_alloc_cyclic(&BiscuitOS_idr, &node0, 1,
@@ -154,7 +157,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_IDR
 +
 +config DEBUG_BISCUITOS_IDR
-+       bool "IDR_INIT_BASE"
++       bool "idr_is_empty"
 +
 +endif # BISCUITOS_IDR
 +
@@ -182,7 +185,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]IDR
-            [*]IDR_INIT_BASE()
+            [*]idr_is_empty()
 {% endhighlight %}
 
 具体过程请参考：
@@ -206,6 +209,7 @@ Device Driver--->
 {% highlight bash %}
 usbcore: registered new interface driver usbhid
 usbhid: USB HID core driver
+IDR is empty.
 IDA's ID 1
 IDB's ID 2
 IDC's ID 3
@@ -218,7 +222,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-初始化一个 IDR。
+检查 IDR 是否为空的。
 
 -----------------------------------------------
 

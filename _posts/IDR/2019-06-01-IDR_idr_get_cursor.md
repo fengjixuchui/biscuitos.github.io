@@ -1,16 +1,16 @@
 ---
 layout: post
-title:  "IDR_INIT_BASE"
+title:  "idr_get_cursor"
 date:   2019-06-01 05:30:30 +0800
 categories: [HW]
-excerpt: IDR IDR_INIT_BASE().
+excerpt: IDR idr_get_cursor().
 tags:
   - Tree
 ---
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
 
-> [Github: IDR_INIT_BASE](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/IDR/API/IDR_INIT_BASE)
+> [Github: idr_get_cursor](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/IDR/API/idr_get_cursor)
 >
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -27,26 +27,22 @@ tags:
 # <span id="源码分析">源码分析</span>
 
 {% highlight bash %}
-/*
- * The IDR API does not expose the tagging functionality of the radix tree
- * to users.  Use tag 0 to track whether a node has free space below it.
+/**
+ * idr_get_cursor - Return the current position of the cyclic allocator
+ * @idr: idr handle
+ *
+ * The value returned is the value that will be next returned from
+ * idr_alloc_cyclic() if it is free (otherwise the search will start from
+ * this position).
  */
-#define IDR_FREE        0
-
-/* Set the IDR flag and the IDR_FREE tag */
-#define IDR_RT_MARKER   (ROOT_IS_IDR | (__force gfp_t)                  \
-                                        (1 << (ROOT_TAG_SHIFT + IDR_FREE)))
-
-#define IDR_INIT_BASE(name, base) {                                     \
-        .idr_rt = RADIX_TREE_INIT(name, IDR_RT_MARKER),                 \
-        .idr_base = (base),                                             \
-        .idr_next = 0,                                                  \
+static inline unsigned int idr_get_cursor(const struct idr *idr)
+{
+        return READ_ONCE(idr->idr_next);
 }
 {% endhighlight %}
 
-IDR_INIT_BASE 宏用于初始化 IDR。调用 RADIX_TREE_INIT 宏初始化 struct idr 中的 idr_rt， 并且将 radix-tree 标记为 IDR_RT_MARKER, IDR_RT_MARKER 首先 设置 radix-tree 的 gfp_mask 为 ROOT_IS_IDR，以此将 radix-tree 作为 IDR 使用。然后设置 radix-tree 的 tag 域的 IDR_FREE。以此告诉内核该 radix-tree 不能给其他功能使用，标记 IDR_FREE 之后，以便跟踪一个 radix-tree 的一个节点 是否有空闲的空间。IDR_INIT_BASE 宏继续将 idr_base 设置为 base，以此 ID 的 分配从 base 开始，idr_next 设置为 0.
-
-> - [INIT_RADIX_TREE](https://biscuitos.github.io/blog/RADIX-TREE_INIT_RADIX_TREE/)
+idr_get_cursor() 函数用于获得当前 IDR 分配 ID 的位置，也称为 IDR 的光标。
+函数直接返回内存中 idr->idr_next 的值。该值存储着 IDR 目前分配到的位置。
 
 --------------------------------------------------
 
@@ -90,7 +86,7 @@ struct node {
 };
 
 /* Root of IDR */
-static struct idr BiscuitOS_idr = IDR_INIT_BASE(BiscuitOS_idr, 0);
+static DEFINE_IDR(BiscuitOS_idr);
 
 /* node set */
 static struct node node0 = { .name = "IDA" };
@@ -127,6 +123,8 @@ static __init int idr_demo_init(void)
 	idr_for_each_entry(&BiscuitOS_idr, np, id)
 		printk("%s's ID %d\n", np->name, id);
 
+	printk("Current position: %d\n", idr_get_cursor(&BiscuitOS_idr));
+
 	/* end preload section started with idr_preload() */
 	idr_preload_end();
 
@@ -154,7 +152,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_IDR
 +
 +config DEBUG_BISCUITOS_IDR
-+       bool "IDR_INIT_BASE"
++       bool "idr_get_cursor"
 +
 +endif # BISCUITOS_IDR
 +
@@ -182,7 +180,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]IDR
-            [*]IDR_INIT_BASE()
+            [*]idr_get_cursor()
 {% endhighlight %}
 
 具体过程请参考：
@@ -211,6 +209,7 @@ IDB's ID 2
 IDC's ID 3
 IDD's ID 4
 IDE's ID 5
+Current position: 6
 aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 aaci-pl041 10004000.aaci: FIFO 512 entries
 oprofile: using arm/armv7-ca9
@@ -218,7 +217,7 @@ oprofile: using arm/armv7-ca9
 
 #### <span id="驱动分析">驱动分析</span>
 
-初始化一个 IDR。
+获得 IDR 当前光标
 
 -----------------------------------------------
 

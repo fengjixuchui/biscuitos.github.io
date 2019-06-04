@@ -1160,6 +1160,39 @@ void radix_tree_iter_tag_clear(struct radix_tree_root *root,
 radix_tree_iter_tag_clear() 函数用于清除节点指定的 tag。函数直接调用
 node_tag_clear() 函数去清除特定的 tag。
 
+--------------------------------------------------
+
+#### <span id="radix_tree_iter_find">radix_tree_iter_find</span>
+
+{% highlight bash %}
+/**
+ * radix_tree_iter_find - find a present entry
+ * @root: radix tree root
+ * @iter: iterator state
+ * @index: start location
+ *
+ * This function returns the slot containing the entry with the lowest index
+ * which is at least @index.  If @index is larger than any present entry, this
+ * function returns NULL.  The @iter is updated to describe the entry found.
+ */
+static inline void __rcu **
+radix_tree_iter_find(const struct radix_tree_root *root,
+                        struct radix_tree_iter *iter, unsigned long index)
+{
+        radix_tree_iter_init(iter, index);
+        return radix_tree_next_chunk(root, iter, 0);
+}
+{% endhighlight %}
+
+radix_tree_iter_find() 用于查找可以插入 slot 的父节点。参数 root 指向 radix-tree
+的根节点；参数 iter 指向 radix_tree_iter 结构；参数 index 指向索引。函数首先
+调用 radix_tree_iter_init() 函数初始化 iter 结构，然后调用
+radix_tree_next_chunk() 函数获得下一个 chunk 的节点，也就是可用 slot 的父节点。
+
+> - [radix_tree_iter_init](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_iter_init/)
+>
+> - [radix_tree_next_chunk](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_next_chunk/)
+
 -----------------------------------------------
 
 # <span id="附录">附录</span>
