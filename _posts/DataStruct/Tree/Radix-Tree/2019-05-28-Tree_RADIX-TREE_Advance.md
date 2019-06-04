@@ -17,6 +17,8 @@ tags:
 
 > - [Radix-Tree 应用场景](#Radix-Tree 应用场景)
 >
+>  - [IDR 机制](https://biscuitos.github.io/blog/IDR/)
+>
 > - [内核中 Radix-Tree 应用分析](#内核中 Radix-Tree 应用分析)
 >
 > - [附录](#附录)
@@ -28,14 +30,16 @@ tags:
 
 ## Radix-Tree 应用场景
 
-IDR 机制
+> - [IDR 机制](https://biscuitos.github.io/blog/IDR/)
 
 -----------------------------------
 <span id="内核中Radix-Tree 应用分析"></span>
 
 ![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000E.jpg)
 
-## 内核中Radix-Tree 应用分析
+## 内核中 Radix-Tree 应用分析
+
+
 
 -----------------------------------------------
 
