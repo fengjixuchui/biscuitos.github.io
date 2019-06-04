@@ -992,11 +992,173 @@ delete_node() 函数从 radix tree 内删除 node 节点。
 
 --------------------------------------------------
 
-#### <span id=""></span>
+#### <span id="radix_tree_tagged">radix_tree_tagged</span>
 
 {% highlight bash %}
-
+/**
+ *      radix_tree_tagged - test whether any items in the tree are tagged
+ *      @root:          radix tree root
+ *      @tag:           tag to test
+ */
+int radix_tree_tagged(const struct radix_tree_root *root, unsigned int tag)
+{
+        return root_tag_get(root, tag);
+}
 {% endhighlight %}
+
+radix_tree_tagged() 函数用于测试 radix-tree 是否已经存在 tag 标记。函数调用
+root_tag_get() 函数去检查根节点的 gfp_mask 是否函数指定的 tag 标记。
+
+--------------------------------------------------
+
+#### <span id="radix_tree_find_next_bit">radix_tree_find_next_bit</span>
+
+{% highlight bash %}
+/**
+ * radix_tree_find_next_bit - find the next set bit in a memory region
+ *
+ * @addr: The address to base the search on
+ * @size: The bitmap size in bits
+ * @offset: The bitnumber to start searching at
+ *
+ * Unrollable variant of find_next_bit() for constant size arrays.
+ * Tail bits starting from size to roundup(size, BITS_PER_LONG) must be zero.
+ * Returns next bit offset, or size if nothing found.
+ */
+static __always_inline unsigned long
+radix_tree_find_next_bit(struct radix_tree_node *node, unsigned int tag,
+                         unsigned long offset)
+{
+        const unsigned long *addr = node->tags[tag];
+
+        if (offset < RADIX_TREE_MAP_SIZE) {
+                unsigned long tmp;
+
+                addr += offset / BITS_PER_LONG;
+                tmp = *addr >> (offset % BITS_PER_LONG);
+                if (tmp)
+                        return __ffs(tmp) + offset;
+                offset = (offset + BITS_PER_LONG) & ~(BITS_PER_LONG - 1);
+                while (offset < RADIX_TREE_MAP_SIZE) {
+                        tmp = *++addr;
+                        if (tmp)
+                                return __ffs(tmp) + offset;
+                        offset += BITS_PER_LONG;
+                }
+        }
+        return RADIX_TREE_MAP_SIZE;
+}
+{% endhighlight %}
+
+radix_tree_find_next_bit() 函数用于查找下一个可用的 bit。
+函数首先获得 tag 在节点中对应 bitmap 地址，然后判断 offset 是否在一个 bitmap
+管理的范围内，如果在，那么首先获得 offset 对应 bitmap 以 unsigned long 对应
+的地址。然后通过求余运算获得 offset 在 bitmap 的 bit 位，并将 bit 位向右移动
+到最低位，这样 tmp 里只包含 bit 左边的位。如果此时 tmp 的值不为零，那么直接
+返回 __ffs() + offset 的值，也就是在 bit 左边的位中找到一个可用的位。如果
+此时 tmp 不存在，再在剩余的 bit 中找到一个可用的 bit，其做法是将 offset 对齐到
+下一个 BITS_PER_LONG，然后在下一个中找到一个可用的 bit。并返回其位置。
+
+--------------------------------------------------
+
+#### <span id="__radix_tree_replace">__radix_tree_replace</span>
+
+{% highlight bash %}
+/**
+ * __radix_tree_replace         - replace item in a slot
+ * @root:               radix tree root
+ * @node:               pointer to tree node
+ * @slot:               pointer to slot in @node
+ * @item:               new item to store in the slot.
+ * @update_node:        callback for changing leaf nodes
+ *              
+ * For use with __radix_tree_lookup().  Caller must hold tree write locked
+ * across slot lookup and replacement.
+ */
+void __radix_tree_replace(struct radix_tree_root *root,
+                          struct radix_tree_node *node,
+                          void __rcu **slot, void *item,
+                          radix_tree_update_node_t update_node)
+{
+        void *old = rcu_dereference_raw(*slot);
+        int exceptional = !!radix_tree_exceptional_entry(item) -
+                                !!radix_tree_exceptional_entry(old);
+        int count = calculate_count(root, node, slot, item, old);
+
+        /*
+         * This function supports replacing exceptional entries and
+         * deleting entries, but that needs accounting against the
+         * node unless the slot is root->rnode.
+         */
+        WARN_ON_ONCE(!node && (slot != (void __rcu **)&root->rnode) &&
+                        (count || exceptional));
+        replace_slot(slot, item, node, count, exceptional);
+
+        if (!node)
+                return;
+
+        if (update_node)
+                update_node(node);
+
+        delete_node(root, node, update_node);
+}
+{% endhighlight %}
+
+__radix_tree_replace() 函数用于替换指定的节点 slot 值。
+参数 root 指向 radix-tree 的根；参数 node 指向需要替换的节点；参数 slot
+指向需要替换的 slot；参数 item 指向需要替换的内容；参数 update_node 指向
+需要更新的函数。函数调用 replace_slot() 函数替换了 slot 对应的内容，最后
+调用 delete_node() 函数删除了 node 节点。
+
+--------------------------------------------------
+
+#### <span id="radix_tree_iter_replace">radix_tree_iter_replace</span>
+
+{% highlight bash %}
+/**
+ * radix_tree_iter_replace - replace item in a slot
+ * @root:       radix tree root
+ * @slot:       pointer to slot
+ * @item:       new item to store in the slot.
+ *
+ * For use with radix_tree_split() and radix_tree_for_each_slot().
+ * Caller must hold tree write locked across split and replacement.
+ */
+void radix_tree_iter_replace(struct radix_tree_root *root,
+                                const struct radix_tree_iter *iter,
+                                void __rcu **slot, void *item)
+{
+        __radix_tree_replace(root, iter->node, slot, item, NULL);
+}
+{% endhighlight %}
+
+radix_tree_iter_replace() 函数用于替换指定 slot 的值；
+参数 root 指向 radix-tree 的根；参数 node 指向需要替换的节点；参数 slot
+指向需要替换的 slot；参数 item 指向需要替换的内容；参数 update_node 指向
+需要更新的函数。函数直接调用 __radix_tree_replace() 进行调换。
+
+> - [\_\_radix_tree_replace](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#__radix_tree_replace)
+
+--------------------------------------------------
+
+#### <span id="radix_tree_iter_tag_clear">radix_tree_iter_tag_clear</span>
+
+{% highlight bash %}
+/**     
+  * radix_tree_iter_tag_clear - clear a tag on the current iterator entry
+  * @root: radix tree root
+  * @iter: iterator state
+  * @tag: tag to clear
+  */    
+void radix_tree_iter_tag_clear(struct radix_tree_root *root,
+                        const struct radix_tree_iter *iter, unsigned int tag)
+{
+        node_tag_clear(root, iter->node, tag, iter_offset(iter));
+}
+{% endhighlight %}
+
+radix_tree_iter_tag_clear() 函数用于清除节点指定的 tag。函数直接调用
+node_tag_clear() 函数去清除特定的 tag。
 
 -----------------------------------------------
 

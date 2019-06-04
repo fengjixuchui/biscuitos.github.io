@@ -740,9 +740,13 @@ struct radix_tree_iter 数据结构用于存储每次遍历的数据，每次遍
 >
 > - [radix_tree_exceptional_entry](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_exceptional_entry/)
 >
+> - [radix_tree_find_next_bit](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_find_next_bit)
+>
 > - [radix_tree_for_each_slot](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_for_each_slot/)
 >
 > - [RADIX_TREE_INIT](https://biscuitos.github.io/blog/RADIX-TREE_RADIX_TREE_INIT/)
+>
+> - [radix_tree_iter_tag_clear](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_iter_tag_clear)
 >
 > - [radix_tree_iter_init](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_iter_init/)
 >
@@ -768,7 +772,13 @@ struct radix_tree_iter 数据结构用于存储每次遍历的数据，每次遍
 >
 > - [radix_tree_node_rcu_free](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_node_rcu_free)
 >
+> - [radix_tree_iter_replace](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_iter_replace)
+>
+> - [\_\_radix_tree_replace](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#__radix_tree_replace)
+>
 > - [radix_tree_shrink](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_shrink)
+>
+> - [radix_tree_tagged](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_tagged)
 >
 > - [replace_slot](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#replace_slot)
 >
