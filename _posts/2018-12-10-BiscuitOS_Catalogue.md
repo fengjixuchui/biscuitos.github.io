@@ -108,6 +108,14 @@ tags:
 >
 >   - [IDR 内核接口函数列表](https://biscuitos.github.io/blog/IDR/#LIST)
 >
+> - [IDA: ID allocator](https://biscuitos.github.io/blog/IDA/)
+>
+>   - [IDA 在内核中的应用](https://biscuitos.github.io/blog/IDA/#CS01)
+>
+>   - [IDA 在应用程序的部署](https://biscuitos.github.io/blog/IDA_UserArrange/)
+>
+>   - [IDA 内核接口函数列表](https://biscuitos.github.io/blog/IDA/#LIST)
+>
 > - 锁/同步
 >
 >   - [atomic 原子操作](https://biscuitos.github.io/blog/ATOMIC/)

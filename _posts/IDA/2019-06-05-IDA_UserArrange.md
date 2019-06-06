@@ -23,6 +23,7 @@ tags:
 > - [附录](#附录)
 
 -----------------------------------
+
 <span id="IDA 部署方法"></span>
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
