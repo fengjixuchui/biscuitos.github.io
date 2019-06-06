@@ -46,6 +46,8 @@ tags:
 ## <span id="Linux_2X">Linux 2.X</span>
 
 > - [Build Linux 2.6.33 Running on ARM32](https://biscuitos.github.io/blog/Linux-2.6.33-arm32-Usermanual/)
+>
+> - [Build Linux 2.6.x Running on ARM32](https://biscuitos.github.io/blog/Linux-2.6.x-arm32-Usermanual/)
 
 ## <span id="Linux_3X">Linux 3.X</span>
 
