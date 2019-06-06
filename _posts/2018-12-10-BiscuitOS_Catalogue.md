@@ -35,6 +35,10 @@ tags:
 > - [Build Linux 5.X](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 >
 > - [Porting Application to BiscuitOS](https://biscuitos.github.io/blog/Kernel_Build/#Userspace)
+>
+> - [Networking on BiscuitOS](https://biscuitos.github.io/blog/Networking-Usermanual/)
+>
+> - [MIT XV6 Operating System](https://biscuitos.github.io/blog/XV6-REV11-Usermanual/)
 
 ## Linux Memory
 
