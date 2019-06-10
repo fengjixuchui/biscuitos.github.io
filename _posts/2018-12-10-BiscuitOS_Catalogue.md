@@ -39,6 +39,8 @@ tags:
 > - [Networking on BiscuitOS](https://biscuitos.github.io/blog/Networking-Usermanual/)
 >
 > - [MIT XV6 Operating System](https://biscuitos.github.io/blog/XV6-REV11-Usermanual/)
+>
+> - [Architecture Computer English](https://biscuitos.github.io/blog/Architecture_English_note/)
 
 ## Linux Memory
 
