@@ -34,7 +34,7 @@ tags:
 >
 > - [Build Linux 5.X](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 >
-> - [Porting Application to BiscuitOS](https://biscuitos.github.io/blog/Kernel_Build/#Userspace)
+> - [Porting Application/Dynamic library/Static library into BiscuitOS](https://biscuitos.github.io/blog/APP-Usermanual/)
 >
 > - [Networking on BiscuitOS](https://biscuitos.github.io/blog/Networking-Usermanual/)
 >
