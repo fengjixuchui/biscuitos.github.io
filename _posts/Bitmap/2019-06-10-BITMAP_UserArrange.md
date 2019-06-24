@@ -121,7 +121,7 @@ int main()
 
 完整实践例子可以查看下面教程：
 
-> [用户空间 Bit 最小实践](https://biscuitos.github.io/blog/Bit/#Bit%20%E5%9C%A8%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%9C%80%E5%B0%8F%E5%AE%9E%E8%B7%B5)
+> [用户空间 Bit 最小实践](https://biscuitos.github.io/blog/BITMAP/#B1)
 
 -----------------------------------------------
 
@@ -129,7 +129,7 @@ int main()
 
 > [Data Structure Visualizations](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
 >
-> [Bit](https://biscuitos.github.io/blog/Bit/)
+> [Bit](https://biscuitos.github.io/blog/BITMAP/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
