@@ -71,7 +71,7 @@ test_find_first_bit()、test_find_next_and_bit() 所花费的时间。测试
 -----------------------------------
 <span id="SC01"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
 
 ## 测试方法
 
@@ -109,7 +109,7 @@ make menuconfig ARCH=arm
 -----------------------------------
 <span id="SC02"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
 ## 测试分析
 
@@ -168,7 +168,6 @@ find_last_bit() 函数越容易找到置位的 bit。
 108544000 ns, 平均每次花费 6638 ns；数据稀疏的时候，调用 find_first_bit() 函
 数总共执行了 656 次，总共花费 44386000 ns, 平均每次花费 67661 ns。因此
 数据越密集，find_first_bit() 函数越容易找到第一次置位的 bit。
-
 
 -----------------------------------------------
 
