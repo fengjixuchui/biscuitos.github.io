@@ -50,6 +50,20 @@ tags:
 
 ## Basic
 
+> - [Bit: bitmap/bitops/bitmask/bit find](https://biscuitos.github.io/blog/BITMAP/)
+>
+>   - [Bitmap 在内核中的应用](https://biscuitos.github.io/blog/BITMAP/#CS01)
+>
+>   - [Bitops 在内核中的应用](https://biscuitos.github.io/blog/BITMAP/#CS02)
+>
+>   - [Bitmask 在内核中的应用](https://biscuitos.github.io/blog/BITMAP/#CS03)
+>
+>   - [Bit find 在内核中的应用](https://biscuitos.github.io/blog/BITMAP/#CS04)
+>
+>   - [Bit 在应用程序中部署](https://biscuitos.github.io/blog/BITMAP_UserArrange/)
+>
+>   - [bitmap 内核接口函数列表](https://biscuitos.github.io/blog/BITMAP/#LIST)
+>
 > - [GNU LD scripts](https://biscuitos.github.io/blog/LD/)
 >
 >   - [LD Instruction List](https://biscuitos.github.io/blog/LD/#ld 链接语法)
