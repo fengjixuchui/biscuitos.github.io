@@ -6,7 +6,8 @@ categories: [Top]
 excerpt: Catalogue.
 tags:
 ---
-![SPI0](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000107.jpg)
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000204.gif)
 
 > Blog State: In maintenance
 
