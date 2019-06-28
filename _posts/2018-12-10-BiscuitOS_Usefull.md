@@ -34,6 +34,19 @@ tags:
 > - [Linux 新手论坛](#A04)
 >
 > - [Linux 内核邮件订阅](#A05)
+>
+> - [Linux 提交第一个内核补丁](#A06)
+>
+> - [Old-Linux](#A07)
+>
+> - [Linux 早期版本内核源码](#A08)
+>
+> - [Linux IBM 社区论坛](#A09)
+>
+> - [Linux 内核源码](#A10)
+
+
+
 
 ---------------------------
 
@@ -103,12 +116,80 @@ Linux Commit History 网站用于查找 Linux 源码相关的内核版本、提�
 想了解最新的内核动态，订阅内核邮件列表再好不过，开发者可以在这个
 网站上订阅自己喜欢的模块。
 
+> - [https://kernelnewbies.org/ML](https://kernelnewbies.org/ML)
+
+---------------------------
+
+### <span id="A06">Linux 提交第一个内核补丁</span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/WEB000007.png)
+
+提交内核补丁是内核进阶的必要环节，开发者可以参考这篇文章进行提交。
+
+> - [https://kernelnewbies.org/FirstKernelPatch](https://kernelnewbies.org/FirstKernelPatch)
+
+---------------------------
+
+### <span id="A07">Old-Linux</span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/WEB000009.png)
+
+Linux 0.11 是个较早公布的 linux 版本，代码量超少，但操作系统的五脏俱全，
+是新手研究 Linux 的不二之选。该网站是由赵炯博士创建，包含了基于 linux 0.11，
+linux 0.12 等早期版本开发信息。
+
+> - [http://oldlinux.org/](http://oldlinux.org/)
+>
+> - [http://oldlinux.org/Linux.old/docs/](http://oldlinux.org/Linux.old/docs/)
+
+---------------------------
+
+### <span id="A08">Linux 早期版本内核源码</span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/WEB000008.png)
+
+Linux 0.11 是个较早公布的 linux 版本，代码量超少，但操作系统的五脏俱全，
+是新手研究 Linux 的不二之选。该网站包含了 linux 早期版本的源码，以及每次
+版本发布改动说明，开发者可以跟踪内核的发展学习内核演变的过程。
+
+> [https://mirrors.edge.kernel.org/pub/linux/kernel/Historic/old-versions/](https://mirrors.edge.kernel.org/pub/linux/kernel/Historic/old-versions/)
+
+---------------------------
+
+### <span id="A09">Linux IBM 社区论坛</span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/WEB000010.png)
+
+高质量的 Linux 技术论坛，IBM 开发者论坛之 Linux。
+
+> [https://www.ibm.com/developerworks/cn/linux/](https://www.ibm.com/developerworks/cn/linux/)
+
+---------------------------
+
+### <span id="A10">Linux 内核源码</span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/WEB000012.png)
+
+Linux 内核源码获取可以通过多个途径，可以从官网、github、FTP 服务器等，
+以下网址皆可获得 Linux 源码：
+
+> - [https://www.kernel.org/](https://www.kernel.org/)
+>
+> - [https://mirrors.edge.kernel.org/pub/linux/kernel/](https://mirrors.edge.kernel.org/pub/linux/kernel/)
+>
+> - [https://github.com/torvalds/linux](https://github.com/torvalds/linux)
+
 ---------------------------
 
 ### <span id="A00"></span>
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/WEB000000.png)
 
+---------------------------
+
+### <span id="A00"></span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/WEB000000.png)
 
 ---------------------------
 
@@ -116,6 +197,11 @@ Linux Commit History 网站用于查找 Linux 源码相关的内核版本、提�
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/WEB000000.png)
 
+---------------------------
+
+### <span id="A00"></span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/WEB000000.png)
 
 ---------------------------
 
@@ -123,14 +209,11 @@ Linux Commit History 网站用于查找 Linux 源码相关的内核版本、提�
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/WEB000000.png)
 
-
 ---------------------------
 
 ### <span id="A00"></span>
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/WEB000000.png)
-
-
 
 
 
