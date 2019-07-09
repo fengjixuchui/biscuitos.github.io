@@ -43,6 +43,14 @@ tags:
 >
 > - [Architecture Computer English](https://biscuitos.github.io/blog/Architecture_English_note/)
 
+## Linux 源码分析及实践
+
+> - [Linux 5.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
+>
+> - [Linux 6.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
+>
+> - [Linux 7.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
+
 ## Linux Memory
 
 > - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
