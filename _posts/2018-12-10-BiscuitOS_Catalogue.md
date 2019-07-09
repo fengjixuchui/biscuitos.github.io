@@ -234,6 +234,8 @@ tags:
 > - [perf: Linux 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-perf/)
 >
 > - [blktrace： Block IO 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-blktrace/)
+>
+> - [Linux 内核源码静态分析工具 sparse](https://biscuitos.github.io/blog/SPARSE/#header)
 
 ## My Hobbies
 
