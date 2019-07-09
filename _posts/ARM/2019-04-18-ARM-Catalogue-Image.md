@@ -13,7 +13,7 @@ tags:
 >
 > - [ARM Linux deugging manual](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/)
 
-## ARM Linux 5.0 源码实践
+## <span id="SC">ARM Linux 5.0 源码实践</span>
 
 > - [实践准备](https://biscuitos.github.io/blog/ARM-BOOT/#%E7%AE%80%E4%BB%8B)
 >
@@ -96,15 +96,3 @@ tags:
 >     - [\_\_mmap_switched](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__mmap_switched)
 >
 >     - [调用 start_kernel 之前](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#start_kernel_last)
->
-> - [内核初始化 start_kernel]
->
->   - [set_task_stack_end_magic](https://biscuitos.github.io/blog/ARM-SCD-start_kernel.S/#set_task_stack_end_magic)
->
->   - [smp_setup_processor_id](https://biscuitos.github.io/blog/ARM-SCD-start_kernel.S/#smp_setup_processor_id)
->
->   - [debug_objects_early_init](https://biscuitos.github.io/blog/ARM-SCD-start_kernel.S/#debug_objects_early_init)
->
->   - [cgroup_init_early](https://biscuitos.github.io/blog/ARM-SCD-start_kernel.S/#cgroup_init_early)
->
->
