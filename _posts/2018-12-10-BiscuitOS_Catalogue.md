@@ -155,6 +155,10 @@ tags:
 >
 >   - spinlock
 
+## Linux 通识
+
+> - [thread_info 与内核堆栈的关系](https://biscuitos.github.io/blog/TASK-thread_info_stack/)
+
 ## <span id="Uboot">Uboot</span>
 
 > - [Build u-boot-2019.04](https://biscuitos.github.io/blog/u-boot-2019.04-Usermanual/)

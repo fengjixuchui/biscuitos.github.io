@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
 
 # 目录
 
@@ -113,6 +113,8 @@ register unsigned long current_stack_pointer asm ("sp");
 从上面的定义可以看出，current_stack_pointer 直接返回了 sp 寄存器
 的值，也就是堆栈的位置。
 
+-------------------------------------
+
 ### <span id="A03">0 号进程的 thread_info</span>
 
 在 linux 中，0 号进程就是内核启动之后的第一个进程，其通过 init_task
@@ -165,8 +167,11 @@ init_stack, 其定义在 include/asm-generic/vmlinux.lds.h
 THREAD_SIZE.
 
 --------------------------------------------------
+<span id="A04"></span>
 
-# <span id="A04">thread_info 实践</span>
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
+
+### thread_info 实践
 
 > - [驱动源码](#驱动源码)
 >
