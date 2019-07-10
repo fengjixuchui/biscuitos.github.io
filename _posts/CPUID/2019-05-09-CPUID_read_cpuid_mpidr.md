@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "Bread_cpuid_mpidrX"
+title:  "read_cpuid_mpidr"
 date:   2019-05-09 14:55:30 +0800
 categories: [HW]
-excerpt: CPUID Bread_cpuid_mpidrX().
+excerpt: CPUID read_cpuid_mpidr().
 tags:
   - CPUID
 ---
@@ -111,7 +111,7 @@ config BISCUITOS_MISC
 +if BISCUITOS_CPUID
 +
 +config DEBUG_BISCUITOS_CPUID
-+       bool "Bread_cpuid_mpidrX"
++       bool "read_cpuid_mpidr"
 +
 +endif # BISCUITOS_CPUID
 +
@@ -139,7 +139,7 @@ obj-$(CONFIG_BISCUITOS_MISC)     += BiscuitOS_drv.o
 Device Driver--->
     [*]BiscuitOS Driver--->
         [*]CPUID
-            [*]Bread_cpuid_mpidrX()
+            [*]read_cpuid_mpidr()
 {% endhighlight %}
 
 具体过程请参考：
