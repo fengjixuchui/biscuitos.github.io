@@ -20,6 +20,8 @@ tags:
 >
 > - [0 号进程的 thread_info](#A03)
 >
+> - [堆栈的生长方式与 thread_info](#A05)
+>
 > - [thread_info 实践](#A04)
 >
 > - [附录](#附录)
@@ -165,6 +167,25 @@ init_stack, 其定义在 include/asm-generic/vmlinux.lds.h
 正如之前讨论的，内核将 0 号进程的 thread_union 结构存放在这里，
 并且将 __end_init_task 指向了堆栈的顶部，其大小正好是
 THREAD_SIZE.
+
+-------------------------------------
+
+### <span id="A05">堆栈的生长方式与 thread_info 的关系</span>
+
+堆栈的生长方式分为向上增长和向下增长，通常堆栈是向下生长的，
+也就是栈底位于高地址，栈顶位于地址，此时内核使用 thread_union
+结构将 thread_info 和内核态堆栈绑定到一起，并且 thread_info
+位于区域的底部，而堆栈的栈底位于区域的顶部，如下图：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000192.png)
+
+区域的大小为 THREAD_SIZE，堆栈向下生长，栈顶会不断靠近 thread_info
+的末尾；如果堆栈的生长方式是向上生长，那么 thread_union 的结构如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000193.png)
+
+区域的大小也是 THREAD_SIZE, 堆栈的栈底就是 thread_info 的结束
+地址，堆栈向上生长，不断靠近区域结束位置。
 
 --------------------------------------------------
 <span id="A04"></span>
