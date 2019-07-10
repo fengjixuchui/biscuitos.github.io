@@ -348,6 +348,88 @@ ARM 版本高于 ARMv6，那么内核支持 TPIDRPRW 寄存器，并用于
 
 ------------------------------------
 
+#### <span id="A0011"></span>
+
+{% highlight c %}
+#define local_irq_disable()     do { raw_local_irq_disable(); } while (0)
+{% endhighlight %}
+
+local_irq_disable() 函数用于禁止本地中断。local_irq_disable()
+通过 raw_local_irq_disable() 函数实现。
+
+> - [raw_local_irq_disable](#A0012)
+
+------------------------------------
+
+#### <span id="A0012">raw_local_irq_disable</span>
+
+{% highlight c %}
+/*
+ * Wrap the arch provided IRQ routines to provide appropriate checks.
+ */
+#define raw_local_irq_disable()         arch_local_irq_disable()
+{% endhighlight %}
+
+raw_local_irq_disable() 函数用于禁止本地中断，其为一个过渡
+接口，用于指向与体系相关的函数，其实现指向
+arch_local_irq_disable() 函数，其实现与体系有关，请根据
+下面的体系进行分析：
+
+> - [arm](#A0013)
+>
+> - [arm64]()
+
+------------------------------------
+
+#### <span id="A0013">arch_local_irq_disable</span>
+
+{% highlight c %}
+#define arch_local_irq_disable arch_local_irq_disable
+static inline void arch_local_irq_disable(void)
+{
+        asm volatile(
+                "       cpsid i                 @ arch_local_irq_disable"
+                :
+                :
+                : "memory", "cc");
+}
+{% endhighlight %}
+
+在 ARMv7 版本中，通过 arch_local_irq_disable() 函数实现
+禁止本地中断。在 ARMv7 中，提供了 CPSID 指令与 I 参数用于
+将 CPSR 寄存器中的 Interrupt 标志位清零，以此禁止本地中断。
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000001.png)
+
+
+> - [CPSID 指令实践](https://github.com/BiscuitOS/HardStack/tree/master/Language/Assembly/ARM-GNU-Assembly/Instruction/cpsid)
+
+------------------------------------
+
+#### <span id="A000"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A000"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A000"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
 #### <span id="A000"></span>
 
 {% highlight c %}
