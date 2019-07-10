@@ -47,6 +47,8 @@ tags:
 
 > - [Linux 5.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
 >
+> - [Linux 5.x 函数列表](https://biscuitos.github.io/blog/SC-LIST-5.0/)
+>
 > - [Linux 6.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
 >
 > - [Linux 7.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
