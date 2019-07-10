@@ -12,7 +12,7 @@ tags:
 
 --------------------------------------------
 
-### <span id="A0000">start_kernel</span>
+#### <span id="A0000">start_kernel</span>
 
 {% highlight c %}
 asmlinkage __visible void __init start_kernel(void)
@@ -39,7 +39,7 @@ start_kernel() 函数是不同体系 CPU 进入统一 Linux 内核函数接口�
 
 ------------------------------------
 
-### <span id="A0001">set_task_stack_end_magic</span>
+#### <span id="A0001">set_task_stack_end_magic</span>
 
 {% highlight c %}
 void set_task_stack_end_magic(struct task_struct *tsk)
@@ -65,7 +65,7 @@ set_task_stack_end_magic() 函数的作用标记进程堆栈生长顶端地址�
 
 ------------------------------------
 
-### <span id="A0002">end_of_stack</span>
+#### <span id="A0002">end_of_stack</span>
 
 {% highlight c %}
 /*              
@@ -108,7 +108,7 @@ end_of_stack() 函数用于获得进程堆栈栈顶的地址。在内核中，�
 
 ------------------------------------
 
-### <span id="A0003">task_thread_info</span>
+#### <span id="A0003">task_thread_info</span>
 
 {% highlight c %}
 #ifdef CONFIG_THREAD_INFO_IN_TASK
