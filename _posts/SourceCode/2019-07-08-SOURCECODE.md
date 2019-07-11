@@ -36,6 +36,8 @@ start_kernel() 函数是不同体系 CPU 进入统一 Linux 内核函数接口�
 > - [smp_setup_processor_id](#A0004)
 >
 > - [debug_objects_early_init]()
+>
+> - [local_irq_disable](#A0011)
 
 ------------------------------------
 
@@ -348,7 +350,7 @@ ARM 版本高于 ARMv6，那么内核支持 TPIDRPRW 寄存器，并用于
 
 ------------------------------------
 
-#### <span id="A0011"></span>
+#### <span id="A0011">local_irq_disable</span>
 
 {% highlight c %}
 #define local_irq_disable()     do { raw_local_irq_disable(); } while (0)
@@ -406,19 +408,426 @@ static inline void arch_local_irq_disable(void)
 
 ------------------------------------
 
-#### <span id="A000"></span>
+#### <span id="A0014">boot_cpu_init</span>
 
 {% highlight c %}
+/*
+ * Activate the first processor.
+ */
+void __init boot_cpu_init(void)
+{
+        int cpu = smp_processor_id();
 
+        /* Mark the boot cpu "present", "online" etc for SMP and UP case */
+        set_cpu_online(cpu, true);
+        set_cpu_active(cpu, true);
+        set_cpu_present(cpu, true);
+        set_cpu_possible(cpu, true);
+
+#ifdef CONFIG_SMP
+        __boot_cpu_id = cpu;
+#endif
+}
 {% endhighlight %}
+
+boot_cpu_init() 函数用于初始化 Boot CPU。函数首先调用
+smp_processor_id() 函数获得 Boot CPU 的 ID，然后将其
+在系统维护的多个位图中置位，其中包括 online，active，present，
+以及 possbile。分别通过 set_cpu_online() 函数将 Boot CPU
+设置为 inline，通过 set_cpu_active() 函数将 Boot CPU 号设置为
+active，再通过 set_cpu_present() 将 Boot CPU 设置为 present，
+最后通过 set_cpu_possible() 函数设置 Boot CPU 设置为 possible。
+最后，如果 CONFIG_SMP 宏存在，那么系统支持 SMP，此时将
+__boot_cpu_id 设置为 Boot CPU。
+
+> - [set_cpu_online](#A0019)
+>
+> - [set_cpu_active](#A0027)
+>
+> - [set_cpu_present](#A0029)
+>
+> - [set_cpu_possible](#A0031)
 
 ------------------------------------
 
-#### <span id="A000"></span>
+#### <span id="A0015">smp_processor_id</span>
 
 {% highlight c %}
-
+#define smp_processor_id() raw_smp_processor_id()
 {% endhighlight %}
+
+smp_processor_id() 函数用于获得 SMP 系统中正在使用的 CPU ID。
+函数通过 raw_smp_processor_id() 实现。
+
+> - [smp_processor_id](#A0016)
+
+------------------------------------
+
+#### <span id="A0016">raw_smp_processor_id</span>
+
+{% highlight c %}
+#define raw_smp_processor_id() (current_thread_info()->cpu)
+{% endhighlight %}
+
+raw_smp_processor_id() 函数用于获得当前 SMP 系统使用
+的 CPU 号，其实现通过 current_thread_info() 函数获得
+当前进程对应的 CPU 号。
+
+> - [current_thread_info](#A0017)
+
+------------------------------------
+
+#### <span id="A0017">current_thread_info</span>
+
+{% highlight c %}
+static inline struct thread_info *current_thread_info(void)
+{
+        return (struct thread_info *)
+                (current_stack_pointer & ~(THREAD_SIZE - 1));
+}
+{% endhighlight %}
+
+current_thread_info() 函数用于获得当前进程的 thread_info
+结构。在 Linux 内核中，进程将 thread_info 与进程的内核态堆栈
+捆绑在同一块区域内，区域的大小为 THREAD_SIZE。通过一定的算法，
+只要知道进程内核态堆栈的地址，也就可以推断出进程 thread_info
+的地址。在 current_thread_info() 函数中，函数首先通过
+current_stack_pointer 获得当前进程的堆栈地址，然后根据
+thread_info 与进程内核堆栈的关系，将堆栈的地址与上
+(THREAD_SIZE - 1) 反码的值，以此获得 thread_info 的地址，
+更多 thread_info 与内核态堆栈的关系，请参考：
+
+> - [Thread_info 与内核堆栈的关系](https://biscuitos.github.io/blog/TASK-thread_info_stack/)
+>
+> - [current_stack_pointer](#A0018)
+
+------------------------------------
+
+#### <span id="A0018">current_stack_pointer</span>
+
+{% highlight c %}
+/*
+ * how to get the current stack pointer in C
+ */
+register unsigned long current_stack_pointer asm ("sp");
+{% endhighlight %}
+
+current_stack_pointer 宏用于读取当前堆栈的值。
+
+------------------------------------
+
+#### <span id="A0019">set_cpu_online</span>
+
+{% highlight c %}
+static inline void
+set_cpu_online(unsigned int cpu, bool online)
+{
+        if (online)
+                cpumask_set_cpu(cpu, &__cpu_online_mask);
+        else
+                cpumask_clear_cpu(cpu, &__cpu_online_mask);
+}
+{% endhighlight %}
+
+set_cpu_online() 函数用于设置 online CPU。内核使用
+__cpu_online_mask 位图维护着处于 online 状态的 CPU 号。
+参数 cpu 指向特定的 CPU 号；online 参数用于指定 cpu 是
+处于 online 状态还是 offline 状态。如果 online 为 1，
+那么函数就调用 cpumask_set_cpu() 函数设置指定 CPU 为
+online 状态；反之 online 为 0，那么函数就调用
+cpumask_clear_cpu() 函数设置指定 CPU 为 offline 状态。
+
+> - [\_\_cpu_online_mask](#A0026)
+>
+> - [cpumask_set_cpu](#A0020)
+>
+> - [cpumask_clear_cpu](#A0025)
+
+------------------------------------
+
+#### <span id="A0020">cpumask_set_cpu</span>
+
+{% highlight c %}
+/**
+ * cpumask_set_cpu - set a cpu in a cpumask
+ * @cpu: cpu number (< nr_cpu_ids)
+ * @dstp: the cpumask pointer
+ */
+static inline void cpumask_set_cpu(unsigned int cpu, struct cpumask *dstp)
+{
+        set_bit(cpumask_check(cpu), cpumask_bits(dstp));
+}
+{% endhighlight %}
+
+cpumask_set_cpu() 函数的作用就是将 dstp 对应的 cpumask 结构
+cpu 参数对应的位置位。函数调用 set_bit() 函数将 dstp 中的 cpu
+对应的位置位，其中 cpumask_check() 函数用于检查 cpu id 的合法性，
+cpumask_bits() 函数用于获得 dstp 参数对应的 bitmap。
+
+> - [set_bit](https://biscuitos.github.io/blog/BITMAP_set_bit/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+>
+> - [cpumask_check](#A0022)
+>
+> - [cpumask_bits](#A0021)
+
+------------------------------------
+
+#### <span id="A0021">cpumask_bits</span>
+
+{% highlight c %}
+/**
+ * cpumask_bits - get the bits in a cpumask
+ * @maskp: the struct cpumask *
+ *
+ * You should only assume nr_cpu_ids bits of this mask are valid.  This is
+ * a macro so it's const-correct.
+ */
+#define cpumask_bits(maskp) ((maskp)->bits)
+{% endhighlight %}
+
+cpumask_bits() 宏用于获得 cpumask 结构中的 bits 成员。
+
+------------------------------------
+
+#### <span id="A0022">cpumask_check</span>
+
+{% highlight c %}
+/* verify cpu argument to cpumask_* operators */
+static inline unsigned int cpumask_check(unsigned int cpu)
+{
+        cpu_max_bits_warn(cpu, nr_cpumask_bits);
+        return cpu;
+}
+{% endhighlight %}
+
+cpumask_check() 函数用于检查 CPU 号的合法性。函数主要
+通过调用 cpu_max_bits_warn() 函数检查 CPU 号是否超过
+nr_cpumask_bits，nr_cpumask_bit 就是系统支持的 CPU 数，
+
+> - [cpu_max_bits_warn](#A0023)
+>
+> - [nr_cpumask_bits](#A0024)
+
+------------------------------------
+
+#### <span id="A0023">cpu_max_bits_warn</span>
+
+{% highlight c %}
+static inline void cpu_max_bits_warn(unsigned int cpu, unsigned int bits)
+{
+#ifdef CONFIG_DEBUG_PER_CPU_MAPS
+        WARN_ON_ONCE(cpu >= bits);
+#endif /* CONFIG_DEBUG_PER_CPU_MAPS */
+}
+{% endhighlight %}
+
+cpu_max_bits_warn() 函数用于检查 cpu 号是否已经查过
+最大 CPU 号。如果超过，内核则报错。
+
+------------------------------------
+
+#### <span id="A0024">nr_cpumask_bits</span>
+
+{% highlight c %}
+#ifdef CONFIG_CPUMASK_OFFSTACK
+/* Assuming NR_CPUS is huge, a runtime limit is more efficient.  Also,
+ * not all bits may be allocated. */
+#define nr_cpumask_bits nr_cpu_ids
+#else
+#define nr_cpumask_bits ((unsigned int)NR_CPUS)
+#endif
+{% endhighlight %}
+
+nr_cpumask_bits CPU mask 的最大 bit 数。
+
+------------------------------------
+
+#### <span id="A0025">cpumask_clear_cpu</span>
+
+{% highlight c %}
+/**
+ * cpumask_clear_cpu - clear a cpu in a cpumask
+ * @cpu: cpu number (< nr_cpu_ids)
+ * @dstp: the cpumask pointer
+ */
+static inline void cpumask_clear_cpu(int cpu, struct cpumask *dstp)
+{
+        clear_bit(cpumask_check(cpu), cpumask_bits(dstp));
+}
+{% endhighlight %}
+
+cpumask_clear_cpu() 函数用于将 dstp 对应的 cpumask 结构中，
+cpu 参数对应的位清零。函数调用 clear_bit() 函数清除 dstp 对应
+bitmap 的 cpu 位。cpumask_check() 函数用于检查 cpu 参数对应
+的 CPUID 合法性，cpumask_bits() 函数用于获得 dtsp 对应的
+bitmap。
+
+> - [clear_bit](https://biscuitos.github.io/blog/BITMAP_clear_bit/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+>
+> - [cpumask_check](#A0022)
+>
+> - [cpumask_bits](#A0021)
+
+------------------------------------
+
+#### <span id="A0026">__cpu_online_mask</span>
+
+{% highlight c %}
+/* Don't assign or return these: may not be this big! */
+typedef struct cpumask { DECLARE_BITMAP(bits, NR_CPUS); } cpumask_t;
+
+struct cpumask __cpu_online_mask __read_mostly;
+EXPORT_SYMBOL(__cpu_online_mask);
+{% endhighlight %}
+
+__cpu_online_mask 定义为一个 bitmap，其长度为 NR_CPUS 个 bit。
+__cpu_online_mask 用于维护系统中 CPU offline/online 信息。
+如果特定 bit 置位，那么对应的 cpu 就处于 online 状态；反之
+如果特定 bit 清零，那么对应的 cpu 就处于 offline 状态。
+
+------------------------------------
+
+#### <span id="A0027">set_cpu_active</span>
+
+{% highlight c %}
+static inline void
+set_cpu_active(unsigned int cpu, bool active)
+{       
+        if (active)
+                cpumask_set_cpu(cpu, &__cpu_active_mask);
+        else
+                cpumask_clear_cpu(cpu, &__cpu_active_mask);
+}
+{% endhighlight %}
+
+set_cpu_active() 函数用于设置特定 CPU 为 active 或
+inactive 状态。参数 cpu 指向特定的 CPU 的 ID 号；active
+参数指向了设置 cpu 为 active 或 inactive 状态。内核使用
+__cpu_active_mask 位图维护着系统内 CPU 的 active 和 inactive
+信息。在函数中，如果 active 为真，那么函数调用 cpumask_set_cpu()
+将 cpu 参数对应的 CPU 设置为 active 状态；反之如果 active 为假，
+那么函数调用 cpumask_set_cpu() 将 cpu 参数对应的 CPU 设
+置为 inactive 状态。
+
+> - [\_\_cpu_active_mask](#A0028)
+>
+> - [cpumask_set_cpu](#A0020)
+>
+> - [cpumask_clear_cpu](#A0025)
+
+------------------------------------
+
+#### <span id="A0028">__cpu_active_mask</span>
+
+{% highlight c %}
+/* Don't assign or return these: may not be this big! */
+typedef struct cpumask { DECLARE_BITMAP(bits, NR_CPUS); } cpumask_t;
+
+struct cpumask __cpu_active_mask __read_mostly;
+EXPORT_SYMBOL(__cpu_active_mask);
+{% endhighlight %}
+
+__cpu_active_mask 用于维护系统中所有 CPU 的 active 和 inactive
+信息，其实现是一个 bitmap，每个 bit 对应一个 CPU。位图中，如果
+一个位置位，那么位对应的 CPU 就处于 active；反之如果一个位清零，
+那么对应的 CPU 就处于 inactive。
+
+------------------------------------
+
+#### <span id="A0029">set_cpu_present</span>
+
+{% highlight c %}
+static inline void
+set_cpu_present(unsigned int cpu, bool present)
+{
+        if (present)
+                cpumask_set_cpu(cpu, &__cpu_present_mask);
+        else
+                cpumask_clear_cpu(cpu, &__cpu_present_mask);
+}
+{% endhighlight %}
+
+set_cpu_present() 函数用于设置特定 CPU 为 present 或
+不存在状态。参数 cpu 指向特定的 CPU 的 ID 号；present
+参数指向了设置 cpu 为 存在或不存在状态。内核使用
+__cpu_present_mask 位图维护着系统内 CPU 的 present 和 non-present
+信息。在函数中，如果 present 为真，那么函数调用 cpumask_set_cpu()
+将 cpu 参数对应的 CPU 设置为 present 状态；反之如果 present 为假，
+那么函数调用 cpumask_set_cpu() 将 cpu 参数对应的 CPU 设
+置为不存在状态。
+
+> - [\_\_cpu_present_mask](#A0030)
+>
+> - [cpumask_set_cpu](#A0020)
+>
+> - [cpumask_clear_cpu](#A0025)
+
+------------------------------------
+
+#### <span id="A0030">__cpu_present_mask</span>
+
+{% highlight c %}
+/* Don't assign or return these: may not be this big! */
+typedef struct cpumask { DECLARE_BITMAP(bits, NR_CPUS); } cpumask_t;
+
+struct cpumask __cpu_present_mask __read_mostly;
+EXPORT_SYMBOL(__cpu_present_mask);
+{% endhighlight %}
+
+__cpu_present_mask 用于维护系统中所有 CPU 的 present 状态信息，
+__cpu_present_mask 其实现是一个位图，每个 cpu 对应一个 bit，如果
+一个 bit 置位，那么对应的 CPU 表示存在；反之如果一个 bit 清零，那么
+对应的 CPU 表示不存在。
+
+------------------------------------
+
+#### <span id="A0031">set_cpu_possible</span>
+
+{% highlight c %}
+static inline void
+set_cpu_possible(unsigned int cpu, bool possible)
+{
+        if (possible)
+                cpumask_set_cpu(cpu, &__cpu_possible_mask);
+        else
+                cpumask_clear_cpu(cpu, &__cpu_possible_mask);
+}
+{% endhighlight %}
+
+set_cpu_possible() 函数用于设置特定 CPU 的 possible 信息。
+内核使用 __cpu_possible_mask 位图维护着 CPU 的 possible 信息。
+参数 cpu 对应要设置的 CPU 号；参数 possible 对应着设置或清除
+possbile 位。在函数中，如果 possbile 为真，那么函数就调用
+cpumask_set_cpu() 设置对应的 bit；反之 possible 为假，那么函数
+就调用 cpumask_clear_cpu() 清零对应的 bit。
+
+> - [\_\_cpu_possible_mask](#A0032)
+>
+> - [cpumask_set_cpu](#A0020)
+>
+> - [cpumask_clear_cpu](#A0025)
+
+------------------------------------
+
+#### <span id="A0032">__cpu_possible_mask</span>
+
+{% highlight c %}
+/* Don't assign or return these: may not be this big! */
+typedef struct cpumask { DECLARE_BITMAP(bits, NR_CPUS); } cpumask_t;
+
+#ifdef CONFIG_INIT_ALL_POSSIBLE
+struct cpumask __cpu_possible_mask __read_mostly
+        = {CPU_BITS_ALL};
+#else
+struct cpumask __cpu_possible_mask __read_mostly;
+#endif
+EXPORT_SYMBOL(__cpu_possible_mask);
+{% endhighlight %}
+
+__cpu_possible_mask 用于维护系统所有的 CPU 的 possible 信息。
+__cpu_possible_mask 的实现是一个位图，每个 bit 对应一个 CPU。
+如果一个 bit 置位，那么该位对应的 CPU possible；反之如果一个
+bit 清零，那么该位对应的 CPU possible 无效。
 
 ------------------------------------
 
