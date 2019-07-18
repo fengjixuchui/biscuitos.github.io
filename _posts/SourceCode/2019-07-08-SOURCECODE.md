@@ -1000,7 +1000,7 @@ __lookup_processor_type 获取 proc_info_list 的过程可以参考
 
 ------------------------------------
 
-#### <span id="A000"></span>
+#### <span id="A0041">read_cpuid_ext</span>
 
 {% highlight c %}
 static int __get_cpu_architecture(void)
@@ -1034,17 +1034,247 @@ static int __get_cpu_architecture(void)
 }
 {% endhighlight %}
 
-__get_cpu_architecture() 函数用于获得 CPU 体系相关的信息。在
-分析源码之前，首先了解 ARM 的 MMFR 和 MIDR 寄存器。ARMv7 中
+__get_cpu_architecture() 函数用于获得当前 ARM 的体系信息。在
+分析源码之前，首先了解 ARM 的 ID_MMFR0 和 MIDR 寄存器。ARMv7 中
 MDIR 寄存器的布局如下图：
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000025.png)
 
 从 MDIR 寄存器的 Architecture 域存储着体系相关的识别码，如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000025
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000196
 .png)
 
+read_cpuid_id() 函数用于读取 ARM 的 MIDR 寄存器，然后
+根据上面的 Architecture 域，判断当前系统 ARM 的体系版本号。
+将 read_cpuid_id() 函数读取的值与 0x0008f000 相与，然后
+通过相与的值可以获得真实的版本号。如果 ARMv7 ，那么 MDIR 寄
+存器的 16:19 域为 0xf。当 ARM 的系统结构是 ARMv7 的时候，
+__get_cpu_architecture() 函数继续调用 read_cpuid_ext()
+函数判断具体 ARMv7 的版本信息。ID_MMFR0 寄存器的内存布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000007
+.png)
+
+ID_MMFR0 寄存器中存储了体系内存模组相关的信息，如上图，
+VMSA 域和 PMSA 域就明确指明目前体系对两者的支持情况。在
+__get_cpu_architecture() 函数中，如果 VMSA 域值大于等于 3，
+或者 PMSA 域大于 3，那么体系就是 ARMv7；如果 VMSA 域或者
+PMSA 域等于 2，那么体系就是 ARMv6。因此 __get_cpu_architecture()
+函数可以获得 ARM 的体系信息。
+
+> - [read_cpuid_id](https://biscuitos.github.io/blog/CPUID_read_cpuid_id/)
+
+------------------------------------
+
+#### <span id="A0042">init_proc_vtable</span>
+
+{% highlight c %}
+static inline void init_proc_vtable(const struct processor *p)
+{
+        processor = *p;
+}
+{% endhighlight %}
+
+init_proc_vtable() 函数用于初始化用于描述系统信息的 struct
+processor 结构，全局变量 processor 用于描述系统的基础信息，与
+系统有关。在 arm 中定于在 arch/arm/include/asm/proc-fns.h
+
+------------------------------------
+
+#### <span id="A0043">get_cr</span>
+
+{% highlight c %}
+static inline unsigned long get_cr(void)
+{
+        unsigned long val;
+        asm("mrc p15, 0, %0, c1, c0, 0  @ get CR" : "=r" (val) : : "cc");
+        return val;
+}
+{% endhighlight %}
+
+get_cr() 函数用于获得 ARM 的 SCTLR (System Control Register)
+系统控制寄存器。其内存布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000014
+.png)
+
+------------------------------------
+
+#### <span id="A0044">init_utsname</span>
+
+{% highlight c %}
+static inline struct new_utsname *init_utsname(void)
+{
+        return &init_uts_ns.name;
+}
+{% endhighlight %}
+
+init_utsname() 函数用于初始化全局变量 init_uts_ns 的 name 成员，
+init_uts_ns 属于 struct uts_namespace，其结构用于维护系统名称，
+版本号，机器名称等。
+
+------------------------------------
+
+#### <span id="A0045">cpu_architecture</span>
+
+{% highlight c %}
+int __pure cpu_architecture(void)
+{               
+        BUG_ON(__cpu_architecture == CPU_ARCH_UNKNOWN);
+
+        return __cpu_architecture;
+}
+{% endhighlight %}
+
+cpu_architecture() 函数用于获得当前系统的 ARM 体系信息。
+内核中，将体系相关的信息维护在 __cpu_architecture 里。
+如果 __cpu_architecture 的值等于 CPU_ARCH_UNKNOWN，
+那么是非法的，系统将会报错。
+
+------------------------------------
+
+#### <span id="A0046">__cpu_architecture</span>
+
+__cpu_architecture 全局变量维护了系统体系相关的信息。
+
+------------------------------------
+
+#### <span id="A0047">cpuid_feature_extract_field</span>
+
+{% highlight c %}
+static inline int __attribute_const__ cpuid_feature_extract_field(u32 features,
+                                                                  int field)
+{
+        int feature = (features >> field) & 15;
+
+        /* feature registers are signed values */
+        if (feature > 7)
+                feature -= 16;
+
+        return feature;
+}  
+{% endhighlight %}
+
+cpuid_feature_extract_field() 函数用于提取 CPUID 系列寄存器
+中特定的域。在 CPUID 系列寄存器中，每个域都是 4 bits，例如 MIDR
+寄存器布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000025.png)
+
+函数首先将寄存器的值向右移动 field 位，然后与 0xF 相与。
+如果对于的寄存器对应域的值带符号，如果此时 feature 大于 7，
+那么此时值是负数，需要获得其真实的负值，将其将去 16 就可以
+获得。最后返回 feature 的值。
+
+------------------------------------
+
+#### <span id="A0048">cpuid_feature_extract</span>
+
+{% highlight c %}
+#define cpuid_feature_extract(reg, field) \
+        cpuid_feature_extract_field(read_cpuid_ext(reg), field)
+{% endhighlight %}
+
+cpuid_feature_extract() 函数用于提取 CPUID 系列寄存器
+中指定的域的值。函数通过调用 cpuid_feature_extract_field()
+函数实现。reg 参数指向寄存器的藐视；field 参数指向域的偏移。
+函数首先调用 read_cpuid_ext() 函数获得 cp15 c0 系列寄存器值，
+然后通过 cpuid_feature_extract_field() 获得 field 对应的值。
+
+> - [cpuid_feature_extract_field](#A0047)
+
+------------------------------------
+
+#### <span id="A0049">cpuid_init_hwcaps</span>
+
+{% highlight c %}
+static void __init cpuid_init_hwcaps(void)
+{
+        int block;
+        u32 isar5;
+
+        if (cpu_architecture() < CPU_ARCH_ARMv7)
+                return;
+
+        block = cpuid_feature_extract(CPUID_EXT_ISAR0, 24);
+        if (block >= 2)
+                elf_hwcap |= HWCAP_IDIVA;
+        if (block >= 1)
+                elf_hwcap |= HWCAP_IDIVT;
+
+        /* LPAE implies atomic ldrd/strd instructions */
+        block = cpuid_feature_extract(CPUID_EXT_MMFR0, 0);
+        if (block >= 5)
+                elf_hwcap |= HWCAP_LPAE;
+
+        /* check for supported v8 Crypto instructions */
+        isar5 = read_cpuid_ext(CPUID_EXT_ISAR5);
+
+        block = cpuid_feature_extract_field(isar5, 4);
+        if (block >= 2)
+                elf_hwcap2 |= HWCAP2_PMULL;
+        if (block >= 1)
+                elf_hwcap2 |= HWCAP2_AES;
+
+        block = cpuid_feature_extract_field(isar5, 8);
+        if (block >= 1)
+                elf_hwcap2 |= HWCAP2_SHA1;
+
+        block = cpuid_feature_extract_field(isar5, 12);
+        if (block >= 1)
+                elf_hwcap2 |= HWCAP2_SHA2;
+
+        block = cpuid_feature_extract_field(isar5, 16);
+        if (block >= 1)
+                elf_hwcap2 |= HWCAP2_CRC32;
+}
+{% endhighlight %}
+
+cpuid_init_hwcaps() 函数用于获得系统指定的硬件支持信息。函数
+首先调用 cpu_architecture() 函数判断当前体系结构是否为 ARMv7
+以上，如果不是，那么直接返回。接着函数调用 cpuid_feature_extract()
+函数获得 ID_ISAR0 (Instruction Set Attribute Register) 寄存器
+的 24:27，ID_ISAR0 寄存器布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000197.png)
+
+在 ID_ISAR0 寄存器中，bit 24:27 域说明如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000198.png)
+
+从上的定义可以知道，在 cpuid_init_hwcaps() 函数中，如果 24:27
+域的值大于等于 2，那么支持 ARM 指令集的 SDIV 和 UDIV 指令，并将
+这个结果通过宏 HWCAP_IDIVA 存储在全局变量 elf_hwcap 里；如果
+24:27 域的值大于 1，那么系统支持 ARM 和 Thumb 指令集的 SDIV
+和 UDIV 指令。接着函数继续调用 cpuid_feature_extract() 函数
+读取 ID_MMFR0 (Memory Model Feature Register) 寄存器，
+ID_MMFR0 寄存器用于描述系统内存模组的信息。其寄存器布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000007.png)
+
+cpuid_init_hwcaps() 函数读取了 ID_MMFR0 寄存器的低 4 bits，
+ID_MMFR0 寄存器的低 4bit 域是 VMSA support 域，其定义如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000199.png)
+
+cpuid_init_hwcaps() 函数判断该域值是否大于 5，如果大于 5，
+那么系统内存模组就支持 Long-descriptor 页表，那么系统就支持
+LPAE，这样就原生支持 LPAE 模式下的 ldrd/strd 指令，此时如果
+支持，函数通过 HWCAP_LPAE 宏存储在 elf_hwcap 全局变量里。
+函数继续调用 read_cpuid_ext(CPUID_EXT_ISAR5) 函数获得
+ID_ISAR5 寄存器，其在 ARMv7 中的内存布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000200.png)
+
+cpuid_init_hwcaps() 函数通过读取 ID_ISAR5 寄存器的值，以此
+确定系统是否支持 V8 Crypto 指令。根据各个域值设置 elf_hwcap2
+全局变量，通过宏 HWCAP2_PMULL，HWCAP2_AES，HWCAP2_SHA1，
+HWCAP2_SHA2，HWCAP2_CRC32。
+
+> - [cpu_architecture](#A0045)
+>
+> - [cpuid_feature_extract](#A0048)
 
 ------------------------------------
 
@@ -1054,13 +1284,6 @@ MDIR 寄存器的布局如下图：
 
 {% endhighlight %}
 
-------------------------------------
-
-#### <span id="A000"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
 
 ------------------------------------
 
@@ -1070,6 +1293,7 @@ MDIR 寄存器的布局如下图：
 
 {% endhighlight %}
 
+
 ------------------------------------
 
 #### <span id="A000"></span>
@@ -1077,6 +1301,16 @@ MDIR 寄存器的布局如下图：
 {% highlight c %}
 
 {% endhighlight %}
+
+
+------------------------------------
+
+#### <span id="A000"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
 
 ------------------------------------
 
