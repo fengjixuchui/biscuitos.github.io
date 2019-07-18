@@ -38,6 +38,12 @@ start_kernel() 函数是不同体系 CPU 进入统一 Linux 内核函数接口�
 > - [debug_objects_early_init]()
 >
 > - [local_irq_disable](#A0011)
+>
+> - [boot_cpu_init](#A0014)
+>
+> - [page_address_init](#A0033)
+>
+> - [linux_banner](#A0036)
 
 ------------------------------------
 
@@ -440,6 +446,8 @@ active，再通过 set_cpu_present() 将 Boot CPU 设置为 present，
 最后，如果 CONFIG_SMP 宏存在，那么系统支持 SMP，此时将
 __boot_cpu_id 设置为 Boot CPU。
 
+> - [smp_processor_id](#A0015)
+>
 > - [set_cpu_online](#A0019)
 >
 > - [set_cpu_active](#A0027)
@@ -831,6 +839,215 @@ bit 清零，那么该位对应的 CPU possible 无效。
 
 ------------------------------------
 
+#### <span id="A0033">page_address_init</span>
+
+{% highlight c %}
+void __init page_address_init(void)
+{
+        int i;
+
+        for (i = 0; i < ARRAY_SIZE(page_address_htable); i++) {
+                INIT_LIST_HEAD(&page_address_htable[i].lh);
+                spin_lock_init(&page_address_htable[i].lock);
+        }
+}
+{% endhighlight %}
+
+page_address_init() 函数用于初始化高端内存线性地址中永久映
+射的全局变量。内核使用全局数组 page_address_htable 维护高端
+内存页表池的链表，并带有一个自旋锁。函数使用 for 循环，对数组
+中的每个成员进行链表头的初始化以及自旋锁的初始化。
+
+> - [page_address_htable](#A0035)
+>
+> - [INIT_LIST_HEAD](https://biscuitos.github.io/blog/LIST_INIT_LIST_HEAD/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+>
+> - [spin_lock_init](#)
+>
+> - [ARRAY_SIZE](#A0034)
+
+------------------------------------
+
+#### <span id="A0034">ARRAY_SIZE</span>
+
+{% highlight c %}
+/**
+ * ARRAY_SIZE - get the number of elements in array @arr
+ * @arr: array to be sized
+ */
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) + __must_be_array(arr))
+{% endhighlight %}
+
+ARRAY_SIZE 宏用于计算数组中成员的个数。
+
+------------------------------------
+
+#### <span id="A0035">page_address_htable</span>
+
+{% highlight c %}
+/*
+ * Hash table bucket
+ */
+static struct page_address_slot {
+        struct list_head lh;                    /* List of page_address_maps */
+        spinlock_t lock;                        /* Protect this bucket's list */
+} ____cacheline_aligned_in_smp page_address_htable[1<<PA_HASH_ORDER];
+{% endhighlight %}
+
+page_address_htable 是一个全局变量，维护高端内存线性地址中永久
+映射的全局变量。page_address_htable 数组的每个成员为
+page_address_slot 结构，结构包含了一个双链表和一个自旋锁。
+
+------------------------------------
+
+#### <span id="A0036"></span>
+
+{% highlight c %}
+/* FIXED STRINGS! Don't touch! */
+const char linux_banner[] =
+        "Linux version " UTS_RELEASE " (" LINUX_COMPILE_BY "@"
+        LINUX_COMPILE_HOST ") (" LINUX_COMPILER ") " UTS_VERSION "\n"
+{% endhighlight %}
+
+linux_banner 字符串保存了 linux 版本号，编译主机，GCC 版本，编译
+时间等信息。
+
+------------------------------------
+
+#### <span id="A0037">setup_arch</span>
+
+setup_arch() 函数用于初始化体系相关的部分，其实现与体系和芯片有关，
+具体实现如下：
+
+> - [ARMv7: Vexpress-a9](#A0038)
+
+------------------------------------
+
+#### <span id="A0038">setup_arch</span>
+
+{% highlight c %}
+void __init setup_arch(char **cmdline_p)
+{       
+        const struct machine_desc *mdesc;
+
+        setup_processor();
+        mdesc = setup_machine_fdt(__atags_pointer);
+{% endhighlight %}
+
+ARMv7 Vexpress-a9 芯片上，setup_arch() 函数的实现如下，
+由于函数较长，分段解析：
+
+
+
+------------------------------------
+
+#### <span id="A0039">lookup_processor</span>
+
+{% highlight c %}
+/*
+ * locate processor in the list of supported processor types.  The linker
+ * builds this table for us from the entries in arch/arm/mm/proc-*.S
+ */
+struct proc_info_list *lookup_processor(u32 midr)
+{
+        struct proc_info_list *list = lookup_processor_type(midr);
+
+        if (!list) {
+                pr_err("CPU%u: configuration botched (ID %08x), CPU halted\n",
+                       smp_processor_id(), midr);
+                while (1)
+                /* can't use cpu_relax() here as it may require MMU setup */;
+        }
+
+        return list;
+}
+{% endhighlight %}
+
+lookup_processor() 函数用于获得体系芯片相关的 proc_info_list 结构。
+参数 midr 指向了 CPU ID 信息，函数通过调用 lookup_processor_type()
+函数获得对应的 proc_info_list 信息，proc_info_list 信息包含了很多
+系统对内存管理以及内存基础信息。如果获取失败，函数将报错并挂起系统。
+
+> - [lookup_processor_type](#A0040)
+
+------------------------------------
+
+#### <span id="A0040">lookup_processor_type</span>
+
+{% highlight c %}
+/*
+ * This provides a C-API version of __lookup_processor_type
+ */
+ENTRY(lookup_processor_type)
+        stmfd   sp!, {r4 - r6, r9, lr}
+        mov     r9, r0
+        bl      __lookup_processor_type
+        mov     r0, r5
+        ldmfd   sp!, {r4 - r6, r9, pc}
+ENDPROC(lookup_processor_type)
+{% endhighlight %}
+
+lookup_processor_type() 函数用于查找体系芯片相关的
+proc_info_list 结构。函数以汇编形式给出，参数通过 r0 寄存器
+传入，并通过调用 __lookup_processor_type 获得需求的内容，
+最后通过 r0 寄存器返回 proc_info_list 的地址。
+__lookup_processor_type 获取 proc_info_list 的过程可以参考
+如下文档：
+
+> - [ARMv7 Cortex-A9 proc_info_list](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#ARMv7%20Cortex-A9%20proc_info_list)
+>
+> - [\_\_lookup_processor_type](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__lookup_processor_type)
+
+------------------------------------
+
+#### <span id="A000"></span>
+
+{% highlight c %}
+static int __get_cpu_architecture(void)
+{
+        int cpu_arch;
+
+        if ((read_cpuid_id() & 0x0008f000) == 0) {
+                cpu_arch = CPU_ARCH_UNKNOWN;
+        } else if ((read_cpuid_id() & 0x0008f000) == 0x00007000) {
+                cpu_arch = (read_cpuid_id() & (1 << 23)) ? CPU_ARCH_ARMv4T : CPU_ARCH_ARMv3;
+        } else if ((read_cpuid_id() & 0x00080000) == 0x00000000) {
+                cpu_arch = (read_cpuid_id() >> 16) & 7;
+                if (cpu_arch)
+                        cpu_arch += CPU_ARCH_ARMv3;
+        } else if ((read_cpuid_id() & 0x000f0000) == 0x000f0000) {
+                /* Revised CPUID format. Read the Memory Model Feature
+                 * Register 0 and check for VMSAv7 or PMSAv7 */
+                unsigned int mmfr0 = read_cpuid_ext(CPUID_EXT_MMFR0);
+                if ((mmfr0 & 0x0000000f) >= 0x00000003 ||
+                    (mmfr0 & 0x000000f0) >= 0x00000030)
+                        cpu_arch = CPU_ARCH_ARMv7;
+                else if ((mmfr0 & 0x0000000f) == 0x00000002 ||
+                         (mmfr0 & 0x000000f0) == 0x00000020)
+                        cpu_arch = CPU_ARCH_ARMv6;
+                else
+                        cpu_arch = CPU_ARCH_UNKNOWN;
+        } else
+                cpu_arch = CPU_ARCH_UNKNOWN;
+
+        return cpu_arch;
+}
+{% endhighlight %}
+
+__get_cpu_architecture() 函数用于获得 CPU 体系相关的信息。在
+分析源码之前，首先了解 ARM 的 MMFR 和 MIDR 寄存器。ARMv7 中
+MDIR 寄存器的布局如下图：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000025.png)
+
+从 MDIR 寄存器的 Architecture 域存储着体系相关的识别码，如下图：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000025
+.png)
+
+
+------------------------------------
+
 #### <span id="A000"></span>
 
 {% highlight c %}
@@ -844,6 +1061,31 @@ bit 清零，那么该位对应的 CPU possible 无效。
 {% highlight c %}
 
 {% endhighlight %}
+
+------------------------------------
+
+#### <span id="A000"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A000"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A000"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
 
 
 ## 赞赏一下吧 🙂
