@@ -1278,39 +1278,114 @@ HWCAP2_SHA2，HWCAP2_CRC32。
 
 ------------------------------------
 
-#### <span id="A000"></span>
+#### <span id="A0050">cache_policies</span>
 
 {% highlight c %}
+static struct cachepolicy cache_policies[] __initdata = {
+        {
+                .policy         = "uncached",
+                .cr_mask        = CR_W|CR_C,
+                .pmd            = PMD_SECT_UNCACHED,
+                .pte            = L_PTE_MT_UNCACHED,
+                .pte_s2         = s2_policy(L_PTE_S2_MT_UNCACHED),
+        }, {
+                .policy         = "buffered",
+                .cr_mask        = CR_C,
+                .pmd            = PMD_SECT_BUFFERED,
+                .pte            = L_PTE_MT_BUFFERABLE,
+                .pte_s2         = s2_policy(L_PTE_S2_MT_UNCACHED),
+        }, {
+                .policy         = "writethrough",
+                .cr_mask        = 0,
+                .pmd            = PMD_SECT_WT,
+                .pte            = L_PTE_MT_WRITETHROUGH,
+                .pte_s2         = s2_policy(L_PTE_S2_MT_WRITETHROUGH),
+        }, {
+                .policy         = "writeback",
+                .cr_mask        = 0,
+                .pmd            = PMD_SECT_WB,
+                .pte            = L_PTE_MT_WRITEBACK,
+                .pte_s2         = s2_policy(L_PTE_S2_MT_WRITEBACK),
+        }, {
+                .policy         = "writealloc",
+                .cr_mask        = 0,
+                .pmd            = PMD_SECT_WBWA,
+                .pte            = L_PTE_MT_WRITEALLOC,
+                .pte_s2         = s2_policy(L_PTE_S2_MT_WRITEBACK),
+        }
+};
+{% endhighlight %}
 
+cache_policies 数组是由 struct cachepolicy 数据构成的，
+用于描述系统 CACHE 的策略信息。
+
+------------------------------------
+
+#### <span id="A0051">initial_pmd_value</span>
+
+{% highlight c %}
+static unsigned long initial_pmd_value __initdata = 0
 {% endhighlight %}
 
 
 ------------------------------------
 
-#### <span id="A000"></span>
+#### <span id="A0052">cachepolicy</span>
 
 {% highlight c %}
-
+static unsigned int cachepolicy __initdata = CPOLICY_WRITEBACK;
 {% endhighlight %}
 
+cachepolicy 全局变量用于指定当前系统所使用的 cache policy
+在 cache_policies[] 数组中的索引。
 
 ------------------------------------
 
-#### <span id="A000"></span>
+#### <span id="A0053">init_default_cache_policy</span>
 
 {% highlight c %}
+/*
+ * Initialise the cache_policy variable with the initial state specified
+ * via the "pmd" value.  This is used to ensure that on ARMv6 and later,
+ * the C code sets the page tables up with the same policy as the head
+ * assembly code, which avoids an illegal state where the TLBs can get
+ * confused.  See comments in early_cachepolicy() for more information.
+ */
+void __init init_default_cache_policy(unsigned long pmd)
+{
+        int i;
 
+        initial_pmd_value = pmd;
+
+        pmd &= PMD_SECT_CACHE_MASK;
+
+        for (i = 0; i < ARRAY_SIZE(cache_policies); i++)
+                if (cache_policies[i].pmd == pmd) {
+                        cachepolicy = i;
+                        break;
+                }
+
+        if (i == ARRAY_SIZE(cache_policies))
+                pr_err("ERROR: could not find cache policy\n");
+}
 {% endhighlight %}
 
+init_default_cache_policy() 函数用于初始化系统 cachepolicy
+信息。内核通过 cache_policies[] 数组提供了多种 cache 策略，
+init_default_cache_policy() 函数通过 pmd 参数在数组中找到
+指定的 cache 策略，并将当前使用的 cache 策略在 cache_policies[]
+数组中的索引值存储在全局变量 cachepolicy 里。该函数又将 pmd
+参数存储在全局变量 initial_pmd_value 里。如果通过 pmd 参数
+传入的值不能在 cache_policies[] 数组里找到指定的值，那么系统
+将提示错误信息。
 
-------------------------------------
-
-#### <span id="A000"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
+> - [initial_pmd_value](#A0051)
+>
+> - [cache_policies](#A0050)
+>
+> - [cachepolicy](#A0052)
+>
+> - [ARRAY_SIZE](#A0034)
 
 ------------------------------------
 
