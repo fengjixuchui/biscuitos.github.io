@@ -937,6 +937,7 @@ void __init setup_arch(char **cmdline_p)
 ARMv7 Vexpress-a9 芯片上，setup_arch() 函数的实现如下，
 由于函数较长，分段解析：
 
+> - [setup_processor](#A0074)
 
 
 ------------------------------------
@@ -1852,7 +1853,392 @@ cacheid 全局变量存储 CACHE 类型信息。
 
 ------------------------------------
 
-#### <span id="A000"></span>
+#### <span id="A0070">__per_cpu_offset</span>
+
+{% highlight c %}
+/*
+ * Generic SMP percpu area setup.
+ *          
+ * The embedding helper is used because its behavior closely resembles
+ * the original non-dynamic generic percpu area setup.  This is
+ * important because many archs have addressing restrictions and might
+ * fail if the percpu area is located far away from the previous
+ * location.  As an added bonus, in non-NUMA cases, embedding is
+ * generally a good idea TLB-wise because percpu area can piggy back
+ * on the physical linear memory mapping which uses large page
+ * mappings on applicable archs.
+ */
+unsigned long __per_cpu_offset[NR_CPUS] __read_mostly;
+EXPORT_SYMBOL(__per_cpu_offset);
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0071">per_cpu_offset</span>
+
+{% highlight c %}
+/*      
+ * per_cpu_offset() is the offset that has to be added to a
+ * percpu variable to get to the instance for a certain processor.
+ *
+ * Most arches use the __per_cpu_offset array for those offsets but
+ * some arches have their own ways of determining the offset (x86_64, s390).
+ */
+#ifndef __per_cpu_offset
+extern unsigned long __per_cpu_offset[NR_CPUS];
+
+#define per_cpu_offset(x) (__per_cpu_offset[x])
+#endif
+{% endhighlight %}
+
+per_cpu_offset() 函数用于获得特定 CPU 在 __per_cpu_offset[]
+数组中的偏移。
+
+------------------------------------
+
+#### <span id="A0072">cpu_proc_init</span>
+
+{% highlight c %}
+#define PROC_VTABLE(f)                  processor.f
+
+#define cpu_proc_init                   PROC_VTABLE(_proc_init)
+{% endhighlight %}
+
+用于调用 ARM 体系相关的 proc_init 函数，在 ARMv9 初始化
+过程中，cpu_proc_init() 函数最终挂钩到 cpu_v7_proc_init()
+函数。该函数实现与体系有关，例如 ARMv7 Cortex-A9mp 中的实现如下：
+
+{% highlight c %}
+ENTRY(cpu_v7_proc_init)
+        ret     lr
+ENDPROC(cpu_v7_proc_init)
+{% endhighlight %}
+
+> - [ARMv7 Cortex-A9mp proc_info](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#ARMv7%20Cortex-A9%20proc_info_list)
+
+------------------------------------
+
+#### <span id="A0073">cpu_init</span>
+
+{% highlight c %}
+/*
+ * cpu_init - initialise one CPU.
+ *
+ * cpu_init sets up the per-CPU stacks.
+ */
+void notrace cpu_init(void)
+{
+#ifndef CONFIG_CPU_V7M
+        unsigned int cpu = smp_processor_id();
+        struct stack *stk = &stacks[cpu];
+
+        if (cpu >= NR_CPUS) {
+                pr_crit("CPU%u: bad primary CPU number\n", cpu);
+                BUG();
+        }       
+
+        /*
+         * This only works on resume and secondary cores. For booting on the
+         * boot cpu, smp_prepare_boot_cpu is called after percpu area setup.
+         */
+        set_my_cpu_offset(per_cpu_offset(cpu));
+
+        cpu_proc_init();
+
+        /*
+         * Define the placement constraint for the inline asm directive below.
+         * In Thumb-2, msr with an immediate value is not allowed.
+         */
+#ifdef CONFIG_THUMB2_KERNEL
+#define PLC     "r"
+#else
+#define PLC     "I"
+#endif
+        /*
+         * setup stacks for re-entrant exception handlers
+         */
+        __asm__ (
+        "msr    cpsr_c, %1\n\t"
+        "add    r14, %0, %2\n\t"
+        "mov    sp, r14\n\t"
+        "msr    cpsr_c, %3\n\t"
+        "add    r14, %0, %4\n\t"
+        "mov    sp, r14\n\t"
+        "msr    cpsr_c, %5\n\t"
+        "add    r14, %0, %6\n\t"
+        "mov    sp, r14\n\t"
+        "msr    cpsr_c, %7\n\t"
+        "add    r14, %0, %8\n\t"
+        "mov    sp, r14\n\t"
+        "msr    cpsr_c, %9"
+            :
+            : "r" (stk),
+              PLC (PSR_F_BIT | PSR_I_BIT | IRQ_MODE),
+              "I" (offsetof(struct stack, irq[0])),
+              PLC (PSR_F_BIT | PSR_I_BIT | ABT_MODE),
+              "I" (offsetof(struct stack, abt[0])),
+              PLC (PSR_F_BIT | PSR_I_BIT | UND_MODE),
+              "I" (offsetof(struct stack, und[0])),
+              PLC (PSR_F_BIT | PSR_I_BIT | FIQ_MODE),
+              "I" (offsetof(struct stack, fiq[0])),
+              PLC (PSR_F_BIT | PSR_I_BIT | SVC_MODE)
+            : "r14");
+#endif
+}
+{% endhighlight %}
+
+cpu_init() 函数用于初始化一个 CPU，并设置了 per-CPU 的堆栈。
+在 ARMv7 中，没有定义宏 CONFIG_CPU_V7M，因此执行下面的代码：
+
+{% highlight c %}
+        unsigned int cpu = smp_processor_id();
+        struct stack *stk = &stacks[cpu];
+
+        if (cpu >= NR_CPUS) {
+                pr_crit("CPU%u: bad primary CPU number\n", cpu);
+                BUG();
+        }       
+
+        /*
+         * This only works on resume and secondary cores. For booting on the
+         * boot cpu, smp_prepare_boot_cpu is called after percpu area setup.
+         */
+        set_my_cpu_offset(per_cpu_offset(cpu));
+
+        cpu_proc_init();
+{% endhighlight %}
+
+函数首先调用 smp_processor_id() 函数获得当前正在使用的 CPU
+号，然后获得当前 CPU 对应的全局堆栈，全局堆栈通过 stacks[]
+维护。如果当前使用的 CPU 号大于 NR_CPUS，那么系统将提出警告。
+接着函数使用 set_my_cpu_offset() 函数将当前 CPU 在 per_cpu_offset()
+中的值写入到 ARMv7 的 TPIDRPRW 寄存器里。接着函数调用
+cpu_proc_init() 函数简介调用体系相关的 proc_init() 函数，
+在 ARMv7 Cortex-A9mp 中，proc_init() 对应的函数是
+cpu_v7_proc_init()。函数接下来使用内嵌汇编，如下：
+
+{% highlight c %}
+        /*
+         * setup stacks for re-entrant exception handlers
+         */
+        __asm__ (
+        "msr    cpsr_c, %1\n\t"
+        "add    r14, %0, %2\n\t"
+        "mov    sp, r14\n\t"
+        "msr    cpsr_c, %3\n\t"
+        "add    r14, %0, %4\n\t"
+        "mov    sp, r14\n\t"
+        "msr    cpsr_c, %5\n\t"
+        "add    r14, %0, %6\n\t"
+        "mov    sp, r14\n\t"
+        "msr    cpsr_c, %7\n\t"
+        "add    r14, %0, %8\n\t"
+        "mov    sp, r14\n\t"
+        "msr    cpsr_c, %9"
+            :
+            : "r" (stk),
+              PLC (PSR_F_BIT | PSR_I_BIT | IRQ_MODE),
+              "I" (offsetof(struct stack, irq[0])),
+              PLC (PSR_F_BIT | PSR_I_BIT | ABT_MODE),
+              "I" (offsetof(struct stack, abt[0])),
+              PLC (PSR_F_BIT | PSR_I_BIT | UND_MODE),
+              "I" (offsetof(struct stack, und[0])),
+              PLC (PSR_F_BIT | PSR_I_BIT | FIQ_MODE),
+              "I" (offsetof(struct stack, fiq[0])),
+              PLC (PSR_F_BIT | PSR_I_BIT | SVC_MODE)
+            : "r14");
+{% endhighlight %}
+
+这段内嵌汇编首先修改了 CPSR 寄存器，在分析具体的源码之前，
+可以查看一下 ARMv7 的 CPSR 寄存器布局，如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000001.png)
+
+函数首先调用 MSR 指令，将 PSR_F_BIT，PSR_I_BIT 和
+IRQ_MODE 写入到 CPSR 寄存器中，代码执行之后，CPSR
+寄存器的 F 标志位和 I 标志位被置位，然后进入 IRQ 模式。
+F 标志置位之后，系统将启用 FIRQ 中断，I 标志置位之后，
+系统将启动 IRQ 中断。此时调用 ADD 指令，将 stk 的地址
+加上 offsetof(struct stack, irq[0])，以此获得 stk->irq
+的地址，此时将堆栈的地址写入到 stk->irq 内，也就是当进入
+中断之后，当前 CPU 使用的中断堆栈。同理，调用 MSR 指令，
+将 PSR_F_BIT，PSR_I_BIT 和 ABT_MODE 写入到 CPSR 寄存器，
+此时系统处于 ABORT 模式，此时将 offsetof(struct stack, abt[0])
+的值通过 ADD 指令与 stk 的地址相加，以此获得 stk->atb
+地址，然后将当前堆栈的地址写入到 stk->atb 中，这样就可以
+知道当系统进入 ABORT 时候，系统所使用的堆栈了。同理设置了
+UND 模式和 FIQ 模式时，tsk 对应的堆栈信息。最后将
+CPSR 寄存器的 F 标志和 I 标志置位，打开 FIRQ 和 IRQ，
+并进入 SVC 模式。
+
+> - [smp_processor_id](#A0015)
+>
+> - [set_my_cpu_offset](#A0010)
+>
+> - [per_cpu_offset](#A0071)
+>
+> - [cpu_proc_init](#A0072)
+>
+> - [ARMv7 Cortex-A9mp proc_info](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#ARMv7%20Cortex-A9%20proc_info_list)
+
+------------------------------------
+
+#### <span id="A0074">setup_processor</span>
+
+{% highlight c %}
+static void __init setup_processor(void)
+{
+        unsigned int midr = read_cpuid_id();
+        struct proc_info_list *list = lookup_processor(midr);
+
+        cpu_name = list->cpu_name;
+        __cpu_architecture = __get_cpu_architecture();
+
+        init_proc_vtable(list->proc);
+#ifdef MULTI_TLB
+        cpu_tlb = *list->tlb;
+#endif
+#ifdef MULTI_USER
+        cpu_user = *list->user;
+#endif
+#ifdef MULTI_CACHE
+        cpu_cache = *list->cache;
+#endif
+
+        pr_info("CPU: %s [%08x] revision %d (ARMv%s), cr=%08lx\n",
+                list->cpu_name, midr, midr & 15,
+                proc_arch[cpu_architecture()], get_cr());
+
+        snprintf(init_utsname()->machine, __NEW_UTS_LEN + 1, "%s%c",
+                 list->arch_name, ENDIANNESS);
+        snprintf(elf_platform, ELF_PLATFORM_SIZE, "%s%c",
+                 list->elf_name, ENDIANNESS);
+        elf_hwcap = list->elf_hwcap;
+
+        cpuid_init_hwcaps();
+        patch_aeabi_idiv();
+
+#ifndef CONFIG_ARM_THUMB
+        elf_hwcap &= ~(HWCAP_THUMB | HWCAP_IDIVT);
+#endif
+#ifdef CONFIG_MMU
+        init_default_cache_policy(list->__cpu_mm_mmu_flags);
+#endif
+        erratum_a15_798181_init();
+
+        elf_hwcap_fixup();
+
+        cacheid_init();
+        cpu_init();
+}
+{% endhighlight %}
+
+setup_processor() 函数用于初始化体系相关的处理器。函数较长，
+分段解析，
+
+{% highlight c %}
+        unsigned int midr = read_cpuid_id();
+        struct proc_info_list *list = lookup_processor(midr);
+
+        cpu_name = list->cpu_name;
+        __cpu_architecture = __get_cpu_architecture();
+
+        init_proc_vtable(list->proc);
+{% endhighlight %}
+
+函数首先调用 read_cpuid_id() 函数获得 ARM 的 ID_MMFR0 寄存器，
+存储在 midr 局部变量，然后调用 lookup_processor() 函数获得
+体系相关的 proc_info_list 结构，该结构包含了系统内存模组等
+基础信息。函数接着将获得的 proc_info_list 的 cpu_name 成员
+信息存储到全局 cpu_name 中，以此维护当前系统名字。函数
+继续调用 __get_cpu_architecture() 函数，将体系信息存储到
+全局变量 __cpu_architecture 中，接着调用
+init_proc_vtable() 函数设置系统的 proc_info vtable.
+
+{% highlight c %}
+#ifdef MULTI_TLB
+        cpu_tlb = *list->tlb;
+#endif
+#ifdef MULTI_USER
+        cpu_user = *list->user;
+#endif
+#ifdef MULTI_CACHE
+        cpu_cache = *list->cache;
+#endif
+{% endhighlight %}
+
+如果定义了 MULTI_TLB 宏，那么将全局变量 cpu_tlb 指向
+proc_info 的 tlb 成员。如果定义了 MULTI_USER，那么将
+cpu_user 指向 proc_info 的 user 成员。如果定义了
+MULTI_CACHE，那么将 cpu_cache 指向 proc_info 的 cache
+成员。
+
+{% highlight c %}
+        pr_info("CPU: %s [%08x] revision %d (ARMv%s), cr=%08lx\n",
+                list->cpu_name, midr, midr & 15,
+                proc_arch[cpu_architecture()], get_cr());
+
+        snprintf(init_utsname()->machine, __NEW_UTS_LEN + 1, "%s%c",
+                 list->arch_name, ENDIANNESS);
+        snprintf(elf_platform, ELF_PLATFORM_SIZE, "%s%c",
+                 list->elf_name, ENDIANNESS);
+        elf_hwcap = list->elf_hwcap;
+
+        cpuid_init_hwcaps();
+        patch_aeabi_idiv();
+{% endhighlight %}
+
+函数打印了 CPU 相关的版本信息，并设置了 UTS 的 machine，
+elf_platform 也被设置为 proc_info 的 elf_name。函数
+将体系的 proc_info 中 elf_hwcap 成员存储到 elf_hwcap
+全局变量中进行维护，并调用 cpuid_init_hwcaps() 函数，
+该函数根据实际体系寄存器的值，设置了全局变量 elf_hwcap,
+最后调用 patch_aeabi_idiv() 获得当前体系支持的硬件
+DIV 指令。本段代码主要获得体系的硬件信息。
+
+{% highlight c %}
+#ifndef CONFIG_ARM_THUMB
+        elf_hwcap &= ~(HWCAP_THUMB | HWCAP_IDIVT);
+#endif
+#ifdef CONFIG_MMU
+        init_default_cache_policy(list->__cpu_mm_mmu_flags);
+#endif
+        erratum_a15_798181_init();
+
+        elf_hwcap_fixup();
+
+        cacheid_init();
+        cpu_init();
+{% endhighlight %}
+
+这段代码中，函数设置默认的 cache 策略，并调用 elf_hwcap_fixup()
+函数修正了硬件支持信息。调用 cacheid_init() 函数获得当前系统
+时候的 cache 信息，并维护在指定的全局变量里。最后调用 cpu_init()
+函数初始化了一个 CPU，设置其各种模式下的堆栈信息，维护在系统的
+stacks[] 数组结构中。至此函数初始化硬件完毕，函数将相应的硬件信息
+维护到系统的全局变量里。
+
+> - [read_cpuid_id](https://biscuitos.github.io/blog/CPUID_read_cpuid_id/)
+>
+> - [lookup_processor](#A0039)
+>
+> - [\_\_get_cpu_architecture](#A0041)
+>
+> - [get_cr](#A0043)
+>
+> - [cpuid_init_hwcaps](#A0049)
+>
+> - [init_default_cache_policy](#A0053)
+>
+> - [elf_hwcap_fixup](#A0055)
+>
+> - [cacheid_init](#A0068)
+>
+> - [cpu_init](#A0072)
+
+------------------------------------
+
+#### <span id="A00"></span>
 
 {% highlight c %}
 
@@ -1860,7 +2246,143 @@ cacheid 全局变量存储 CACHE 类型信息。
 
 ------------------------------------
 
-#### <span id="A000"></span>
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
 
 {% highlight c %}
 
