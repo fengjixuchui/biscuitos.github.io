@@ -1389,6 +1389,477 @@ init_default_cache_policy() 函数通过 pmd 参数在数组中找到
 
 ------------------------------------
 
+#### <span id="A0054">read_cpuid_part</span>
+
+{% highlight c %}
+/*
+ * The CPU part number is meaningless without referring to the CPU
+ * implementer: implementers are free to define their own part numbers
+ * which are permitted to clash with other implementer part numbers.
+ */
+static inline unsigned int __attribute_const__ read_cpuid_part(void)
+{       
+        return read_cpuid_id() & ARM_CPU_PART_MASK;
+}
+{% endhighlight %}
+
+read_cpuid_part() 函数用于获得 MIDR 寄存器中 Implementer 域和
+Primary part number 域。MIDR 寄存器的布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000201.png)
+
+> - [read_cpuid_id](https://biscuitos.github.io/blog/CPUID_read_cpuid_id/)
+
+------------------------------------
+
+#### <span id="A0055">elf_hwcap_fixup</span>
+
+{% highlight c %}
+static void __init elf_hwcap_fixup(void)
+{       
+        unsigned id = read_cpuid_id();
+
+        /*
+         * HWCAP_TLS is available only on 1136 r1p0 and later,
+         * see also kuser_get_tls_init.
+         */
+        if (read_cpuid_part() == ARM_CPU_PART_ARM1136 &&
+            ((id >> 20) & 3) == 0) {
+                elf_hwcap &= ~HWCAP_TLS;
+                return;
+        }
+
+        /* Verify if CPUID scheme is implemented */
+        if ((id & 0x000f0000) != 0x000f0000)
+                return;
+
+        /*
+         * If the CPU supports LDREX/STREX and LDREXB/STREXB,
+         * avoid advertising SWP; it may not be atomic with
+         * multiprocessing cores.
+         */  
+        if (cpuid_feature_extract(CPUID_EXT_ISAR3, 12) > 1 ||
+            (cpuid_feature_extract(CPUID_EXT_ISAR3, 12) == 1 &&
+             cpuid_feature_extract(CPUID_EXT_ISAR4, 20) >= 3))
+                elf_hwcap &= ~HWCAP_SWP;
+}
+{% endhighlight %}
+
+elf_hwcap_fixup() 用于修正 ARM 硬件支持的信息。函数首先调用
+read_cpuid_id() 函数获得 MIDR 寄存器的值，其寄存器布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000201.png)
+
+然后调用 read_cpuid_part() 函数判断当前 ARM 是否是
+ARM_CPU_PART_ARM1136, 并且判断 MIDR 寄存器的 Variant 域
+是否为 0，该域值与 “An IMPLEMENTATION DEFINED variant number”
+有关，如果上面的条件满足，那么设置 elf_hwcap 全局变量与
+~HWCAP_TLS 相与，并直接返回。如果函数此时没有返回，那么继续
+执行下面的代码，接着判断当前系统的 MIDR 寄存器的 Variant 域，
+如果当前体系没有实现这个域，那么函数直接返回；反之如果 MDIR
+实现了 Variant 域，那么函数调用 cpuid_feature_extract() 函数
+读取体系的 ID_ISAR3 寄存器，ID_ISAR4 寄存器，其寄存器布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000202.png)
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000203.png)
+
+elf_hwcap_fixup() 函数判断，如果 ID_ISAR3 的 bit 12:15 域值，
+该域值的含义如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000204.png)
+
+该域值与 ID_ISAR4 寄存器的 SynchPrim_instrs_frac 域一同
+判断体系是否实现了 Synchronization Primitive 指令，其中
+ID_ISAR4 寄存器的 SynchPrim_instrs_frac 域定义如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000205.png)
+
+elf_hwcap_fixup() 函数此时判断，如果 ID_ISAR3 寄存器的
+SynchPrim_instrs 域值大于 1，或者 ID_ISAR3 寄存器的
+SynchPrim_instrs 域值等于 1，且 ID_ISAR4 寄存器的
+SynchPrim_instrs_frac 域大于等于 3，那么函数将全局变量 elf_hwcap
+的值与宏 ~HWCAP_SWP 相与。
+
+> - [cpuid_feature_extract](#A0048)
+>
+> - [read_cpuid_id](https://biscuitos.github.io/blog/CPUID_read_cpuid_id/)
+
+------------------------------------
+
+#### <span id="A0056">read_cpuid_cachetype</span>
+
+{% highlight c %}
+static inline unsigned int __attribute_const__ read_cpuid_cachetype(void)
+{
+        return read_cpuid(CPUID_CACHETYPE);
+}
+{% endhighlight %}
+
+read_cpuid_cachetype() 函数用于读取 ARM 的 CTR (Cache Type Register)
+寄存器，以此读取体系 CACHE 的类型信息。CTR 寄存器的内存布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000206.png)
+
+> - [read_cpuid](https://biscuitos.github.io/blog/CPUID_read_cpuid/)
+
+------------------------------------
+
+#### <span id="A0057">cacheid_is</span>
+
+{% highlight c %}
+#define CACHEID_VIVT                    (1 << 0)
+#define CACHEID_VIPT_NONALIASING        (1 << 1)
+#define CACHEID_VIPT_ALIASING           (1 << 2)
+#define CACHEID_VIPT                    (CACHEID_VIPT_ALIASING|CACHEID_VIPT_NONALIASING)
+#define CACHEID_ASID_TAGGED             (1 << 3)
+#define CACHEID_VIPT_I_ALIASING         (1 << 4)
+#define CACHEID_PIPT
+
+/*              
+ * __LINUX_ARM_ARCH__ is the minimum supported CPU architecture
+ * Mask out support which will never be present on newer CPUs.
+ * - v6+ is never VIVT
+ * - v7+ VIPT never aliases on D-side
+ */
+#if __LINUX_ARM_ARCH__ >= 7
+#define __CACHEID_ARCH_MIN      (CACHEID_VIPT_NONALIASING |\
+                                 CACHEID_ASID_TAGGED |\
+                                 CACHEID_VIPT_I_ALIASING |\
+                                 CACHEID_PIPT)
+#elif __LINUX_ARM_ARCH__ >= 6
+#define __CACHEID_ARCH_MIN      (~CACHEID_VIVT)
+#else
+#define __CACHEID_ARCH_MIN      (~0)
+#endif
+
+/*              
+ * Mask out support which isn't configured
+ */
+#if defined(CONFIG_CPU_CACHE_VIVT) && !defined(CONFIG_CPU_CACHE_VIPT)
+#define __CACHEID_ALWAYS        (CACHEID_VIVT)
+#define __CACHEID_NEVER         (~CACHEID_VIVT)
+#elif !defined(CONFIG_CPU_CACHE_VIVT) && defined(CONFIG_CPU_CACHE_VIPT)
+#define __CACHEID_ALWAYS        (0)
+#define __CACHEID_NEVER         (CACHEID_VIVT)
+#else
+#define __CACHEID_ALWAYS        (0)
+#define __CACHEID_NEVER         (0)
+#endif                  
+
+static inline unsigned int __attribute__((pure)) cacheid_is(unsigned int mask)
+{                       
+        return (__CACHEID_ALWAYS & mask) |
+               (~__CACHEID_NEVER & __CACHEID_ARCH_MIN & mask & cacheid);
+}
+{% endhighlight %}
+
+cacheid_is() 函数用于获得 ARM 系统 CTR (Cache Type Register)
+寄存器中的特定域值。宏 __CACHEID_ALWAYS 的值与宏 CONFIG_CPU_CACHE_VIVT
+和宏 CONFIG_CPU_CACHE_VIPT 有关，定义如上。宏 __CACHEID_ARCH_MIN 的定义
+由 CACHEID_VIPT_NONALIASING，CACHEID_ASID_TAGGED，CACHEID_VIPT_I_ALIASING，
+CACHEID_PIPT 定义有关。cacheid_is() 函数首先将 mask 参数
+与 __CACHEID_ALWAYS 相与，然后 __CACHEID_NEVER 的反码与  
+__CACHEID_ARCH_MIN, mask 参数，cacheid 相与，相与的结果与
+之前的值相或，以此获得 CTR 寄存器中特定的值。
+
+------------------------------------
+
+#### <span id="A0058">icache_is_pipt</span>
+
+{% highlight c %}
+#define icache_is_pipt()                cacheid_is(CACHEID_PIPT)
+{% endhighlight %}
+
+icache_is_pipt() 函数判断 L1 指令 CACHE 是否是 PIPT
+(Physical index, Physical tag).
+
+------------------------------------
+
+#### <span id="A0059">set_csselr</span>
+
+{% highlight c %}
+static inline void set_csselr(unsigned int cache_selector)
+{
+        asm volatile("mcr p15, 2, %0, c0, c0, 0" : : "r" (cache_selector));
+}
+{% endhighlight %}
+
+set_csselr() 函数用于设置 ARM 的 CSSELR (Cache Size Selection Register)
+寄存器，该寄存器用来设置 cache 的时候选择对应的 CACHE 类型以及 CACHE level 号，
+例如 Dcache 或者 ICACHE，或者 Level1 cache，Level2 cache 等。
+CSSELR 寄存器的寄存器布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000026.png)
+
+------------------------------------
+
+#### <span id="A0060">read_ccsidr</span>
+
+{% highlight c %}
+static inline unsigned int read_ccsidr(void)
+{
+        unsigned int val;
+
+        asm volatile("mrc p15, 1, %0, c0, c0, 0" : "=r" (val));
+        return val;
+}
+{% endhighlight %}
+
+read_ccsidr() 函数的作用就是读取 ARM 体系的 CCSIDR
+(Cache Size ID Registers) 寄存器。CCSIDR 寄存器存储了 CSSELR
+寄存器选中 cache 的 Cache Sets，LineSize 信息。
+CCSIDR 寄存器的寄存器布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000028.png)
+
+------------------------------------
+
+#### <span id="A0061">cpu_has_aliasing_icache</span>
+
+{% highlight c %}
+static int cpu_has_aliasing_icache(unsigned int arch)
+{
+        int aliasing_icache;
+        unsigned int id_reg, num_sets, line_size;
+
+        /* PIPT caches never alias. */
+        if (icache_is_pipt())
+                return 0;
+
+        /* arch specifies the register format */
+        switch (arch) {
+        case CPU_ARCH_ARMv7:
+                set_csselr(CSSELR_ICACHE | CSSELR_L1);
+                isb();
+                id_reg = read_ccsidr();
+                line_size = 4 << ((id_reg & 0x7) + 2);
+                num_sets = ((id_reg >> 13) & 0x7fff) + 1;
+                aliasing_icache = (line_size * num_sets) > PAGE_SIZE;
+                break;
+        case CPU_ARCH_ARMv6:
+                aliasing_icache = read_cpuid_cachetype() & (1 << 11);
+                break;
+        default:
+                /* I-cache aliases will be handled by D-cache aliasing code */
+                aliasing_icache = 0;
+        }
+
+        return aliasing_icache;
+}
+{% endhighlight %}
+
+cpu_has_aliasing_icache() 函数用于判断 ICACHE 是否按页对齐。
+函数首先调用 icache_is_pipt() 函数判断 ICACHE 是否属于 PIPT
+类型，如果是，那么 PIPT cache 是不需要对齐的，直接返回 0；如果
+CACHE 不是 PIPT 类型，那么函数通过 arch 参数进行不同的处理，
+arch 如果是 ARMv7 的时候，函数首先调用 set_csselr() 设置
+CSSELR 寄存器，传入 CSSELR_ICACHE 和 CSSELR_L1，以此选中
+Level1 的 ICACHE。然后调用 isb() 函数执行一次内存屏障，
+接着调用 read_ccsidr() 函数读取 L1 ICACHE 的 cache sets
+和 cache line 信息，以此计算 L1 ICACHE 的体积是否小于一个
+PAGE_SIZE，如果大于，那么表示 L1 ICACHE 没有对齐；反之
+表示 L1 ICACHE 已经按页对齐。在 ARMv7 中 CSSELR 寄存器
+的布局如下图：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000026.png)
+
+ARMv7 中 CCSIDR 寄存器的寄存器布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000028.png)
+
+ARMv6 的情况不讨论，最后返回比较的结果。
+
+> - [set_csselr](#A0059)
+>
+> - [read_ccsidr](#A0060)
+
+------------------------------------
+
+#### <span id="A0062">cache_is_vivt</span>
+
+{% highlight c %}
+#define cache_is_vivt()                 cacheid_is(CACHEID_VIVT)
+{% endhighlight %}
+
+cache_is_vivt() 判断 CACHE 是否是 VIVT 类型，
+Virtual index，Virtual Tag。
+
+------------------------------------
+
+#### <span id="A0063">cache_is_vipt</span>
+
+{% highlight c %}
+#define cache_is_vipt()                 cacheid_is(CACHEID_VIPT)
+{% endhighlight %}
+
+cache_is_vipt() 函数判断 CACHE 是否属于 VIPT 类型。
+Virtual Index，Physical Tag。
+
+------------------------------------
+
+#### <span id="A0064">cache_is_vipt_nonaliasing</span>
+
+{% highlight c %}
+#define cache_is_vipt_nonaliasing()     cacheid_is(CACHEID_VIPT_NONALIASING)
+{% endhighlight %}
+
+cache_is_vipt_nonaliasing() 函数用于判断 CACHE 是否属于
+VIPT 非别名的。Virtual Index，Physical Tag。
+
+------------------------------------
+
+#### <span id="A0065">cache_is_vipt_aliasing</span>
+
+{% highlight c %}
+#define cache_is_vipt_aliasing()        cacheid_is(CACHEID_VIPT_ALIASING)
+{% endhighlight %}
+
+cache_is_vipt_aliasing() 函数判断 CACHE 是否属于
+VIPT aliasing，Virtual Index，Physical Tag。
+
+------------------------------------
+
+#### <span id="A0066">icache_is_vivt_asid_tagged</span>
+
+{% highlight c %}
+#define icache_is_vivt_asid_tagged()    cacheid_is(CACHEID_ASID_TAGGED)
+{% endhighlight %}
+
+icache_is_vivt_asid_tagged() 函数判断函数 ICACHE 是否属于
+VIVT ASID tags.
+
+------------------------------------
+
+#### <span id="A0067">icache_is_vipt_aliasing</span>
+
+{% highlight c %}
+#define icache_is_vipt_aliasing()       cacheid_is(CACHEID_VIPT_I_ALIASING)
+{% endhighlight %}
+
+icache_is_vipt_aliasing() 函数用于判断 ICACHE 是否属于
+VIPT aliasing。
+
+------------------------------------
+
+#### <span id="A0068">cacheid_init</span>
+
+{% highlight c %}
+static void __init cacheid_init(void)
+{
+        unsigned int arch = cpu_architecture();
+
+        if (arch >= CPU_ARCH_ARMv6) {
+                unsigned int cachetype = read_cpuid_cachetype();
+
+                if ((arch == CPU_ARCH_ARMv7M) && !(cachetype & 0xf000f)) {
+                        cacheid = 0;
+                } else if ((cachetype & (7 << 29)) == 4 << 29) {
+                        /* ARMv7 register format */
+                        arch = CPU_ARCH_ARMv7;
+                        cacheid = CACHEID_VIPT_NONALIASING;
+                        switch (cachetype & (3 << 14)) {
+                        case (1 << 14):
+                                cacheid |= CACHEID_ASID_TAGGED;
+                                break;
+                        case (3 << 14):
+                                cacheid |= CACHEID_PIPT;
+                                break;
+                        }
+                } else {
+                        arch = CPU_ARCH_ARMv6;
+                        if (cachetype & (1 << 23))
+                                cacheid = CACHEID_VIPT_ALIASING;
+                        else    
+                                cacheid = CACHEID_VIPT_NONALIASING;
+                }
+                if (cpu_has_aliasing_icache(arch))
+                        cacheid |= CACHEID_VIPT_I_ALIASING;
+        } else {
+                cacheid = CACHEID_VIVT;
+        }
+
+        pr_info("CPU: %s data cache, %s instruction cache\n",
+                cache_is_vivt() ? "VIVT" :
+                cache_is_vipt_aliasing() ? "VIPT aliasing" :
+                cache_is_vipt_nonaliasing() ? "PIPT / VIPT nonaliasing" : "unknown",            
+                cache_is_vivt() ? "VIVT" :
+                icache_is_vivt_asid_tagged() ? "VIVT ASID tagged" :
+                icache_is_vipt_aliasing() ? "VIPT aliasing" :
+                icache_is_pipt() ? "PIPT" :
+                cache_is_vipt_nonaliasing() ? "VIPT nonaliasing" : "unknown");
+}
+{% endhighlight %}
+
+cacheid_init() 函数用于初始化系统 CACHE 信息。内核使用
+全局变量 cacheid 维护 cache 相关的信息。函数首先调用
+read_cpuid_cachetype() 函数读取 ARM 体系的  CTR (Cache Type Register)
+寄存器，以此读取体系 CACHE 的类型信息。CTR 寄存器的内存布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000206.png)
+
+如果 arch 参数表明当前体系是 ARMv7M 关于这个 cache type 的
+0:3 域与 16:19 域为 0，这两个域分别是 IminLine 和 DminLine 域，
+用于指定最小的 Line number 数。此时设置 cacheid 为 0；如果此时
+cachetype 的 bit 29:31 等于 4，此时对应 CTR 寄存器的 Format 域，
+其定义如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000207.png)
+
+如果 Format 等于 4，那么此时体系信息是 ARMv7. 此时将
+cacheid 设置为 CACHEID_VIPT_NONALIASING。接着如果此时
+CTR 的 bit 14:16 L1lp 域，即 Level 1 cache policy 域，
+其定义为：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000208.png)
+
+如果此时域值为 1，即 AIVIVT，那么将宏 CACHEID_ASID_TAGGED
+添加到 cacheid 中；如果此时域值为 3，即 PIPT，那么将宏
+CACHEID_PIPT 添加到 cacheid 中；如果此时是 ARMv6，这里不做
+讨论。函数接着调用 cpu_has_aliasing_icache() 函数判断当前
+使用的 ICACHE 是否按页对齐，如果按页对齐，那么将宏
+CACHEID_VIPT_I_ALIASING 添加到 cacheid 里面。
+如果 ARM 体系的版本小于 ARMv6, 那么 cacheid 设置为
+CACHE_VIVT。函数最后打印了 CACHE 的信息。
+
+> - [cpu_architecture](#A0045)
+>
+> - [read_cpuid_cachetype](#A0056)
+>
+> - [cpu_has_aliasing_icache](#A0061)
+>
+> - [cache_is_vivt](#A0062)
+>
+> - [cache_is_vipt_aliasing](#A0065)
+>
+> - [cache_is_vipt_nonaliasing](#A0064)
+>
+> - [icache_is_vivt_asid_tagged](#A0066)
+>
+> - [icache_is_vipt_aliasing](#A0067)
+>
+> - [cacheid](#A0069)
+
+------------------------------------
+
+#### <span id="A0069">cacheid</span>
+
+{% highlight c %}
+unsigned int cacheid __read_mostly;
+{% endhighlight %}
+
+cacheid 全局变量存储 CACHE 类型信息。
+
+------------------------------------
+
+#### <span id="A000"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
 #### <span id="A000"></span>
 
 {% highlight c %}
