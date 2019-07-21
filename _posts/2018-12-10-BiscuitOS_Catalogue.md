@@ -41,6 +41,8 @@ tags:
 >
 > - [MIT XV6 Operating System](https://biscuitos.github.io/blog/XV6-REV11-Usermanual/)
 >
+> - [Apollo-11](https://biscuitos.github.io/blog/Apollo-11-Usermanual/)
+>
 > - [Architecture Computer English](https://biscuitos.github.io/blog/Architecture_English_note/)
 
 ## Linux 源码分析及实践
