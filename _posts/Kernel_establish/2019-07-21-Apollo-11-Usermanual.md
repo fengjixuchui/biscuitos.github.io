@@ -5,7 +5,7 @@ date:   2019-07-20 07:24:30 +0800
 categories: [Build]
 excerpt: Apollo-11.
 tags:
-  - xv6
+  - Apollo
 ---
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000202.gif)
@@ -94,6 +94,8 @@ sudo apt-get install -y libfdt-dev libpixman-1-dev
 sudo add-apt-repository ppa:nilarimogard/webupd8
 sudo apt-get update
 sudo apt-get install libwxgtk2.8-dev
+sudo apt-get install libsdl1.2-dev liballegro4-dev
+sudo apt-get install libncurses5-dev libgtk2.0-dev
 
 ## Ubuntu 18.04
 sudo apt-get install libwxgtk3.0-dev libsdl1.2-dev
