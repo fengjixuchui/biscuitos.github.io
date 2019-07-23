@@ -270,18 +270,26 @@ buddy@BDOS:$ ll vexpress-v2p-ca15_a7.dtb
 标识 DTB 文件的版本信息。其值为 DTB文件的第六个 4 字节，由于采用大
 端模式，此时其值为：0x00000011。
 
+-------------------------------
+
 ###### last_comp_version
 
 标识上一个兼容 DTB 版本信息
+
+-------------------------------
 
 ###### boot_cpuid_phys
 
 物理 CPU 号
 
+------------------------------
+
 ###### dt_strings_size
 
 标识 Device-tree strings 的大小，结合 off_dt_strings 可以
 计算出 DTB 文件 device-tree string 的完整信息。
+
+------------------------------
 
 ###### dt_struct_size
 
@@ -522,7 +530,7 @@ More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
 ----------------------------------------------------
 
-##### <span id=A011>Russell King 反对 DTS 加入到 ARM</span>
+##### <span id="A011">Russell King 反对 DTS 加入到 ARM</span>
 
 Russell King is against adding support for FDT to the ARM
 platform (see whole thread for interesting discussion):
@@ -594,7 +602,7 @@ Please read the FAQ at http://www.tux.org/lkml/
 
 ------------------------------------------------
 
-##### <span id=A013>Russell 最终被说服接受 DTS 进入 ARM</span>
+##### <span id="A013">Russell 最终被说服接受 DTS 进入 ARM</span>
 
 But maybe Russell can be convinced:
 
@@ -674,7 +682,7 @@ Please read the FAQ at http://www.tux.org/lkml/
 
 ----------------------------------------------------------
 
-##### <span id=A014>David Gibson 辩护 FDT</span>
+##### <span id="A014">David Gibson 辩护 FDT</span>
 
 David Gibson definds FDT：
 
