@@ -102,6 +102,312 @@ Gaah.Guys, this whole ARM thing is a f*ching pain in the ass.
 
 -----------------------------------------------
 
+## <span id="C00">DTS 语法</span>
+
+> - [Node Name](#C001)
+>
+> - [Path Names](#C002)
+>
+> - [Property](#C003)
+
+
+---------------------------------
+
+#### <span id="C001">Node Name</span>
+
+任何一个节点在 DeviceTree 中都有一个名字相对于，请标准格式如下：
+
+{% highlight bash %}
+node-name@unit-address
+{% endhighlight %}
+
+`node-name` 部分指明了节点的名字，其可由 1 到 31 个字符构成，
+字符可以为下面中的任何字符：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000215.png)
+
+`node-name` 部分以一个小写或大写字符串开始，用于指明节点对应设备
+的类型。`unit-address` 成分用于说明节点与总线的关系，一般为设备
+在总线上的位置。`unit-address` 由上表的字符串构成。`unit-address`
+成分的值必须与节点 reg 属性的值一致。如果节点没有 reg 属性，那么
+`@unit-address` 必须被省略，并且节点的名字必须与同一级别的其他节点
+通过名字区分开来。当节点绑定到特定总线，可以使用 reg 属性和 `@unit-address`
+进行更具体的指定。
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000216.png)
+
+root 节点没有 `node-name` 和 `unit-address`, 其使用 `/` 代表。
+在上图中，1) 节点名字为 cpu 通过 `unit-address` 进行区分，其值
+为 0 和 1，即 cpu@0 与 cpu@1. 2) 名字为 ethernet 的节点通过它们
+的 `unit-address` 部分进行确认，分别是 `ethernet@fe002000` 与
+`ethernet@fe003000`.
+
+###### DTS 推荐节点名字
+
+节点的名字应该通用和反应设备的功能，而不是精确的编程模型，
+下表是推荐的节点名字：
+
+{% highlight bash %}
+adc
+accelerometer
+atm
+audio-codec
+audio-controller
+backlight
+bluetooth
+bus
+cache-controller
+camera
+can
+charger
+clock
+clock-controller
+compact-flash
+cpu
+cpus
+crypto
+disk
+display
+dma-controller
+dsp
+eeprom
+efuse
+endpoint
+ethernet
+ethernet-phy
+fdc
+flash
+gnss
+gpio
+gpu
+gyrometer
+hdmi
+i2c
+i2c-mux
+ide
+interrupt-controller
+isa
+keyboard
+key
+keys
+lcd-controller
+led
+leds
+led-controller
+light-sensor
+magnetometer
+mailbox
+mdio
+memory
+memory-controller
+mmc
+mmc-slot
+mouse
+nand-controller
+nvram
+oscillator
+parallel
+pc-card
+pci
+pcie
+phy
+pinctrl
+pmic
+pmu
+port
+ports
+power-monitor
+pwm
+regulator
+reset-controller
+rtc
+sata
+scsi
+serial
+sound
+spi
+sram-controller
+ssi-controller
+syscon
+temperature-sensor
+timer
+touchscreen
+usb
+usb-hub
+usb-phy
+video-codec
+vme
+watchdog
+wifi
+{% endhighlight %}
+
+---------------------------------
+
+#### <span id="C002">Path Names</span>
+
+一个节点在 DeviceTree 中，可以通过根节点到节点的全路径唯一
+指定。全路径的标准定义如下：
+
+{% highlight bash %}
+/node-name-1/node-name-2/node-name-N
+{% endhighlight %}
+
+例如下图中 cpu#1 节点的全路径为：
+
+{% highlight bash %}
+/cpus/cpu@1
+{% endhighlight %}
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000216.png)
+
+根节点的全路径是 `/`。1) 如果一个节点的全路径是明确的，那么可以忽略
+节点的 `unit-address`。 2) 如果一个节点的全路径是不明确的，那么定义
+位未定义的。
+
+---------------------------------
+
+## <span id="C003">Property</span>
+
+每个节点在 DeviceTree 中都包含多个属性，这些属性由于描述
+节点的性质等。属性由名字和属性值构成。
+
+#### 属性名字
+
+属性名字有 1 到 31 个字符构成，字符可以从下表中选取：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000215.png)
+
+非标准的属性名字应制定唯一的字符串前缀，例如一个 stock ticker 符号，
+识别公司和组织的名字去定义属性名字，例如：
+
+{% highlight bash %}
+fsl,channel-fifo-len
+ibm,ppc-interrupt-server#s
+linux,network-index
+{% endhighlight %}
+
+#### 属性值
+
+属性值包含与属性相关联的信息的零个或多个字节的数组。如果
+属性用于传递真假信息，那么属性值可能有空值。在这种情况下，
+如果属性存在，那么属性值就是真；如果属性不存在，那么属性值
+就是假。下面详细介绍属性值的类型。
+
+> - [empty](#C010)
+>
+> - [u32](#C011)
+
+------------------------------------
+
+###### <span id="C010">empty</span>
+
+如果属性值的类型是 `<empty>`，那么属性表达的信息就是真假，当
+属性存在与节点中，那么其值就是真；反之，如果属性不在节点中，
+那么属性的属性值就是假，例如：
+
+{% highlight bash %}
+        memory@60000000 {
+                device_type = "memory";
+                device_hotplug;
+                reg = <0x60000000 0x40000000>;
+        };
+{% endhighlight %}
+
+对于上诉例子的属性 `device_hotplug` ，其属性值就是真；
+对于上诉例子的属性 `device_moveable`, 由于该属性不在
+节点中，那么其属性值就是假。
+
+---------------------------------
+
+###### <span id="C011">u32</span>
+
+如果属性值的类型是 u32，那么其值以大端模式表示，例如:
+
+{% highlight bash %}
+        memory@60000000 {
+                device_type = "memory";
+                bs_val = <0x11223344>;
+                reg = <0x60000000 0x40000000>;
+        };
+{% endhighlight %}
+
+在上面的例子中，属性 bs_val 的属性类型就是 u32，由于其大端模式
+表示，所以：
+
+{% highlight bash %}
+address+0        11
+address+1        22
+address+2        33
+address+3        44
+{% endhighlight %}
+
+-----------------------------------
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+{% highlight bash %}
+
+{% endhighlight %}
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+{% highlight bash %}
+
+{% endhighlight %}
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+{% highlight bash %}
+
+{% endhighlight %}
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+
+
+
+
+
+
+
+-------------------------------------------------
+
 ## DTB 标准结构设计
 
 DTB 是一个二进制文件，由 dtc 工具将 dts 文件转换而来，用于存储板子硬件
@@ -348,6 +654,46 @@ struct fdt_node_header {
 };
 {% endhighlight %}
 
+DTS 文件中一个节点例子如下：
+
+{% highlight bash %}
+        cpus {
+                #address-cells = <1>;
+                #size-cells = <0>;
+
+                A9_0: cpu@0 {
+                        device_type = "cpu";
+                        compatible = "arm,cortex-a9";
+                        reg = <0>;
+                        next-level-cache = <&L2>;
+                };
+
+                A9_1: cpu@1 {
+                        device_type = "cpu";
+                        compatible = "arm,cortex-a9";
+                        reg = <1>;
+                        next-level-cache = <&L2>;
+                };
+
+                A9_2: cpu@2 {
+                        device_type = "cpu";
+                        compatible = "arm,cortex-a9";
+                        reg = <2>;
+                        next-level-cache = <&L2>;
+                };
+
+                A9_3: cpu@3 {
+                        device_type = "cpu";
+                        compatible = "arm,cortex-a9";
+                        reg = <3>;
+                        next-level-cache = <&L2>;
+                };
+        };
+{% endhighlight %}
+
+在 DTS 文件中，存在节点 cpus，其包含了 4 个子节点，分别是
+A9_0, A9_1, A9_2, 和 A9_3.
+
 ###### 属性 property
 
 从上图可知，属性位于节点内部，并且每个属性以 FDT_PROP 开始，到下一个
@@ -380,6 +726,19 @@ struct fdt_property {
     char data[0];
 };
 {% endhighlight %}
+
+DTS 文件中一个属性例子：
+
+{% highlight bash %}
+        memory@60000000 {
+                device_type = "memory";
+                reg = <0x60000000 0x40000000>;
+        };
+{% endhighlight %}
+
+DTS 文件中 ，节点 memory@60000000 包含了两个属性 device_type
+和 reg。其中 device_type 属性值是一个字符串 "memory", 而属性
+reg 的值是一个整型。
 
 ###### 宏定义
 
