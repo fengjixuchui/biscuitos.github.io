@@ -109,6 +109,8 @@ Gaah.Guys, this whole ARM thing is a f*ching pain in the ass.
 > - [Path Names](#C002)
 >
 > - [Property](#C003)
+>
+> - [compatible](#C200)
 
 
 ---------------------------------
@@ -296,6 +298,16 @@ linux,network-index
 > - [empty](#C010)
 >
 > - [u32](#C011)
+>
+> - [u64](#C012)
+>
+> - [string](#C013)
+>
+> - [phandle](#C014)
+>
+> - [stringlist](#C015)
+>
+> - [prop-encoded-array](#C016)
 
 ------------------------------------
 
@@ -332,7 +344,7 @@ linux,network-index
 {% endhighlight %}
 
 在上面的例子中，属性 bs_val 的属性类型就是 u32，由于其大端模式
-表示，所以：
+表示，其属性值是 0x11223344，其布局如下：
 
 {% highlight bash %}
 address+0        11
@@ -341,8 +353,210 @@ address+2        33
 address+3        44
 {% endhighlight %}
 
+因此开发者在使用给属性设置 u32 属性值时，应该充分考虑属性值
+以大端模式存储。
+
 -----------------------------------
 
+###### <span id="C012">u64</span>
+
+如果属性值的类型是 u64，那么其值由两个 u32 整型以大端模式
+构成。u64 属性值的第一个 u32 值存储 u64 值的 MSB 部分，第二个
+u32 值存储 u64 的 LSB 部分，例如：
+
+{% highlight bash %}
+        memory@60000000 {
+                device_type = "memory";
+                bs_val = <0x11223344 0x55667788>;
+                reg = <0x60000000 0x40000000>;
+        };
+{% endhighlight %}
+
+bs_val 属性值是一个 u64，在 DeviceTree 中由两个 u32 构成，
+bs_val 的属性值是 0x122334455667788. 其内存布局如下：
+
+{% highlight bash %}
+address+0        11
+address+1        22
+address+2        33
+address+3        44
+address+4        55
+address+5        66
+address+6        77
+address+7        88
+{% endhighlight %}
+
+因此开发者在使用给属性设置 u64 属性值时，应该充分考虑属性
+值以大端模式存储。
+
+---------------------------------
+
+#### <span id="C013">string</span>
+
+如果属性值是 string 类型，那么其值是可打印，并以 `\0` 结尾
+的字符串。例如：
+
+{% highlight bash %}
+        memory@60000000 {
+                device_type = "memory";
+                bs_val = <0x11223344 0x55667788>;
+                reg = <0x60000000 0x40000000>;
+        };
+{% endhighlight %}
+
+属性 device_type 的属性值就是 string，其值是 "memory",
+其值在内存里的布局如下：
+
+{% highlight bash %}
+address+0        'm'
+address+1        'e'
+address+2        'm'
+address+3        'o'
+address+4        'r'
+address+5        'y'
+address+6        '\0'
+{% endhighlight %}
+
+---------------------------------
+
+#### <span id="C014">phandle</span>
+
+如果属性值类型是 phandle，那么其值也是一个 u32，该 u32 整型用于
+引用 DeviceTree 里的其他的节点。任意可引用的节点都可以定义为一个
+唯一的 u32 值。例如下面节点：
+
+{% highlight bash %}
+        memory@60000000 {
+                device_type = "memory";
+                bs_val = <0x11223344 0x55667788>;
+                reg = <0x60000000 0x40000000>;
+                ref-phandle = <&node0>;
+
+                node0: node@1 {
+                      reg = <1>;
+                };
+        };
+{% endhighlight %}
+
+属性 ref-phandle 的属性值就是一个 phandle 类型，其指向 node0
+节点。
+
+---------------------------------
+
+#### <span id="C015">stringlist</span>
+
+如果属性值类型是 stringlist，那么其值由一连串的 string 构成，
+例如：
+
+{% highlight bash %}
+        memory@60000000 {
+                device_type = "memory";
+                bs_strings = "uboot", "kernel", "rootfs";
+                reg = <0x60000000 0x40000000>;
+        };
+{% endhighlight %}
+
+bs_strings 属性值的类型就是一个 stringlist，其由三个 string
+组成，分别是 "uboot", "kernel", "rootfs"，其内存布局如下：
+
+{% highlight bash %}
+address+0        'u'
+address+1        'b'
+address+2        'o'
+address+3        'o'
+address+4        't'
+address+5        '\0'
+address+6        'k'
+address+7        'e'
+address+8        'r'
+address+9        'n'
+address+a        'e'
+address+b        'l'
+....
+{% endhighlight %}
+
+---------------------------------
+
+#### <span id="C016">prop-encoded-array</span>
+
+如果属性值的类型是 prop-encoded-array, 那么其值就是
+一种混合型，即属性值中含有多种属性，例如：
+
+{% highlight bash %}
+ / {
+        DTS_demo {
+                compatible = "DTS_demo, BiscuitOS";
+                status = "okay";
+                phy-handle = <&phy0 1 2 3 &phy1 4 5>;
+                reset-gpio = <&gpio0 25 0>;
+        };
+
+        phy0: phy@0 {
+                #phy-cells = <3>;
+                compatible = "PHY0, BiscuitOS";
+        };
+
+        phy1: phy@1 {
+                #phy-cells = <2>;
+                compatible = "PHY1, BiscuitOS";
+        };
+
+        gpio0: gpio@0 {
+                #gpio-cells = <2>;
+                compatible = "gpio, BiscuitOS";
+        };
+ };
+{% endhighlight %}
+
+DTS_demo 节点的 phy-handle 属性的属性值就是 prop-encoded-array，
+里面包含了 u32 与 phandle 类型属性值。prop-encoded-array 类型
+也可以是同类型的数组，例如：
+
+
+{% highlight bash %}
+        memory@60000000 {
+                device_type = "memory";
+                bs_array = <0x12 0x34 0x45 0x87 0x89 0x22>;
+                reg = <0x60000000 0x40000000>;
+        };
+{% endhighlight %}
+
+属性 bs_array 属性值就是一个 prop-encoded-array，
+其值就是 u32 的数组。
+
+
+---------------------------------
+
+#### <span id="C201">compatible</span>
+
+compatible 属性，属性值类型是一个 `<stringlist>`。
+compatible 属性值由设备模型相关的一个或多个字符串组成。该属性
+由 Client 端设备选取对应驱动，属性值由一连串以终止符结尾的字符串
+组成。该属性具有兼容与设备相似的设备驱动，也允许只有一个设备驱动
+程序使用该驱动。
+
+compatible 推荐的格式为：
+
+{% highlight bash %}
+manufacturer,model
+{% endhighlight %}
+
+manufacturer 部分是一个字符串，主要用来描述生产厂商，model
+部分用于描述模组信息。例如：
+
+{% highlight bash %}
+        Kingnode@60000000 {
+                compatile = "fsl,mpc8641","ns16550";
+                reg = <0x60000000 0x40000000>;
+        };
+{% endhighlight %}
+
+在上面的例子中，操作系统首先定位 "fsl,mcpc8641" 设备驱动，
+如果驱动没有找到，操作系统才试图定位 "ns16550"。在实际的设备
+驱动开发中，如果驱动程序的 of_device_id 结构的 compatible
+成员不与 DeviceTree 中节点的 compatible 相同，那么对应的
+设备驱动无法运行。
+
 ---------------------------------
 
 #### <span id="C00"></span>
@@ -350,34 +564,6 @@ address+3        44
 {% highlight bash %}
 
 {% endhighlight %}
-
----------------------------------
-
-#### <span id="C00"></span>
-
-{% highlight bash %}
-
-{% endhighlight %}
-
----------------------------------
-
-#### <span id="C00"></span>
-
-{% highlight bash %}
-
-{% endhighlight %}
-
----------------------------------
-
-#### <span id="C00"></span>
-
----------------------------------
-
-#### <span id="C00"></span>
-
----------------------------------
-
-#### <span id="C00"></span>
 
 ---------------------------------
 
