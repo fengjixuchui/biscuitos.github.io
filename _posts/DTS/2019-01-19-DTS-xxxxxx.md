@@ -710,11 +710,11 @@ status 属性指明了一个节点的状态，属性值可以为 "okay",
 #### <span id="C205">#address-cell and #size-cells</span>
 
 "#address-cells" 属性和 "#size-cells" 属性，属性值是
-<u32> 类型。"#address-cells" 属性和 "#size-cells" 属性
+"u32" 类型。"#address-cells" 属性和 "#size-cells" 属性
 可以在任意节点中使用，其作用于子节点，并用于描述子节点应该
 如何寻址。"#address-cells" 属性定义了用于在子节点的 reg
-属性中编码地址域中 <u32> 使用的个数，"#size-cells" 属性
-用于定义了子节点的 reg 属性中编码 size 域中 <u32> 的个数。
+属性中编码地址域中 u32 使用的个数，"#size-cells" 属性
+用于定义了子节点的 reg 属性中编码 size 域中 u32 的个数。
 例如：
 
 {% highlight bash %}
@@ -732,11 +732,11 @@ status 属性指明了一个节点的状态，属性值可以为 "okay",
 {% endhighlight %}
 
 在节点 Fil 中，"#address-cells" 的属性值为 2，代表子节点
-reg 属性的地址域由两个 <u32> 组成，node0 是 Fil 的子节点，
+reg 属性的地址域由两个 u32 组成，node0 是 Fil 的子节点，
 node0 node-name@unit-addrss 的 unit-address 域为 1，所以
 node0 节点 reg 属性的地址域也要为 1，结合上述要求，那么
 reg 属性的地址域最终为 "0 1"。同理 Fil 节点的 "#size-cells"
-属性值为 1，那么 Fil 子节点 reg 属性的 size 域由一个 <u32>
+属性值为 1，那么 Fil 子节点 reg 属性的 size 域由一个 u32
 构成，因此 node0 节点 reg 属性值的 size 域值为 0x100。
 
 "#address-cells" 属性和 "#size-cells" 属性不从节点的祖先
@@ -780,7 +780,7 @@ reg 属性值的类型是 <prop-encode-array>, 其值由 address
 
 #### <span id="C207">virtual-reg</span>
 
-"virtual-reg" 属性，属性值是 <u32>。"virtual-reg" 属性
+"virtual-reg" 属性，属性值是 u32。"virtual-reg" 属性
 提供了一个有效的虚拟地址，其映射到 reg 属性对应的第一个物理
 地址上。此属性使引导程序能够为客户端程序提供已设置的虚拟到
 物理映射。例如
@@ -804,10 +804,10 @@ range 属性提供了一种定义子节点地址空间和父地址空间的映�
 range 属性值的格式是任意数量的三元数组 (子节点总线地址，
 父节点总线地址，长度)。
 
-"child-bus-address" 代表子节点总线上的一个物理地址，其包含 <u32>
+"child-bus-address" 代表子节点总线上的一个物理地址，其包含 u32
 的数量由该节点的 "#address-cells" 属性决定。"parent-bus-address"
-代表父总线上的一个物理地址，其包含 <u32> 的数量由父节点的 "#address-cells"
-属性指定。"length" 域指定了子节点地址空间的长度，其包含 <u32> 的
+代表父总线上的一个物理地址，其包含 u32 的数量由父节点的 "#address-cells"
+属性指定。"length" 域指定了子节点地址空间的长度，其包含 u32 的
 数量有当前节点的 "#size-cells" 进行指定。
 
 如果 ranges 属性的属性值类型是一个 "<empty>", 那么表示父节点的地址空间
@@ -859,11 +859,11 @@ serial 在父节点总线上的地址就是 0x4600 + 0xe0000000 = 0xe0004600.
 {% endhighlight %}
 
 soc 节点包含了 ranges 属性，且 soc 节点的 #address-cells 属性
-为 2，那么 ranges 的 child-bus-address 占用两个 <u32> 整数，
+为 2，那么 ranges 的 child-bus-address 占用两个 u32 整数，
 其值为 0x00000000 00000000。由于 soc 节点的 #size-cells 属性值
-为 2，那么 ranges 属性的 length 域占用两个 <u32> 整数。其值为
+为 2，那么 ranges 属性的 length 域占用两个 u32 整数。其值为
 0x00000000 00100000。soc 节点的父节点的 #address-cells 属性值为 1，
-那么 soc 节点的 rangs 属性 parent-bus-address 占用一个 <u32>，
+那么 soc 节点的 rangs 属性 parent-bus-address 占用一个 u32，
 其值为 0xe0000000。因此 ranges 属性表示 soc 子节点地址空间从物理
 地址 0 映射到父节点地址空间物理地址 0xe0000000, 映射长度是 0x00100000.
 那么子节点 serial 在子节点地址总线上的偏移是 0x4600, 那么其在父总线
@@ -881,10 +881,10 @@ DMA 访问的物理地址之间的映射。dma-ranges 属性可以任意数量�
 数组描述一段连续的 DMA 地址空间范围。
 
 "child-bus-address" 域是子节点地址空间上的一个物理地址，其占用
-<u32> 整数的数量由该节点的 "#address-cells" 进行指定。
+u32 整数的数量由该节点的 "#address-cells" 进行指定。
 "parent-bus-address" 域是父节点总线上的一个物理地址，其占用
-<u32> 的数量由父节点的 "#address-cells" 进行指定。"length"
-域表示子节点地址空间的长度，其占用 <u32> 的数量由该节点的
+u32 的数量由父节点的 "#address-cells" 进行指定。"length"
+域表示子节点地址空间的长度，其占用 u32 的数量由该节点的
 "#size-cells" 进行指定。例如：
 
 {% highlight bash %}
@@ -908,11 +908,11 @@ DMA 访问的物理地址之间的映射。dma-ranges 属性可以任意数量�
 {% endhighlight %}
 
 pciec 节点中包含了 dma-ranges 属性，该节点的 "#address-cells" 为 3，
-那么 dma-ranges 属性的 child-bus-address 使用三个 <u32> 表示，
+那么 dma-ranges 属性的 child-bus-address 使用三个 u32 表示，
 因此 dma-ranges 第一个三元数组 child-bus-address 域值为：
 0x42000000 00000000 40000000; 第二个三元数组 child-bus-address
 域值为: 0x43000000 00000002 00000000。该节点的 "#size-cells" 为 2，
-那么 dma-ranges 属性的 parent-bus-address 使用了两个 <u32> 表示，
+那么 dma-ranges 属性的 parent-bus-address 使用了两个 u32 表示，
 因此 dma-ranges 第一个三元数组 length 域值为：0x0000000 80000000;
 第二个三原数组 length 域值为: 0x00000001 00000000。pciec 节点
 的父节点的 "#address-cells" 属性值为 2，那么 dma-ranges 的一个三元
