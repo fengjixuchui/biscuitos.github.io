@@ -104,18 +104,37 @@ Gaah.Guys, this whole ARM thing is a f*ching pain in the ass.
 
 ## <span id="C00">DTS 语法</span>
 
-> - [Node Name](#C001)
+> - [node-name@unit-addrss](#C001)
 >
 > - [Path Names](#C002)
 >
 > - [Property](#C003)
 >
 > - [compatible](#C200)
+>
+> - [model](#C202)
+>
+> - [phandle](#C203)
+>
+> - [status](#C204)
+>
+> - [#address-cell and #size-cells](#C205)
+>
+> - [reg](#C206)
+>
+> - [virtual-reg](#C207)
+>
+> - [ranges](#C208)
+>
+> - [dma-ranges](#C209)
+
+
+
 
 
 ---------------------------------
 
-#### <span id="C001">Node Name</span>
+#### <span id="C001">node-name@unit-addrss</span>
 
 任何一个节点在 DeviceTree 中都有一个名字相对于，请标准格式如下：
 
@@ -559,6 +578,362 @@ manufacturer 部分是一个字符串，主要用来描述生产厂商，model
 
 ---------------------------------
 
+#### <span id="C202">model</span>
+
+model 属性，属性值是一个 `<string>`。
+model 属性用于指定设备厂商的模组信息。推荐的 model
+属性值格式如下：
+
+{% highlight bash %}
+manufacturer,model
+{% endhighlight %}
+
+manufacturer 部分用于指明厂商信息，model 部分则表明模组相关的
+信息。例如：
+
+{% highlight bash %}
+        Kingnode@60000000 {
+                compatile = "fsl,mpc8641","ns16550";
+                model = "fsl,MPC8349EMITX";
+                reg = <0x60000000 0x40000000>;
+        };
+{% endhighlight %}
+
+Kingnode 节点的 model 属性值 "fsl,MPC8349EMITX"，fsl 指明了
+厂商信息，MPC8349EMITX 指明了模组信息。
+
+---------------------------------
+
+#### <span id="C203">phandle</span>
+
+phandle 属性，属性值类型是 `u32` 类型。
+phandle 属性通过一个唯一的 u32 整数指向 DeviceTree 中的其他节点。
+例如:
+
+{% highlight bash %}
+        memory@60000000 {
+                device_type = "memory";
+                bs_val = <0x11223344 0x55667788>;
+                reg = <0x60000000 0x40000000>;
+                phandle = <&node0>;
+
+                node0: node@1 {
+                      reg = <1>;
+                };
+        };
+{% endhighlight %}
+
+memory 节点中，phandle 属性指向了节点 node0。老版本的 DeviceTree
+可能会遇到一种不推荐的属性形式 `linux,phandle`。为了兼容，希望客户端
+程序也解析 `linux,phandle`, 两种形式都是一致的。大多数 DTS 节点中不会
+显示的包含 phandle 属性，只有当使用 DTC 工具将 DTS 转换成 DTB 之后自动
+插入 phandle 属性和属性值。例如下面的 DTS 中某节点的描述：
+
+{% highlight bash %}
+                bs_cma: cma@61000000 {
+                        status = "okay";
+                        compatible = "bs-cma";
+                        reg = <0x61000000 0x6400000>;
+                };
+{% endhighlight %}
+
+通过 DTC 工具生成 DTB 之后，再将 DTB 转出 DTS 文件之后，
+如下：
+
+{% highlight bash %}
+                cma@61000000 {
+                        status = "okay";
+                        compatible = "bs-cma";
+                        reg = <0x61000000 0x6400000>;
+                        phandle = <0x12>;
+                };
+{% endhighlight %}
+
+注意，只有其他节点通过 <phandle> 类型的属性引用了该节点，
+该节点生成 DTB 的时候才会自动加入 phandle 属性，否则 DTB
+不会自动为节点添加 phandle 属性。另外开发者应该正确区分
+phandle 属性和属性值类型是 <pahndle>, 两者不要搞混，
+
+> - [phandle 属性类型](C014)
+
+---------------------------------
+
+#### <span id="C204">status</span>
+
+status 属性，属性值类型是 <string>。
+status 属性指明了一个节点的状态，属性值可以为 "okay",
+"disabled", "reserved", "fail", "fail-sss". status
+使用如下：
+
+{% highlight bash %}
+                bs_cma: cma@61000000 {
+                        status = "okay";
+                        compatible = "bs-cma";
+                        reg = <0x61000000 0x6400000>;
+                };
+{% endhighlight %}
+
+不同的属性值代表不同的含义，具体描述如下：
+
+###### okay
+
+"okay" 属性值指明设备节点对应的设备是可以使用的。当 status
+属性设置为 "okay" 之后，操作系统启动后就会运行节点对应的
+设备驱动。
+
+###### disabled
+
+"disabled" 属性值表明设备目前不可以运行，但将来可能会运行
+(例如有些设备没有插入或者关闭)。
+
+###### reserved
+
+"reserved" 属性值表示可以运行，但不应该被使用。通常情况下，
+这是操作系统之外的软件控制设备，例如平台固件。
+
+###### fail
+
+"fail" 属性值表示设备无法运行。在设备上检测到一个严重的错误，
+如果不修复，那么设备不可能运行。
+
+###### fail-sss
+
+"fail-sss" 属性值表示设备无法运行，并在设备上检测到一个严重
+的错误，如果不修复，设备不太可能运行。"sss" 用于指定设备，
+并指示错误的描述。
+
+正常情况下，如果要使用某个设备，那么将 status 设置成 "okay",
+不使用则设置为 "disabled".
+
+---------------------------------
+
+#### <span id="C205">#address-cell and #size-cells</span>
+
+"#address-cells" 属性和 "#size-cells" 属性，属性值是
+<u32> 类型。"#address-cells" 属性和 "#size-cells" 属性
+可以在任意节点中使用，其作用于子节点，并用于描述子节点应该
+如何寻址。"#address-cells" 属性定义了用于在子节点的 reg
+属性中编码地址域中 <u32> 使用的个数，"#size-cells" 属性
+用于定义了子节点的 reg 属性中编码 size 域中 <u32> 的个数。
+例如：
+
+{% highlight bash %}
+        Fil@60000000 {
+                compatible = "BS,FIL2356";
+                #address-cells = <2>;
+                #size-cells = <1>;
+                reg = <0x60000000 0x40000000>;
+                phandle = <&node0>;
+
+                node0: node@1 {
+                      reg = <0 1 0x100>;
+                };
+        };
+{% endhighlight %}
+
+在节点 Fil 中，"#address-cells" 的属性值为 2，代表子节点
+reg 属性的地址域由两个 <u32> 组成，node0 是 Fil 的子节点，
+node0 node-name@unit-addrss 的 unit-address 域为 1，所以
+node0 节点 reg 属性的地址域也要为 1，结合上述要求，那么
+reg 属性的地址域最终为 "0 1"。同理 Fil 节点的 "#size-cells"
+属性值为 1，那么 Fil 子节点 reg 属性的 size 域由一个 <u32>
+构成，因此 node0 节点 reg 属性值的 size 域值为 0x100。
+
+"#address-cells" 属性和 "#size-cells" 属性不从节点的祖先
+那里继承下来，应该显示的定义这两个属性。在所有包含子节点的
+节点中，应该提供 "#address-cells" 属性和 "#size-cells" 属性，
+如果没有提供，那么客户端程序假设 "#address-cells" 属性值为 2，
+"#size-cells" 属性值为 1.
+
+---------------------------------
+
+#### <span id="C206">reg</span>
+
+"reg" 属性，属性值 <prop-encoded-array>, 其由
+(address,length) 两个域构成。reg 属性用于描述节点在
+父总线定义的空间内的地址。通常属性值代表 memory-mapped
+IO 寄存器块的偏移和长度，但在某些总线类型上可能有不同的
+含义。根节点定义的地址空间中的地址就是 CPU 真实地址。
+reg 属性值的类型是 <prop-encode-array>, 其值由 address
+和 length 成对表示，即 <address length>. address
+和 length 所占用 u32 的个数由父节点的 "#address-cells"
+和 "#size-cells" 指定。如果父节点的 "#size-cells" 的值
+为 0，那么 reg 属性就忽略 length 域。例如：
+
+{% highlight bash %}
+        #address-cells = <1>;
+        #size-cells = <1>;
+        Fil: Fil@60000000 {
+                compatible = "BS,FIL2356";
+                reg = <0x60000000 0x40000000>;
+        };
+{% endhighlight %}
+
+节点 Fil 包含了 reg 属性，由于 Fil 父节点的 #address-cells 值
+为 1，那么 reg 的 address 域占用一个 u32。同理父节点的
+#size-cells 值为 1，那么 reg 的 length 域占用一个 u32.
+
+指的注意的是，节点 node-name@unit-address 的 "unit-address"
+如果存在，那么其值一定要与节点 reg 属性的 address 域值一致。
+
+---------------------------------
+
+#### <span id="C207">virtual-reg</span>
+
+"virtual-reg" 属性，属性值是 <u32>。"virtual-reg" 属性
+提供了一个有效的虚拟地址，其映射到 reg 属性对应的第一个物理
+地址上。此属性使引导程序能够为客户端程序提供已设置的虚拟到
+物理映射。例如
+
+{% highlight bash %}
+        Fil: Fil@60000000 {
+                compatible = "BS,FIL2356";
+                reg = <0x60000000 0x40000000>;
+                virtual-reg = <0x80000000>;
+        };
+{% endhighlight %}
+
+---------------------------------
+
+#### <span id="C208">ranges</span>
+
+"ranges" 属性，属性值类型为 "<empty>" 或者 "<prop-encoded-array>",
+当属性值类型为 "<prop-encoded-array>" 由
+(child-bus-address, parent-bus-address, length) 三元组构成。
+range 属性提供了一种定义子节点地址空间和父地址空间的映射和转换方法。
+range 属性值的格式是任意数量的三元数组 (子节点总线地址，
+父节点总线地址，长度)。
+
+"child-bus-address" 代表子节点总线上的一个物理地址，其包含 <u32>
+的数量由该节点的 "#address-cells" 属性决定。"parent-bus-address"
+代表父总线上的一个物理地址，其包含 <u32> 的数量由父节点的 "#address-cells"
+属性指定。"length" 域指定了子节点地址空间的长度，其包含 <u32> 的
+数量有当前节点的 "#size-cells" 进行指定。
+
+如果 ranges 属性的属性值类型是一个 "<empty>", 那么表示父节点的地址空间
+和子节点的地址空间相同，不需要地址转换。如果节点中不存在 ranges 属性，那么
+假设子节点和父节点之间不存在地址映射。例如：
+
+{% highlight bash %}
+        soc {
+                compatible = "simple-bus";
+                #address-cells = <1>;
+                #size-cells = <1>;
+                ranges = <0x0 0xe0000000 0x00100000>;
+
+                serial@4600 {
+                      device_type = "serial";
+                      compatible = "nsl16550";
+                      reg = <0x4600 0x100>;
+                      clock-frequency = <0>;
+                      interrupts = <0xA 0x8>;
+                      interrupt-parent = <&ipic>;
+                };
+        };
+{% endhighlight %}
+
+在上面的例子中，soc 节点包含了 ranges 属性，其属性值为
+"<0x0 0xe0000000 0x00100000>", 其表示 soc 的子节点的
+物理地址 0 映射到 soc 地址空间的物理地址 0xe0000000.serial
+节点为 soc 的子节点，其地址是父节点总线偏移 0x4600 处，因此
+serial 在父节点总线上的地址就是 0x4600 + 0xe0000000 = 0xe0004600.
+在如下面的例子：
+
+{% highlight bash %}
+        #address-cells = <1>;
+        soc {
+                compatible = "simple-bus";
+                #address-cells = <2>;
+                #size-cells = <2>;
+                ranges = <0x0 0x0 0xe0000000 0x0 0x00100000>;
+
+                serial@4600 {
+                      device_type = "serial";
+                      compatible = "nsl16550";
+                      reg = <0x4600 0x100>;
+                      clock-frequency = <0>;
+                      interrupts = <0xA 0x8>;
+                      interrupt-parent = <&ipic>;
+                };
+        };
+{% endhighlight %}
+
+soc 节点包含了 ranges 属性，且 soc 节点的 #address-cells 属性
+为 2，那么 ranges 的 child-bus-address 占用两个 <u32> 整数，
+其值为 0x00000000 00000000。由于 soc 节点的 #size-cells 属性值
+为 2，那么 ranges 属性的 length 域占用两个 <u32> 整数。其值为
+0x00000000 00100000。soc 节点的父节点的 #address-cells 属性值为 1，
+那么 soc 节点的 rangs 属性 parent-bus-address 占用一个 <u32>，
+其值为 0xe0000000。因此 ranges 属性表示 soc 子节点地址空间从物理
+地址 0 映射到父节点地址空间物理地址 0xe0000000, 映射长度是 0x00100000.
+那么子节点 serial 在子节点地址总线上的偏移是 0x4600, 那么其在父总线
+上的地址就是: 0x4600 + 0xe0000000 = 0xe0004600.
+
+---------------------------------
+
+#### <span id="C209">dma-ranges</span>
+
+"dma-range" 属性，属性值类型是 "<empty>" 或 "<prop-encoded-array>,
+"<prop-encode-array>" 定义为 (child-bus-address, parent-bus-address,
+length) 三元数组。"dma-ranges" 属性子节点 DMA 访问的物理地址域父节点
+DMA 访问的物理地址之间的映射。dma-ranges 属性可以任意数量的三原数组
+(child-bus-address, parent-bus-address, length) 构成。每个三元
+数组描述一段连续的 DMA 地址空间范围。
+
+"child-bus-address" 域是子节点地址空间上的一个物理地址，其占用
+<u32> 整数的数量由该节点的 "#address-cells" 进行指定。
+"parent-bus-address" 域是父节点总线上的一个物理地址，其占用
+<u32> 的数量由父节点的 "#address-cells" 进行指定。"length"
+域表示子节点地址空间的长度，其占用 <u32> 的数量由该节点的
+"#size-cells" 进行指定。例如：
+
+{% highlight bash %}
+                #addrss-cells = <2>;
+                #size-cells = <2>;
+                pciec: pcie@fe000000 {
+                        compatible = "renesas,pcie-r8a7743",
+                                     "renesas,pcie-rcar-gen2";
+                        reg = <0 0xfe000000 0 0x80000>;
+                        #address-cells = <3>;
+                        #size-cells = <2>;
+                        bus-range = <0x00 0xff>;
+                        device_type = "pci";
+                        ranges = <0x01000000 0 0x00000000 0 0xfe100000 0 0x00100000
+                                  0x02000000 0 0xfe200000 0 0xfe200000 0 0x00200000
+                                  0x02000000 0 0x30000000 0 0x30000000 0 0x08000000
+                                  0x42000000 0 0x38000000 0 0x38000000 0 0x08000000>;
+                        /* Map all possible DDR as inbound ranges */
+                        dma-ranges = <0x42000000 0 0x40000000 0 0x40000000 0 0x80000000
+                                      0x43000000 2 0x00000000 2 0x00000000 1 0x00000000>;
+{% endhighlight %}
+
+pciec 节点中包含了 dma-ranges 属性，该节点的 "#address-cells" 为 3，
+那么 dma-ranges 属性的 child-bus-address 使用三个 <u32> 表示，
+因此 dma-ranges 第一个三元数组 child-bus-address 域值为：
+0x42000000 00000000 40000000; 第二个三元数组 child-bus-address
+域值为: 0x43000000 00000002 00000000。该节点的 "#size-cells" 为 2，
+那么 dma-ranges 属性的 parent-bus-address 使用了两个 <u32> 表示，
+因此 dma-ranges 第一个三元数组 length 域值为：0x0000000 80000000;
+第二个三原数组 length 域值为: 0x00000001 00000000。pciec 节点
+的父节点的 "#address-cells" 属性值为 2，那么 dma-ranges 的一个三元
+数组的 parent-bus-address 占用 2 个 u32 整数，其值为：
+0x00000000 40000000; 同理第二个三元数组的 parent-bus-address
+值为 0x00000002 00000000.
+
+---------------------------------
+
+#### <span id="C210">device_type</span>
+
+"device_type" 属性，属性值类型是 <string>.
+
+
+{% highlight bash %}
+
+{% endhighlight %}
+
+
+---------------------------------
+
 #### <span id="C00"></span>
 
 {% highlight bash %}
@@ -569,25 +944,41 @@ manufacturer 部分是一个字符串，主要用来描述生产厂商，model
 
 #### <span id="C00"></span>
 
----------------------------------
+{% highlight bash %}
 
-#### <span id="C00"></span>
-
----------------------------------
-
-#### <span id="C00"></span>
+{% endhighlight %}
 
 ---------------------------------
 
 #### <span id="C00"></span>
 
+{% highlight bash %}
+
+{% endhighlight %}
+
 ---------------------------------
 
 #### <span id="C00"></span>
 
+{% highlight bash %}
 
+{% endhighlight %}
 
+---------------------------------
 
+#### <span id="C00"></span>
+
+{% highlight bash %}
+
+{% endhighlight %}
+
+---------------------------------
+
+#### <span id="C00"></span>
+
+{% highlight bash %}
+
+{% endhighlight %}
 
 
 
