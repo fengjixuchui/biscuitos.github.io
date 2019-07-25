@@ -2676,13 +2676,437 @@ FDT_ERR_TRUNCATED。函数最后检查 DeviceTree string 的
 
 ------------------------------------
 
+#### <span id="A0093">early_init_dt_verify</span>
+
+{% highlight c %}
+bool __init early_init_dt_verify(void *params)
+{
+        if (!params)
+                return false;
+
+        /* check device tree validity */
+        if (fdt_check_header(params))
+                return false;
+
+        /* Setup flat device-tree pointer */
+        initial_boot_params = params;
+        of_fdt_crc32 = crc32_be(~0, initial_boot_params,
+                                fdt_totalsize(initial_boot_params));
+        return true;
+}
+{% endhighlight %}
+
+early_init_dt_verify() 函数用于检查 DTB 的有效性。参数 params
+指向 DTB 所在的虚拟地址。函数首先检查 params 的有效性，如果无效，
+则直接返回 false；如果有效，函数调用 fdt_check_header() 检查 DTB
+header 的有效性，如果无效，则返回 false；反之如果有效，则将 params
+参数赋值给 initial_boot_params。最后函数调用 crc32_be() 函数
+生成 DTB 的 CRC。
+
+> - [fdt_check_header](#A0092)
+
+------------------------------------
+
+#### <span id="A0094">arch_get_next_mach</span>
+
+{% highlight c %}
+static const void * __init arch_get_next_mach(const char *const **match)
+{       
+        static const struct machine_desc *mdesc = __arch_info_begin;
+        const struct machine_desc *m = mdesc;   
+
+        if (m >= __arch_info_end)
+                return NULL;
+
+        mdesc++;
+        *match = m->dt_compat;  
+        return m;
+}
+{% endhighlight %}
+
+arch_get_next_mach() 函数用于获得下一个 machine_desc 结构的
+DeviceTree compatible strings 地址。函数首先使用局部变量 mdesc
+和 m 指向 __arch_info_begin。然后每次调用 arch_get_next_mach(),
+函数都会将 __arch_info_begin 指向下一个 machine_desc，以此获得
+下一个 machine_desc，最后函数返回下一个 machine_desc 的 dt_compat
+成员。
+
+------------------------------------
+
+#### <span id="A0095">fdt_offset_ptr_</span>
+
+{% highlight c %}
+static inline const void *fdt_offset_ptr_(const void *fdt, int offset)
+{
+        return (const char *)fdt + fdt_off_dt_struct(fdt) + offset;
+}
+{% endhighlight %}
+
+fdt_offset_ptr_() 函数的作用是通过 device-node 在 DTB structure 内
+的偏移得到指向 device-node 的指针。参数 fdt 指向 DTB，参数 offset
+为 device-node 在 DTB structure 区块内的偏移。函数调用
+fdt_off_dt_struct() 函数获得 structure 区块在 DTB 的位置，然后
+将该值加上 DTB 的位置，最后一同加上 offset 偏移就可以获得
+device-node 的地址。DTB 的结构设计如下图：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000213.png)
+
+> - [fdt_off_dt_struct](#A0079)
+>
+> - [DTB format describe](https://biscuitos.github.io/blog/DTS/#M00)
+
+------------------------------------
+
+#### <span id="A0096">fdt_offset_ptr</span>
+
+{% highlight c %}
+const void *fdt_offset_ptr(const void *fdt, int offset, unsigned int len)
+{
+        unsigned absoffset = offset + fdt_off_dt_struct(fdt);
+
+        if ((absoffset < offset)
+            || ((absoffset + len) < absoffset)
+            || (absoffset + len) > fdt_totalsize(fdt))
+                return NULL;
+
+        if (fdt_version(fdt) >= 0x11)
+                if (((offset + len) < offset)
+                    || ((offset + len) > fdt_size_dt_struct(fdt)))
+                        return NULL;
+
+        return fdt_offset_ptr_(fdt, offset);
+}
+{% endhighlight %}
+
+fdt_offset_ptr() 函数通过 device-node 在 DTB structure 内的
+偏移获得指向 device-node 的指针。参数 fdt 指向 DTB，参数 offset
+为 device-node 在 DTB structure 区域内的偏移，len 参数表示
+device-node 的长度。函数首先通过 offset 参数和 fdt_off_dt_struct()
+函数获得 device-node 在 DTB 内的偏移，其值存储在 absoffset 内，
+如果 absoffset 小于 offset，表示 absoffset 溢出，或者
+"absoffset+len" 的值小于 absoffset 表示溢出，或者大于
+fdt_totalsize, 这几种情况都是不符合要求，不能获得正确的值，
+因此直接返回 NULL。
+
+函数调用 fdt_version() 函数获得 DTB 的版本，如果当前版本大于
+等于 17，那么在这种情况下，"offset+len" 小于 offset 表示
+"offset+len" 已经溢出。或者 "offset+len" 的值大于 DTB
+structure 区块的长度，那么上述情况都不满足条件，直接返回 NULL。
+如果上面的检查都通过，那么函数调用 fdt_offset_ptr_() 函数
+获得 device-node 的指针。
+
+> - [fdt_off_dt_struct](#A0079)
+>
+> - [fdt_totalsize](#A0078)
+>
+> - [fdt_size_dt_struct](#A0087)
+>
+> - [fdt_offset_ptr_](#A0095)
+
+------------------------------------
+
+#### <span id="A0097">CPU_TO_FDT32</span>
+
+{% highlight c %}
+#define CPU_TO_FDT32(x) ((EXTRACT_BYTE(x, 0) << 24) | (EXTRACT_BYTE(x, 1) << 16) | \    
+                         (EXTRACT_BYTE(x, 2) << 8) | EXTRACT_BYTE(x, 3))
+{% endhighlight %}
+
+CPU_TO_FDT32() 函数用于将数据的大小端模式进行翻转。如果 x
+代表的数据是大端模式，那么 CPU_TO_FDT32() 函数将转换为小端
+模式，反之亦然。
+
+------------------------------------
+
+#### <span id="A0098">fdt32_to_cpu</span>
+
+{% highlight c %}
+static inline uint32_t fdt32_to_cpu(fdt32_t x)
+{       
+        return (FDT_FORCE uint32_t)CPU_TO_FDT32(x);
+}
+{% endhighlight %}
+
+fdt32_to_cpu() 函数用于将 DTB/DTS 里的大端数据转换
+为小端数据。函数通过调用 CPU_TO_FDT32() 函数实现。
+
+> - [CPU_TO_FDT32](#A0097)
+
+------------------------------------
+
+#### <span id="A0099">fdt_next_tag</span>
+
+{% highlight c %}
+uint32_t fdt_next_tag(const void *fdt, int startoffset, int *nextoffset)
+{
+        const fdt32_t *tagp, *lenp;
+        uint32_t tag;
+        int offset = startoffset;
+        const char *p;
+
+        *nextoffset = -FDT_ERR_TRUNCATED;
+        tagp = fdt_offset_ptr(fdt, offset, FDT_TAGSIZE);
+        if (!tagp)
+                return FDT_END; /* premature end */
+        tag = fdt32_to_cpu(*tagp);
+        offset += FDT_TAGSIZE;
+
+        *nextoffset = -FDT_ERR_BADSTRUCTURE;
+        switch (tag) {
+        case FDT_BEGIN_NODE:
+                /* skip name */
+                do {
+                        p = fdt_offset_ptr(fdt, offset++, 1);
+                } while (p && (*p != '\0'));
+                if (!p)
+                        return FDT_END; /* premature end */
+                break;
+
+        case FDT_PROP:
+                lenp = fdt_offset_ptr(fdt, offset, sizeof(*lenp));
+                if (!lenp)
+                        return FDT_END; /* premature end */
+                /* skip-name offset, length and value */
+                offset += sizeof(struct fdt_property) - FDT_TAGSIZE
+                        + fdt32_to_cpu(*lenp);
+                if (fdt_version(fdt) < 0x10 && fdt32_to_cpu(*lenp) >= 8 &&
+                    ((offset - fdt32_to_cpu(*lenp)) % 8) != 0)
+                        offset += 4;
+                break;
+
+        case FDT_END:
+        case FDT_END_NODE:
+        case FDT_NOP:
+                break;
+
+        default:
+                return FDT_END;
+        }
+
+        if (!fdt_offset_ptr(fdt, startoffset, offset - startoffset))
+                return FDT_END; /* premature end */
+
+        *nextoffset = FDT_TAGALIGN(offset);
+        return tag;
+}
+{% endhighlight %}
+
+fdt_next_tag() 函数用于获得下一个 tag 在 DTB DeviceTree structure
+内的偏移。在解析函数之前，开发者应该先了解 DTB 中 DeviceTree struct
+区块的内存布局如下图：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000214.png)
+
+从上图可知，每个节点或子节点都是以 FDT_BEGIN_NODE 开始，到
+FDT_END_NODE 结束。节点中可以嵌套节点，嵌套的节点称为父节点，
+被嵌套的节点称为子节点。
+
+{% highlight bash %}
+FDT_BEGIN_NODE         .......... 节点 N
+|
+|---FDT_BEGIN_NODE     .......... 子节点 0
+|   |
+|   FDT_END_NODE
+|
+|---FDT_BEGIN_NODE     .......... 子节点 1
+|   |
+|   FDT_END_NODE
+|
+FDT_END_NODE
+{% endhighlight %}
+
+从上图可知，属性位于节点内部，并且每个属性以 FDT_PROP 开始，到下一个
+FDT_PROP 结束。属性内包含了属性字符串大小，属性字符串在 device-tree strings
+中的偏移，以及属性数值等信息。
+
+{% highlight bash %}
+FDT_BEGIN_NODE
+|
+|----FDT_PROP
+|    |--- Property string size
+|    |--- Property string offset
+|    |--- Property value
+|    
+|----FDT_PROP
+|    |--- Property string size
+|    |--- Property string offset
+|    |--- Property value
+|
+FDT_END_NODE
+{% endhighlight %}
+
+因此 fdt_next_tag() 函数在解析 DTB 下一个 tag 的信息按如下
+逻辑进行分析：
+
+{% highlight c %}
+        const fdt32_t *tagp, *lenp;
+        uint32_t tag;
+        int offset = startoffset;
+        const char *p;
+
+        *nextoffset = -FDT_ERR_TRUNCATED;
+        tagp = fdt_offset_ptr(fdt, offset, FDT_TAGSIZE);
+        if (!tagp)
+                return FDT_END; /* premature end */
+        tag = fdt32_to_cpu(*tagp);
+        offset += FDT_TAGSIZE;
+
+        *nextoffset = -FDT_ERR_BADSTRUCTURE;
+{% endhighlight %}
+
+fdt_next_tag() 函数具有三个参数，fdt 参数指向 DTB；
+参数 startoffset 指明当前 tag 在 DTB DeviceTree Structure 区域
+内的偏移，参数 nextoffset 用于存储下一个 tag 在 DTB DeviceTree
+Structure 区域内的偏移。函数首先调用 fdt_offset_ptr() 函数获得
+当前 tag 的虚拟地址存储在 tagp 中，如果 tagp 为空，那么代表到达
+不正确的末尾，为非正常值；如果 tagp 不为空，调用  fdt32_to_cpu()
+函数读取 tagp 正确形式的值，此时 offset 指向一个 tag 的起始位置，
+其值可能是一个 device node 的起始 tag (FDT_BEGIN_NODE), 也可能
+是一个属性的起始 tag (FDT_PROP)。此时函数将 offset 的地址增加
+FDT_TAGSIZE。并将 nextoffset 的值设置为 -FDT_ERR_BADSTRUCTURE.
+
+{% highlight c %}
+        switch (tag) {
+        case FDT_BEGIN_NODE:
+                /* skip name */
+                do {
+                        p = fdt_offset_ptr(fdt, offset++, 1);
+                } while (p && (*p != '\0'));
+                if (!p)
+                        return FDT_END; /* premature end */
+                break;
+
+        case FDT_PROP:
+                lenp = fdt_offset_ptr(fdt, offset, sizeof(*lenp));
+                if (!lenp)
+                        return FDT_END; /* premature end */
+                /* skip-name offset, length and value */
+                offset += sizeof(struct fdt_property) - FDT_TAGSIZE
+                        + fdt32_to_cpu(*lenp);
+                if (fdt_version(fdt) < 0x10 && fdt32_to_cpu(*lenp) >= 8 &&
+                    ((offset - fdt32_to_cpu(*lenp)) % 8) != 0)
+                        offset += 4;
+                break;
+
+        case FDT_END:
+        case FDT_END_NODE:
+        case FDT_NOP:
+                break;
+
+        default:
+                return FDT_END;
+        }
+{% endhighlight %}
+
+tag 里面存储着 DTB DeviceTree structure 区域 tag 相关的信息，
+此时使用 switch 进行处理，如果 tag 的值是 FDT_BEGIN_NODE，那么
+代表 startoffset 指向了一个 device node 的起始地址，由于 DTB
+中定义一个 device node 的数据结果如下：
+
+{% highlight bash %}
+struct fdt_node_header {
+    uint32_t tag;
+    char name[0];
+};
+{% endhighlight %}
+
+那么函数就找到 device node 结尾的位置，其结尾是一个字符串，
+因此只要找到 `\0` 就可以找到 device node 的结尾，如果此时
+找到的末尾为空，那么找到末尾，没必要继续查找下一个 tag，
+直接返回 FDT_END；如果 tag 的值是 FDT_PROP，那么代表
+startoffset 指向的是一个属性开始的偏移，在 DTB 中，属性的
+定义如下：
+
+{% highlight bash %}
+struct fdt_property {
+    uint32_t tag;
+    uint32_t len;
+    uint32_t nameoff;
+    char data[0];
+};
+{% endhighlight %}
+
+函数首先获得属性值 len 的长度，然后跳过属性的 nameoff，
+最后再将 offset 的值加上属性值的长度，这样就可以到达下一个
+tag 的起始位置。如果 DTB 的版本小于 17 且属性值长度大于 8
+个字节，并且此时 offset 减去属性长度的值没有按 8 字节对齐，
+那么需要将 offset 的值加上 4。至此，其余 tag 的值都不进行
+处理。
+
+{% highlight c %}
+        if (!fdt_offset_ptr(fdt, startoffset, offset - startoffset))
+                return FDT_END; /* premature end */
+
+        *nextoffset = FDT_TAGALIGN(offset);
+        return tag;
+}
+{% endhighlight %}
+
+函数最后调用 fdt_offset_ptr() 函数，并传入 `offset-startoffset` 的
+值以此定位到下一个 tag 的起始地址，此时对新活动地址进行判断，如果
+地址有效，那么将 *nextoffset 指向下一个 tag 的偏移地址。最后返回 tag
+的值，以此返回下一个 tag 类型。
+
+> - [fdt_offset_ptr](#A00)
+>
+> - [fdt32_to_cpu](#A0098)
+>
+> - [fdt_version](#A0082)
+>
+> - [FDT_TAGALIGN](#A0101)
+
+------------------------------------
+
+#### <span id="A0100">FDT_ALIGN</span>
+
+{% highlight c %}
+#define FDT_ALIGN(x, a)         (((x) + (a) - 1) & ~((a) - 1))
+{% endhighlight %}
+
+FDT_ALIGN() 函数用于将 x 参数按 a 对齐。
+
+------------------------------------
+
+#### <span id="A0101">FDT_TAGALIGN</span>
+
+{% highlight c %}
+#define FDT_TAGALIGN(x)         (FDT_ALIGN((x), FDT_TAGSIZE))
+{% endhighlight %}
+
+FDT_TAGALIGN() 函数用于 DTB 中 tag 的对齐方式。其通过
+FDT_ALIGN() 函数实现。
+
+------------------------------------
+
 #### <span id="A00"></span>
 
 {% highlight c %}
 
 {% endhighlight %}
 
+------------------------------------
 
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
 
 ------------------------------------
 
