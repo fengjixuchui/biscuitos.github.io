@@ -2238,11 +2238,441 @@ stacks[] 数组结构中。至此函数初始化硬件完毕，函数将相应�
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0075">fdt32_ld</span>
 
 {% highlight c %}
+static inline uint32_t fdt32_ld(const fdt32_t *p)
+{
+        const uint8_t *bp = (const uint8_t *)p;
+
+        return ((uint32_t)bp[0] << 24)
+                | ((uint32_t)bp[1] << 16)
+                | ((uint32_t)bp[2] << 8)
+                | bp[3];
+}
+{% endhighlight %}
+
+fdt32_ld() 函数的作用是将一个 32 位的大端数据转换为一个 32 位
+的小端数据。函数首先获得参数 p 的起始地址，然后按字节进行大小
+段转换。
+
+------------------------------------
+
+#### <span id="A0076">fdt_get_header</span>
+
+{% highlight c %}
+#define fdt_get_header(fdt, field) \
+        (fdt32_ld(&((const struct fdt_header *)(fdt))->field))
+{% endhighlight %}
+
+fdt_get_header() 函数用于从 DTB 的 header 读出指定的信息。
+DTB 二进制文件起始的位置是一个 struct fdt_header 结构，
+函数通过从 DTB 的头部读出指定数据之后，由于 DTB 内的数据
+采用大端模式存储，而 ARM 是小端模式，因此需要调用 fdt32_ld()
+函数将大端数据转换成小端数据。
+
+> - [fdt32_ld](#A0075)
+>
+> - [DTB 二进制文件结构](https://biscuitos.github.io/blog/DTS/#M00)
+>
+> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+
+------------------------------------
+
+#### <span id="A0077">fdt_magic</span>
+
+{% highlight c %}
+#define fdt_magic(fdt)                  (fdt_get_header(fdt, magic))
+{% endhighlight %}
+
+fdt_magic() 函数用于读取 DTB header 的 MAGIC 信息。
+函数通过调用 fdt_get_header() 函数获得 DTB 二进制文件
+struct fdt_header 的 magic 成员。
+
+> - [fdt_get_header](#A0076)
+>
+> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+
+------------------------------------
+
+#### <span id="A0078">fdt_totalsize</span>
+
+{% highlight c %}
+#define fdt_totalsize(fdt)              (fdt_get_header(fdt, totalsize))
+{% endhighlight %}
+
+fdt_totalsize() 函数用于读取 DTB header 的 totalsize 信息。
+函数通过调用 fdt_get_header() 函数获得 DTB 二进制文件
+struct fdt_header 的 fdt_totalsize 成员，该成员存储 DTB
+二进制文件的大小。
+
+> - [fdt_get_header](#A0076)
+>
+> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+
+------------------------------------
+
+#### <span id="A0079">fdt_off_dt_struct</span>
+
+{% highlight c %}
+#define fdt_off_dt_struct(fdt)          (fdt_get_header(fdt, off_dt_struct))
+{% endhighlight %}
+
+fdt_off_dt_struct() 函数用于读取 DTB header 的 off_dt_struct 信息。
+函数通过调用 fdt_get_header() 函数获得 DTB 二进制文件
+struct fdt_header 的 off_dt_struct 成员，该成员指向 DTB
+二进制文件中 DeviceTree struct 的偏移地址。
+
+> - [fdt_get_header](#A0076)
+>
+> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+
+------------------------------------
+
+#### <span id="A0080">fdt_off_dt_strings</span>
+
+{% highlight c %}
+#define fdt_off_dt_strings(fdt)         (fdt_get_header(fdt, off_dt_strings))
+{% endhighlight %}
+
+fdt_off_dt_strings() 函数用于读取 DTB header 的 off_dt_strings 信息。
+函数通过调用 fdt_get_header() 函数获得 DTB 二进制文件
+struct fdt_header 的 off_dt_strings 成员，该成员指向 DTB
+二进制文件中 DeviceTree string 的偏移地址。
+
+> - [fdt_get_header](#A0076)
+>
+> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+
+------------------------------------
+
+#### <span id="A0081">fdt_off_mem_rsvmap</span>
+
+{% highlight c %}
+#define fdt_off_mem_rsvmap(fdt)         (fdt_get_header(fdt, off_mem_rsvmap))
+{% endhighlight %}
+
+fdt_off_mem_rsvmap() 函数用于读取 DTB header 的 off_mem_revmap 信息。
+函数通过调用 fdt_get_header() 函数获得 DTB 二进制文件
+struct fdt_header 的 off_mem_revmap 成员，该成员指向 DTB
+二进制文件中 Reserved memory 的偏移地址。
+
+> - [fdt_get_header](#A0076)
+>
+> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+
+------------------------------------
+
+#### <span id="A0082">fdt_version</span>
+
+{% highlight c %}
+#define fdt_version(fdt)                (fdt_get_header(fdt, version))
+{% endhighlight %}
+
+fdt_version() 函数用于读取 DTB header 的 version 信息。
+函数通过调用 fdt_get_header() 函数获得 DTB 二进制文件
+struct fdt_header 的 version 成员，该成员指向 DeviceTree
+的版本信息。
+
+> - [fdt_get_header](#A0076)
+>
+> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+
+------------------------------------
+
+#### <span id="A0083">fdt_last_comp_version</span>
+
+{% highlight c %}
+#define fdt_last_comp_version(fdt)      (fdt_get_header(fdt, last_comp_version))
+{% endhighlight %}
+
+fdt_last_comp_version() 函数用于读取 DTB header 的 last_comp_version 信息。
+函数通过调用 fdt_get_header() 函数获得 DTB 二进制文件
+struct fdt_header 的 last_comp_version 成员，该成员指向 DeviceTree
+上一版本的兼容信息。
+
+> - [fdt_get_header](#A0076)
+>
+> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+
+------------------------------------
+
+#### <span id="A0085">fdt_boot_cpuid_phys</span>
+
+{% highlight c %}
+#define fdt_boot_cpuid_phys(fdt)        (fdt_get_header(fdt, boot_cpuid_phys))
+{% endhighlight %}
+
+fdt_boot_cpuid_phys() 函数用于读取 DTB header 的 boot_cpuid_phys 信息。
+函数通过调用 fdt_get_header() 函数获得 DTB 二进制文件
+struct fdt_header 的 boot_cpuid_phys 成员，该成员指向 DeviceTree
+使用 boot CPU 信息。
+
+> - [fdt_get_header](#A0076)
+>
+> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+
+------------------------------------
+
+#### <span id="A0086">fdt_size_dt_strings</span>
+
+{% highlight c %}
+#define fdt_size_dt_strings(fdt)        (fdt_get_header(fdt, size_dt_strings))
+{% endhighlight %}
+
+fdt_boot_cpuid_phys() 函数用于读取 DTB header 的 dt_strings_size 信息。
+函数通过调用 fdt_get_header() 函数获得 DTB 二进制文件
+struct fdt_header 的 dt_strings_size 成员，该成员指明了 DTB 文件
+中 string 的长度。
+
+> - [fdt_get_header](#A0076)
+>
+> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+
+------------------------------------
+
+#### <span id="A0087">fdt_size_dt_struct</span>
+
+{% highlight c %}
+#define fdt_size_dt_struct(fdt)         (fdt_get_header(fdt, size_dt_struct))
+{% endhighlight %}
+
+fdt_size_dt_struct() 函数用于读取 DTB header 的 dt_struct_size 信息。
+函数通过调用 fdt_get_header() 函数获得 DTB 二进制文件
+struct fdt_header 的 dt_struct_size 成员，该成员指明了 DTB 文件
+中 DeviceTree structure 的长度。
+
+> - [fdt_get_header](#A0076)
+>
+> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+
+------------------------------------
+
+#### <span id="A0088">fdt_header_size_</span>
+
+{% highlight c %}
+#define FDT_V1_SIZE     (7*sizeof(fdt32_t))
+#define FDT_V2_SIZE     (FDT_V1_SIZE + sizeof(fdt32_t))
+#define FDT_V3_SIZE     (FDT_V2_SIZE + sizeof(fdt32_t))
+#define FDT_V16_SIZE    FDT_V3_SIZE
+#define FDT_V17_SIZE    (FDT_V16_SIZE + sizeof(fdt32_t)
+
+
+size_t fdt_header_size_(uint32_t version)
+{               
+        if (version <= 1)
+                return FDT_V1_SIZE;
+        else if (version <= 2)
+                return FDT_V2_SIZE;
+        else if (version <= 3)
+                return FDT_V3_SIZE;
+        else if (version <= 16)
+                return FDT_V16_SIZE;
+        else
+                return FDT_V17_SIZE;
+}
+{% endhighlight %}
+
+fdt_header_size_() 函数用于获得 DTB header 结构的
+长度。不同版本的 DTB 二进制文件 header 长度不一样。
+函数根据 version 参数获得对应的 header 长度，每个版本
+ header 长度都通过宏 FDT_VX_SIZE 定义。
+
+------------------------------------
+
+#### <span id="A0089">fdt_header_size</span>
+
+{% highlight c %}
+static inline size_t fdt_header_size(const void *fdt)
+{       
+        return fdt_header_size_(fdt_version(fdt));
+}
+{% endhighlight %}
+
+fdt_header_size() 函数用于获得 DTB 二进制文件 header
+的长度。函数首先通过 fdt_version() 获得 DTB 的版本号，
+然后通过 fdt_header_size_() 函数计算出版本号对应的
+DTB header 长度。
+
+> - [fdt_header_size_](#A0088)
+>
+> - [fdt_version](#A0082)
+
+------------------------------------
+
+#### <span id="A0090">check_off_</span>
+
+{% highlight c %}
+static int check_off_(uint32_t hdrsize, uint32_t totalsize, uint32_t off)
+{
+        return (off >= hdrsize) && (off <= totalsize);
+}
+{% endhighlight %}
+
+check_off_() 函数用于检测参数 off 是在 hdrsize 和 totalsize 之间。
+
+------------------------------------
+
+#### <span id="A0091">check_block_</span>
+
+{% highlight c %}
+static int check_block_(uint32_t hdrsize, uint32_t totalsize,
+                        uint32_t base, uint32_t size)
+{
+        if (!check_off_(hdrsize, totalsize, base))
+                return 0; /* block start out of bounds */
+        if ((base + size) < base)
+                return 0; /* overflow */
+        if (!check_off_(hdrsize, totalsize, base + size))
+                return 0; /* block end out of bounds */
+        return 1;
+}
+{% endhighlight %}
+
+check_block_() 函数检查 "base+size" 的和是否在 hdrsize 与
+totalsize 之间。函数首先调用 check_off_() 函数判断 base
+是否在 hdrsize 与 totalsize 之间，如果不在，则返回 0；如果在，
+继续判断 base+size 是否溢出，如果溢出，直接返回 0,；反之，
+继续检查 base+size 的和是否在 hdrsize 和 totalsize 之间。
+
+> - [check_off_](#A0090)
+
+------------------------------------
+
+#### <span id="A0092">fdt_check_header</span>
+
+{% highlight c %}
+int fdt_check_header(const void *fdt)
+{
+        size_t hdrsize;
+
+        if (fdt_magic(fdt) != FDT_MAGIC)
+                return -FDT_ERR_BADMAGIC;
+        hdrsize = fdt_header_size(fdt);
+        if ((fdt_version(fdt) < FDT_FIRST_SUPPORTED_VERSION)
+            || (fdt_last_comp_version(fdt) > FDT_LAST_SUPPORTED_VERSION))
+                return -FDT_ERR_BADVERSION;
+        if (fdt_version(fdt) < fdt_last_comp_version(fdt))
+                return -FDT_ERR_BADVERSION;
+
+        if ((fdt_totalsize(fdt) < hdrsize)
+            || (fdt_totalsize(fdt) > INT_MAX))
+                return -FDT_ERR_TRUNCATED;
+
+        /* Bounds check memrsv block */
+        if (!check_off_(hdrsize, fdt_totalsize(fdt), fdt_off_mem_rsvmap(fdt)))
+                return -FDT_ERR_TRUNCATED;
+
+        /* Bounds check structure block */
+        if (fdt_version(fdt) < 17) {
+                if (!check_off_(hdrsize, fdt_totalsize(fdt),
+                                fdt_off_dt_struct(fdt)))
+                        return -FDT_ERR_TRUNCATED;
+        } else {
+                if (!check_block_(hdrsize, fdt_totalsize(fdt),
+                                  fdt_off_dt_struct(fdt),
+                                  fdt_size_dt_struct(fdt)))
+                        return -FDT_ERR_TRUNCATED;
+        }
+
+        /* Bounds check strings block */
+        if (!check_block_(hdrsize, fdt_totalsize(fdt),
+                          fdt_off_dt_strings(fdt), fdt_size_dt_strings(fdt)))
+                return -FDT_ERR_TRUNCATED;
+
+        return 0;
+}
+{% endhighlight %}
+
+fdt_check_header() 函数用于检查 DTB 二进制文件是否有效。
+由于函数太长，分段解析：
+
+{% highlight c %}
+        if (fdt_magic(fdt) != FDT_MAGIC)
+                return -FDT_ERR_BADMAGIC;
+        hdrsize = fdt_header_size(fdt);
+        if ((fdt_version(fdt) < FDT_FIRST_SUPPORTED_VERSION)
+            || (fdt_last_comp_version(fdt) > FDT_LAST_SUPPORTED_VERSION))
+                return -FDT_ERR_BADVERSION;
+        if (fdt_version(fdt) < fdt_last_comp_version(fdt))
+                return -FDT_ERR_BADVERSION;
+{% endhighlight %}
+
+函数首先调用 fdt_magic() 函数检查 DTB 文件的 MAGIC 是否
+与 FDT_MAGIC 一致，如果不一致，直接返回 FDT_ERR_BADMAGIC；
+如果一致，然后调用 fdt_header_size() 函数获得 DTB header
+的长度。接着通过 fdt_version() 函数判断 DTB 的版本如果小于
+FDT_FIRST_SUPPORTED_VERSION，或则调用 fdt_last_comp_version()
+函数判断 DTB 上一个兼容的版本大于 FDT_LAST_SUPPORTED_VERSION，
+那么判断 DTB 是无效的，直接返回 FDT_ERR_BADVERSION。函数继续
+通过调用 fdt_version() 与 fdt_last_comp_version() 进行判断，
+如果 DTB 当前的版本小于上一个兼容版本，那么判定 DTB 无效，直接
+返回 FDT_ERR_BADVERSION.
+
+{% highlight c %}
+        if ((fdt_totalsize(fdt) < hdrsize)
+            || (fdt_totalsize(fdt) > INT_MAX))
+                return -FDT_ERR_TRUNCATED;
+
+        /* Bounds check memrsv block */
+        if (!check_off_(hdrsize, fdt_totalsize(fdt), fdt_off_mem_rsvmap(fdt)))
+                return -FDT_ERR_TRUNCATED;
+{% endhighlight %}
+
+函数继续检查，如果 DTB 的长度比 DTB header 小，或者
+DTB 的长度比 INT_MAX 大，那么函数判定 DTB 无效，直接返回
+FDT_ERR_TRUNCATED；函数接着调用 check_off_() 检查
+DTB 的 reserved 区域是否在大于 DTB header 而小于 DTB
+二进制文件大小的区域内，如果不在，则返回 FDT_ERR_TRUNCATED。
+
+{% highlight c %}
+        /* Bounds check structure block */
+        if (fdt_version(fdt) < 17) {
+                if (!check_off_(hdrsize, fdt_totalsize(fdt),
+                                fdt_off_dt_struct(fdt)))
+                        return -FDT_ERR_TRUNCATED;
+        } else {
+                if (!check_block_(hdrsize, fdt_totalsize(fdt),
+                                  fdt_off_dt_struct(fdt),
+                                  fdt_size_dt_struct(fdt)))
+                        return -FDT_ERR_TRUNCATED;
+        }
+
+        /* Bounds check strings block */
+        if (!check_block_(hdrsize, fdt_totalsize(fdt),
+                          fdt_off_dt_strings(fdt), fdt_size_dt_strings(fdt)))
+                return -FDT_ERR_TRUNCATED;
 
 {% endhighlight %}
+
+函数继续检查，如果 DTB 的版本小于 17，如果此时 DTB 文件中
+DeviceTree struct 的位置不在 hdrsize 和 totalsize 之间，那么
+认定 DTB 无效，直接返回 FDT_ERR_TRUNCATED；反之，如果 DTB 版本
+大于等于 17，那么 DeviceTree struct 的长度不在 hdrsize
+和 totalsize 之间，那么函数认定 DTB 无效，直接返回
+FDT_ERR_TRUNCATED。函数最后检查 DeviceTree string 的
+长度是否在 hdrsize 与 totalsize 之间，如果不在，那么
+函数认定 DTB 无效，直接返回 FDT_ERR_TRUNCATED。
+
+> - [fdt_magic](#A0077)
+>
+> - [fdt_header_size](#A0089)
+>
+> - [fdt_version](#A0082)
+>
+> - [fdt_totalsize](#A0078)
+>
+> - [check_off_](#A0090)
+>
+> - [check_block_](#A0091)
+>
+> - [fdt_off_mem_rsvmap](#A0081)
+>
+> - [fdt_off_dt_struct](#A0079)
+>
+> - [fdt_size_dt_struct](#A0087)
+>
+> - [fdt_lst_comp_version](#A0083)
 
 ------------------------------------
 
@@ -2252,61 +2682,7 @@ stacks[] 数组结构中。至此函数初始化硬件完毕，函数将相应�
 
 {% endhighlight %}
 
-------------------------------------
 
-#### <span id="A00"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A00"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A00"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A00"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A00"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A00"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A00"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
 
 ------------------------------------
 
