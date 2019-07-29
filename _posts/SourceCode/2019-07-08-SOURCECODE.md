@@ -3078,6 +3078,745 @@ FDT_ALIGN() 函数实现。
 
 ------------------------------------
 
+#### <span id="A0102">fdt_check_node_offset_</span>
+
+{% highlight c %}
+int fdt_check_node_offset_(const void *fdt, int offset)
+{
+        if ((offset < 0) || (offset % FDT_TAGSIZE)
+            || (fdt_next_tag(fdt, offset, &offset) != FDT_BEGIN_NODE))
+                return -FDT_ERR_BADOFFSET;
+
+        return offset;
+}
+{% endhighlight %}
+
+fdt_check_node_offset_() 函数用于判断 offset 对应的
+的值是否为 FDT device node。参数 fdt 指向 DTB，参数 offset
+为 device node 在 DTB DeviceTree structure 内的偏移。
+函数首先判断 offset 如果小于 0 则无效，或者 offset 没有按
+FDT_TAGSIZE 对齐则无效，或者调用 fdt_next_tag() 函数
+获得 offset 对应的下一个 tag 不是 FDT_BEGIN_NODE，
+那么也是无效的。如果 offset 都不满足上面的情况，那么
+offset 是一个有效的值。
+
+> - [fdt_next_tag](#A0099)
+
+------------------------------------
+
+#### <span id="A0103">fdt_check_prop_offset_</span>
+
+{% highlight c %}
+int fdt_check_prop_offset_(const void *fdt, int offset)
+{       
+        if ((offset < 0) || (offset % FDT_TAGSIZE)
+            || (fdt_next_tag(fdt, offset, &offset) != FDT_PROP))
+                return -FDT_ERR_BADOFFSET;
+
+        return offset;                            
+}  
+{% endhighlight %}
+
+fdt_check_prop_offset_() 函数用于判断 offset 对应的
+tag 是否为 FDT property。参数 fdt 指向 DTB，参数 offset
+为 property 在 DTB DeviceTree structure 内的偏移。
+如果 offset 小于 0，或者 offset 没有按 FDT_TAGSIZE 对齐，
+或者调用 fdt_next_tag() 函数获得下一个 tag 不是 FDT_PROP，
+那么 offset 是无效的 property tag；如果 offset 不满足
+上面的条件，那么 offset 就是一个有效的 property tag。
+
+> - [fdt_next_tag](#A0099)
+
+------------------------------------
+
+#### <span id="A0104">nextprop_</span>
+
+{% highlight c %}
+static int nextprop_(const void *fdt, int offset)
+{
+        uint32_t tag;
+        int nextoffset;
+
+        do {
+                tag = fdt_next_tag(fdt, offset, &nextoffset);
+
+                switch (tag) {
+                case FDT_END:
+                        if (nextoffset >= 0)
+                                return -FDT_ERR_BADSTRUCTURE;
+                        else
+                                return nextoffset;
+
+                case FDT_PROP:
+                        return offset;
+                }
+                offset = nextoffset;
+        } while (tag == FDT_NOP);
+
+        return -FDT_ERR_NOTFOUND;
+}
+{% endhighlight %}
+
+nextprop_() 函数用于获得下一个属性 tag 在 DTB DeviceTree
+structure 内的偏移。参数 fdt 指向 DTB，offset 指向属性在
+DeviceTree structure 内的偏移。函数首先调用 do while()
+循环，通过调用 fdt_next_tag() 函数获得 offset 的下一个 tag，
+将下一个 tag 的值返回，并将下一个 tag 在 DTB DeviceTree
+structure 区域内的偏移存储在 nextoffset 内。此时，如果
+tag 的值是 FDT_END，且 nextoffset 大于零，那么这不是一个
+正常的 property 结尾，直接返回 FDT_ERRR_BADSTRUCTURE；
+反之返回 nextoffset 的值。如果 tag 的值是 FDT_PROP，那么
+检测到了 property 的结尾，则返回 offset。否则 tag 为
+FDT_NOP 的时候，那么继续循环。循环结束还没找到对应的 tag，
+那么直接返回 FDT_ERR_NOTFOUND。
+
+> - [fdt_next_tag](#A0099)
+
+------------------------------------
+
+#### <span id="A0105">fdt_first_property_offset</span>
+
+{% highlight c %}
+int fdt_first_property_offset(const void *fdt, int nodeoffset)
+{
+        int offset;
+
+        if ((offset = fdt_check_node_offset_(fdt, nodeoffset)) < 0)
+                return offset;
+
+        return nextprop_(fdt, offset);
+}
+{% endhighlight %}
+
+fdt_first_property_offset() 函数用于获得 device node 的第一个
+属性在 DTB DeviceTree structure 区域内的偏移。参数 fdt
+指向 DTB，nodeoffset 代表 device-node 在 DTB DeviceTree structure 区域
+内的偏移。函数首先调用 fdt_check_node_offset_() 函数检查 nodeoffset
+对应位置是否是一个 device-node，如果不是直接返回错误值；如果是
+device-node，那么 nodeoffset 的下一个 tag 可能是属性的 tag，
+其偏移值是 offset，此时调用 nextprop_() 函数获得 device-node 的
+第一个属性的偏移值；如果 device-node 无法通过 nextprop_() 函数找到
+属性的值，那么函数返回错误码。
+
+> - [fdt_check_node_offset_](#A0102)
+>
+> - [nextprop_](#A0104)
+
+------------------------------------
+
+#### <span id="A0106">fdt_next_property_offset</span>
+
+{% highlight c %}
+int fdt_next_property_offset(const void *fdt, int offset)
+{
+        if ((offset = fdt_check_prop_offset_(fdt, offset)) < 0)
+                return offset;
+
+        return nextprop_(fdt, offset);
+}
+{% endhighlight %}
+
+fdt_next_property_offset() 函数用于获得 offset 对应 property
+的下一个 property 的偏移。参数 fdt 指向 DTB，参数 offset 指向
+当前 property 在 DTB DeviceTree Structure 区域内的偏移。
+函数首先调用 fdt_check_prop_offset_() 函数下一个 tag 是不是
+property，如果不是则返回错误，如果那么调用 nextprop_() 函数获得
+下一个属性在 DTB DeviceTree structure 内的偏移。
+
+> - [fdt_check_prop_offset_](#A0103)
+>
+> - [nextprop_](#A0104)
+
+------------------------------------
+
+#### <span id="A0107">fdt_get_property_by_offset_</span>
+
+{% highlight c %}
+static const struct fdt_property *fdt_get_property_by_offset_(const void *fdt,
+                                                              int offset,
+                                                              int *lenp)
+{
+        int err;
+        const struct fdt_property *prop;
+
+        if ((err = fdt_check_prop_offset_(fdt, offset)) < 0) {
+                if (lenp)
+                        *lenp = err;
+                return NULL;
+        }
+
+        prop = fdt_offset_ptr_(fdt, offset);
+
+        if (lenp)
+                *lenp = fdt32_ld(&prop->len);
+
+        return prop;
+}
+{% endhighlight %}
+
+fdt_get_property_by_offset_() 函数的左右就是通过属性在
+DTB DeviceTree Structure 区域内的偏移获得属性值的长度。
+参数 fdt 指向 DTB，参数 offset 指向 proprty 在 DTB
+DeviceTree Structure 区域内的偏移，参数 lenp 用于存储
+property 属性值长度。函数首先通过 fdt_check_prop_offset_()
+函数检查 offset 对应的 property 是否是一个 property，
+如果不是，将 lenp 指向的变量设置为错误码。如果 offset
+对于的是一个有效的 property，那么调用 fdt_offset_ptr_()
+计算出 perperty 的虚拟地址，接着 lenp 不为空的情况下，
+调用 fd32_ld() 函数读取 property 属性值长度。在 DTB
+中，property 定义如下：
+
+{% highlight bash %}
+struct fdt_property {
+    uint32_t tag;
+    uint32_t len;
+    uint32_t nameoff;
+    char data[0];
+};
+{% endhighlight %}
+
+因此获得 len 长度位于 tag 之后，通过 tag 就可以获得 len
+的值，也就是知道 property 属性值占用了多少个 u32.
+
+> - [fdt_check_prop_offset_](#A0103)
+>
+> - [fdt_offset_ptr_](#A0095)
+>
+> - [fdt32_ld](#A0075)
+
+------------------------------------
+
+#### <span id="A0108">fdt_ro_probe_</span>
+
+{% highlight c %}
+/*
+ * Minimal sanity check for a read-only tree. fdt_ro_probe_() checks
+ * that the given buffer contains what appears to be a flattened
+ * device tree with sane information in its header.
+ */
+int fdt_ro_probe_(const void *fdt)
+{
+        if (fdt_magic(fdt) == FDT_MAGIC) {
+                /* Complete tree */
+                if (fdt_version(fdt) < FDT_FIRST_SUPPORTED_VERSION)
+                        return -FDT_ERR_BADVERSION;
+                if (fdt_last_comp_version(fdt) > FDT_LAST_SUPPORTED_VERSION)
+                        return -FDT_ERR_BADVERSION;
+        } else if (fdt_magic(fdt) == FDT_SW_MAGIC) {
+                /* Unfinished sequential-write blob */
+                if (fdt_size_dt_struct(fdt) == 0)
+                        return -FDT_ERR_BADSTATE;
+        } else {
+                return -FDT_ERR_BADMAGIC;
+        }
+
+        return 0;
+}
+{% endhighlight %}
+
+fdt_ro_probe_() 函数用于一个只读 DTB 的最小健全性检测。参数 fdt
+指向 DTB。函数首先调用 fdt_magic() 检查 DTB 的 MAGIC 信息，如果
+MAGIC 为 FDT_MAGIC，那么 fdt 参数指向的是一个 FDT，在这个 MAGIC
+模式下，函数调用 fdt_version() 函数检查 DTB 版本如果小于
+FDT_FIRST_SUPPORTED_VERSION，那么 DTB 是无效的，直接返回
+FDT_ERR_BADVERSION；如果没有返回，函数继续调用
+fdt_last_comp_version() 函数判断 DTB 上一个兼容版本是否大于
+FDT_LAST_SUPPORTED_VERSION，如果大于则 DTB 是无效的，直接
+返回 FDT_ERR_BADVERSION。如果 DTB 的 MAGIC 是 FDT_SW_MAGIC，
+那么函数调用 fdt_size_dt_struct() 函数获得 DTB DeviceTree
+Structure 区域的长度，如果长度为 0，那么直接返回 FDT_ERR_BADSTATE；
+反之如果 MAGIC 为其他，那么 DTB 也是无效的。至此，DTB 最小
+健全性检测完毕，函数返回 0 表示通过。
+
+> - [fdt_magic](#A0077)
+>
+> - [fdt_last_comp_version](#A0083)
+>
+> - [fdt_size_dt_struct](#A0087)
+
+------------------------------------
+
+#### <span id="A0109">fdt_get_string</span>
+
+{% highlight c %}
+const char *fdt_get_string(const void *fdt, int stroffset, int *lenp)
+{
+        uint32_t absoffset = stroffset + fdt_off_dt_strings(fdt);
+        size_t len;
+        int err;
+        const char *s, *n;
+
+        err = fdt_ro_probe_(fdt);
+        if (err != 0)
+                goto fail;
+
+        err = -FDT_ERR_BADOFFSET;
+        if (absoffset >= fdt_totalsize(fdt))
+                goto fail;
+        len = fdt_totalsize(fdt) - absoffset;
+
+        if (fdt_magic(fdt) == FDT_MAGIC) {
+                if (stroffset < 0)
+                        goto fail;
+                if (fdt_version(fdt) >= 17) {
+                        if (stroffset >= fdt_size_dt_strings(fdt))
+                                goto fail;
+                        if ((fdt_size_dt_strings(fdt) - stroffset) < len)
+                                len = fdt_size_dt_strings(fdt) - stroffset;
+                }
+        } else if (fdt_magic(fdt) == FDT_SW_MAGIC) {
+                if ((stroffset >= 0)
+                    || (stroffset < -fdt_size_dt_strings(fdt)))
+                        goto fail;
+                if ((-stroffset) < len)
+                        len = -stroffset;
+        } else {
+                err = -FDT_ERR_INTERNAL;
+                goto fail;
+        }
+
+        s = (const char *)fdt + absoffset;
+        n = memchr(s, '\0', len);
+        if (!n) {
+                /* missing terminating NULL */
+                err = -FDT_ERR_TRUNCATED;
+                goto fail;
+        }
+
+        if (lenp)
+                *lenp = n - s;
+        return s;
+
+fail:
+        if (lenp)
+                *lenp = err;
+        return NULL;
+}
+{% endhighlight %}
+
+fdt_get_string() 函数通过字符串在 DTB DeviceTree strings 区域内
+的偏移，获得对应的字符串。由于函数较长，分段解析。
+
+{% highlight c %}
+const char *fdt_get_string(const void *fdt, int stroffset, int *lenp)
+{
+        uint32_t absoffset = stroffset + fdt_off_dt_strings(fdt);
+        size_t len;
+        int err;
+        const char *s, *n;
+
+        err = fdt_ro_probe_(fdt);
+        if (err != 0)
+                goto fail;
+
+        err = -FDT_ERR_BADOFFSET;
+        if (absoffset >= fdt_totalsize(fdt))
+                goto fail;
+        len = fdt_totalsize(fdt) - absoffset;
+{% endhighlight %}
+
+参数 fdt 指向 DTB，参数 stroffset 是字符串在 DTB DeviceTree
+Strings 区域内的偏移，参数 lenp 用于存储字符串的长度。
+函数首先调用 fdt_off_dt_strings() 函数加上 stroffset，
+以此计算字符串在 DTB 内的偏移。函数接着调用 fdt_ro_probe()
+函数对 DTB 做了最小健全性检查，如果不通过，则跳转到 fail 处。
+如果字符串在 DTB 内的偏移查过了 DTB 的大小，那么函数也跳转
+到 fail 处。函数将字符串到 DTB 结尾的长度存储到 len 局部变量里。
+
+{% highlight c %}
+        if (fdt_magic(fdt) == FDT_MAGIC) {
+                if (stroffset < 0)
+                        goto fail;
+                if (fdt_version(fdt) >= 17) {
+                        if (stroffset >= fdt_size_dt_strings(fdt))
+                                goto fail;
+                        if ((fdt_size_dt_strings(fdt) - stroffset) < len)
+                                len = fdt_size_dt_strings(fdt) - stroffset;
+                }
+        } else if (fdt_magic(fdt) == FDT_SW_MAGIC) {
+                if ((stroffset >= 0)
+                    || (stroffset < -fdt_size_dt_strings(fdt)))
+                        goto fail;
+                if ((-stroffset) < len)
+                        len = -stroffset;
+        } else {
+                err = -FDT_ERR_INTERNAL;
+                goto fail;
+        }
+{% endhighlight %}
+
+函数调用 fdt_magic() 函数获得 DTB 的 MAGIC，然后根据不同的
+MAGIC 进行相应的处理。如果当前 DTB 的版本大于等于 17，且
+字符串在 DTB DeviceTree strings 内的偏移小于 DTB DeviceTree
+strings 区域的长度，且该偏移到 DTB DeviceTree strings 区域
+结束的长度小于 len，那么 len 的值就是 DTB DeviceTree strings
+区域的长度减去 stroffset 的值。如果 DTB 的 MAGIC 是
+FDT_SW_MAGIC，那么函数计算出 len 的长度，如果不符合要求，
+直接跳转到 fail 处。如果 MAGIC 为其他情况，那么函数直接跳转到
+fail 处。
+
+{% highlight c %}
+        s = (const char *)fdt + absoffset;
+        n = memchr(s, '\0', len);
+        if (!n) {
+                /* missing terminating NULL */
+                err = -FDT_ERR_TRUNCATED;
+                goto fail;
+        }
+
+        if (lenp)
+                *lenp = n - s;
+        return s;
+
+fail:
+        if (lenp)
+                *lenp = err;
+        return NULL;
+{% endhighlight %}
+
+经过上面的检测处理之后，通过 absoffset 获得字符串的虚拟
+地址，然后通过 memchr() 函数找到字符串结束的虚拟地址，
+将字符串结束地址减去起始其值就可以计算出字符串的长度，
+最后将字符串的长度存储在 lenp 参数里。
+
+> - [fdt_ro_probe_](#A0108)
+>
+> - [fdt_totalsize](#A0078)
+>
+> - [fdt_size_dt_strings](#A0086)
+>
+> - [fdt_magic](#A0077)
+
+------------------------------------
+
+#### <span id="A0110">fdt_string_eq_</span>
+
+{% highlight c %}
+static int fdt_string_eq_(const void *fdt, int stroffset,
+                          const char *s, int len)
+{
+        int slen;
+        const char *p = fdt_get_string(fdt, stroffset, &slen);
+
+        return p && (slen == len) && (memcmp(p, s, len) == 0);
+}
+{% endhighlight %}
+
+fdt_string_eq_() 用于对比 offset 对应 DTB DeviceTree strings
+区域内字符串与参数 s 给定的字符串是否相等。参数 fdt 指向 DTB，
+stroffset 指向字符串在 DTB DeviceTree strings 内偏移。参数 s
+指向需要对比的字符串，len 是需要对比的长度。函数首先调用
+fdt_get_string() 函数获得 stroffset 对应的字符串，然后使用
+memcmp() 函数对比指定长度内字符串是否相等，如果相等，则返回 1，
+返回返回 0.
+
+> - [fdt_get_string](#A0109)
+
+------------------------------------
+
+#### <span id="A0111">fdt_get_property_namelen_</span>
+
+{% highlight c %}
+static const struct fdt_property *fdt_get_property_namelen_(const void *fdt,
+                                                            int offset,
+                                                            const char *name,
+                                                            int namelen,
+                                                            int *lenp,
+                                                            int *poffset)
+{
+        for (offset = fdt_first_property_offset(fdt, offset);
+             (offset >= 0);
+             (offset = fdt_next_property_offset(fdt, offset))) {
+                const struct fdt_property *prop;
+
+                if (!(prop = fdt_get_property_by_offset_(fdt, offset, lenp))) {
+                        offset = -FDT_ERR_INTERNAL;
+                        break;
+                }
+                if (fdt_string_eq_(fdt, fdt32_ld(&prop->nameoff),
+                                   name, namelen)) {
+                        if (poffset)
+                                *poffset = offset;
+                        return prop;
+                }
+        }
+
+        if (lenp)
+                *lenp = offset;
+        return NULL;
+}
+{% endhighlight %}
+
+fdt_get_property_namelen_() 函数通过 name 参数获得 DTB
+中 property。参数 fdt 指向 DTB，参数 offset 指向 property
+在 DTB DeviceTree Structure 中的偏移，name 参数为需要查找
+的 property 名字，参数 namelen 代表名字的长度，lenp 用于
+存储 property 的偏移。
+函数首先调用 fdt_first_property_offset() 获得 offset 参数
+开始之后的第一个 property，然后通过 fdt_next_property_offset()
+用于获得下一个 property，只要 offset 大于零，循环不停止。
+每次遍历一个 property，函数都会通过遍历到的 offset 与
+fdt_get_property_by_offset_() 函数获得 property，并将
+属性值长度存储在 lenp 里。接着调用 fdt_string_eq_()
+函数对比 property 属性的名字是否和 name 参数一直，如果一致，
+那么将 property 在 DTB DeviceTree Structure 内的偏移
+存储在 poffset 里，并返回 property；反之返回 NULL。
+
+> - [fdt_first_property_offset](#A0105)
+>
+> - [fdt_next_property_offset](#A0106)
+>
+> - [fdt_get_property_by_offset_](#A0107)
+>
+> - [fdt_string_eq_](#A0110)
+>
+> - [fdt32_ld](#A0075)
+
+------------------------------------
+
+#### <span id="A0112">fdt_getprop_namelen</span>
+
+{% highlight c %}
+const void *fdt_getprop_namelen(const void *fdt, int nodeoffset,
+                                const char *name, int namelen, int *lenp)
+{
+        int poffset;
+        const struct fdt_property *prop;
+
+        prop = fdt_get_property_namelen_(fdt, nodeoffset, name, namelen, lenp,
+                                         &poffset);
+        if (!prop)
+                return NULL;
+
+        /* Handle realignment */
+        if (fdt_version(fdt) < 0x10 && (poffset + sizeof(*prop)) % 8 &&
+            fdt32_ld(&prop->len) >= 8)
+                return prop->data + 4;
+        return prop->data;
+}
+{% endhighlight %}
+
+fdt_getprop_namelen() 函数用于通过名字获得 device-node 内部
+属性的值。参数 fdt 指向 DTB，参数 nodeoffset 是节点在 DTB
+DeviceTree Structure 区域内的偏移，参数 name 为需要查找属性的
+名字，参数 lenp 用于存储属性值的长度。函数首先通过调用
+fdt_get_property_namelen_() 函数获得 name 对应的 property，
+然后如果当前 DTB 版本小于 17，且 property 属性值长度大于 8，
+那么属性值加 4；反之直接返回属性值。
+
+> - [fdt_get_property_namelen_](#A0111)
+>
+> - [fdt_version](#A0082)
+>
+> - [fdt32_ld](#A0075)
+
+------------------------------------
+
+#### <span id="A0113">fdt_getprop</span>
+
+{% highlight c %}
+const void *fdt_getprop(const void *fdt, int nodeoffset,
+                        const char *name, int *lenp)
+{
+        return fdt_getprop_namelen(fdt, nodeoffset, name, strlen(name), lenp);
+}
+
+{% endhighlight %}
+
+fdt_getprop() 函数通过名字获得 device-node 中的属性值。参数 fdt
+指向 DTB，参数 nodeoffset 是节点 DTB DeviceTree Structure 区域
+内的偏移，name 参数是需要查找的 property 名字，参数 lenp 用于
+存储属性值的长度。函数直接通过调用 fdt_getprop_namelen() 函数实现。
+
+> - [fdt_getprop](#A0112)
+
+------------------------------------
+
+#### <span id="A0114">of_compat_cmp</span>
+
+{% highlight c %}
+#define of_compat_cmp(s1, s2, l)        strcasecmp((s1), (s2))
+{% endhighlight %}
+
+of_compat_cmp() 函数用于对比 device-node 的 compatible
+属性字符串是否相同，如果相同则返回 0.
+
+------------------------------------
+
+#### <span id="A0115">of_fdt_is_compatible</span>
+
+{% highlight c %}
+/**                 
+ * of_fdt_is_compatible - Return true if given node from the given blob has
+ * compat in its compatible list
+ * @blob: A device tree blob
+ * @node: node to test
+ * @compat: compatible string to compare with compatible list.
+ *      
+ * On match, returns a non-zero value with smaller values returned for more
+ * specific compatible values.
+ */
+static int of_fdt_is_compatible(const void *blob,
+                      unsigned long node, const char *compat)
+{
+        const char *cp;
+        int cplen;
+        unsigned long l, score = 0;
+
+        cp = fdt_getprop(blob, node, "compatible", &cplen);
+        if (cp == NULL)
+                return 0;
+        while (cplen > 0) {
+                score++;
+                if (of_compat_cmp(cp, compat, strlen(compat)) == 0)
+                        return score;
+                l = strlen(cp) + 1;
+                cp += l;
+                cplen -= l;
+        }
+
+        return 0;
+}
+{% endhighlight %}
+
+of_fdt_is_compatible() 函数用于检查节点的 compatible 属性值
+是否与参数 compat 相同。参数 blob 指向 DTB，参数 node 代表
+device-node 在 DTB DeviceTree Structure 内的偏移值，参数
+compat 指向需要查找的节点 compatible。函数首先通过函数
+fdt_getprop() 函数读取节点的 "compatible" 属性值，然后在
+循环中通过 of_compat_cmp() 对比节点的 "compatible" 属性值
+中是否包含参数 compat，知道找到才返回，否则一直循环到属性值
+的末尾。那么返回 0 表示没有找到。
+
+> - [fdt_getprop](#A0113)
+>
+> - [of_compat_cmp](#A0114)
+
+------------------------------------
+
+#### <span id="A0116">of_flat_dt_is_compatible</span>
+
+{% highlight c %}
+/**
+ * of_flat_dt_is_compatible - Return true if given node has compat in compatible list
+ * @node: node to test
+ * @compat: compatible string to compare with compatible list.
+ */
+int __init of_flat_dt_is_compatible(unsigned long node, const char *compat)
+{
+        return of_fdt_is_compatible(initial_boot_params, node, compat);
+}
+{% endhighlight %}
+
+of_flat_dt_is_compatible() 函数用于判断节点的 compatible 属性是否
+包含 compat 参数。如果包含，则返回 true，反之返回 false。函数通过
+调用 of_flat_dt_is_compatible() 函数进行查找。
+
+> - [of_fdt_is_compatible](#A0115)
+
+------------------------------------
+
+#### <span id="A0117">of_get_flat_dt_prop</span>
+
+{% highlight c %}
+/**
+ * of_get_flat_dt_prop - Given a node in the flat blob, return the property ptr
+ *
+ * This function can be used within scan_flattened_dt callback to get
+ * access to properties
+ */
+const void *__init of_get_flat_dt_prop(unsigned long node, const char *name,
+                                       int *size)
+{
+        return fdt_getprop(initial_boot_params, node, name, size);
+}
+{% endhighlight %}
+
+of_get_flat_dt_prop() 函数用于从 DTB 中获得 device-node name 参数
+对应的属性值。参数 node 指向 device-node 在 DTB DeviceTree Structure
+区域内的偏移，参数 name 指向属性的名字，参数 size 用于存储属性值的长度。
+函数通过调用 fdt_getprop() 函数获得属性值。
+
+> - [fdt_getprop](#A0113)
+
+------------------------------------
+
+#### <span id="A0118">of_get_flat_dt_root</span>
+
+{% highlight c %}
+/**
+ * of_get_flat_dt_root - find the root node in the flat blob
+ */
+unsigned long __init of_get_flat_dt_root(void)
+{
+        return 0;
+}
+{% endhighlight %}
+
+of_get_flat_dt_root() 函数用于获得 DTS 根节点在 DTB
+DeviceTree Structure 中的偏移。root 的偏移为 0.
+
+------------------------------------
+
+#### <span id="A0119">arch_get_next_mach</span>
+
+{% highlight c %}
+static const void * __init arch_get_next_mach(const char *const **match)
+{
+        static const struct machine_desc *mdesc = __arch_info_begin;
+        const struct machine_desc *m = mdesc;
+
+        if (m >= __arch_info_end)
+                return NULL;
+
+        mdesc++;
+        *match = m->dt_compat;
+        return m;
+}
+{% endhighlight %}
+
+arch_get_next_mach() 函数用于读取系统下一个 machine_desc
+结构体中的 dt_compat 成员，其用于指明 DTB 根节点 compatible
+属性值。函数首先获得 __arch_info_begin 指向的 machine_desc
+结构，然后将其指向下一个 machine_desc，并从下一个 machine_desc
+中读取 dt_compat 成员的值存储到 match 中。内核将 machine_desc
+结构都维护到一个 section 内，并使用 __arch_info_begin 指向
+区间的起始地址。
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
 #### <span id="A00"></span>
 
 {% highlight c %}
