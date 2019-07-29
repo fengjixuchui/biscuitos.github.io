@@ -51,6 +51,8 @@ tags:
 
 ### 虚拟AGC：重现阿波罗登月制导指挥场景
 
+![Apollo-11](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000221.jpg)
+
 由 NASA 联合 The Instrumentation Laboratory、MIT、剑桥以及
 MASS 共同资助的一个项目，为了给阿波罗计划登月任务中使用的机载制导
 计算机提供计算机仿真。BiscuitOS 目前以及集成了 AGC 模拟器，如果

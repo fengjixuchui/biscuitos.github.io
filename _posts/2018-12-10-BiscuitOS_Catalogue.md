@@ -39,9 +39,7 @@ tags:
 >
 > - [Networking on BiscuitOS](https://biscuitos.github.io/blog/Networking-Usermanual/)
 >
-> - [MIT XV6 Operating System](https://biscuitos.github.io/blog/XV6-REV11-Usermanual/)
->
-> - [Apollo-11](https://biscuitos.github.io/blog/Apollo-11-Usermanual/)
+> - [Other Operation System](https://biscuitos.github.io/blog/Kernel_Build/#OTHOS)
 >
 > - [Architecture Computer English](https://biscuitos.github.io/blog/Architecture_English_note/)
 

@@ -104,7 +104,7 @@ tags:
 >
 > - [移植动态库到 BiscuitOS](https://biscuitos.github.io/blog/APP-Usermanual/#APP1)
 
-## <span id="OS">Other OS</span>
+## <span id="OTHOS">Other OS</span>
 
 > - [MIT XV6 Operating System](https://biscuitos.github.io/blog/XV6-REV11-Usermanual/)
 >

@@ -3785,51 +3785,314 @@ arch_get_next_mach() 函数用于读取系统下一个 machine_desc
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0120">of_flat_dt_match_machine</span>
 
 {% highlight c %}
+/**             
+ * of_flat_dt_match_machine - Iterate match tables to find matching machine.
+ *                               
+ * @default_match: A machine specific ptr to return in case of no match.
+ * @get_next_compat: callback function to return next compatible match table.
+ *
+ * Iterate through machine match tables to find the best match for the machine
+ * compatible string in the FDT.
+ */
+const void * __init of_flat_dt_match_machine(const void *default_match,
+                const void * (*get_next_compat)(const char * const**))
+{       
+        const void *data = NULL;
+        const void *best_data = default_match;
+        const char *const *compat;
+        unsigned long dt_root;
+        unsigned int best_score = ~1, score = 0;
+
+        dt_root = of_get_flat_dt_root();
+        while ((data = get_next_compat(&compat))) {
+                score = of_flat_dt_match(dt_root, compat);
+                if (score > 0 && score < best_score) {
+                        best_data = data;
+                        best_score = score;
+                }       
+        }       
+        if (!best_data) {
+                const char *prop;
+                int size;
+
+                pr_err("\n unrecognized device tree list:\n[ ");
+
+                prop = of_get_flat_dt_prop(dt_root, "compatible", &size);
+                if (prop) {
+                        while (size > 0) {
+                                printk("'%s' ", prop);
+                                size -= strlen(prop) + 1;
+                                prop += strlen(prop) + 1;
+                        }
+                }
+                printk("]\n\n");
+                return NULL;
+        }
+
+        pr_info("Machine model: %s\n", of_flat_dt_get_machine_name());
+
+        return best_data;
+}
 
 {% endhighlight %}
+
+of_flat_dt_match_machine() 函数用于对比 DTB 根节点的 compatible
+属性值与 machine_desc 数据结构中 dt_compat 成员是否相同。函数首先
+通过调用 of_get_flat_dt_root() 函数获得 DTS 根节点在 DTB
+DeviceTree Structure 区域内的偏移，然后使用 while() 循环，每次
+循环，函数通过调用 get_next_compat() 函数获得 machine 对应的
+compatible 属性，在每次遍历中，函数通过调用 of_flat_dt_match()
+对比 machine 提供的 compatible 与 DTB 根节点的 compatible 是否
+相同，如果找到相同的，那么将 best_data 设置为 data，并将 best_score
+设置为 score。如果 best_data 为 0，那么 DTB 不是有效的 DTB，
+此时通过 of_get_flat_dt_prop() 获得 DTB 根节点的 compatible，
+并打印在错误信息里面，然后返回 NULL。如果 machine 提供的
+compatible 与 DTB 根节点的 compatible 一致，那么打印相关
+的提示信息，最后返回 best_data.
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0121">fdt_next_node</span>
 
 {% highlight c %}
+int fdt_next_node(const void *fdt, int offset, int *depth)
+{
+        int nextoffset = 0;
+        uint32_t tag;
 
+        if (offset >= 0)
+                if ((nextoffset = fdt_check_node_offset_(fdt, offset)) < 0)
+                        return nextoffset;
+
+        do {
+                offset = nextoffset;
+                tag = fdt_next_tag(fdt, offset, &nextoffset);
+
+                switch (tag) {
+                case FDT_PROP:
+                case FDT_NOP:
+                        break;
+
+                case FDT_BEGIN_NODE:
+                        if (depth)
+                                (*depth)++;
+                        break;
+
+                case FDT_END_NODE:
+                        if (depth && ((--(*depth)) < 0))
+                                return nextoffset;
+                        break;
+
+                case FDT_END:
+                        if ((nextoffset >= 0)
+                            || ((nextoffset == -FDT_ERR_TRUNCATED) && !depth))
+                                return -FDT_ERR_NOTFOUND;
+                        else
+                                return nextoffset;
+                }
+        } while (tag != FDT_BEGIN_NODE);
+
+        return offset;
+}
 {% endhighlight %}
+
+fdt_next_node() 函数用于获得当前 device-node 的下一个 device-node。
+参数 fdt 指向 DTB，参数 offset 指向当前 device-node 在 DTB
+DeviceTree Structure 区域中的偏移，depth 参数用于标识当前节点
+的深度。函数首先判断 offset 大于等于 0 是，判断 offset 对应的
+的 device-node 是否为有效的 device-node，如果无效，则返回
+下一个 tag。如果当前 device-node 合法，那么函数使用 do while
+进行循环，每次循环中，函数首先通过 fdt_next_tag() 获得当前 tag
+的下一个 tag 以及偏移，如果下一个 tag 的值是 FDT_BEGIN_NODE，
+那么当前节点包含了一个子节点，将 depath 值加一，然后继续循环；
+如果下一个 tag 是 FDT_END_NODE，那么表示下一个 tag 是一个节点
+的结尾，如果此时 depth 存在，并且 depth 此时为零，即不包含任何
+子节点，那么函数直接返回下一个 tag 的偏移值；反之表示下一个 tag
+是一个子节点结束的位置，那么结束本次循环；如果下一个 tag 的值
+是 FDT_END，那么如果 nextoffset 大于零，或者 nextoffset 不是
+`-FDT_ERR_TRUNCATED` 且 depth 为零，那么这是一种无效的偏移，
+因为 FDT_END 已经是 DTB 的末尾，此时如果 nextoffset 小于 0，
+那么函数直接返回 nextoffset。循环直到 tag 的值为 FDT_BEGIN_NODE.
+
+> - [fdt_check_node_offset_](#A0102)
+>
+> - [fdt_next_tag](#A0099)
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0122">fdt_get_name</span>
 
 {% highlight c %}
+const char *fdt_get_name(const void *fdt, int nodeoffset, int *len)
+{
+        const struct fdt_node_header *nh = fdt_offset_ptr_(fdt, nodeoffset);
+        const char *nameptr;             
+        int err;
 
+        if (((err = fdt_ro_probe_(fdt)) != 0)
+            || ((err = fdt_check_node_offset_(fdt, nodeoffset)) < 0))
+                        goto fail;       
+
+        nameptr = nh->name;
+
+        if (fdt_version(fdt) < 0x10) {
+                /*
+                 * For old FDT versions, match the naming conventions of V16:
+                 * give only the leaf name (after all /). The actual tree
+                 * contents are loosely checked.
+                 */
+                const char *leaf;
+                leaf = strrchr(nameptr, '/');
+                if (leaf == NULL) {
+                        err = -FDT_ERR_BADSTRUCTURE;
+                        goto fail;
+                }
+                nameptr = leaf+1;
+        }
+
+        if (len)
+                *len = strlen(nameptr);
+
+        return nameptr;
+
+ fail:
+        if (len)
+                *len = err;
+        return NULL;
+}
 {% endhighlight %}
+
+fdt_get_name() 函数通过节点的偏移获得节点的名字。参数 fdt 指向 DTB，
+参数 nodeoffset 指 device-node 在 DTB DeviceTree Structure 区域
+内的偏移，参数 len 用于存储名字的长度。函数首先调用 fdt_offset_ptr_()
+函数获得参数 nodeoffset 对应的指针，然后调用 fdt_ro_probe_() 函数
+对 fdt 进行最小健全性检测，以及调用 fdt_check_offset_() 函数检查
+device-node 的合法性，如果上面两个检测其中一个失败，那么函数跳转
+到 fail，并返回 NULL；反之，如果检测通过，那么函数将
+fdt_node_header 数据结构中的 name 成员读取到 nameptr 中。
+函数调用 fdt_version() 获得当前 DTB 的版本，如果当前版本
+小于 17，那么所有节点的名字前面都会加上字符 '\', 所以对于这些
+版本的名字，函数通过 strrchr 在 nameptr 中找到 `\` 的位置，
+然后将 nameptr 指向 `\` 的下一个字节。如果 len 参数指向的空间
+有效，那么函数调用 strlen() 函数获得 nameptr 的长度，并存储到
+len 指向的空间，最后返回 nameptr。
+
+> - [fdt_offset_ptr_](#A0095)
+>
+> - [fdt_check_node_offset_](#A0102)
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0123">of_read_number</span>
 
 {% highlight c %}
-
+/* Helper to read a big number; size is in cells (not bytes) */
+static inline u64 of_read_number(const __be32 *cell, int size)
+{
+        u64 r = 0;
+        while (size--)
+                r = (r << 32) | be32_to_cpu(*(cell++));
+        return r;
+}
 {% endhighlight %}
+
+of_read_number() 函数的作用就是从大端的属性值中以
+小端模式读出 size 个 u32 整数。参数 cell 指向大端数据
+的地址，size 参数代表读出 u32 的个数。函数使用 while
+循环，每次循环一个 u32，并调用 be32_to_cpu() 函数获得
+大端模式中一个 u32 整数，并将获得的整数放在小端地址的
+低地址，将原先的数据放在小端地址的高地址上。循环结束
+后返回小端模式的属性值。
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0124">__early_init_dt_declare_initrd</span>
 
 {% highlight c %}
-
+static void __early_init_dt_declare_initrd(unsigned long start,
+                                           unsigned long end)
+{
+        /* ARM64 would cause a BUG to occur here when CONFIG_DEBUG_VM is
+         * enabled since __va() is called too early. ARM64 does make use
+         * of phys_initrd_start/phys_initrd_size so we can skip this
+         * conversion.
+         */
+        if (!IS_ENABLED(CONFIG_ARM64)) {
+                initrd_start = (unsigned long)__va(start);
+                initrd_end = (unsigned long)__va(end);
+                initrd_below_start_ok = 1;
+        }
+}
 {% endhighlight %}
+
+__early_init_dt_declare_initrd() 函数用于在在系统启动早期，
+设置 INITRD 的范围。参数 start 指向 initrd 的起始物理地址，
+end 指向 initrd 终止的物理地址。函数首先判断当前内核有没有
+定义 CONFIG_ARM64 宏，如果没有定义，那么函数将 initrd_start
+指向 start 参数对应的虚拟地址，将 initrd_end 指向 end 参数
+对应的虚拟地址，最后将全局变量 initrd_below_start_ok
+设置为 1.
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0125">early_init_dt_check_for_initrd</span>
 
 {% highlight c %}
+/**
+ * early_init_dt_check_for_initrd - Decode initrd location from flat tree
+ * @node: reference to node containing initrd location ('chosen')
+ */
+static void __init early_init_dt_check_for_initrd(unsigned long node)
+{
+        u64 start, end;
+        int len;
+        const __be32 *prop;
 
+        pr_debug("Looking for initrd properties... ");
+
+        prop = of_get_flat_dt_prop(node, "linux,initrd-start", &len);
+        if (!prop)
+                return;
+        start = of_read_number(prop, len/4);
+
+        prop = of_get_flat_dt_prop(node, "linux,initrd-end", &len);
+        if (!prop)
+                return;
+        end = of_read_number(prop, len/4);
+
+        __early_init_dt_declare_initrd(start, end);
+        phys_initrd_start = start;
+        phys_initrd_size = end - start;
+
+        pr_debug("initrd_start=0x%llx  initrd_end=0x%llx\n",
+                 (unsigned long long)start, (unsigned long long)end);
+}
 {% endhighlight %}
+
+early_init_dt_check_for_initrd() 函数的作用是从 DTB 中读出
+INITRD 的信息，并设置 INITRD 相关的全局变量。参数 node 代表
+`chosen` 节点在 DTB DeviceTree Struct 区域内的偏移。函数首先
+通过 of_get_flat_dt_prop() 函数获得 "linux,initrd-start"
+的属性值，如果属性不存在，直接返回；反之调用 of_read_number()
+函数将 "linux,initrd-start" 属性值转换成小端模式值。
+函数继续调用 of_get_flat_dt_prop() 函数读取 DTB 中
+"linux,initrd-end" 的属性值，如果该属性值存在，则调用
+of_read_number() 函数将其转换成小端模式，至此，从 DTB 中
+获得了 INITRD 的起始物理地址和终止物理地址，函数调用
+__early_init_dt_declare_initrd() 函数将 INITRD 的起始
+虚拟地址存储到全局变量 initrd_start，将 INITRD 的终止
+虚拟地址存储到全局变量 initrd_end。最后将 INITRD 起始
+物理地址存储到全局变量 phys_initrd_start, 并将 INITRD
+的长度存储到 phys_initrd_size 里。
+
+> - [of_get_flat_dt_prop](#A0117)
+>
+> - [of_read_number](#A0123)
+>
+> - [\_\_early_init_dt_declare_initrd](#A0124)
 
 ------------------------------------
 
