@@ -103,3 +103,11 @@ tags:
 > - [移植应用程序到 BiscuitOS](https://biscuitos.github.io/blog/APP-Usermanual/)
 >
 > - [移植动态库到 BiscuitOS](https://biscuitos.github.io/blog/APP-Usermanual/#APP1)
+
+## <span id="OS">Other OS</span>
+
+> - [MIT XV6 Operating System](https://biscuitos.github.io/blog/XV6-REV11-Usermanual/)
+>
+> - [Apollo-11](https://biscuitos.github.io/blog/Apollo-11-Usermanual/)
+>
+> - [Debian-0.91](https://biscuitos.github.io/blog/Debian-0.91-Usermanual/)
