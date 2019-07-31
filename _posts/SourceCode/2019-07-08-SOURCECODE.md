@@ -4096,6 +4096,1421 @@ __early_init_dt_declare_initrd() 函数将 INITRD 的起始
 
 ------------------------------------
 
+#### <span id="A0126">early_init_dt_scan_chosen</span>
+
+{% highlight c %}
+int __init early_init_dt_scan_chosen(unsigned long node, const char *uname,
+                                     int depth, void *data)
+{
+        int l;
+        const char *p;
+
+        pr_debug("search \"chosen\", depth: %d, uname: %s\n", depth, uname);
+
+        if (depth != 1 || !data ||
+            (strcmp(uname, "chosen") != 0 && strcmp(uname, "chosen@0") != 0))
+                return 0;
+
+        early_init_dt_check_for_initrd(node);
+
+        /* Retrieve command line */
+        p = of_get_flat_dt_prop(node, "bootargs", &l);
+        if (p != NULL && l > 0)
+                strlcpy(data, p, min((int)l, COMMAND_LINE_SIZE));
+
+        /*
+         * CONFIG_CMDLINE is meant to be a default in case nothing else
+         * managed to set the command line, unless CONFIG_CMDLINE_FORCE
+         * is set in which case we override whatever was found earlier.
+         */     
+#ifdef CONFIG_CMDLINE
+#if defined(CONFIG_CMDLINE_EXTEND)
+        strlcat(data, " ", COMMAND_LINE_SIZE);
+        strlcat(data, CONFIG_CMDLINE, COMMAND_LINE_SIZE);
+#elif defined(CONFIG_CMDLINE_FORCE)
+        strlcpy(data, CONFIG_CMDLINE, COMMAND_LINE_SIZE);
+#else                   
+        /* No arguments from boot loader, use kernel's  cmdl*/
+        if (!((char *)data)[0])
+                strlcpy(data, CONFIG_CMDLINE, COMMAND_LINE_SIZE);
+#endif  
+#endif /* CONFIG_CMDLINE */
+
+        pr_debug("Command line is: %s\n", (char*)data);
+
+        /* break now */
+        return 1;
+}
+{% endhighlight %}
+
+early_init_dt_scan_chosen() 函数用于从 DTB 的 chosen 节点中
+读取 bootargs 参数并与内核提供的 CMDLINE，最终合成系统启动时
+需要的 cmdline。参数 node 代表 DTB 中 chosen 节点在 DTB
+DeviceTree Structure 区域内的偏移，参数 uname 为 chosen
+节点的节点名字；参数 depth 指向 chosen 子节点的前套数，
+参数 data 指向 cmdline。函数首先检查 depth， data 参数
+的有效性，以及当 uname 是否为 "chosen" 与 "chosen@0",
+如果无效，则返回；如果检查通过，那么函数调用
+early_init_dt_check_for_initrd() 函数从 DTB 的 chosen
+节点中，读取并设置 INITRD 相关的数据。接着调用
+of_get_flat_dt_prop() 读取 chosen 节点的 "bootargs"
+属性值，如果该属性存在，那么将属性值拷贝到 data 指向的空间。
+此时函数通过宏进行不同的处理，如果此时定义了 CONFIG_CMDLINE，
+那么内核配置中存在一些 cmdline 数据，此时如果宏
+CONFIG_CMDLINE_EXTEND 定义，那么函数将内核配置中的
+cmdline 拼接到 data 后面，此时 cmdline 就包含了 DTB 和 kernel
+提供的 cmdline；反之，如果此时宏 CONFIG_CMDLINE_FORCE
+定义，那么函数丢弃 DTB 中的 cmdline 而只保留 kernel
+提供的 cmdline。
+
+> - [early_init_dt_check_for_initrd](#A0125)
+>
+> - [of_get_flat_dt_prop](#A0117)
+
+------------------------------------
+
+#### <span id="A0127">of_scan_flat_dt</span>
+
+{% highlight c %}
+/**
+ * of_scan_flat_dt - scan flattened tree blob and call callback on each.
+ * @it: callback function
+ * @data: context data pointer
+ *
+ * This function is used to scan the flattened device-tree, it is
+ * used to extract the memory information at boot before we can
+ * unflatten the tree
+ */
+int __init of_scan_flat_dt(int (*it)(unsigned long node,
+                                     const char *uname, int depth,
+                                     void *data),
+                           void *data)
+{
+        const void *blob = initial_boot_params;
+        const char *pathp;
+        int offset, rc = 0, depth = -1;
+
+        if (!blob)
+                return 0;
+
+        for (offset = fdt_next_node(blob, -1, &depth);
+             offset >= 0 && depth >= 0 && !rc;
+             offset = fdt_next_node(blob, offset, &depth)) {
+
+                pathp = fdt_get_name(blob, offset, NULL);
+                if (*pathp == '/')
+                        pathp = kbasename(pathp);
+                rc = it(offset, pathp, depth, data);
+        }
+        return rc;
+}
+{% endhighlight %}
+
+of_scan_flat_dt() 函数用于遍历 DTB 中所有节点，
+节点以其在 DTB DeviceTree Structure 区域内的偏移给出，
+函数将每次遍历的到的节点传递给函数 it() 执行。参数 node
+为开始查找的节点偏移值，参数 uname 为需要查找节点的名字，
+参数 depth 代表嵌套节点的深度；参数 data 用于传递私有数据。
+函数使用 for 循环遍历从 node 参数开始的节点，函数每次通过
+fdt_next_node() 函数获得下一个节点的偏移值，只要下一个节点
+的偏移值不小于 0，且 depth 不小于 0，且 rc 等于 0，那么
+循环继续执行，每次遍历一个节点的时候，函数首先调用
+fdt_get_name() 函数获得节点对应的名字，如果节点名字
+第一个字符是 `/`, 那么函数调用 kbasename() 函数将第一个
+字符从名字中去除。接着函数将获得的节点偏移，和节点名字等信息
+传递给 it() 函数。
+
+> - [fdt_next_node](#A0121)
+>
+> - [fdt_get_name](#A0122)
+
+------------------------------------
+
+#### <span id="A0128">early_init_dt_scan_root</span>
+
+{% highlight c %}
+/**
+ * early_init_dt_scan_root - fetch the top level address and size cells
+ */
+int __init early_init_dt_scan_root(unsigned long node, const char *uname,
+                                   int depth, void *data)
+{
+        const __be32 *prop;
+
+        if (depth != 0)
+                return 0;
+
+        dt_root_size_cells = OF_ROOT_NODE_SIZE_CELLS_DEFAULT;
+        dt_root_addr_cells = OF_ROOT_NODE_ADDR_CELLS_DEFAULT;
+
+        prop = of_get_flat_dt_prop(node, "#size-cells", NULL);
+        if (prop)
+                dt_root_size_cells = be32_to_cpup(prop);
+        pr_debug("dt_root_size_cells = %x\n", dt_root_size_cells);
+
+        prop = of_get_flat_dt_prop(node, "#address-cells", NULL);
+        if (prop)
+                dt_root_addr_cells = be32_to_cpup(prop);
+        pr_debug("dt_root_addr_cells = %x\n", dt_root_addr_cells);
+
+        /* break now */
+        return 1;
+}
+{% endhighlight %}
+
+early_init_dt_scan_root() 函数用于获得根节点 `#size_cells` 与
+`#address-cells` 对应的属性值。参数 node 指向节点的偏移，参数 uname
+指向节点的名字，参数 depth 代表节点的深度，参数 data 代表
+私有数据。函数首先判断 depth 的值如果不为 0，那么直接返回，因此
+此时针对的节点是根节点，根节点不可能嵌套在其他节点之下。
+函数首先接着将全局变量 dt_root_size_cells 与 dt_root_addr_cells
+设置为默认值。接着函数在根节点中查找 `#size-cells` 属性，如果存在，
+将该属性值赋值到 dt_root_size_cells 里面，同理在根节点中查找
+`#address-cells` 属性，如果该属性存在，那么将属性值存储到
+dt_root_addr_cells 里面，最后返回 1.
+
+> - [of_get_flat_dt_prop](#A0117)
+
+------------------------------------
+
+#### <span id="A0129">dt_mem_next_cell</span>
+
+{% highlight c %}
+u64 __init dt_mem_next_cell(int s, const __be32 **cellp)
+{
+        const __be32 *p = *cellp;
+
+        *cellp = p + s;
+        return of_read_number(p, s);
+}
+{% endhighlight %}
+
+dt_mem_next_cell() 函数用于从 DTB memory 节点中读取
+reg 属性的值。函数通过调用 of_read_number() 获得对应的
+属性值。
+
+> - [of_read_number](#A0123)
+
+------------------------------------
+
+#### <span id="A0130">early_init_dt_add_memory_arch</span>
+
+{% highlight c %}
+void __init __weak early_init_dt_add_memory_arch(u64 base, u64 size)
+{
+        const u64 phys_offset = MIN_MEMBLOCK_ADDR;
+
+        if (size < PAGE_SIZE - (base & ~PAGE_MASK)) {
+                pr_warn("Ignoring memory block 0x%llx - 0x%llx\n",
+                        base, base + size);
+                return;
+        }
+
+        if (!PAGE_ALIGNED(base)) {
+                size -= PAGE_SIZE - (base & ~PAGE_MASK);
+                base = PAGE_ALIGN(base);
+        }
+        size &= PAGE_MASK;
+
+        if (base > MAX_MEMBLOCK_ADDR) {
+                pr_warning("Ignoring memory block 0x%llx - 0x%llx\n",
+                                base, base + size);
+                return;
+        }
+
+        if (base + size - 1 > MAX_MEMBLOCK_ADDR) {
+                pr_warning("Ignoring memory range 0x%llx - 0x%llx\n",
+                                ((u64)MAX_MEMBLOCK_ADDR) + 1, base + size);
+                size = MAX_MEMBLOCK_ADDR - base + 1;
+        }
+
+        if (base + size < phys_offset) {
+                pr_warning("Ignoring memory block 0x%llx - 0x%llx\n",
+                           base, base + size);
+                return;
+        }
+        if (base < phys_offset) {
+                pr_warning("Ignoring memory range 0x%llx - 0x%llx\n",
+                           base, phys_offset);
+                size -= phys_offset - base;
+                base = phys_offset;
+        }
+        memblock_add(base, size);
+}
+{% endhighlight %}
+
+early_init_dt_add_memory_arch() 函数用于从 DTB 中获得内存的
+基地址和长度之后，进行对齐和检测之后，将基地址对应长度的物理内存
+信息添加到 MEMBLOCK 内存管理器里。参数 base 指向物理内存的基地址，
+size 参数指向物理内存的长度。函数首先将基地址和长度与 MEMBLOCK
+管理的最大与最小物理内存信息做检测，然后进行页对齐检测，如果上面
+的检测中，如果检查不通过，那么就修改基地址与长度的值，如果修改
+之后还是无法通过，那么直接返回。如果上面的检测都通过，那么
+函数直接调用 memblock_add() 函数将物理内存信息更新到
+MEMBLOCK 内存管理器里。
+
+------------------------------------
+
+#### <span id="A0131">early_init_dt_scan_memory</span>
+
+{% highlight c %}
+/**
+ * early_init_dt_scan_memory - Look for and parse memory nodes
+ */
+int __init early_init_dt_scan_memory(unsigned long node, const char *uname,
+                                     int depth, void *data)
+{
+        const char *type = of_get_flat_dt_prop(node, "device_type", NULL);
+        const __be32 *reg, *endp;
+        int l;
+        bool hotpluggable;
+
+        /* We are scanning "memory" nodes only */
+        if (type == NULL || strcmp(type, "memory") != 0)
+                return 0;
+
+        reg = of_get_flat_dt_prop(node, "linux,usable-memory", &l);
+        if (reg == NULL)
+                reg = of_get_flat_dt_prop(node, "reg", &l);
+        if (reg == NULL)
+                return 0;
+
+        endp = reg + (l / sizeof(__be32));
+        hotpluggable = of_get_flat_dt_prop(node, "hotpluggable", NULL);
+
+        pr_debug("memory scan node %s, reg size %d,\n", uname, l);
+
+        while ((endp - reg) >= (dt_root_addr_cells + dt_root_size_cells)) {
+                u64 base, size;
+
+                base = dt_mem_next_cell(dt_root_addr_cells, &reg);
+                size = dt_mem_next_cell(dt_root_size_cells, &reg);
+
+                if (size == 0)
+                        continue;
+                pr_debug(" - %llx ,  %llx\n", (unsigned long long)base,
+                    (unsigned long long)size);
+
+                early_init_dt_add_memory_arch(base, size);
+
+                if (!hotpluggable)
+                        continue;
+
+                if (early_init_dt_mark_hotplug_memory_arch(base, size))
+                        pr_warn("failed to mark hotplug range 0x%llx - 0x%llx\n",
+                                base, base + size);
+        }
+
+        return 0;
+}
+{% endhighlight %}
+
+early_init_dt_scan_memory() 函数用于获得 DTB memory 节点的信息，即
+物理内存的信息，并将物理内存的信息更新到 MEMBLOCK 内存分配器中。
+参数 node 指向节点的偏移，uname 指向节点的名字，参数 depth 代表
+节点的深度，data 指向私有数据。函数首先通过 of_get_flat_dt_prop()
+函数获得当前节点的 "device_type" 属性值，如果该属性不存在，或者
+该属性值不为 "memory", 那么函数直接返回 0；如果检查到的属性符合要求，
+那么当前节点就是 "memory", 函数调用 of_get_flat_dt_prop() 函数从
+"memory" 节点中读取 "linux,usable-memory" 属性的值，如果该值不存在，
+那么函数读取 "memory" 节点的 "reg" 属性值，如果属性值还是不存在，
+那么函数直接返回 0；如果上诉条件都满足，那么函数将 endp 指向属性
+值末尾的地方。函数接着从 "memory" 节点中读取 "hotplugable" 属性
+值。函数接着使用一个 while 循环，循环只要 "endp-reg" 的值大于
+"dt_root_addr_cells+dt_root_size_cells" 的值，那么 while
+循环继续循环。每次循环过程中，函数调用 dt_mem_next_cell()
+函数读取 reg 属性里面的信息，以此获得物理内存的起始地址与
+长度信息。如果此时 size 的值为 0，那么结束本次循环，继续下一次
+循环。函数调用 early_init_dt_add_memory_arch() 函数将
+获得物理内存信息更新到 MEMBLOCK 内存管理器。此时如果
+hotpluggable 为零，即系统不支持热插拔的内存条，则直接
+结束本次循环。否则调用 early_init_dt_mark_hotplug_memory_arch()
+函数进行处理。
+
+> - [of_get_flat_dt_prop](#A0117)
+>
+> - [dt_mem_next_cell](#A0129)
+>
+> - [early_init_dt_add_memory_arch](#A0130)
+
+------------------------------------
+
+#### <span id="A0132">setup_machine_fdt</span>
+
+{% highlight c %}
+/**
+ * setup_machine_fdt - Machine setup when an dtb was passed to the kernel
+ * @dt_phys: physical address of dt blob
+ *
+ * If a dtb was passed to the kernel in r2, then use it to choose the
+ * correct machine_desc and to setup the system.
+ */
+const struct machine_desc * __init setup_machine_fdt(unsigned int dt_phys)
+{
+        const struct machine_desc *mdesc, *mdesc_best = NULL;
+
+#if defined(CONFIG_ARCH_MULTIPLATFORM) || defined(CONFIG_ARM_SINGLE_ARMV7M)
+        DT_MACHINE_START(GENERIC_DT, "Generic DT based system")
+                .l2c_aux_val = 0x0,
+                .l2c_aux_mask = ~0x0,
+        MACHINE_END
+
+        mdesc_best = &__mach_desc_GENERIC_DT;
+#endif
+
+        if (!dt_phys || !early_init_dt_verify(phys_to_virt(dt_phys)))
+                return NULL;
+
+        mdesc = of_flat_dt_match_machine(mdesc_best, arch_get_next_mach);
+
+        if (!mdesc) {
+                const char *prop;
+                int size;
+                unsigned long dt_root;
+
+                early_print("\nError: unrecognized/unsupported "
+                            "device tree compatible list:\n[ ");
+
+                dt_root = of_get_flat_dt_root();
+                prop = of_get_flat_dt_prop(dt_root, "compatible", &size);
+                while (size > 0) {
+                        early_print("'%s' ", prop);
+                        size -= strlen(prop) + 1;
+                        prop += strlen(prop) + 1;
+                }
+                early_print("]\n\n");
+
+                dump_machine_table(); /* does not return */
+        }
+
+        /* We really don't want to do this, but sometimes firmware provides buggy data */
+        if (mdesc->dt_fixup)
+                mdesc->dt_fixup();
+
+        early_init_dt_scan_nodes();
+
+        /* Change machine number to match the mdesc we're using */
+        __machine_arch_type = mdesc->nr;
+
+        return mdesc;
+}
+{% endhighlight %}
+
+setup_machine_fdt() 用于获得系统的 DTB，并对 DTB 的合法性和有效性
+做检测，检测通过后，从 DTB 中获得内核初始化相关的内存信息和 cmdline
+信息。参数 dt_phys 指向 DTB 所在的物理地址。函数首先定义了一个
+machine_desc 结构，然后调用 early_init_dt_verify() 函数检查 DTB
+的有效性，如果 DTB 的物理地址无效，或者 DTB 二进制文件无效，那么
+函数直接返回 NULL。函数继续调用 of_flat_dt_match_machine() 函数
+获得 DTB 根节点的 compatible 信息与 machine_desc 里给出的 dt_compat
+信息是否一致，如果遍历了所有的 machine_desc 都不能找到一致的信息，
+那么内核此时就报出一些错误信息。如果检测通过，那么如果 mdesc 的 dt_fixup()
+函数存在，那么执行 dt_fixup() 函数。函数接着执行 early_init_dt_scan_nodes()
+函数，该函数从 DTB 中读取 cmdline 信息，并设置全局的 CMDLINE 信息，
+函数还从 DTB 中获得物理内存的基本信息，并将信息更新到 MEMBLOCK
+内存器里。
+
+> - [early_init_dt_verify](#A0093)
+>
+> - [of_get_flat_dt_root](#A0118)
+>
+> - [early_init_dt_scan_nodes](#A0133)
+
+------------------------------------
+
+#### <span id="A0133">early_init_dt_scan_nodes</span>
+
+{% highlight c %}
+void __init early_init_dt_scan_nodes(void)
+{               
+        int rc = 0;                    
+
+        /* Retrieve various information from the /chosen node */
+        rc = of_scan_flat_dt(early_init_dt_scan_chosen, boot_command_line);
+        if (!rc)
+                pr_warn("No chosen node found, continuing without\n");
+
+        /* Initialize {size,address}-cells info */
+        of_scan_flat_dt(early_init_dt_scan_root, NULL);
+
+        /* Setup memory, calling early_init_dt_add_memory_arch */
+        of_scan_flat_dt(early_init_dt_scan_memory, NULL);
+}
+{% endhighlight %}
+
+early_init_dt_scan_nodes() 函数用于从 DTB 总获得 cmdline 信息，
+以及物理内存信息。函数首先调用 "of_scan_flat_dt(early_init_dt_scan_chosen, boot_command_line)"
+获得 cmdline 信息，接着调用 "of_scan_flat_dt(early_init_dt_scan_root, NULL)"
+函数获得根节点 "#address-cells" 与 "#size-cells" 信息，最后
+调用 "of_scan_flat_dt(early_init_dt_scan_memory, NULL)" 函数
+获得物理内存信息。
+
+> - [of_scan_flat_dt](#A0127)
+>
+> - [early_init_dt_scan_chosen](#A0126)
+>
+> - [early_init_dt_scan_root](#A0128)
+>
+> - [early_init_dt_scan_memory](#A0131)
+
+------------------------------------
+
+#### <span id="A0134">for_each_memblock_type</span>
+
+{% highlight c %}
+#define for_each_memblock_type(i, memblock_type, rgn)                   \
+        for (i = 0, rgn = &memblock_type->regions[0];                   \
+             i < memblock_type->cnt;                                    \
+             i++, rgn = &memblock_type->regions[i])
+{% endhighlight %}
+
+for_each_memblock_type() 函数用于遍历 MEMBLOCK 指定内存区的
+所有 region。参数 i 指 region 索引，参数 memblock_type 指向
+MEMBLOCK region 的类型，参数 rgn 指向特定的 region。函数通过
+使用 for 循环，从指定的 MEMBLOCK 类型的第一块 region 开始，
+遍历所有的 region，直到遍历完该类型的 region。
+
+------------------------------------
+
+#### <span id="A0135">memblock_set_region_node</span>
+
+{% highlight c %}
+static inline void memblock_set_region_node(struct memblock_region *r, int nid)
+{
+        r->nid = nid;
+}
+{% endhighlight %}
+
+memblock_set_region_node() 函数用于设置 memblock_region
+的 nid 信息，指定 NUMA ID。
+
+------------------------------------
+
+#### <span id="A0136">memblock_get_region_node</span>
+
+{% highlight c %}
+static inline int memblock_get_region_node(const struct memblock_region *r)
+{
+        return r->nid;
+}
+{% endhighlight %}
+
+memblock_get_region_node() 函数用于获得当前 memblock_region
+所在的 NUMA CPU 信息。
+
+------------------------------------
+
+#### <span id="A0137">memblock_insert_region</span>
+
+{% highlight c %}
+/**
+ * memblock_insert_region - insert new memblock region
+ * @type:       memblock type to insert into
+ * @idx:        index for the insertion point
+ * @base:       base address of the new region
+ * @size:       size of the new region
+ * @nid:        node id of the new region
+ * @flags:      flags of the new region
+ *
+ * Insert new memblock region [@base, @base + @size) into @type at @idx.
+ * @type must already have extra room to accommodate the new region.
+ */
+static void __init_memblock memblock_insert_region(struct memblock_type *type,
+                                                   int idx, phys_addr_t base,
+                                                   phys_addr_t size,
+                                                   int nid,
+                                                   enum memblock_flags flags)
+{
+        struct memblock_region *rgn = &type->regions[idx];
+
+        BUG_ON(type->cnt >= type->max);
+        memmove(rgn + 1, rgn, (type->cnt - idx) * sizeof(*rgn));
+        rgn->base = base;
+        rgn->size = size;
+        rgn->flags = flags;
+        memblock_set_region_node(rgn, nid);
+        type->cnt++;
+        type->total_size += size;
+}
+{% endhighlight %}
+
+memblock_insert_region() 函数用于将一个新的 memblock_region
+插入到 MEMBLOCK 指定类型里。参数 memblock_type 指定插入的类型，
+参数 idx 为插入的位置，base 参数为 region 的基地址，size 为 region
+的长度，参数 nid 指向 region 所在的 NUMA 上，参数 falgs 指向
+region 的 flags 信息。函数首先 idx 参数获得 type 类型的物理内存
+的 region 块，如果该类型物理内存包含的 region 数大于或等于
+该类型物理内存能包含最大 region 数，那么函数通过 BUG_ON()
+函数进行报错。函数继续通过 memmove() 函数将 rgn 对应的 region
+都拷贝到 rgn+1 下一个 region 的位置，并确保重叠数据在覆盖之前，
+memmove() 函数都能正确拷贝，这样 memblock_type regions 成员
+的 rgn 位置空闲出一个位置，然后将该 region 用于给新的 region
+使用，设置 rgn 的 base，size，flags 与参数一致，最后增加该
+类型物理内存 regions 的数量和总物理内存数。
+
+------------------------------------
+
+#### <span id="A0138">memblock_bottom_up</span>
+
+{% highlight c %}
+/*
+ * Check if the allocation direction is bottom-up or not.
+ * if this is true, that said, memblock will allocate memory
+ * in bottom-up direction.
+ */             
+static inline bool memblock_bottom_up(void)
+{
+        return memblock.bottom_up;
+}
+{% endhighlight %}
+
+memblock_bottom_up() 函数用于获得当前 MEMBLOCK 分配的方向。
+如果 memblock.bottom_up 为 true，那么 MEMBLOCK 从低地址
+向高地址分配；反之，如果 memblock.bottom_up 为 false，那么
+MEMBLOCK 从高地址向低地址分配。
+
+------------------------------------
+
+#### <span id="A0139">__next__mem_range</span>
+
+{% highlight c %}
+/**
+ * __next__mem_range - next function for for_each_free_mem_range() etc.
+ * @idx: pointer to u64 loop variable
+ * @nid: node selector, %NUMA_NO_NODE for all nodes
+ * @flags: pick from blocks based on memory attributes
+ * @type_a: pointer to memblock_type from where the range is taken
+ * @type_b: pointer to memblock_type which excludes memory from being taken
+ * @out_start: ptr to phys_addr_t for start address of the range, can be %NULL
+ * @out_end: ptr to phys_addr_t for end address of the range, can be %NULL
+ * @out_nid: ptr to int for nid of the range, can be %NULL
+ *
+ * Find the first area from *@idx which matches @nid, fill the out
+ * parameters, and update *@idx for the next iteration.  The lower 32bit of
+ * *@idx contains index into type_a and the upper 32bit indexes the
+ * areas before each region in type_b.  For example, if type_b regions
+ * look like the following,
+ *
+ *      0:[0-16), 1:[32-48), 2:[128-130)
+ *
+ * The upper 32bit indexes the following regions.
+ *
+ *      0:[0-0), 1:[16-32), 2:[48-128), 3:[130-MAX)
+ *
+ * As both region arrays are sorted, the function advances the two indices
+ * in lockstep and returns each intersection.
+ */
+void __init_memblock __next_mem_range(u64 *idx, int nid,
+                                      enum memblock_flags flags,
+                                      struct memblock_type *type_a,
+                                      struct memblock_type *type_b,
+                                      phys_addr_t *out_start,
+                                      phys_addr_t *out_end, int *out_nid)
+{
+        int idx_a = *idx & 0xffffffff;
+        int idx_b = *idx >> 32;
+
+        if (WARN_ONCE(nid == MAX_NUMNODES,
+        "Usage of MAX_NUMNODES is deprecated. Use NUMA_NO_NODE instead\n"))
+                nid = NUMA_NO_NODE;
+
+        for (; idx_a < type_a->cnt; idx_a++) {
+                struct memblock_region *m = &type_a->regions[idx_a];
+
+                phys_addr_t m_start = m->base;
+                phys_addr_t m_end = m->base + m->size;
+                int         m_nid = memblock_get_region_node(m);
+
+                /* only memory regions are associated with nodes, check it */
+                if (nid != NUMA_NO_NODE && nid != m_nid)
+                        continue;
+
+                /* skip hotpluggable memory regions if needed */
+                if (movable_node_is_enabled() && memblock_is_hotpluggable(m))
+                        continue;
+
+                /* if we want mirror memory skip non-mirror memory regions */
+                if ((flags & MEMBLOCK_MIRROR) && !memblock_is_mirror(m))
+                        continue;
+
+                /* skip nomap memory unless we were asked for it explicitly */
+                if (!(flags & MEMBLOCK_NOMAP) && memblock_is_nomap(m))
+                        continue;
+
+                if (!type_b) {
+                        if (out_start)
+                                *out_start = m_start;
+                        if (out_end)
+                                *out_end = m_end;
+                        if (out_nid)
+                                *out_nid = m_nid;
+                        idx_a++;
+                        *idx = (u32)idx_a | (u64)idx_b << 32;
+                        return;
+                }
+
+                /* scan areas before each reservation */
+                for (; idx_b < type_b->cnt + 1; idx_b++) {
+                        struct memblock_region *r;
+                        phys_addr_t r_start;
+                        phys_addr_t r_end;
+
+                        r = &type_b->regions[idx_b];
+                        r_start = idx_b ? r[-1].base + r[-1].size : 0;
+                        r_end = idx_b < type_b->cnt ?
+                                r->base : PHYS_ADDR_MAX;
+
+                        /*
+                         * if idx_b advanced past idx_a,
+                         * break out to advance idx_a
+                         */
+                        if (r_start >= m_end)
+                                break;
+                        /* if the two regions intersect, we're done */
+                        if (m_start < r_end) {
+                                if (out_start)
+                                        *out_start =
+                                                max(m_start, r_start);
+                                if (out_end)
+                                        *out_end = min(m_end, r_end);
+                                if (out_nid)
+                                        *out_nid = m_nid;
+                                /*
+                                 * The region which ends first is
+                                 * advanced for the next iteration.
+                                 */
+                                if (m_end <= r_end)
+                                        idx_a++;
+                                else
+                                        idx_b++;
+                                *idx = (u32)idx_a | (u64)idx_b << 32;
+                                return;
+                        }
+                }
+        }
+
+        /* signal end of iteration */
+        *idx = ULLONG_MAX;
+}
+{% endhighlight %}
+
+__next__mem_range() 函数的作用是在指定 regions 内找到
+一块空闲的 region。由于函数太长，分段解析。
+
+{% highlight c %}
+void __init_memblock __next_mem_range(u64 *idx, int nid,
+                                      enum memblock_flags flags,
+                                      struct memblock_type *type_a,
+                                      struct memblock_type *type_b,
+                                      phys_addr_t *out_start,
+                                      phys_addr_t *out_end, int *out_nid)
+{
+        int idx_a = *idx & 0xffffffff;
+        int idx_b = *idx >> 32;
+
+        if (WARN_ONCE(nid == MAX_NUMNODES,
+        "Usage of MAX_NUMNODES is deprecated. Use NUMA_NO_NODE instead\n"))
+                nid = NUMA_NO_NODE;
+{% endhighlight %}
+
+参数 idx 用于存储在 memblock_type regions 中的索引，参数 nid 指向
+NUMA 信息，参数 flags 指向 regions 的 flags 信息，参数 type_a，type_b
+指向特定的 memblock_type, out_start 参数指向找到物理地址的起始地址，
+out_end 参数指向找到物理地址的终止地址。参数 nid 存储找到 NID 信息。
+函数将 64 位的 idx 拆分成高 32 位的 idx_b 与低 32 位的 idx_a. 如果
+nid 等于 MAX_NUMNODES, 那么函数将报错。
+
+{% highlight c %}
+        for (; idx_a < type_a->cnt; idx_a++) {
+                struct memblock_region *m = &type_a->regions[idx_a];
+
+                phys_addr_t m_start = m->base;
+                phys_addr_t m_end = m->base + m->size;
+                int         m_nid = memblock_get_region_node(m);
+
+                /* only memory regions are associated with nodes, check it */
+                if (nid != NUMA_NO_NODE && nid != m_nid)
+                        continue;
+
+                /* skip hotpluggable memory regions if needed */
+                if (movable_node_is_enabled() && memblock_is_hotpluggable(m))
+                        continue;
+
+                /* if we want mirror memory skip non-mirror memory regions */
+                if ((flags & MEMBLOCK_MIRROR) && !memblock_is_mirror(m))
+                        continue;
+
+                /* skip nomap memory unless we were asked for it explicitly */
+                if (!(flags & MEMBLOCK_NOMAP) && memblock_is_nomap(m))
+                        continue;
+
+                if (!type_b) {
+                        if (out_start)
+                                *out_start = m_start;
+                        if (out_end)
+                                *out_end = m_end;
+                        if (out_nid)
+                                *out_nid = m_nid;
+                        idx_a++;
+                        *idx = (u32)idx_a | (u64)idx_b << 32;
+                        return;
+                }
+{% endhighlight %}
+
+函数使用 for 循环，在 type_a 对应的物理区内遍历所有的 region，
+每次遍历到一个 memblock_region, 将该 memblock_region 的起始物理
+地址存储在局部变量 m_start, 终止物理地址存储在局部遍历 m_end 中，
+并从当前 region 中，通过函数 memblock_get_region_node() 获得
+NUMA 信息。接下来函数对刚获得的三个数据进行检测，首先检查 NUMA
+信息是否符合要求，如果 nid 即不等于 NUMA_NO_NODE，也不等于 m_nid,
+那么函数直接调用 continue；函数通过 movable_node_is_enabled()
+函数检测热插拔节点功能是否支持，以及 memblock_is_hotpluggable()
+确定当前的 region 是否属于热插拔，如果属于，那么调用 continue；
+如果此时 flags 参数中没有包含 MEMBLOCK_NOMAP，但 memblock_is_nomap()
+函数返回为 true，那么不符合条件，直接返回。如果此时 type_b 参数
+为空，那么函数将检测通过 region 信息存储到参数 out_* 中，增加
+idx_a 的值，并更新 idx 的信息后返回。
+
+{% highlight c %}
+                /* scan areas before each reservation */
+                for (; idx_b < type_b->cnt + 1; idx_b++) {
+                        struct memblock_region *r;
+                        phys_addr_t r_start;
+                        phys_addr_t r_end;
+
+                        r = &type_b->regions[idx_b];
+                        r_start = idx_b ? r[-1].base + r[-1].size : 0;
+                        r_end = idx_b < type_b->cnt ?
+                                r->base : PHYS_ADDR_MAX;
+
+                        /*
+                         * if idx_b advanced past idx_a,
+                         * break out to advance idx_a
+                         */
+                        if (r_start >= m_end)
+                                break;
+                        /* if the two regions intersect, we're done */
+                        if (m_start < r_end) {
+                                if (out_start)
+                                        *out_start =
+                                                max(m_start, r_start);
+                                if (out_end)
+                                        *out_end = min(m_end, r_end);
+                                if (out_nid)
+                                        *out_nid = m_nid;
+                                /*
+                                 * The region which ends first is
+                                 * advanced for the next iteration.
+                                 */
+                                if (m_end <= r_end)
+                                        idx_a++;
+                                else
+                                        idx_b++;
+                                *idx = (u32)idx_a | (u64)idx_b << 32;
+                                return;
+                        }
+                }
+        }
+{% endhighlight %}
+
+如果此时 type_b 也不为空，那么函数使用一个 for 循环，遍历 type_b
+中的 region， idx_b 作为索引遍历 regions，每次循环中，函数都会将
+r_start 指向上一块的结束地址，然后将 r_end 指向当前 region 的结束
+地址。如果 r_start 的值大于等于 r_end, 那么没有找到满足需求的
+region，那么直接返回。函数继续执行，如果 m_start < r_end, 那么
+可以从该区域内找到一块空闲的物理内存，其范围从 m_start 与
+r_start 之间最大的地址开始，到 m_end 与 r_end 之间最小的地址
+停止，最终将找到的地址存储到参数中。在函数返回前更新 idx 的值。
+
+> - [movable_node_is_enabled](#A0140)
+>
+> - [memblock_is_hotpluggable](#A0141)
+>
+> - [memblock_is_mirror](#A0142)
+>
+> - [memblock_is_nomap](#A0143)
+>
+> - [\_\_next_mem_range 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__next_mem_range/)
+
+------------------------------------
+
+#### <span id="A0140">movable_node_is_enabled</span>
+
+{% highlight c %}
+static inline bool movable_node_is_enabled(void)
+{
+        return movable_node_enabled;
+}
+{% endhighlight %}
+
+movable_node_is_enabled() 函数判断 movable_node_enabled
+是否使能，如果为 true，那么 movable_node_enabled 使能。
+
+------------------------------------
+
+#### <span id="A0141">memblock_is_hotpluggable</span>
+
+{% highlight c %}
+static inline bool memblock_is_hotpluggable(struct memblock_region *m)
+{
+        return m->flags & MEMBLOCK_HOTPLUG;
+}
+{% endhighlight %}
+
+memblock_is_hotpluggable() 函数判断当前 region 是否
+具有热插拔属性，如果有则返回 true；反之返回 false。
+
+------------------------------------
+
+#### <span id="A0142">memblock_is_mirror</span>
+
+{% highlight c %}
+static inline bool memblock_is_mirror(struct memblock_region *m)
+{
+        return m->flags & MEMBLOCK_MIRROR;
+}
+{% endhighlight %}
+
+memblock_is_mirror() 判断当前 regions 是否是 MIRROR。
+如果是则返回 true；反之返回 false
+
+------------------------------------
+
+#### <span id="A0143">memblock_is_nomap</span>
+
+{% highlight c %}
+static inline bool memblock_is_nomap(struct memblock_region *m)
+{
+        return m->flags & MEMBLOCK_NOMAP;
+}
+{% endhighlight %}
+
+memblock_is_nomap() 函数判断当前 region 是否不需要
+映射页表，如果是则返回 true，反之返回 false。
+
+------------------------------------
+
+#### <span id="A0144">for_each_mem_range</span>
+
+{% highlight c %}
+/**             
+ * for_each_mem_range - iterate through memblock areas from type_a and not
+ * included in type_b. Or just type_a if type_b is NULL.
+ * @i: u64 used as loop variable
+ * @type_a: ptr to memblock_type to iterate
+ * @type_b: ptr to memblock_type which excludes from the iteration
+ * @nid: node selector, %NUMA_NO_NODE for all nodes
+ * @flags: pick from blocks based on memory attributes
+ * @p_start: ptr to phys_addr_t for start address of the range, can be %NULL
+ * @p_end: ptr to phys_addr_t for end address of the range, can be %NULL
+ * @p_nid: ptr to int for nid of the range, can be %NULL
+ */                     
+#define for_each_mem_range(i, type_a, type_b, nid, flags,               \
+                           p_start, p_end, p_nid)                       \
+        for (i = 0, __next_mem_range(&i, nid, flags, type_a, type_b,    \
+                                     p_start, p_end, p_nid);            \
+             i != (u64)ULLONG_MAX;                                      \
+             __next_mem_range(&i, nid, flags, type_a, type_b,           \
+                              p_start, p_end, p_nid))
+{% endhighlight %}
+
+for_each_mem_range() 函数的作用就是遍历指定范围内的所有 region。
+参数 i 用于遍历索引，参数 type_a 指向特定的 regions，同理参数 type_b
+也指向特定的 regions，nid 参数存储 NUMA 信息，flags 参数包含 region
+相关的 flags。函数通过 for 循环，i 从 0 开始，调用 __next_mem_range()
+函数遍历 regions 内的所有 region。知道 i 等于 ULLONG_MAX 停止。
+
+> - [\_\_next_mem_range](#A0139)
+>
+> - [\_\_next_mem_range 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range/)
+
+------------------------------------
+
+#### <span id="A0145">for_each_free_mem_range</span>
+
+{% highlight c %}
+/**
+ * for_each_free_mem_range - iterate through free memblock areas
+ * @i: u64 used as loop variable
+ * @nid: node selector, %NUMA_NO_NODE for all nodes
+ * @flags: pick from blocks based on memory attributes
+ * @p_start: ptr to phys_addr_t for start address of the range, can be %NULL
+ * @p_end: ptr to phys_addr_t for end address of the range, can be %NULL
+ * @p_nid: ptr to int for nid of the range, can be %NULL
+ *
+ * Walks over free (memory && !reserved) areas of memblock.  Available as
+ * soon as memblock is initialized.
+ */
+#define for_each_free_mem_range(i, nid, flags, p_start, p_end, p_nid)   \
+        for_each_mem_range(i, &memblock.memory, &memblock.reserved,     \
+                           nid, flags, p_start, p_end, p_nid)
+{% endhighlight %}
+
+for_each_free_mem_range() 函数用于遍历指定 regions 内所有空闲的
+region。参数 i 左右遍历索引，参数 nid 指向 NUMA 信息，参数 p_start
+存储起始物理地址，p_end 参数存储终止物理地址，p_nid 指向 NUMA 信息。
+函数通过 for_each_mem_range() 函数遍历 memblock.memory 内的所有
+regions，并确保遍历到的 region 不在 memblock.reserved 里面。
+
+> - [for_each_mem_range](#A0144)
+>
+> - [for_each_free_mem_range 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/)
+
+------------------------------------
+
+#### <span id="A0146">clamp</span>
+
+{% highlight c %}
+/**
+ * clamp - return a value clamped to a given range with strict typechecking
+ * @val: current value          
+ * @lo: lowest allowable value  
+ * @hi: highest allowable value
+ *
+ * This macro does strict typechecking of @lo/@hi to make sure they are of the
+ * same type as @val.  See the unnecessary pointer comparisons.
+ */
+#define clamp(val, lo, hi) min((typeof(val))max(val, lo), hi)
+{% endhighlight %}
+
+clamp() 函数用于从 val 和 lo 中找到一个最大的值，再将该值与 hi 中
+找到最小的值。
+
+------------------------------------
+
+#### <span id="A0147">__memblock_find_range_bottom_up</span>
+
+{% highlight c %}
+/**
+ * __memblock_find_range_bottom_up - find free area utility in bottom-up
+ * @start: start of candidate range
+ * @end: end of candidate range, can be %MEMBLOCK_ALLOC_ANYWHERE or
+ *       %MEMBLOCK_ALLOC_ACCESSIBLE
+ * @size: size of free area to find
+ * @align: alignment of free area to find
+ * @nid: nid of the free area to find, %NUMA_NO_NODE for any node
+ * @flags: pick from blocks based on memory attributes
+ *
+ * Utility called from memblock_find_in_range_node(), find free area bottom-up.
+ *
+ * Return:
+ * Found address on success, 0 on failure.
+ */
+static phys_addr_t __init_memblock
+__memblock_find_range_bottom_up(phys_addr_t start, phys_addr_t end,
+                                phys_addr_t size, phys_addr_t align, int nid,
+                                enum memblock_flags flags)
+{
+        phys_addr_t this_start, this_end, cand;
+        u64 i;
+
+        for_each_free_mem_range(i, nid, flags, &this_start, &this_end, NULL) {
+                this_start = clamp(this_start, start, end);
+                this_end = clamp(this_end, start, end);
+
+                cand = round_up(this_start, align);
+                if (cand < this_end && this_end - cand >= size)
+                        return cand;
+        }
+
+        return 0;
+}
+{% endhighlight %}
+
+__memblock_find_range_bottom_up() 函数用于 MEMBLOCK 的底部
+开始，查找一块可用的物理内存 region。参数 start 指向查找起始
+物理地址，参数 end 指向查找终止物理地址，参数 size 指向 region
+大小，参数 align 代表对齐方式，参数 nid 指向 NUMA 信息，参数
+flags 包含 region flags。函数首先调用 for_each_free_mem_range()
+函数遍历了所有可用物理内存 region，在每次遍历中，调用 clamp()
+函数找到符合要求的范围，函数接着调用 round_up() 对 this_start
+进行对齐，对齐之后的值小于终止地址，并且找到的长度大于等于 size，
+那么函数就找到一个空闲的 region。
+
+> - [for_each_free_mem_range](#A0)
+>
+> - [clamp](#A0)
+>
+> - [round_up](#A0149)
+
+------------------------------------
+
+#### <span id="A0148">__round_mask</span>
+
+{% highlight c %}
+/*
+ * This looks more complex than it should be. But we need to
+ * get the type for the ~ right in round_down (it needs to be
+ * as wide as the result!), and we want to evaluate the macro
+ * arguments just once each.
+ */
+#define __round_mask(x, y) ((__typeof__(x))((y)-1))
+{% endhighlight %}
+
+__round_mask() 用于生成 (y-1) 的掩码。
+
+------------------------------------
+
+#### <span id="A0149">round_up</span>
+
+{% highlight c %}
+/**
+ * round_up - round up to next specified power of 2
+ * @x: the value to round       
+ * @y: multiple to round up to (must be a power of 2)
+ *      
+ * Rounds @x up to next multiple of @y (which must be a power of 2).
+ * To perform arbitrary rounding up, use roundup() below.
+ */     
+#define round_up(x, y) ((((x)-1) | __round_mask(x, y))+1)
+{% endhighlight %}
+
+round_up() 函数用于向上对齐。参数 x 为需要对齐的数据，y 为
+对齐的方式。
+
+> - [\_\_round_mask](#A0148)
+
+------------------------------------
+
+#### <span id="A0150">__next_mem_range_rev</span>
+
+{% highlight c %}
+/**
+ * __next_mem_range_rev - generic next function for for_each_*_range_rev()
+ *
+ * @idx: pointer to u64 loop variable
+ * @nid: node selector, %NUMA_NO_NODE for all nodes
+ * @flags: pick from blocks based on memory attributes
+ * @type_a: pointer to memblock_type from where the range is taken
+ * @type_b: pointer to memblock_type which excludes memory from being taken
+ * @out_start: ptr to phys_addr_t for start address of the range, can be %NULL
+ * @out_end: ptr to phys_addr_t for end address of the range, can be %NULL
+ * @out_nid: ptr to int for nid of the range, can be %NULL
+ *
+ * Finds the next range from type_a which is not marked as unsuitable
+ * in type_b.
+ *
+ * Reverse of __next_mem_range().
+ */
+void __init_memblock __next_mem_range_rev(u64 *idx, int nid,
+                                          enum memblock_flags flags,
+                                          struct memblock_type *type_a,
+                                          struct memblock_type *type_b,
+                                          phys_addr_t *out_start,
+                                          phys_addr_t *out_end, int *out_nid)
+{
+        int idx_a = *idx & 0xffffffff;
+        int idx_b = *idx >> 32;
+
+        if (WARN_ONCE(nid == MAX_NUMNODES, "Usage of MAX_NUMNODES is deprecated. Use NUMA_NO_NODE instead\n"))
+                nid = NUMA_NO_NODE;
+
+        if (*idx == (u64)ULLONG_MAX) {
+                idx_a = type_a->cnt - 1;
+                if (type_b != NULL)
+                        idx_b = type_b->cnt;
+                else
+                        idx_b = 0;
+        }
+
+        for (; idx_a >= 0; idx_a--) {
+                struct memblock_region *m = &type_a->regions[idx_a];
+
+                phys_addr_t m_start = m->base;
+                phys_addr_t m_end = m->base + m->size;
+                int m_nid = memblock_get_region_node(m);
+
+                /* only memory regions are associated with nodes, check it */
+                if (nid != NUMA_NO_NODE && nid != m_nid)
+                        continue;
+
+                /* skip hotpluggable memory regions if needed */
+                if (movable_node_is_enabled() && memblock_is_hotpluggable(m))
+                        continue;
+
+                /* if we want mirror memory skip non-mirror memory regions */
+                if ((flags & MEMBLOCK_MIRROR) && !memblock_is_mirror(m))
+                        continue;
+
+                /* skip nomap memory unless we were asked for it explicitly */
+                if (!(flags & MEMBLOCK_NOMAP) && memblock_is_nomap(m))
+                        continue;
+
+                if (!type_b) {
+                        if (out_start)
+                                *out_start = m_start;
+                        if (out_end)
+                                *out_end = m_end;
+                        if (out_nid)
+                                *out_nid = m_nid;
+                        idx_a--;
+                        *idx = (u32)idx_a | (u64)idx_b << 32;
+                        return;
+                }
+
+                /* scan areas before each reservation */
+                for (; idx_b >= 0; idx_b--) {
+                        struct memblock_region *r;
+                        phys_addr_t r_start;
+                        phys_addr_t r_end;
+
+                        r = &type_b->regions[idx_b];
+                        r_start = idx_b ? r[-1].base + r[-1].size : 0;
+                        r_end = idx_b < type_b->cnt ?
+                                r->base : PHYS_ADDR_MAX;
+                        /*
+                         * if idx_b advanced past idx_a,
+                         * break out to advance idx_a
+                         */
+
+                        if (r_end <= m_start)
+                                break;
+                        /* if the two regions intersect, we're done */
+                        if (m_end > r_start) {
+                                if (out_start)
+                                        *out_start = max(m_start, r_start);
+                                if (out_end)
+                                        *out_end = min(m_end, r_end);
+                                if (out_nid)
+                                        *out_nid = m_nid;
+                                if (m_start >= r_start)
+                                        idx_a--;
+                                else
+                                        idx_b--;
+                                *idx = (u32)idx_a | (u64)idx_b << 32;
+                                return;
+                        }
+                }
+        }
+        /* signal end of iteration */
+        *idx = ULLONG_MAX;
+}
+{% endhighlight %}
+
+__next_mem_range_rev() 函数从指定的区域之后查找一块可用的物理内存区块。
+函数代码较长，分段解析
+
+{% highlight c %}
+/**
+ * __next_mem_range_rev - generic next function for for_each_*_range_rev()
+ *
+ * @idx: pointer to u64 loop variable
+ * @nid: node selector, %NUMA_NO_NODE for all nodes
+ * @flags: pick from blocks based on memory attributes
+ * @type_a: pointer to memblock_type from where the range is taken
+ * @type_b: pointer to memblock_type which excludes memory from being taken
+ * @out_start: ptr to phys_addr_t for start address of the range, can be %NULL
+ * @out_end: ptr to phys_addr_t for end address of the range, can be %NULL
+ * @out_nid: ptr to int for nid of the range, can be %NULL
+ *
+ * Finds the next range from type_a which is not marked as unsuitable
+ * in type_b.
+ *
+ * Reverse of __next_mem_range().
+ */
+void __init_memblock __next_mem_range_rev(u64 *idx, int nid,
+                                          enum memblock_flags flags,
+                                          struct memblock_type *type_a,
+                                          struct memblock_type *type_b,
+                                          phys_addr_t *out_start,
+                                          phys_addr_t *out_end, int *out_nid)
+{
+        int idx_a = *idx & 0xffffffff;
+        int idx_b = *idx >> 32;
+{% endhighlight %}
+
+参数 idx 是一个 64 位变量，其高 32 位作为 type_a 参数的索引，低 32位作为
+type_b 参数的索引。flags 指向内存区的标志；type_a 指向可用物理内存区；
+type_b 指向预留内存区；out_start 参数用于存储查找到区域的起始地址；
+out_end 参数用于存储找到区域的终止地址; out_nid 指向 nid 域; idx_a 变量
+用于存储可用物理内存区块的索引; idx_b 变量用于存储预留区块的索引。
+
+{% highlight c %}
+if (WARN_ONCE(nid == MAX_NUMNODES, "Usage of MAX_NUMNODES is deprecated. Use NUMA_NO_NODE instead\n"))
+        nid = NUMA_NO_NODE;
+
+if (*idx == (u64)ULLONG_MAX) {
+        idx_a = type_a->cnt - 1;
+        if (type_b != NULL)
+                idx_b = type_b->cnt;
+        else
+                idx_b = 0;
+}
+{% endhighlight %}
+
+函数首先检查 nid 参数，如果参数值不是 MAX_NUMNODES， 那么函数就会报错。接着函数
+将 idx 参数进行检查，如果参数的值是 ULLONG_MAX,那么就将 idx_a 设置为 type_a
+内存区含有的内存区块数，此时，如果 type_b 参数如果存在，那么将 idx_b 设置为
+预留区的函数的内存区块数。如果 type_b 参数不存在，那么函数认为 MEMBLOCK 不存在
+预留区，可以从有用的物理内存区开始查找，如果 idx_b 设置为 0.
+
+{% highlight c %}
+for (; idx_a >= 0; idx_a--) {
+        struct memblock_region *m = &type_a->regions[idx_a];
+
+        phys_addr_t m_start = m->base;
+        phys_addr_t m_end = m->base + m->size;
+        int m_nid = memblock_get_region_node(m);
+
+        /* only memory regions are associated with nodes, check it */
+        if (nid != NUMA_NO_NODE && nid != m_nid)
+                continue;
+
+        /* skip hotpluggable memory regions if needed */
+        if (movable_node_is_enabled() && memblock_is_hotpluggable(m))
+                continue;
+
+        /* if we want mirror memory skip non-mirror memory regions */
+        if ((flags & MEMBLOCK_MIRROR) && !memblock_is_mirror(m))
+                continue;
+
+        /* skip nomap memory unless we were asked for it explicitly */
+        if (!(flags & MEMBLOCK_NOMAP) && memblock_is_nomap(m))
+                continue;
+{% endhighlight %}
+
+这段代码首先使用 for 循环遍历 MEMBLOCK 中可用的物理内存区块，从最后一块开始
+遍历，每次遍历一块内存区块，都是用 struct memblock_region 结构体维护，以此
+计算出这块内存区块的起始地址和终止地址。接下来进行内存区块的检测，函数是要找到
+一块符合要求的的内存区块，内存区块要满足以下几点：
+
+> 1. 内存区块必须属于指定的 node
+>
+> 2. 内存区块不是热插拔的
+>
+> 3. 内存区块不是 non-mirror 的
+>
+> 4. 内存区块不能是 MEMBLOCK_NOMAP 的
+
+只有符合上述的内存区块才是可以继续查找的部分。
+
+{% highlight c %}
+        if (!type_b) {
+                if (out_start)
+                        *out_start = m_start;
+                if (out_end)
+                        *out_end = m_end;
+                if (out_nid)
+                        *out_nid = m_nid;
+                idx_a--;
+                *idx = (u32)idx_a | (u64)idx_b << 32;
+                return;
+        }
+{% endhighlight %}
+
+经过上面的检测之后，如果预留区不存在，那么直接就从可用物理内存区中返回可用的地址，
+out_start 参数指向可用物理内存区块的起始地址；out_end 参数指向可用物理内存区块
+的终止地址，将 idx_a 指向前一块可用的物理内存块，并更新 idx 参数的值，使其指向
+新的索引。最后返回
+
+{% highlight c %}
+/* scan areas before each reservation */
+for (; idx_b >= 0; idx_b--) {
+        struct memblock_region *r;
+        phys_addr_t r_start;
+        phys_addr_t r_end;
+
+        r = &type_b->regions[idx_b];
+        r_start = idx_b ? r[-1].base + r[-1].size : 0;
+        r_end = idx_b < type_b->cnt ?
+                r->base : PHYS_ADDR_MAX;
+        /*
+         * if idx_b advanced past idx_a,
+         * break out to advance idx_a
+         */
+
+        if (r_end <= m_start)
+                break;
+{% endhighlight %}
+
+如果预留区存在，那么从 idx_b 指向的预留区开始查找。同样使用 memblock_region
+结构维护一个预留区块。接下来判断，如果该预留区块的前一块预留区块也存在，那么函数
+将上一块预留区块的结束地址到该预留区块的起始地址作为一块可用的物理内存区块；如果
+不存在上一块预留区块，那么可用物理内存区块的起始地址设置为 0；如果 idx_b 的索引
+不小于预留区所具有的内存区块数，那么将可用物理内存区块的终止地址设置为
+PHYS_ADDR_MAX.通过上面的判断可以找到一块可用的物理内存区块范围，如果找到的内存
+区块的起始地址大于或等于该预留区块，那么就跳出循环，表示在该可用的物理内存区段中
+找不到一块满足条件的内存区块。
+
+{% highlight c %}
+/* scan areas before each reservation */
+/* if the two regions intersect, we're done */
+if (m_end > r_start) {
+        if (out_start)
+                *out_start = max(m_start, r_start);
+        if (out_end)
+                *out_end = min(m_end, r_end);
+        if (out_nid)
+                *out_nid = m_nid;
+        if (m_start >= r_start)
+                idx_a--;
+        else
+                idx_b--;
+        *idx = (u32)idx_a | (u64)idx_b << 32;
+        return;
+}
+{% endhighlight %}
+
+如果符合之前的条件，那么接下来只要找到的物理内存区块的终止地址比预留区的大，但找到的
+物理内存区块的起始地址小于预留区块的终止地址，至少保证可用物理内存区在预留区块之前有
+交集。接下来，将 out_start 参数指向最大的起始地址；将 out_end 指向最小的终止地
+址，这样处理能确保找到的物理内存区块不与预留区块重叠。接着如果找到的可用物理内存区块
+的起始地址大于预留区块的起始地址，那么增加 idx_a 的引用计数，这样可以在循环中指向
+下一块可用的物理内存；反之增加 idx_b 的引用计数，这样可以指向下一块预留区块。
+
+{% highlight c %}
+/* signal end of iteration */
+*idx = ULLONG_MAX;
+{% endhighlight %}
+
+如果循环遍历之后，还找不到，那么直接设置 idx 为 ULLONG_MAX.
+
+> - [memblock_get_region_node](#A0136)
+>
+> - [movable_node_is_enabled](#A0140)
+>
+> - [memblock_is_hotpluggable](#A0141)
+>
+> - [memblock_is_mirror](#A0142)
+>
+> - [memblock_is_nomap](#A0143)
+>
+> - [__next_mem_range_rev 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__next_mem_range_rev/#header)
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
 #### <span id="A00"></span>
 
 {% highlight c %}
