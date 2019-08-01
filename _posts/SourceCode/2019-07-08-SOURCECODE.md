@@ -925,17 +925,54 @@ setup_arch() 函数用于初始化体系相关的部分，其实现与体系和�
 
 #### <span id="A0038">setup_arch</span>
 
+ARMv7 Vexpress-a9 芯片上，setup_arch() 函数的实现如下，
+由于函数较长，分段解析：
+
 {% highlight c %}
-void __init setup_arch(char **cmdline_p)
-{       
         const struct machine_desc *mdesc;
 
         setup_processor();
         mdesc = setup_machine_fdt(__atags_pointer);
+        if (!mdesc)
+                mdesc = setup_machine_tags(__atags_pointer, __machine_arch_type);               
+        if (!mdesc) {
+                early_print("\nError: invalid dtb and unrecognized/unsupported machine ID\n");
+                early_print("  r1=0x%08x, r2=0x%08x\n", __machine_arch_type,
+                            __atags_pointer);
+                if (__atags_pointer)
+                        early_print("  r2[]=%*ph\n", 16,
+                                    phys_to_virt(__atags_pointer));
+                dump_machine_table();
+        }
 {% endhighlight %}
 
-ARMv7 Vexpress-a9 芯片上，setup_arch() 函数的实现如下，
-由于函数较长，分段解析：
+函数首先定义了一个局部变量 mdesc，其为 machine_desc 数据结构，用于
+维护体系相关的机器信息。函数首先调用 setup_processor()
+从硬件获得体系相关的信息，并将该信息用于系统的初始化。
+函数接着调用 setup_machine_fdt() 函数，__atags_pointer
+指向 DTB 所在的物理地址，并从 DTB 中获得 CMDLINE，可用
+物理内存的信息，并使用从 DTB 中获得的信息初始化系统，函数
+执行完毕之后，会返回一个指向当前可用的 machine_desc 结构，
+如果该结构不存在，函数调用 setup_machine_tags() 函数，
+以此从 Uboot 传递的 ATAG 参数中获得 CMDLINE，物理内存
+等信息，并用于系统的初始化，最后返回一个指向当前可用的
+machine_desc 结构。如果此时还是不能获得 mdsec 结构，
+那么系统就打印相应的错误信息，并报错，调用 dump_machine_table()
+函数打印出指定的信息。
+
+{% highlight c %}
+        machine_desc = mdesc;
+        machine_name = mdesc->name;
+        dump_stack_set_arch_desc("%s", mdesc->name);
+
+        if (mdesc->reboot_mode != REBOOT_HARD)
+                reboot_mode = mdesc->reboot_mode;
+{% endhighlight %}
+
+函数将获得的 mdesc 指针赋值给 machine_desc 全局变量，并
+把 mdesc->name 赋值为 machine_name 全局变量，函数继续调用
+dump_stack_set_arch_desc() 函数将 mdesc->name 字符串拷贝
+到 dump_stack_arch_desc_str 全局变量里。
 
 > - [setup_processor](#A0074)
 
@@ -4349,6 +4386,8 @@ size 参数指向物理内存的长度。函数首先将基地址和长度与 ME
 函数直接调用 memblock_add() 函数将物理内存信息更新到
 MEMBLOCK 内存管理器里。
 
+> - [memblock_add](#A0166)
+
 ------------------------------------
 
 #### <span id="A0131">early_init_dt_scan_memory</span>
@@ -5476,6 +5515,1609 @@ if (m_end > r_start) {
 > - [memblock_is_nomap](#A0143)
 >
 > - [__next_mem_range_rev 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__next_mem_range_rev/#header)
+
+------------------------------------
+
+#### <span id="A0151">for_each_mem_range_rev</span>
+
+{% highlight c %}
+/**
+ * for_each_mem_range_rev - reverse iterate through memblock areas from
+ * type_a and not included in type_b. Or just type_a if type_b is NULL.
+ * @i: u64 used as loop variable
+ * @type_a: ptr to memblock_type to iterate
+ * @type_b: ptr to memblock_type which excludes from the iteration
+ * @nid: node selector, %NUMA_NO_NODE for all nodes
+ * @flags: pick from blocks based on memory attributes
+ * @p_start: ptr to phys_addr_t for start address of the range, can be %NULL
+ * @p_end: ptr to phys_addr_t for end address of the range, can be %NULL
+ * @p_nid: ptr to int for nid of the range, can be %NULL
+ */
+#define for_each_mem_range_rev(i, type_a, type_b, nid, flags,           \
+                               p_start, p_end, p_nid)                   \
+        for (i = (u64)ULLONG_MAX,                                       \
+                     __next_mem_range_rev(&i, nid, flags, type_a, type_b,\
+                                          p_start, p_end, p_nid);       \
+             i != (u64)ULLONG_MAX;                                      \
+             __next_mem_range_rev(&i, nid, flags, type_a, type_b,       \
+                                  p_start, p_end, p_nid))
+{% endhighlight %}
+
+for_each_mem_range_rev() 函数的作用就是遍历所有可用的物理内存区块。
+参数 i 用于循环；type_a 参数指向可用物理内存区块; type_b 参数指向预留物理内存
+区块。 nid 指向节点信息；参数 flags 指向内存区标志； p_start 参数用于存储查找
+到的内存区块起始地址； p_end 参数用于存储查找到的内存区块的终止地址
+
+函数首先调用 for 循环，将参数 i 设置为 ULLONG_MAX, 以此遍历所有预留区，然后调用
+__next_mem_range_rev() 函数查找一块可用的物理内存。每遍历一次，循环都检查 i 的
+值，如果 i 不等于 ULLONG_MAX, 那么继续循环。每次调用完 __next_mem_range_rev()
+函数之后，i 都会指向前一个预留区。通过循环，每个找到的可用物理内存区块都会将其起始
+地址存储到 p_start 参数里，将终止地址存储到 p_end 参数里。直到遍历完所有可用物理
+内存区块之后终止循环。
+
+> - [\_\_next_mem_range_rev](#A0150)
+>
+> - [for_each_mem_range_rev 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range_rev/)
+
+------------------------------------
+
+#### <span id="A0152">for_each_free_mem_range_reverse</span>
+
+{% highlight c %}
+/**
+ * for_each_free_mem_range_reverse - rev-iterate through free memblock areas
+ * @i: u64 used as loop variable
+ * @nid: node selector, %NUMA_NO_NODE for all nodes
+ * @flags: pick from blocks based on memory attributes
+ * @p_start: ptr to phys_addr_t for start address of the range, can be %NULL
+ * @p_end: ptr to phys_addr_t for end address of the range, can be %NULL
+ * @p_nid: ptr to int for nid of the range, can be %NULL
+ *
+ * Walks over free (memory && !reserved) areas of memblock in reverse
+ * order.  Available as soon as memblock is initialized.
+ */
+#define for_each_free_mem_range_reverse(i, nid, flags, p_start, p_end,  \
+                                        p_nid)                          \
+        for_each_mem_range_rev(i, &memblock.memory, &memblock.reserved, \
+                               nid, flags, p_start, p_end, p_nid)
+{% endhighlight %}
+
+for_each_free_mem_range_reverse() 函数的作用就是倒叙遍历所有 free
+物理内存区块。参数 i 用于循环； nid 指向节点信息；参数 flags 指向内
+存区标志； p_start 参数用于存储查找到的内存区块起始地址； p_end 参数
+用于存储查找到的内存区块的终止地址。函数直接调用 for_each_mem_range_rev()
+函数。
+
+> - [for_each_free_mem_range_reverse](#A0151)
+>
+> - [for_each_free_mem_range_reverse 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/)
+
+------------------------------------
+
+#### <span id="A0153">__memblock_find_range_top_down</span>
+
+{% highlight c %}
+/**
+ * __memblock_find_range_top_down - find free area utility, in top-down
+ * @start: start of candidate range
+ * @end: end of candidate range, can be %MEMBLOCK_ALLOC_ANYWHERE or
+ *       %MEMBLOCK_ALLOC_ACCESSIBLE
+ * @size: size of free area to find
+ * @align: alignment of free area to find
+ * @nid: nid of the free area to find, %NUMA_NO_NODE for any node
+ * @flags: pick from blocks based on memory attributes
+ *
+ * Utility called from memblock_find_in_range_node(), find free area top-down.
+ *
+ * Return:
+ * Found address on success, 0 on failure.
+ */
+static phys_addr_t __init_memblock
+__memblock_find_range_top_down(phys_addr_t start, phys_addr_t end,
+                               phys_addr_t size, phys_addr_t align, int nid,
+                               enum memblock_flags flags)
+{
+        phys_addr_t this_start, this_end, cand;
+        u64 i;
+
+        for_each_free_mem_range_reverse(i, nid, flags, &this_start, &this_end,
+                                        NULL) {
+                this_start = clamp(this_start, start, end);
+                this_end = clamp(this_end, start, end);
+
+                if (this_end < size)
+                        continue;
+
+                cand = round_down(this_end - size, align);
+                if (cand >= this_start)
+                        return cand;
+        }
+
+        return 0;
+}
+{% endhighlight %}
+
+__memblock_find_range_top_down() 函数的作用是从顶端往低端，查找满足
+需求的空闲物理块。函数调用 for_each_free_mem_range_reverse()
+倒序遍历所有的空闲物理区块，在这些空闲的物理区块中，使用
+clamp() 函数找到符合要求的起始物理地址和终止物理地址，如果
+找到的终止地址小于 size，那么继续查找下一块；反之如果从
+终止地址往低端地址，长度为 size 并按 align 方式对齐，那么
+此时地址大于等于起始地址，那么函数就找到一块符合要求的物理
+区块。
+
+> - [for_each_free_mem_range_reverse](#A0152)
+>
+> - [clamp](#A0146)
+>
+> - [round_down](#A0154)
+
+------------------------------------
+
+#### <span id="A0154">round_down</span>
+
+{% highlight c %}
+/**
+ * round_down - round down to next specified power of 2
+ * @x: the value to round
+ * @y: multiple to round down to (must be a power of 2)
+ *
+ * Rounds @x down to next multiple of @y (which must be a power of 2).
+ * To perform arbitrary rounding down, use rounddown() below.
+ */
+#define round_down(x, y) ((x) & ~__round_mask(x, y))
+{% endhighlight %}
+
+round_down() 函数用于向下按 y 方式对齐。函数通过 __round_mask()
+函数获得相应的掩码之后，再反码。最后相与，这样 x 就按向下
+按 y 方式对齐。
+
+------------------------------------
+
+#### <span id="A0155">memblock_find_in_range_node</span>
+
+{% highlight c %}
+/**
+ * memblock_find_in_range_node - find free area in given range and node
+ * @size: size of free area to find
+ * @align: alignment of free area to find
+ * @start: start of candidate range
+ * @end: end of candidate range, can be %MEMBLOCK_ALLOC_ANYWHERE or
+ *       %MEMBLOCK_ALLOC_ACCESSIBLE
+ * @nid: nid of the free area to find, %NUMA_NO_NODE for any node
+ * @flags: pick from blocks based on memory attributes
+ *
+ * Find @size free area aligned to @align in the specified range and node.
+ *
+ * When allocation direction is bottom-up, the @start should be greater
+ * than the end of the kernel image. Otherwise, it will be trimmed. The
+ * reason is that we want the bottom-up allocation just near the kernel
+ * image so it is highly likely that the allocated memory and the kernel
+ * will reside in the same node.
+ *
+ * If bottom-up allocation failed, will try to allocate memory top-down.
+ *
+ * Return:
+ * Found address on success, 0 on failure.
+ */
+phys_addr_t __init_memblock memblock_find_in_range_node(phys_addr_t size,
+                                        phys_addr_t align, phys_addr_t start,
+                                        phys_addr_t end, int nid,
+                                        enum memblock_flags flags)
+{
+        phys_addr_t kernel_end, ret;
+
+        /* pump up @end */
+        if (end == MEMBLOCK_ALLOC_ACCESSIBLE ||
+            end == MEMBLOCK_ALLOC_KASAN)
+                end = memblock.current_limit;
+
+        /* avoid allocating the first page */
+        start = max_t(phys_addr_t, start, PAGE_SIZE);
+        end = max(start, end);
+        kernel_end = __pa_symbol(_end);
+
+        /*
+         * try bottom-up allocation only when bottom-up mode
+         * is set and @end is above the kernel image.
+         */
+        if (memblock_bottom_up() && end > kernel_end) {
+                phys_addr_t bottom_up_start;
+
+                /* make sure we will allocate above the kernel */
+                bottom_up_start = max(start, kernel_end);
+
+                /* ok, try bottom-up allocation first */
+                ret = __memblock_find_range_bottom_up(bottom_up_start, end,
+                                                      size, align, nid, flags);
+                if (ret)
+                        return ret;
+
+                /*
+                 * we always limit bottom-up allocation above the kernel,
+                 * but top-down allocation doesn't have the limit, so
+                 * retrying top-down allocation may succeed when bottom-up
+                 * allocation failed.
+                 *
+                 * bottom-up allocation is expected to be fail very rarely,
+                 * so we use WARN_ONCE() here to see the stack trace if
+                 * fail happens.
+                 */
+                WARN_ONCE(IS_ENABLED(CONFIG_MEMORY_HOTREMOVE),
+                          "memblock: bottom-up allocation failed, memory hotremove may be affected\n");
+        }
+
+        return __memblock_find_range_top_down(start, end, size, align, nid,
+                                              flags);
+}
+{% endhighlight %}
+
+memblock_find_in_range_node() 函数的作用是在指定的节点区间
+内查找一块可用的物理内存。代码较长，分段解析
+
+{% highlight c %}
+/**
+ * memblock_find_in_range_node - find free area in given range and node
+ * @size: size of free area to find
+ * @align: alignment of free area to find
+ * @start: start of candidate range
+ * @end: end of candidate range, can be %MEMBLOCK_ALLOC_ANYWHERE or
+ *       %MEMBLOCK_ALLOC_ACCESSIBLE
+ * @nid: nid of the free area to find, %NUMA_NO_NODE for any node
+ * @flags: pick from blocks based on memory attributes
+ *
+ * Find @size free area aligned to @align in the specified range and node.
+ *
+ * When allocation direction is bottom-up, the @start should be greater
+ * than the end of the kernel image. Otherwise, it will be trimmed. The
+ * reason is that we want the bottom-up allocation just near the kernel
+ * image so it is highly likely that the allocated memory and the kernel
+ * will reside in the same node.
+ *
+ * If bottom-up allocation failed, will try to allocate memory top-down.
+ *
+ * Return:
+ * Found address on success, 0 on failure.
+ */
+phys_addr_t __init_memblock memblock_find_in_range_node(phys_addr_t size,
+					phys_addr_t align, phys_addr_t start,
+					phys_addr_t end, int nid,
+					enum memblock_flags flags)
+{
+	phys_addr_t kernel_end, ret;
+{% endhighlight %}
+
+参数 size 代表需要查找内存的大小；align 代表对齐方式；start 代表需要查找
+内存区域的起始地址；end 参数代表需要查找内存区域的终止地址；nid 代表 NUMA
+节点信息；flags 代表内存区的标志。
+
+{% highlight c %}
+/* pump up @end */
+if (end == MEMBLOCK_ALLOC_ACCESSIBLE ||
+    end == MEMBLOCK_ALLOC_KASAN)
+  end = memblock.current_limit;
+
+/* avoid allocating the first page */
+start = max_t(phys_addr_t, start, PAGE_SIZE);
+end = max(start, end);
+kernel_end = __pa_symbol(_end);
+{% endhighlight %}
+
+函数首先对 end 参数进行检测，只要参数属于 MEMBLOCK_ALLOC_ACCESSIBLE
+或 MEMBLOCK_ALLOC_KASAN 中的一种，那么函数就会将 end 参数设置为
+MEMBLOCK 最大限制地址。接着函数调用 max_t() 函数和 max() 函数对
+start 参数和 end 参数进行简单的处理。最后通过 __pa_symbol() 函数获得
+kernel 镜像的终止物理地址。
+
+{% highlight c %}
+/*
+ * try bottom-up allocation only when bottom-up mode
+ * is set and @end is above the kernel image.
+ */
+if (memblock_bottom_up() && end > kernel_end) {
+  phys_addr_t bottom_up_start;
+
+  /* make sure we will allocate above the kernel */
+  bottom_up_start = max(start, kernel_end);
+
+  /* ok, try bottom-up allocation first */
+  ret = __memblock_find_range_bottom_up(bottom_up_start, end,
+                size, align, nid, flags);
+  if (ret)
+    return ret;
+
+  /*
+   * we always limit bottom-up allocation above the kernel,
+   * but top-down allocation doesn't have the limit, so
+   * retrying top-down allocation may succeed when bottom-up
+   * allocation failed.
+   *
+   * bottom-up allocation is expected to be fail very rarely,
+   * so we use WARN_ONCE() here to see the stack trace if
+   * fail happens.
+   */
+  WARN_ONCE(IS_ENABLED(CONFIG_MEMORY_HOTREMOVE),
+      "memblock: bottom-up allocation failed, memory hotremove may be affected\n");
+}
+{% endhighlight %}
+
+接下来，参数做了一个判断，如果 memblock_bottom_up() 函数返回 true，表示
+MEMBLOCK 支持从低向上的分配，以及查找的终止地址大于内核的终止物理地址，
+那么函数将执行从低地址开始查找符合要求的内存区块。采用这种分配的一定要
+从 kernel 的终止地址之后开始分配，接着调用 __memblock_find_range_bottom_up()
+函数进行分配，如果分配成功，则返回获得的起始地址。由于 bottom-top 的分配
+要从 kernel 结束地址之后开始分配，但 top-down 分配则没有这个限制，所以
+bottom-top 的分配很容易失败，所以当分配失败之后，函数会调用 WARN_ONCE 进行
+提示。
+
+{% highlight c %}
+return __memblock_find_range_top_down(start, end, size, align, nid,
+					      flags);
+{% endhighlight %}
+
+如果函数没有采用 bottom-up 的分配方式，那么函数就采用 top-down 的方式进行
+分配，函数调用 __memblock_find_range_top_down() 函数，并直接返回查找到的
+值。
+
+> - [memblock_bottom_up](#A0138)
+>
+> - [\_\_memblock_find_range_bootm_up](#A0147)
+>
+> - [\_\_memblock_find_range_top_down](#A0153)
+>
+> - [memblock_find_in_range_node 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_find_in_range_node/)
+
+------------------------------------
+
+#### <span id="A0156">memblock_find_in_range</span>
+
+{% highlight c %}
+/**
+ * memblock_find_in_range - find free area in given range
+ * @start: start of candidate range
+ * @end: end of candidate range, can be %MEMBLOCK_ALLOC_ANYWHERE or
+ *       %MEMBLOCK_ALLOC_ACCESSIBLE
+ * @size: size of free area to find
+ * @align: alignment of free area to find
+ *
+ * Find @size free area aligned to @align in the specified range.
+ *
+ * Return:
+ * Found address on success, 0 on failure.
+ */
+phys_addr_t __init_memblock memblock_find_in_range(phys_addr_t start,
+                                        phys_addr_t end, phys_addr_t size,
+                                        phys_addr_t align)
+{
+        phys_addr_t ret;
+        enum memblock_flags flags = choose_memblock_flags();
+
+again:
+        ret = memblock_find_in_range_node(size, align, start, end,
+                                            NUMA_NO_NODE, flags);
+
+        if (!ret && (flags & MEMBLOCK_MIRROR)) {
+                pr_warn("Could not allocate %pap bytes of mirrored memory\n",
+                        &size);
+                flags &= ~MEMBLOCK_MIRROR;
+                goto again;
+        }
+
+        return ret;
+}
+{% endhighlight %}
+
+memblock_find_in_range() 函数的作用是在指定的区间内查找
+一块可用的物理内存。参数 start 查找区域的起始地址；参数 end
+查找区域的结束地址；参数 size 表示要查找可用物理内存的大小；
+align 参数用于对齐操作。
+
+函数调用 memblock_find_in_range_node() 函数在指定的节点和指定的区域内找到
+一块 size 大小的可用物理内存块，并将起始地址存储在 ret 中。如果 ret 为 0，
+那么该标志无法获得想要的物理内存，改变物理内存标志，然后跳到 again 继续查找。
+
+> - [memblock_find_in_range_node](#A0)
+>
+> - [choose_memblock_flags](#A0157)
+>
+> - [memblock_find_in_range 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_find_in_range/)
+
+------------------------------------
+
+#### <span id="A0157">choose_memblock_flags</span>
+
+{% highlight c %}
+enum memblock_flags __init_memblock choose_memblock_flags(void)
+{
+        return system_has_some_mirror ? MEMBLOCK_MIRROR : MEMBLOCK_NONE;
+}
+{% endhighlight %}
+
+choose_memblock_flags() 函数用于获得 MEMBLOCK 内存区间的 flags。
+如果全局变量 system_has_some_mirror 为 ture，那么直接返回
+MEMBLOCK_MIRROR；反之返回 MEMBLOCK_NONE。
+
+------------------------------------
+
+#### <span id="A0158">memblock_isolate_range</span>
+
+{% highlight c %}
+/**
+ * memblock_isolate_range - isolate given range into disjoint memblocks
+ * @type: memblock type to isolate range for
+ * @base: base of range to isolate
+ * @size: size of range to isolate
+ * @start_rgn: out parameter for the start of isolated region
+ * @end_rgn: out parameter for the end of isolated region
+ *
+ * Walk @type and ensure that regions don't cross the boundaries defined by
+ * [@base, @base + @size).  Crossing regions are split at the boundaries,
+ * which may create at most two more regions.  The index of the first
+ * region inside the range is returned in *@start_rgn and end in *@end_rgn.
+ *
+ * Return:
+ * 0 on success, -errno on failure.
+ */
+static int __init_memblock memblock_isolate_range(struct memblock_type *type,
+                                        phys_addr_t base, phys_addr_t size,
+                                        int *start_rgn, int *end_rgn)
+{
+        phys_addr_t end = base + memblock_cap_size(base, &size);
+        int idx;
+        struct memblock_region *rgn;
+
+        *start_rgn = *end_rgn = 0;
+
+        if (!size)
+                return 0;
+
+        /* we'll create at most two more regions */
+        while (type->cnt + 2 > type->max)
+                if (memblock_double_array(type, base, size) < 0)
+                        return -ENOMEM;
+
+
+        for_each_memblock_type(idx, type, rgn) {
+                phys_addr_t rbase = rgn->base;
+                phys_addr_t rend = rbase + rgn->size;
+
+                if (rbase >= end)
+                        break;
+                if (rend <= base)
+                        continue;
+
+                if (rbase < base) {
+                        /*
+                         * @rgn intersects from below.  Split and continue
+                         * to process the next region - the new top half.
+                         */
+                        rgn->base = base;
+                        rgn->size -= base - rbase;
+                        type->total_size -= base - rbase;
+                        memblock_insert_region(type, idx, rbase, base - rbase,
+                                               memblock_get_region_node(rgn),
+                                               rgn->flags);
+                } else if (rend > end) {
+                        /*
+                         * @rgn intersects from above.  Split and redo the
+                         * current region - the new bottom half.
+                         */
+                        rgn->base = end;
+                        rgn->size -= end - rbase;
+                        type->total_size -= end - rbase;
+                        memblock_insert_region(type, idx--, rbase, end - rbase,
+                                               memblock_get_region_node(rgn),
+                                               rgn->flags);
+                } else {
+                        /* @rgn is fully contained, record it */
+                        if (!*end_rgn)
+                                *start_rgn = idx;
+                        *end_rgn = idx + 1;
+                }
+        }
+
+        return 0;
+}
+{% endhighlight %}
+
+memblock_isolate_range() 函数用于是将指定范围的物理内存从内存区块
+中孤立出来。原先的物理内存区块可能被拆分做多块。函数较长，分段解析：
+
+{% highlight c %}
+static int __init_memblock memblock_isolate_range(struct memblock_type *type,
+                                        phys_addr_t base, phys_addr_t size,
+                                        int *start_rgn, int *end_rgn)
+{
+        phys_addr_t end = base + memblock_cap_size(base, &size);
+        int idx;
+        struct memblock_region *rgn;
+
+        *start_rgn = *end_rgn = 0;
+
+        if (!size)
+                return 0;
+
+        /* we'll create at most two more regions */
+        while (type->cnt + 2 > type->max)
+                if (memblock_double_array(type, base, size) < 0)
+                        return -ENOMEM;
+{% endhighlight %}
+
+参数 type 指向特定的 memblock_type，base 指向孤立物理内存块的
+起始物理地址，size 指向孤立物理内存区块的长度。
+函数首先调用 memblock_cap_size() 函数获得一个孤立物理块安全
+的长度，基于这个长度，计算出孤立物理块的终止物理地址。此时将
+参数 start_rgn 与 end_rgn 都设置为 0. 如果当前 memblock_type
+所具有的 regions 数加上 2 之后大于该 memblock_type 支持的最大
+regions 数，那么函数调用 memblock_double_array() 将 memblock_type
+拓展为原先两倍大。如果拓展失败，函数返回 -ENOMEM。
+
+{% highlight c %}
+        for_each_memblock_type(idx, type, rgn) {
+                phys_addr_t rbase = rgn->base;
+                phys_addr_t rend = rbase + rgn->size;
+
+                if (rbase >= end)
+                        break;
+                if (rend <= base)
+                        continue;
+{% endhighlight %}
+
+函数调用 for_each_memblock_type() 遍历 type 对应的所有
+物理内存 region， 将每次遍历到的 region 起始地址存储到
+rbase，并将终止地址存储到 rend。接着将查找的 region 与
+end 和 base 做检测，确保找到符合要求的 region。
+
+{% highlight c %}
+                if (rbase < base) {
+                        /*
+                         * @rgn intersects from below.  Split and continue
+                         * to process the next region - the new top half.
+                         */
+                        rgn->base = base;
+                        rgn->size -= base - rbase;
+                        type->total_size -= base - rbase;
+                        memblock_insert_region(type, idx, rbase, base - rbase,
+                                               memblock_get_region_node(rgn),
+                                               rgn->flags);
+{% endhighlight %}
+
+如果 rbase 小于 base，那么需要孤立的内存区块可能可遍历到的 region
+存在重叠的情况，此时将重叠的部分从原先的 region 中移除，并调用
+memblock_insert_region() 函数将剩余的 region 继续插入到 memblock_type
+的 regions 里面。
+
+{% highlight c %}
+                } else if (rend > end) {
+                        /*
+                         * @rgn intersects from above.  Split and redo the
+                         * current region - the new bottom half.
+                         */
+                        rgn->base = end;
+                        rgn->size -= end - rbase;
+                        type->total_size -= end - rbase;
+                        memblock_insert_region(type, idx--, rbase, end - rbase,
+                                               memblock_get_region_node(rgn),
+                                               rgn->flags);
+{% endhighlight %}
+
+如果 rend 大于 end，那么需要孤立的物理内存块和遍历到的 region 存在
+前部重叠，此时将重叠部分从 region 中移除，并将剩余的 region 重新
+插入到 memblock_type 的 regions 里面。
+
+{% highlight c %}
+                } else {
+                        /* @rgn is fully contained, record it */
+                        if (!*end_rgn)
+                                *start_rgn = idx;
+                        *end_rgn = idx + 1;
+                }
+{% endhighlight %}
+
+最后如果需要孤立的物理内存区块与遍历到 region 不存在重叠或完全包含，
+那么函数只更新 start_rgn 与 end_rgn 的值，以此代表移除的内存区块
+占用了多个 regions。
+
+> - [memblock_cap_size](#A0159)
+>
+> - [memblock_double_array](#A0163)
+>
+> - [for_each_memblock_type](#A0134)
+>
+> - [memblock_insert_region](#A0137)
+
+------------------------------------
+
+#### <span id="A0159">memblock_cap_size</span>
+
+{% highlight c %}
+/* adjust *@size so that (@base + *@size) doesn't overflow, return new size */
+static inline phys_addr_t memblock_cap_size(phys_addr_t base, phys_addr_t *size)
+{
+        return *size = min(*size, PHYS_ADDR_MAX - base);
+}
+{% endhighlight %}
+
+memblock_cap_size() 函数用于获得一个有效的长度值。函数确保 size
+不会超出系统所支持的物理内存。函数通过 min() 函数获得 size 与
+"PHYS_ADDR_MAX - base" 中最小值，以此确保 size 不会超出物理
+内存的范围。
+
+------------------------------------
+
+#### <span id="A0160">memblock_remove_range</span>
+
+{% highlight c %}
+static int __init_memblock memblock_remove_range(struct memblock_type *type,
+                                          phys_addr_t base, phys_addr_t size)
+{
+        int start_rgn, end_rgn;
+        int i, ret;
+
+        ret = memblock_isolate_range(type, base, size, &start_rgn, &end_rgn);
+        if (ret)
+                return ret;
+
+        for (i = end_rgn - 1; i >= start_rgn; i--)
+                memblock_remove_region(type, i);
+        return 0;
+}
+{% endhighlight %}
+
+memblock_remove_range() 函数用于从指定的 memblock_type 中
+移除一定范围的内存区块。参数 type 执行特定的 memblock_type,
+参数 base 指向移除的起始物理地址，参数 size 指向移除的终止
+物理地址。函数首先调用 memblock_isolate_range() 函数将
+指定的内存区块从指定的 memblock_type 中移除，如果移除的
+内存区块包含了多个 region，那么函数使用 for 循环将每个
+region 通过 memblock_remove_region() 函数进行移除。
+
+> - [memblock_isolate_range](#A0158)
+>
+> - [memblock_remove_region](#A0161)
+
+------------------------------------
+
+#### <span id="A0161">memblock_remove_region</span>
+
+{% highlight c %}
+static void __init_memblock memblock_remove_region(struct memblock_type *type, unsigned long r)
+{
+        type->total_size -= type->regions[r].size;
+        memmove(&type->regions[r], &type->regions[r + 1],
+                (type->cnt - (r + 1)) * sizeof(type->regions[r]));
+        type->cnt--;
+
+        /* Special case for empty arrays */
+        if (type->cnt == 0) {
+                WARN_ON(type->total_size != 0);
+                type->cnt = 1;
+                type->regions[0].base = 0;
+                type->regions[0].size = 0;
+                type->regions[0].flags = 0;
+                memblock_set_region_node(&type->regions[0], MAX_NUMNODES);
+        }
+}
+{% endhighlight %}
+
+memblock_remove_region() 函数用于从 memblock_type regions 中，
+移除指定的 region。参数 type 指向特定的 memblock_type，参数 r
+指向要移除 region 在 regions 中的索引。函数首先更新 memblock_type
+的 total_size，以此减少该 memblock_type 占用的物理内存。接着调用
+memmove() 函数将 regions 中 r+1 的 region 及其之后的所有 region
+都向前移动一个 region。接着将 memblock_type 的 cnt 数减一。
+如果移除完毕之后，memblock_type 的 cnt 为 0，那么代表该
+memblock_type 内不包含任何物理内存，此时重新初始化
+memblock_type 结构。
+
+------------------------------------
+
+#### <span id="A0162">memblock_free</span>
+
+{% highlight c %}
+/**
+ * memblock_free - free boot memory block
+ * @base: phys starting address of the  boot memory block
+ * @size: size of the boot memory block in bytes
+ *
+ * Free boot memory block previously allocated by memblock_alloc_xx() API.
+ * The freeing memory will not be released to the buddy allocator.
+ */
+int __init_memblock memblock_free(phys_addr_t base, phys_addr_t size)
+{
+        phys_addr_t end = base + size - 1;
+
+        memblock_dbg("   memblock_free: [%pa-%pa] %pF\n",
+                     &base, &end, (void *)_RET_IP_);
+
+        kmemleak_free_part_phys(base, size);
+        return memblock_remove_range(&memblock.reserved, base, size);
+}
+{% endhighlight %}
+
+memblock_free() 函数的作用是释放物理内存区块。参数 base 指向
+释放的起始物理地址，参数 size 指向释放物理区块的长度。
+函数首先计算出释放物理内存区块的终止物理地址，然后调用
+memblock_remove_range() 函数从保留区内移除 base 到 end
+之间的物理内存区块。
+
+> - [memblock_remove_range](#A0160)
+>
+> - [memblock_free 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_free/)
+
+------------------------------------
+
+#### <span id="A0163">memblock_double_array</span>
+
+{% highlight c %}
+/**
+ * memblock_double_array - double the size of the memblock regions array
+ * @type: memblock type of the regions array being doubled
+ * @new_area_start: starting address of memory range to avoid overlap with
+ * @new_area_size: size of memory range to avoid overlap with
+ *
+ * Double the size of the @type regions array. If memblock is being used to
+ * allocate memory for a new reserved regions array and there is a previously
+ * allocated memory range [@new_area_start, @new_area_start + @new_area_size]
+ * waiting to be reserved, ensure the memory used by the new array does
+ * not overlap.
+ *
+ * Return:
+ * 0 on success, -1 on failure.
+ */
+static int __init_memblock memblock_double_array(struct memblock_type *type,
+                                                phys_addr_t new_area_start,
+                                                phys_addr_t new_area_size)
+{
+        struct memblock_region *new_array, *old_array;
+        phys_addr_t old_alloc_size, new_alloc_size;
+        phys_addr_t old_size, new_size, addr, new_end;
+        int use_slab = slab_is_available();
+        int *in_slab;
+
+        /* We don't allow resizing until we know about the reserved regions
+         * of memory that aren't suitable for allocation
+         */
+        if (!memblock_can_resize)
+                return -1;
+
+        /* Calculate new doubled size */
+        old_size = type->max * sizeof(struct memblock_region);
+        new_size = old_size << 1;
+        /*
+         * We need to allocated new one align to PAGE_SIZE,
+         *   so we can free them completely later.
+         */
+        old_alloc_size = PAGE_ALIGN(old_size);
+        new_alloc_size = PAGE_ALIGN(new_size);
+
+        /* Retrieve the slab flag */
+        if (type == &memblock.memory)
+                in_slab = &memblock_memory_in_slab;
+        else
+                in_slab = &memblock_reserved_in_slab;
+
+        /* Try to find some space for it.
+         *
+         * WARNING: We assume that either slab_is_available() and we use it or
+         * we use MEMBLOCK for allocations. That means that this is unsafe to
+         * use when bootmem is currently active (unless bootmem itself is
+         * implemented on top of MEMBLOCK which isn't the case yet)
+         *
+         * This should however not be an issue for now, as we currently only
+         * call into MEMBLOCK while it's still active, or much later when slab
+         * is active for memory hotplug operations
+         */
+        if (use_slab) {
+                new_array = kmalloc(new_size, GFP_KERNEL);
+                addr = new_array ? __pa(new_array) : 0;
+        } else {
+                /* only exclude range when trying to double reserved.regions */
+                if (type != &memblock.reserved)
+                        new_area_start = new_area_size = 0;
+
+                addr = memblock_find_in_range(new_area_start + new_area_size,
+                                                memblock.current_limit,
+                                                new_alloc_size, PAGE_SIZE);
+                if (!addr && new_area_size)
+                        addr = memblock_find_in_range(0,
+                                min(new_area_start, memblock.current_limit),
+                                new_alloc_size, PAGE_SIZE);
+
+                new_array = addr ? __va(addr) : NULL;
+        }
+        if (!addr) {
+                pr_err("memblock: Failed to double %s array from %ld to %ld entries !\n",
+                       type->name, type->max, type->max * 2);
+                return -1;
+        }
+
+        new_end = addr + new_size - 1;
+        memblock_dbg("memblock: %s is doubled to %ld at [%pa-%pa]",
+                        type->name, type->max * 2, &addr, &new_end);
+
+        /*
+         * Found space, we now need to move the array over before we add the
+         * reserved region since it may be our reserved array itself that is
+         * full.
+         */
+        memcpy(new_array, type->regions, old_size);
+        memset(new_array + type->max, 0, old_size);
+        old_array = type->regions;
+        type->regions = new_array;
+        type->max <<= 1;
+
+        /* Free old array. We needn't free it if the array is the static one */
+        if (*in_slab)
+                kfree(old_array);
+        else if (old_array != memblock_memory_init_regions &&
+                 old_array != memblock_reserved_init_regions)
+                memblock_free(__pa(old_array), old_alloc_size);
+
+        /*
+         * Reserve the new array if that comes from the memblock.  Otherwise, we
+         * needn't do it
+         */
+        if (!use_slab)
+                BUG_ON(memblock_reserve(addr, new_alloc_size));
+
+        /* Update slab flag */
+        *in_slab = use_slab;
+
+        return 0;
+}
+{% endhighlight %}
+
+memblock_double_array() 函数的作用是将 memblock_type 支持的 regions
+数扩大两倍。由于函数较长，分段解析：
+
+{% highlight c %}
+static int __init_memblock memblock_double_array(struct memblock_type *type,
+                                                phys_addr_t new_area_start,
+                                                phys_addr_t new_area_size)
+{
+        struct memblock_region *new_array, *old_array;
+        phys_addr_t old_alloc_size, new_alloc_size;
+        phys_addr_t old_size, new_size, addr, new_end;
+        int use_slab = slab_is_available();
+        int *in_slab;
+
+        /* We don't allow resizing until we know about the reserved regions
+         * of memory that aren't suitable for allocation
+         */
+        if (!memblock_can_resize)
+                return -1;
+{% endhighlight %}
+
+参数 type 指向需要扩编的 memblock_type, 参数 new_area_start
+代表新物理内存区的起始物理地址，参数 new_area_size 代表新物理
+内存区的长度。函数首先调用 slab_is_available() 函数判断当前
+slab 内存分配器是否可用，如果当前系统 memblock_can_resize 为
+零，那么 MEMBLOCK 不支持动态拓展，那么直接返回 -1.
+
+{% highlight c %}
+        /* Calculate new doubled size */
+        old_size = type->max * sizeof(struct memblock_region);
+        new_size = old_size << 1;
+        /*
+         * We need to allocated new one align to PAGE_SIZE,
+         *   so we can free them completely later.
+         */
+        old_alloc_size = PAGE_ALIGN(old_size);
+        new_alloc_size = PAGE_ALIGN(new_size);
+
+        /* Retrieve the slab flag */
+        if (type == &memblock.memory)
+                in_slab = &memblock_memory_in_slab;
+        else
+                in_slab = &memblock_reserved_in_slab;
+{% endhighlight %}
+
+函数首先计算原先 memblock_type 支持的最大物理内存数，然后将
+长度扩大一倍存储到 new_size. 函数继续使用 PAGE_ALIGN() 函数
+对 old_size 和 new_size 进行页对齐。如果 type 对应的类型是
+可用物理内存区，那么读取 memblock_memory_in_slab 的值到
+in_slab 中；如果 type 对应的类型是预留区物理内存，那么读取
+memblock_reserved_in_slab 的值到 in_slab.
+
+{% highlight c %}
+        /* Try to find some space for it.
+         *
+         * WARNING: We assume that either slab_is_available() and we use it or
+         * we use MEMBLOCK for allocations. That means that this is unsafe to
+         * use when bootmem is currently active (unless bootmem itself is
+         * implemented on top of MEMBLOCK which isn't the case yet)
+         *
+         * This should however not be an issue for now, as we currently only
+         * call into MEMBLOCK while it's still active, or much later when slab
+         * is active for memory hotplug operations
+         */
+        if (use_slab) {
+                new_array = kmalloc(new_size, GFP_KERNEL);
+                addr = new_array ? __pa(new_array) : 0;
+        } else {
+                /* only exclude range when trying to double reserved.regions */
+                if (type != &memblock.reserved)
+                        new_area_start = new_area_size = 0;
+
+                addr = memblock_find_in_range(new_area_start + new_area_size,
+                                                memblock.current_limit,
+                                                new_alloc_size, PAGE_SIZE);
+                if (!addr && new_area_size)
+                        addr = memblock_find_in_range(0,
+                                min(new_area_start, memblock.current_limit),
+                                new_alloc_size, PAGE_SIZE);
+
+                new_array = addr ? __va(addr) : NULL;
+        }
+{% endhighlight %}
+
+如果此时 slab 内存分配器已经可以使用，那么 usb_slab 为 ture，
+函数调用 kmalloc() 函数分配内存给 new_array, 如果分配成功，
+则将 new_array 的物理地址存储在 addr。如果此时 slab 内存分配器
+还不能使用，那么如果 type 指向预留区，那么 new_area_start 和
+new_area_size 都设置为 0. 函数此时调用 memblock_find_in_range()
+函数查找一块空闲的物理内存，如果没有找到，那么函数继续从 0，地址
+重新查找物理内存，最后，如果找到，那么将找到的物理内存的起始地址
+对应的虚拟地址存储在 new_arary 内；反之没有找到则将 new_array
+设置为 NULL。
+
+{% highlight c %}
+        if (!addr) {
+                pr_err("memblock: Failed to double %s array from %ld to %ld entries !\n",
+                       type->name, type->max, type->max * 2);
+                return -1;
+        }
+
+        new_end = addr + new_size - 1;
+        memblock_dbg("memblock: %s is doubled to %ld at [%pa-%pa]",
+                        type->name, type->max * 2, &addr, &new_end);
+
+        /*
+         * Found space, we now need to move the array over before we add the
+         * reserved region since it may be our reserved array itself that is
+         * full.
+         */
+        memcpy(new_array, type->regions, old_size);
+        memset(new_array + type->max, 0, old_size);
+        old_array = type->regions;
+        type->regions = new_array;
+        type->max <<= 1;
+{% endhighlight %}
+
+如果 addr 为 NULL，代表系统目前没有空闲的物理内存，则
+系统打印错误信息之后返回 -1；更新 new_end 指向新分配的
+物理内存起始地址加上 new_size 的地址上。函数首先调用
+memcpy() 将原始的 regions 信息拷贝到新分配的物理内存
+上，然后清零的 new_array+type->max 之后的物理内存，
+继续更新 type 的 regions，使其指向新地址 new_array,
+type->max 增大一倍。原始的 regions 存储在 old_array.
+
+{% highlight c %}
+        /* Free old array. We needn't free it if the array is the static one */
+        if (*in_slab)
+                kfree(old_array);
+        else if (old_array != memblock_memory_init_regions &&
+                 old_array != memblock_reserved_init_regions)
+                memblock_free(__pa(old_array), old_alloc_size);
+
+        /*
+         * Reserve the new array if that comes from the memblock.  Otherwise, we
+         * needn't do it
+         */
+        if (!use_slab)
+                BUG_ON(memblock_reserve(addr, new_alloc_size));
+
+        /* Update slab flag */
+        *in_slab = use_slab;
+
+        return 0;
+{% endhighlight %}
+
+接下来是释放原始 regions 占用的物理内存，如果 in_slab 不为 NULL，
+即此时 slab 已经可以使用，那么直接调用 kfree() 函数释放 old_array;
+反之函数调用 memblock_free() 函数释放原始的 regions 所占用的物理
+内存。最后更新 in_slab 的值。
+
+> - [memblock_find_in_range](#A0156)
+>
+> - [memblock_free](#A0162)
+
+------------------------------------
+
+#### <span id="A0164">memblock_merge_regions</span>
+
+{% highlight c %}
+/**
+ * memblock_merge_regions - merge neighboring compatible regions
+ * @type: memblock type to scan
+ *
+ * Scan @type and merge neighboring compatible regions.
+ */
+static void __init_memblock memblock_merge_regions(struct memblock_type *type)
+{
+        int i = 0;
+
+        /* cnt never goes below 1 */
+        while (i < type->cnt - 1) {
+                struct memblock_region *this = &type->regions[i];
+                struct memblock_region *next = &type->regions[i + 1];
+
+                if (this->base + this->size != next->base ||
+                    memblock_get_region_node(this) !=
+                    memblock_get_region_node(next) ||
+                    this->flags != next->flags) {
+                        BUG_ON(this->base + this->size > next->base);
+                        i++;
+                        continue;
+                }
+
+                this->size += next->size;
+                /* move forward from next + 1, index of which is i + 2 */
+                memmove(next, next + 1, (type->cnt - (i + 2)) * sizeof(*next));
+                type->cnt--;
+        }
+}
+{% endhighlight %}
+
+memblock_merge_regions() 函数的作用用于合并特定 memblock_type
+内的 regions。参数 type 指向特定的 memblock_type。函数使用一个
+while() 循环，使用 i 作为循环索引，遍历所有 region。每次遍历到一个
+新的 region，将其存储到 this 指针，并将其下一个 region 存储到
+next 指针。通过判断这两个是否能够合并成一个 region，如果两个
+region 正好相连，并且 flags 和 NUMA 都相同，那么两个 region
+可以合并成一个 region，函数通过更新 this 对应 region 的信息
+实现合并。合并完之后，调用 memmove() 函数将 next+1 region 及其
+之后的 region 都向前移动一个 region。最后将 type 的 cnt 减一，
+并进入下一次循环。
+
+> - [memblock_get_region_node](#A0136)
+
+------------------------------------
+
+#### <span id="A0165">memblock_add_range</span>
+
+{% highlight c %}
+/**
+ * memblock_add_range - add new memblock region
+ * @type: memblock type to add new region into
+ * @base: base address of the new region
+ * @size: size of the new region
+ * @nid: nid of the new region
+ * @flags: flags of the new region
+ *
+ * Add new memblock region [@base, @base + @size) into @type.  The new region
+ * is allowed to overlap with existing ones - overlaps don't affect already
+ * existing regions.  @type is guaranteed to be minimal (all neighbouring
+ * compatible regions are merged) after the addition.
+ *
+ * Return:
+ * 0 on success, -errno on failure.
+ */
+int __init_memblock memblock_add_range(struct memblock_type *type,
+                                phys_addr_t base, phys_addr_t size,
+                                int nid, enum memblock_flags flags)
+{
+        bool insert = false;
+        phys_addr_t obase = base;
+        phys_addr_t end = base + memblock_cap_size(base, &size);
+        int idx, nr_new;
+        struct memblock_region *rgn;
+
+        if (!size)
+                return 0;
+
+        /* special case for empty array */
+        if (type->regions[0].size == 0) {
+                WARN_ON(type->cnt != 1 || type->total_size);
+                type->regions[0].base = base;
+                type->regions[0].size = size;
+                type->regions[0].flags = flags;
+                memblock_set_region_node(&type->regions[0], nid);
+                type->total_size = size;
+                return 0;
+        }
+repeat:
+        /*
+         * The following is executed twice.  Once with %false @insert and
+         * then with %true.  The first counts the number of regions needed
+         * to accommodate the new area.  The second actually inserts them.
+         */
+        base = obase;
+        nr_new = 0;
+
+        for_each_memblock_type(idx, type, rgn) {
+                phys_addr_t rbase = rgn->base;
+                phys_addr_t rend = rbase + rgn->size;
+
+                if (rbase >= end)
+                        break;
+                if (rend <= base)
+                        continue;
+                /*
+                 * @rgn overlaps.  If it separates the lower part of new
+                 * area, insert that portion.
+                 */
+                if (rbase > base) {
+#ifdef CONFIG_HAVE_MEMBLOCK_NODE_MAP
+                        WARN_ON(nid != memblock_get_region_node(rgn));
+#endif
+                        WARN_ON(flags != rgn->flags);
+                        nr_new++;
+                        if (insert)
+                                memblock_insert_region(type, idx++, base,
+                                                       rbase - base, nid,
+                                                       flags);
+                }
+                /* area below @rend is dealt with, forget about it */
+                base = min(rend, end);
+        }
+
+        /* insert the remaining portion */
+        if (base < end) {
+                nr_new++;
+                if (insert)
+                        memblock_insert_region(type, idx, base, end - base,
+                                               nid, flags);
+        }
+
+        if (!nr_new)
+                return 0;
+        /*
+         * If this was the first round, resize array and repeat for actual
+         * insertions; otherwise, merge and return.
+         */
+        if (!insert) {
+                while (type->cnt + nr_new > type->max)
+                        if (memblock_double_array(type, obase, size) < 0)
+                                return -ENOMEM;
+                insert = true;
+                goto repeat;
+        } else {
+                memblock_merge_regions(type);
+                return 0;
+        }
+}
+{% endhighlight %}
+
+memblock_add_range() 函数的作用是将一块物理内存块插入到内存区里面，
+内存区可以是物理内存区，也可以是预留区。代码很长，分段解析：
+
+{% highlight c %}
+/**
+ * memblock_add_range - add new memblock region
+ * @type: memblock type to add new region into
+ * @base: base address of the new region
+ * @size: size of the new region
+ * @nid: nid of the new region
+ * @flags: flags of the new region
+ *
+ * Add new memblock region [@base, @base + @size) into @type.  The new region
+ * is allowed to overlap with existing ones - overlaps don't affect already
+ * existing regions.  @type is guaranteed to be minimal (all neighbouring
+ * compatible regions are merged) after the addition.
+ *
+ * Return:
+ * 0 on success, -errno on failure.
+ */
+int __init_memblock memblock_add_range(struct memblock_type *type,
+                phys_addr_t base, phys_addr_t size,
+                int nid, enum memblock_flags flags)
+{
+    bool insert = false;
+    phys_addr_t obase = base;
+    phys_addr_t end = base + memblock_cap_size(base, &size);
+    int idx, nr_new;
+    struct memblock_region *rgn;
+
+    if (!size)
+        return 0;
+{% endhighlight %}
+
+参数 type 指向了内存区，由上面调用的函数可知，这里指向预留内存区；base 指向新加入的
+内存块的基地址; size 指向新加入的内核块的长度； nid 指向 NUMA 节点; flags 指向新加
+入内存块对应的 flags。
+
+函数首先调用 memblock_cap_size() 函数与 base 参数相加，以此计算新加入内存块的最后
+后的物理地址。如果 size 参数为零，那么函数不做任何操作直接返回 0.
+
+{% highlight c %}
+/* special case for empty array */
+if (type->regions[0].size == 0) {
+	WARN_ON(type->cnt != 1 || type->total_size);
+	type->regions[0].base = base;
+	type->regions[0].size = size;
+	type->regions[0].flags = flags;
+	memblock_set_region_node(&type->regions[0], nid);
+	type->total_size = size;
+	return 0;
+}
+{% endhighlight %}
+
+函数首先检查参数 type->regions[0].size，以此判断该内存区内是不是不包含其他内存区块，
+由于内存区内的所有内存区块都是按其首地址从低到高排列，如果第一个内存区块的长度为 0，
+那么函数基本认为这个内存区可能为空，但不能确定。函数继续检查内存区的 cnt 变量，这个变
+量统计内存区内内存块的数量，有内存区的初始化可知，内存区的 cnt 为 1 时，表示内存区内
+不含任何内存区块；函数也会检查，如果内存区的 total_size 不为零，那么内存区函数内存区
+块，但是函数期望的是不含有任何内存区块，如果含有，内核就会报错。
+
+但检查到的该内存区内不包含任何内存区块是，新加入的内存区块就是第一块，函数直接将新的
+内存区块放到数组的首成员，如上述代码，执行完之后，函数就返回 0.
+
+{% highlight c %}
+repeat:
+	/*
+	 * The following is executed twice.  Once with %false @insert and
+	 * then with %true.  The first counts the number of regions needed
+	 * to accommodate the new area.  The second actually inserts them.
+	 */
+	base = obase;
+	nr_new = 0;
+
+	for_each_memblock_type(idx, type, rgn) {
+		phys_addr_t rbase = rgn->base;
+		phys_addr_t rend = rbase + rgn->size;
+
+		if (rbase >= end)
+			break;
+		if (rend <= base)
+			continue;
+		/*
+		 * @rgn overlaps.  If it separates the lower part of new
+		 * area, insert that portion.
+		 */
+		if (rbase > base) {
+#ifdef CONFIG_HAVE_MEMBLOCK_NODE_MAP
+			WARN_ON(nid != memblock_get_region_node(rgn));
+#endif
+			WARN_ON(flags != rgn->flags);
+			nr_new++;
+			if (insert)
+				memblock_insert_region(type, idx++, base,
+						       rbase - base, nid,
+						       flags);
+		}
+		/* area below @rend is dealt with, forget about it */
+		base = min(rend, end);
+	}
+
+	/* insert the remaining portion */
+	if (base < end) {
+		nr_new++;
+		if (insert)
+			memblock_insert_region(type, idx, base, end - base,
+					       nid, flags);
+	}
+{% endhighlight %}
+
+如果内存区内已经包含其他的内存区块，那么函数就会继续执行如下代码。函数首先调用
+for_each_memblock_type() 函数遍历该内存区内的所有内存区块，每遍历到一个内存区块，
+函数会将新的内存区块和该内存区块进行比较，这两个内存区块一共会出现 11 种情况，但函数
+将这么多的情况分作三种进行统一处理：
+
+#### 遍历到的内存区块的起始地址大于或等于新内存区块的结束地址，新的内存区块位于遍历到内存区块的前端
+
+对于这类，会存在两种情况，分别为：
+
+{% highlight bash %}
+1） rbase > end
+
+ base                    end        rbase               rend
+ +-----------------------+          +-------------------+
+ |                       |          |                   |
+ | New region            |          | Exist regions     |
+ |                       |          |                   |
+ +-----------------------+          +-------------------+
+
+2）rbase == endi
+
+                         rbase                      rend
+                        | <----------------------> |
+ +----------------------+--------------------------+
+ |                      |                          |
+ | New region           | Exist regions            |
+ |                      |                          |
+ +----------------------+--------------------------+
+ | <------------------> |
+ base                   end
+
+{% endhighlight %}
+
+对于这类情况，函数会直接退出 for_each_memblock() 循环，直接进入下一个判断，此时新内
+存块的基地址都小于其结束地址，这样函数就会将新的内存块加入到内存区的链表中去
+
+#### 遍历到的内存区块的终止地址小于或等于新内存区块的起始地址, 新的内存区块位于遍历到内存区块的后面
+
+对于这类情况，会存在两种情况，分别为：
+
+{% highlight bash %}
+1） base > rend
+ rbase                rend         base                  end
+ +--------------------+            +---------------------+
+ |                    |            |                     |
+ |   Exist regions    |            |      new region     |
+ |                    |            |                     |
+ +--------------------+            +---------------------+
+
+2) base == rend
+                      base
+ rbase                rend                     end
+ +--------------------+------------------------+
+ |                    |                        |
+ |   Exist regions    |       new region       |
+ |                    |                        |
+ +--------------------+------------------------+
+{% endhighlight %}
+
+对于这类情况，函数会在 for_each_memblock() 中继续循环遍历剩下的节点，直到找到新加的
+内存区块与已遍历到的内存区块存在其他类情况。也可能出现遍历的内存区块是内存区最后一块
+内存区块，那么函数就会结束 for_each_memblock() 的循环，这样的话新内存区块还是和最后
+一块已遍历的内存区块保持这样的关系。接着函数检查到新的内存区块的基地址小于其结束地址，
+那么函数就将这块内存区块加入到内存区链表内。
+
+#### 其他情况,两个内存区块存在重叠部分
+
+剩余的情况中，新的内存区块都与已遍历到的内存区块存在重叠部分，但可以分做两种情况进行处
+理：
+
+> 新内存区块不重叠部分位于已遍历内存区块的前部
+>
+> 新内存区块不重叠部分位于已遍历内存区块的后部
+
+对于第一种情况，典型的模型如下：
+
+{% highlight bash %}
+                 rbase     Exist regions        rend
+                 | <--------------------------> |
+ +---------------+--------+---------------------+
+ |               |        |                     |
+ |               |        |                     |
+ |               |        |                     |
+ +---------------+--------+---------------------+
+ | <--------------------> |
+ base   New region        end
+{% endhighlight %}
+
+当然还有其他几种几种也满足这种情况，但这种情况的显著特征就是不重叠部分位于已遍历的内存
+区块的前部。对于这种情况，函数在调用 for_each_memblock() 循环的时候，只要探测到这种
+情况的时候，函数就会直接调用 memblock_insert_region() 函数将不重叠部分直接加入到内存
+区链表里，新加入的部分在内存区链表中位于已遍历内存区块的前面。执行完上面的函数之后，
+调用 min 函数重新调整新内存区块的基地址，新调整的内存区块可能 base 与 end 也可能出现
+两种情况：
+
+> base < end
+>
+> base == end
+
+如果 base == end 情况，那么新内存区块在这部分代码段已经执行完成。对于 base 小于 end
+的情况，函数继续调用 memblock_insert_region() 函数将剩下的内存区块加入到内存区块
+链表内。
+
+对于第二种情况，典型的模型如下图：
+
+{% highlight bash %}
+* rbase                     rend
+* | <---------------------> |
+* +----------------+--------+----------------------+
+* |                |        |                      |
+* | Exist regions  |        |                      |
+* |                |        |                      |
+* +----------------+--------+----------------------+
+*                  | <---------------------------> |
+*                  base      new region            end
+{% endhighlight %}
+
+对于这种情况，函数会继续在 for_each_memblock() 中循环，并且每次循环中，都调用 min
+函数更新新内存区块的基地址，并不断循环，使其不予已存在的内存区块重叠或出现其他位置。
+如果循环结束时，新的内存区块满足 base < end 的情况，那么就调用
+memblock_insert_region() 函数将剩下的内存区块加入到内存区块链表里。
+
+{% highlight c %}
+if (!nr_new)
+	return 0;
+
+/*
+ * If this was the first round, resize array and repeat for actual
+ * insertions; otherwise, merge and return.
+ */
+if (!insert) {
+	while (type->cnt + nr_new > type->max)
+		if (memblock_double_array(type, obase, size) < 0)
+			return -ENOMEM;
+	insert = true;
+	goto repeat;
+} else {
+	memblock_merge_regions(type);
+	return 0;
+}
+{% endhighlight %}
+
+接下来的代码片段首先检查 nr_new 参数，这个参数用于指定有没有新的内存区块需要加入到内
+存区块链表。到这里大家通过实践运行发现有几个参数会很困惑：nr_new 和 insert，以及为什
+么要 repeat？其实设计这部分代码的开发者的基本思路就是：第一次通过 insert 和 nr_new
+变量只检查新的内存区块是否加入到内存区块以及要加入几个内存区块(在有的一个内存区块由于
+与已经存在的内存区块存在重叠被分成了两块，所以这种情况下，一块新的内存区块加入时就需
+要向内存区块链表中加入两块内存区块)，通过这样的检测之后，函数就在上面的代码中检测现
+有的内存区是否能存储下这么多的内存区块，如果不能，则调用 memblock_double_array() 函
+数增加现有内存区块链表的长度。检测完毕之后，函数就执行真正的加入工作，将新的内存区块
+都加入到内存区块链表内。执行完以上操作之后，函数最后调用 memblock_merge_regions()
+函数将内存区块链表中可以合并的内存区块进行合并。
+
+> - [memblock_cap_size](#A0159)
+>
+> - [memblock_set_region_node](#A0135)
+>
+> - [for_each_memblock_type](#A0134)
+>
+> - [memblock_get_region_node](#A0136)
+>
+> - [memblock_insert_region](#A0137)
+>
+> - [memblock_double_array](#A0163)
+>
+> - [memblock_merge_region](#A0164)
+>
+> - [memblock_add_range 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range/)
+
+------------------------------------
+
+#### <span id="A0166">memblock_add</span>
+
+{% highlight c %}
+/**
+ * memblock_add - add new memblock region
+ * @base: base address of the new region
+ * @size: size of the new region
+ *
+ * Add new memblock region [@base, @base + @size) to the "memory"
+ * type. See memblock_add_range() description for mode details
+ *
+ * Return:
+ * 0 on success, -errno on failure.
+ */
+int __init_memblock memblock_add(phys_addr_t base, phys_addr_t size)
+{
+        phys_addr_t end = base + size - 1;
+
+        memblock_dbg("memblock_add: [%pa-%pa] %pF\n",
+                     &base, &end, (void *)_RET_IP_);
+
+        return memblock_add_range(&memblock.memory, base, size, MAX_NUMNODES, 0);
+}
+{% endhighlight %}
+
+memblock_add() 函数的作用是入一块可用的物理内存。
+参数 base 指向要添加内存区块的起始物理地址；size 指向要添加内存
+区块的大小。函数直接调用 memblock_add_range() 函数将内存区块添加到
+memblock.memory 内存区。
+
+> - [memblock_add_range](#A0165)
+>
+> - [memblock_add 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add/)
+
+------------------------------------
+
+#### <span id="A0167">dump_stack_set_arch_desc</span>
+
+{% highlight c %}
+/**             
+ * dump_stack_set_arch_desc - set arch-specific str to show with task dumps
+ * @fmt: printf-style format string
+ * @...: arguments for the format string
+ *              
+ * The configured string will be printed right after utsname during task
+ * dumps.  Usually used to add arch-specific system identifiers.  If an
+ * arch wants to make use of such an ID string, it should initialize this
+ * as soon as possible during boot.
+ */
+void __init dump_stack_set_arch_desc(const char *fmt, ...)
+{       
+        va_list args;
+
+        va_start(args, fmt);
+        vsnprintf(dump_stack_arch_desc_str, sizeof(dump_stack_arch_desc_str),
+                  fmt, args);
+        va_end(args);
+}
+{% endhighlight %}
+
+dump_stack_set_arch_desc() 函数用于将体系名字信息写入全局变量
+dump_stack_arch_desc_str 里。dump_stack_arch_desc_str 变量用于
+内核 dump stack 信息的时候，输出体系相关的信息。函数通过格式化输入，
+将参数 fmt 的值存储到 dump_stack_arch_desc_str 指针指向的地址。
+
+------------------------------------
+
+#### <span id="A0168">pgd_index</span>
+
+{% highlight c %}
+/* to find an entry in a page-table-directory */
+#define pgd_index(addr)         ((addr) >> PGDIR_SHIFT)
+{% endhighlight %}
+
+pgd_index() 函数用于获得虚拟地址 x 在也目录中的索引。
+例如在二级页表的 32 为虚拟地址上，页目录和页表的布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000222.png)
+
+页目录的偏移值位于虚拟地址的最高端位置，可以通过将
+虚拟地址向右移动 PGDIR_SHIFT 位后获得虚拟地址在
+页目录中的偏移。
+
+------------------------------------
+
+#### <span id="A0169">pgd_offset</span>
+
+{% highlight c %}
+#define pgd_offset(mm, addr)    ((mm)->pgd + pgd_index(addr))
+{% endhighlight %}
+
+pgd_offset() 函数用于获得虚拟地址对应的页目录内容。
+参数 mm 指向进程对应的 mm_struct, 也就是进程的页目录。
+参数 addr 指向虚拟地址。例如在二级页表中，页目录索引与
+进程页目录的关系如下图：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000223.png)
+
+页目录索引通过 pgd_index() 函数获得，mm 参数的 pgd
+指向了进程的页目录, 然后将页目录起始地址加上虚拟地址
+的页目录索引，就可以得到虚拟地址在页目录中的内容。
+
+> - [pgd_index](#A0168)
+
+------------------------------------
+
+#### <span id="A0170">pgd_offset_k</span>
+
+{% highlight c %}
+/* to find an entry in a kernel page-table-directory */
+#define pgd_offset_k(addr)      pgd_offset(&init_mm, addr)
+{% endhighlight %}
+
+pgd_offset_k() 函数的作用是获得内核空间虚拟地址对应的页目录内容。
+参数 addr 是一个内核空间的虚拟地址。函数通过 pgd_offset() 函数
+实现，其中 init_mm 就是内核进程内存管理数据，其中包含了内核进程
+所使用的页目录。例如在二级页表中，内核虚拟地址对应的页目录关系
+如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000224.png)
+
+内核进程 task_struct 的 mm 成员指向了 init_mm 结构，
+init_mm 包含了内核进程所使用的页目录，然后内核通过内核
+提供的页目录与内核虚拟地址在页目录中的索引，就可以找到
+内核虚拟地址对应的内核页目录内容。
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A00"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
 
 ------------------------------------
 
