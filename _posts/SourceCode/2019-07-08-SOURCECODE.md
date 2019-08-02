@@ -7074,7 +7074,7 @@ pgd_offset() 函数用于获得虚拟地址对应的页目录内容。
 #define pgd_offset_k(addr)      pgd_offset(&init_mm, addr)
 {% endhighlight %}
 
-pgd_offset_k() 函数的作用是获得内核空间虚拟地址对应的页目录内容。
+pgd_offset_k() 函数的作用是获得内核空间虚拟地址对应的页目录入口地址。
 参数 addr 是一个内核空间的虚拟地址。函数通过 pgd_offset() 函数
 实现，其中 init_mm 就是内核进程内存管理数据，其中包含了内核进程
 所使用的页目录。例如在二级页表中，内核虚拟地址对应的页目录关系
@@ -7085,11 +7085,934 @@ pgd_offset_k() 函数的作用是获得内核空间虚拟地址对应的页目�
 内核进程 task_struct 的 mm 成员指向了 init_mm 结构，
 init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 提供的页目录与内核虚拟地址在页目录中的索引，就可以找到
-内核虚拟地址对应的内核页目录内容。
+内核虚拟地址对应的内核页目录入口地址。
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0171">pud_offset</span>
+
+{% highlight c %}
+static inline pud_t *pud_offset(p4d_t *p4d, unsigned long address)
+{
+        return (pud_t *)p4d;
+}
+{% endhighlight %}
+
+pud_offset() 函数用于从页目录中获得 PUD 入口地址，在没有四级页表
+的设计中，PUD 的入口地址就是虚拟地址对应页目录项的值。
+
+------------------------------------
+
+#### <span id="A0172">pmd_offset</span>
+
+{% highlight c %}
+static inline pmd_t * pmd_offset(pud_t * pud, unsigned long address)
+{
+        return (pmd_t *)pud;
+}
+{% endhighlight %}
+
+pmd_offset() 函数用于从 PUD 页表中获得 PMD 入口地址。在没有
+四级页表的设计中，虚拟地址对应 PMD 值就是虚拟地址对应的
+页目录值。
+
+------------------------------------
+
+#### <span id="A0173">fixmap_pmd</span>
+
+{% highlight c %}
+static inline pmd_t * __init fixmap_pmd(unsigned long addr)
+{
+        pgd_t *pgd = pgd_offset_k(addr);
+        pud_t *pud = pud_offset(pgd, addr);
+        pmd_t *pmd = pmd_offset(pud, addr);     
+
+        return pmd;
+}
+{% endhighlight %}
+
+fixmap_pmd() 函数的作用就是获得 FIXMAP 区间虚拟地址对应
+的 PMD 入口地址。参数 addr 是 FIXMAP 区间的虚拟地址。
+函数调用 pgd_offset_k() 函数获得 addr 虚拟地址对应的
+内核页目录入口地址，基于页目录入口地址，调用 pud_offset()
+函数获得虚拟地址对应的 PUD 入口地址，基于 PMD 入口地址，
+调用 pmd_offset() 函数获得 PMD 入口地址。最后返回 pmd
+入口地址。
+
+> - [pgd_offset_k](#A0170)
+>
+> - [pud_offset](#A0171)
+>
+> - [pmd_offset](#A0172)
+
+------------------------------------
+
+#### <span id="A0174">flush_pmd_entry</span>
+
+{% highlight c %}
+/*
+ *      flush_pmd_entry
+ *
+ *      Flush a PMD entry (word aligned, or double-word aligned) to
+ *      RAM if the TLB for the CPU we are running on requires this.
+ *      This is typically used when we are creating PMD entries.
+ *
+ *      clean_pmd_entry
+ *
+ *      Clean (but don't drain the write buffer) if the CPU requires
+ *      these operations.  This is typically used when we are removing
+ *      PMD entries.
+ */
+static inline void flush_pmd_entry(void *pmd)
+{
+        const unsigned int __tlb_flag = __cpu_tlb_flags;
+
+        tlb_op(TLB_DCLEAN, "c7, c10, 1  @ flush_pmd", pmd);
+        tlb_l2_op(TLB_L2CLEAN_FR, "c15, c9, 1  @ L2 flush_pmd", pmd);
+
+        if (tlb_flag(TLB_WB))
+                dsb(ishst);
+}
+{% endhighlight %}
+
+flush_pmd_entry() 函数的目的是:
+"Clean data or unified cache line by MVA to Poc"。在 cache 中，
+每个 cache line 是 32 字节，而一个 pmd entry 是 4 字节，因此，
+对于两个 pmd (pmd1, pmd2), 刷新 pmd2， pmd1 没必要重复刷新了。
+这里可能会问： pmd1 和 pmd2 如果不在同一个 cache line 中，怎么办？
+一个页表所占页也是 4KB，因此，如果成对刷新页表项的话，这个页表
+对一定落在同一个 cache line 中。
+
+------------------------------------
+
+#### <span id="A0175">__pmd_populate</span>
+
+{% highlight c %}
+static inline void __pmd_populate(pmd_t *pmdp, phys_addr_t pte,
+                                  pmdval_t prot)
+{
+        pmdval_t pmdval = (pte + PTE_HWTABLE_OFF) | prot;
+        pmdp[0] = __pmd(pmdval);
+#ifndef CONFIG_ARM_LPAE
+        pmdp[1] = __pmd(pmdval + 256 * sizeof(pte_t));
+#endif
+        flush_pmd_entry(pmdp);
+}
+{% endhighlight %}
+
+__pmd_populate() 函数的作用是向指定的 PMD 入口上填充 PTE
+页表的物理地址与标志。参数 pmdp 指向 PMD 入口地址，参数 pte
+是 PTE 页表的物理地址，参数 prot 为 PTE 页表在 PMD 入口中的
+标志。在 Linux 的 PMD 入口中，PMD 具有两个入口 (pmd0 和 pmd1)，
+如下图：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000225.png)
+
+如上图，一个 PTE 页表正好占用 4K 的页，每个 pte 入口占用 4 字节，
+所以一个 PTE 页表可以包含 1024 个 pte 入口。在 Linux 中，PTE 页表
+的后 512 个入口给硬件使用，前 512 个入口给软件使用，Linux 对上面
+的设计给出的解释如下：
+
+{% highlight c %}
+Hardware-wise, we have a two level page table structure, where the first
+level has 4096 entries, and the second level has 256 entries.  Each entry
+is one 32-bit word.  Most of the bits in the second level entry are used
+by hardware, and there aren't any "accessed" and "dirty" bits.
+
+Linux on the other hand has a three level page table structure, which can
+be wrapped to fit a two level page table structure easily - using the PGD
+and PTE only.  However, Linux also expects one "PTE" table per page, and
+at least a "dirty" bit.
+
+Therefore, we tweak the implementation slightly - we tell Linux that we
+have 2048 entries in the first level, each of which is 8 bytes (iow, two
+hardware pointers to the second level.)  The second level contains two
+hardware PTE tables arranged contiguously, preceded by Linux versions
+which contain the state information Linux needs.  We, therefore, end up
+with 512 entries in the "PTE" level.
+
+This leads to the page tables having the following layout:
+
+   pgd             pte
+|        |
++--------+
+|        |       +------------+ +0
++- - - - +       | Linux pt 0 |
+|        |       +------------+ +1024
++--------+ +0    | Linux pt 1 |
+|        |-----> +------------+ +2048
++- - - - + +4    |  h/w pt 0  |
+|        |-----> +------------+ +3072
++--------+ +8    |  h/w pt 1  |
+|        |       +------------+ +4096
+
+See L_PTE_xxx below for definitions of bits in the "Linux pt", and
+PTE_xxx for definitions of bits appearing in the "h/w pt".
+
+PMD_xxx definitions refer to bits in the first level page table.
+{% endhighlight %}
+
+因此在上面的讨论之后，__pmd_populate() 函数首先定义了一个
+局部变量 pmdval, 其值为 pte 页表的物理地址加上 PTE_HWTABLE_OFF，
+使其指向 PTE 页表 h/w 的起始地址，然后在 pmdval 上加上 prot
+的值。函数将 PMD 第一个入口的值设置为 pmdval，也就是指向
+"PTE h/w pt 0", 如果系统没有定义 CONFIG_ARM_LPAE, 那么函数
+继续将 PMD 第二个入口值设置为 "PTE h/w pt 1"。这样的操作实现了
+上图所定义规则。设置完毕之后，函数调用 flush_pmd_entry() 进行
+刷新新页表，是页表生效。
+
+------------------------------------
+
+#### <span id="A0176">pte_offset_early_fixmap</span>
+
+{% highlight c %}
+static pte_t * __init pte_offset_early_fixmap(pmd_t *dir, unsigned long addr)
+{
+        return &bm_pte[pte_index(addr)];
+}
+{% endhighlight %}
+
+pte_offset_early_fixmap() 函数用于在系统初始化早期，通过虚拟地址获得
+fixmap 区域内的 PTE 入口地址。bm_pte[] 数组存储着 FIXMAP 区域的 PTE
+页表。
+
+------------------------------------
+
+#### <span id="A0177">early_fixmap_init</span>
+
+{% highlight c %}
+void __init early_fixmap_init(void)
+{
+        pmd_t *pmd;
+
+        /*
+         * The early fixmap range spans multiple pmds, for which
+         * we are not prepared:
+         */
+        BUILD_BUG_ON((__fix_to_virt(__end_of_early_ioremap_region) >> PMD_SHIFT)
+                     != FIXADDR_TOP >> PMD_SHIFT);
+
+        pmd = fixmap_pmd(FIXADDR_TOP);
+        pmd_populate_kernel(&init_mm, pmd, bm_pte);
+
+        pte_offset_fixmap = pte_offset_early_fixmap;
+}
+{% endhighlight %}
+
+early_fixmap_init() 函数的作用是初始化早期的 FIXMAP 内存。
+函数首先调用 __fix_to_virt() 函数获得 FIXMAP 最后一个项的
+虚拟地址对应的 PMD 入口，然后与 FIXADDR_TOP() 对应的 PMD 入口，
+如果两者不相等，代表 FIXMAP 内存并按 FIXADDR_TOP 对齐。在
+FIXMAP 内存区内，使用 FIXADDR_TOP 作为 FIXMAP 最后一个可以
+分配的地址，此时调用 BUILD_BUG_ON() 函数进行报错。函数接着
+调用 fixmap_pmd() 函数获得 FIXADDR_TOP 虚拟地址对应的 PMD
+入口地址，存储在 pmd 变量里，接着函数调用 pmd_populate_kernel()
+函数将 PMD 对应的入口指向 bm_pte, 以此建立 PMD 对应的 PTE
+页表。最后将 pte_offset_fixmap 函数指向 pte_offset_early_fixmap(),
+以此用于获得 FIXMAP 区域内虚拟地址对应的 PTE 入口地址。
+
+> - [fixmap_pmd](#A0173)
+>
+> - [pmd_populate_kernel](#A0178)
+>
+> - [pte_offset_early_fixmap](#A0176)
+
+------------------------------------
+
+#### <span id="A0178">pmd_populate_kernel</span>
+
+{% highlight c %}
+/*
+ * Populate the pmdp entry with a pointer to the pte.  This pmd is part
+ * of the mm address space.
+ *
+ * Ensure that we always set both PMD entries.
+ */
+static inline void   
+pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmdp, pte_t *ptep)
+{
+        /*
+         * The pmd must be loaded with the physical address of the PTE table
+         */
+        __pmd_populate(pmdp, __pa(ptep), _PAGE_KERNEL_TABLE);
+}
+{% endhighlight %}
+
+pmd_populate_kernel() 函数的作用是为内核 PMD 入口填充 PTE 页表信息。
+参数 mm 指向内核进程的 mm_struct, 参数 pmdp 指向 PMD 入口地址，参数
+ptep 指向 PTE 页表。函数通过调用 __pmd_populate() 设置 PMD 入口的 PTE
+页表，其中 PTE 页表必须是物理地址，_PAGE_KERNEL_TABLE 为内核对应的
+PMD 入口标志。
+
+> - [\_\_pmd_populate](#A0175)
+
+------------------------------------
+
+#### <span id="A0179">early_ioremap_setup</span>
+
+{% highlight c %}
+void __init early_ioremap_setup(void)
+{       
+        int i;
+
+        for (i = 0; i < FIX_BTMAPS_SLOTS; i++)
+                if (WARN_ON(prev_map[i]))
+                        break;
+
+        for (i = 0; i < FIX_BTMAPS_SLOTS; i++)
+                slot_virt[i] = __fix_to_virt(FIX_BTMAP_BEGIN - NR_FIX_BTMAPS*i);
+}
+{% endhighlight %}
+
+early_ioremap_setup() 函数的作用就是设置早期 I/O 映射的虚拟地址。
+函数在 FIXMAP 内存区域分配了一块虚拟地址给早期 I/O 使用，一个包含
+FIX_BTMAPS_SLOTS 个 slot，每个 slot 包含了 NR_FIX_BTMAPS，函数
+调用 for 循环，通过 __fix_to_virt() 函数将所有 SLOT 对应的虚拟
+地址存储在 slot_virt[] 数组里。
+
+------------------------------------
+
+#### <span id="A0180">early_ioremap_init</span>
+
+{% highlight c %}
+/*
+ * Must be called after early_fixmap_init
+ */     
+void __init early_ioremap_init(void)
+{       
+        early_ioremap_setup();
+}
+{% endhighlight %}
+
+early_ioremap_init() 函数用于初始化早期 I/O 使用的虚拟地址。
+函数通过 early_ioremap_setup() 函数实现。
+
+------------------------------------
+
+#### <span id="A0181">isspace</span>
+
+{% highlight c %}
+#define isspace(c)      ((__ismask(c)&(_S)) != 0)
+{% endhighlight %}
+
+isspace() 函数判断字符 c 是否是一个空格。
+
+------------------------------------
+
+#### <span id="A0182">skip_spaces</span>
+
+{% highlight c %}
+/**             
+ * skip_spaces - Removes leading whitespace from @str.
+ * @str: The string to be stripped.
+ *                      
+ * Returns a pointer to the first non-whitespace character in @str.
+ */             
+char *skip_spaces(const char *str)
+{                       
+        while (isspace(*str))
+                ++str;
+        return (char *)str;
+}       
+EXPORT_SYMBOL(skip_spaces);
+{% endhighlight %}
+
+skip_spaces() 函数用于调过字符串 str 开头多个空格。
+函数在 while() 循环中调用 isspace() 函数找到字符串
+中的空格，然后加一跳过，直到字符串遇到非空格后停止循环。
+
+> - [isspace](#A0181)
+
+------------------------------------
+
+#### <span id="A0183">next_arg</span>
+
+{% highlight c %}
+/*
+ * Parse a string to get a param value pair.
+ * You can use " around spaces, but can't escape ".
+ * Hyphens and underscores equivalent in parameter names.
+ */
+char *next_arg(char *args, char **param, char **val)
+{
+        unsigned int i, equals = 0;
+        int in_quote = 0, quoted = 0;
+        char *next;
+
+        if (*args == '"') {
+                args++;
+                in_quote = 1;
+                quoted = 1;
+        }
+
+        for (i = 0; args[i]; i++) {
+                if (isspace(args[i]) && !in_quote)
+                        break;
+                if (equals == 0) {
+                        if (args[i] == '=')
+                                equals = i;
+                }
+                if (args[i] == '"')
+                        in_quote = !in_quote;
+        }
+
+        *param = args;
+        if (!equals)
+                *val = NULL;
+        else {
+                args[equals] = '\0';
+                *val = args + equals + 1;
+
+                /* Don't include quotes in value. */
+                if (**val == '"') {
+                        (*val)++;
+                        if (args[i-1] == '"')
+                                args[i-1] = '\0';
+                }
+        }
+        if (quoted && args[i-1] == '"')
+                args[i-1] = '\0';
+
+        if (args[i]) {
+                args[i] = '\0';
+                next = args + i + 1;
+        } else
+                next = args + i;
+
+        /* Chew up trailing spaces. */
+        return skip_spaces(next);
+}
+{% endhighlight %}
+
+next_arg() 函数用于从 cmdline 中读取一个项目，包括项目的名
+字以及项目的值。代码较长，分段解析：
+
+{% highlight c %}
+char *next_arg(char *args, char **param, char **val)
+{
+        unsigned int i, equals = 0;
+        int in_quote = 0, quoted = 0;
+        char *next;
+
+        if (*args == '"') {
+                args++;
+                in_quote = 1;
+                quoted = 1;
+        }
+{% endhighlight %}
+
+参数 args 指向 cmdline 字符串，参数 param 用于存储解析
+项目的名字，val 参数用于存储解析项目的值。函数首先判断 args
+字符串的第一个字符是否为 `"`, 如果是则将 args 指向下一个
+字符，并将 in_quote 和 quoted 都设置为 1，代表目前字符串
+位于双引号之间。
+
+{% highlight c %}
+        for (i = 0; args[i]; i++) {
+                if (isspace(args[i]) && !in_quote)
+                        break;
+                if (equals == 0) {
+                        if (args[i] == '=')
+                                equals = i;
+                }
+                if (args[i] == '"')
+                        in_quote = !in_quote;
+        }
+{% endhighlight %}
+
+函数从头遍历 args 字符串所指的字符串，如果遍历到的字符串是
+一个空格，且不在双引号里面，那么找到一个完整的项目，结束循环；
+反之如果 equals 为 0，且遍历到的字符是 `=`，那么将 i 的值
+赋值给 equals。如果遍历到的字符是 `"`，那么将 in_quote 取反。
+
+{% highlight c %}
+        *param = args;
+        if (!equals)
+                *val = NULL;
+        else {
+                args[equals] = '\0';
+                *val = args + equals + 1;
+
+                /* Don't include quotes in value. */
+                if (**val == '"') {
+                        (*val)++;
+                        if (args[i-1] == '"')
+                                args[i-1] = '\0';
+                }
+        }
+{% endhighlight %}
+
+将 *param 指向 args 所指的字符串，如果此时 equals 为 0，那么
+表示该项目没有值，所以将 *val 设置为 NULL；反之将 args 字符串
+从 `=` 处截断，args 只指向项目的名字，将项目的值存储到 *val
+里面。如果 *val 的值为 `"`, 那么将 *val 去掉，即不包含 `"`，
+
+{% highlight c %}
+        if (quoted && args[i-1] == '"')
+                args[i-1] = '\0';
+
+        if (args[i]) {
+                args[i] = '\0';
+                next = args + i + 1;
+        } else
+                next = args + i;
+
+        /* Chew up trailing spaces. */
+        return skip_spaces(next);
+{% endhighlight %}
+
+最后对 args 指向字符串的位置进行更新，使其指向下一个项目，
+并且调用 skip_spaces() 函数过略掉 args 开头的空格。
+
+> - [isspace](#A0181)
+>
+> - [skip_spaces](#A0182)
+
+------------------------------------
+
+#### <span id="A0184">dash2underscore</span>
+
+{% highlight c %}
+static char dash2underscore(char c)
+{        
+        if (c == '-')
+                return '_';
+        return c;
+}
+{% endhighlight %}
+
+dash2underscore() 函数的作用是将 `-` 字符转换成 `_`。
+如果参数 c 是字符 `-`， 那么返回 `_`；反之直接返回字符。
+
+------------------------------------
+
+#### <span id="A0185">parameqn</span>
+
+{% highlight c %}
+bool parameqn(const char *a, const char *b, size_t n)
+{
+        size_t i;
+
+        for (i = 0; i < n; i++) {
+                if (dash2underscore(a[i]) != dash2underscore(b[i]))
+                        return false;
+        }
+        return true;
+}
+{% endhighlight %}
+
+parameqn() 函数的作用就是对比两个字符串的 n 个字符，如果
+两个字符串在 n 个字符内不相等，那么返回 false；反之返回
+true。
+
+> - [dash2underscore](#A0184)
+
+------------------------------------
+
+#### <span id="A0186">parameq</span>
+
+{% highlight c %}
+bool parameq(const char *a, const char *b)
+{
+        return parameqn(a, b, strlen(a)+1);
+}
+{% endhighlight %}
+
+parameq() 用于对比 a 字符串是否与 b 字符串相等。
+如果相等，则返回 true；反之返回 false。函数通过
+调用 parameqn() 函数对比字符串 a 是否与字符串 b
+在 strlen(a)+1 个字符是否相等。
+
+> - [parameqn](#A0185)
+
+------------------------------------
+
+#### <span id="A0187">parse_one</span>
+
+{% highlight c %}
+static int parse_one(char *param,
+                     char *val,
+                     const char *doing,
+                     const struct kernel_param *params,
+                     unsigned num_params,
+                     s16 min_level,
+                     s16 max_level,
+                     void *arg,
+                     int (*handle_unknown)(char *param, char *val,
+                                     const char *doing, void *arg))
+{
+        unsigned int i;
+        int err;
+
+        /* Find parameter */
+        for (i = 0; i < num_params; i++) {
+                if (parameq(param, params[i].name)) {
+                        if (params[i].level < min_level
+                            || params[i].level > max_level)
+                                return 0;
+                        /* No one handled NULL, so do it here. */
+                        if (!val &&
+                            !(params[i].ops->flags & KERNEL_PARAM_OPS_FL_NOARG))
+                                return -EINVAL;
+                        pr_debug("handling %s with %p\n", param,
+                                params[i].ops->set);
+                        kernel_param_lock(params[i].mod);
+                        param_check_unsafe(&params[i]);
+                        err = params[i].ops->set(val, &params[i]);
+                        kernel_param_unlock(params[i].mod);
+                        return err;
+                }
+        }
+
+        if (handle_unknown) {
+                pr_debug("doing %s: %s='%s'\n", doing, param, val);
+                return handle_unknown(param, val, doing, arg);
+        }
+
+        pr_debug("Unknown argument '%s'\n", param);
+        return -ENOENT;
+}
+{% endhighlight %}
+
+parse_one() 用于解析 cmdline 里面的一个参数，并在内核启动过程
+中设置这个内核参数。由于代码太长，分段解析:
+
+{% highlight c %}
+static int parse_one(char *param,
+                     char *val,
+                     const char *doing,
+                     const struct kernel_param *params,
+                     unsigned num_params,
+                     s16 min_level,
+                     s16 max_level,
+                     void *arg,
+                     int (*handle_unknown)(char *param, char *val,
+                                     const char *doing, void *arg))
+{
+{% endhighlight %}
+
+参数 param 指向 cmdline 参数的名字，val 参数指向 cmdline 参数
+的值，params 参数指向内核启动参数 section，num_params 参数代表
+含有参数的个数。
+
+{% highlight c %}
+        /* Find parameter */
+        for (i = 0; i < num_params; i++) {
+                if (parameq(param, params[i].name)) {
+                        if (params[i].level < min_level
+                            || params[i].level > max_level)
+                                return 0;
+{% endhighlight %}
+
+内核将所有启动参数的钩子函数存放在 "__param" section 里，
+并且 params 指向该 section 开始的位置。在 "__param" section
+内，每个成员按 struct kernel_param 格式存储。函数通过 for
+循环遍历所有的 kernel_param, 函数调用 parmaeq() 函数判断
+遍历到的 kernel_param name 成员是否和参数 param 相同，如果
+相同，那么找到一个指定的 kernel_param.
+
+{% highlight c %}
+                        /* No one handled NULL, so do it here. */
+                        if (!val &&
+                            !(params[i].ops->flags & KERNEL_PARAM_OPS_FL_NOARG))
+                                return -EINVAL;
+                        pr_debug("handling %s with %p\n", param,
+                                params[i].ops->set);
+                        kernel_param_lock(params[i].mod);
+                        param_check_unsafe(&params[i]);
+                        err = params[i].ops->set(val, &params[i]);
+                        kernel_param_unlock(params[i].mod);
+                        return err;
+                }
+{% endhighlight %}
+
+函数接下来对 kermel_param 里的成员与参数进行检测，如果检查
+通过，那么函数上锁，然后执行 kernel_param 内包含的 set() 函数，
+该函数就是用 cmdline 中的参数设置内核中启动的参数。设置完毕之后
+解锁。最后返回。
+
+{% highlight c %}
+        if (handle_unknown) {
+                pr_debug("doing %s: %s='%s'\n", doing, param, val);
+                return handle_unknown(param, val, doing, arg);
+        }
+
+        pr_debug("Unknown argument '%s'\n", param);
+        return -ENOENT;
+{% endhighlight %}
+
+如果没有从内核的 `__param` section 中找到指定的 kernel_param,
+那么如果此时 handle_unknow() 存在，那么函数直接调用
+handle_unknown() 函数并返回。如果 handle_unknown 也不
+存在，那么函数直接返回 ENOENT。
+
+> - [parameq](#A0186)
+
+------------------------------------
+
+#### <span id="A0188">parse_args</span>
+
+{% highlight c %}
+/* Args looks like "foo=bar,bar2 baz=fuz wiz". */
+char *parse_args(const char *doing,
+                 char *args,
+                 const struct kernel_param *params,
+                 unsigned num,
+                 s16 min_level,
+                 s16 max_level,
+                 void *arg,
+                 int (*unknown)(char *param, char *val,
+                                const char *doing, void *arg))
+{
+        char *param, *val, *err = NULL;
+
+        /* Chew leading spaces */
+        args = skip_spaces(args);
+
+        if (*args)
+                pr_debug("doing %s, parsing ARGS: '%s'\n", doing, args);
+
+        while (*args) {
+                int ret;
+                int irq_was_disabled;
+
+                args = next_arg(args, &param, &val);
+                /* Stop at -- */
+                if (!val && strcmp(param, "--") == 0)
+                        return err ?: args;
+                irq_was_disabled = irqs_disabled();
+                ret = parse_one(param, val, doing, params, num,
+                                min_level, max_level, arg, unknown);
+                if (irq_was_disabled && !irqs_disabled())
+                        pr_warn("%s: option '%s' enabled irq's!\n",
+                                doing, param);
+
+                switch (ret) {
+                case 0:
+                        continue;
+                case -ENOENT:
+                        pr_err("%s: Unknown parameter `%s'\n", doing, param);
+                        break;
+                case -ENOSPC:
+                        pr_err("%s: `%s' too large for parameter `%s'\n",
+                               doing, val ?: "", param);
+                        break;
+                default:
+                        pr_err("%s: `%s' invalid for parameter `%s'\n",
+                               doing, val ?: "", param);
+                        break;
+                }
+
+                err = ERR_PTR(ret);
+        }
+
+        return err;
+}
+{% endhighlight %}
+
+parse_args() 函数用于从一个字符串中解析参数，并设置对应的内核
+参数。由于代码太长，分段解析：
+
+{% highlight c %}
+char *parse_args(const char *doing,
+                 char *args,
+                 const struct kernel_param *params,
+                 unsigned num,
+                 s16 min_level,
+                 s16 max_level,
+                 void *arg,
+                 int (*unknown)(char *param, char *val,
+                                const char *doing, void *arg))
+{
+        char *param, *val, *err = NULL;
+
+        /* Chew leading spaces */
+        args = skip_spaces(args);
+
+        if (*args)
+                pr_debug("doing %s, parsing ARGS: '%s'\n", doing, args);
+{% endhighlight %}
+
+参数 doing 指向标识字符串，参数 args 指向包含启动参数的字符串，
+参数 params 指向内核参数列表，参数 num 代表查找内核参数的数量，
+参数 unknown 参数指向私有函数。函数首先调用 skip_space() 函数
+将 args 参数开始处的空格去掉。
+
+{% highlight c %}
+        while (*args) {
+                int ret;
+                int irq_was_disabled;
+
+                args = next_arg(args, &param, &val);
+                /* Stop at -- */
+                if (!val && strcmp(param, "--") == 0)
+                        return err ?: args;
+                irq_was_disabled = irqs_disabled();
+                ret = parse_one(param, val, doing, params, num,
+                                min_level, max_level, arg, unknown);
+                if (irq_was_disabled && !irqs_disabled())
+                        pr_warn("%s: option '%s' enabled irq's!\n",
+                                doing, param);
+{% endhighlight %}
+
+函数使用 while 循环，只要 args 有效，循环不停止。函数首先
+调用 next_arg() 函数从 args 字符串中获得一个参数的名字，
+将其存储到 param 里，并从 args 字符串中获得参数名字对应的
+参数值，并存储在 val 里面。函数接着判断当前中断是否使能，
+函数将参数名字和参数值传递到 parse_one() 函数里，该函数
+会在内核参数中找到与参数名字相同的内核参数，并将内核参数
+的值设置成 val 的值。
+
+{% highlight c %}
+                switch (ret) {
+                case 0:
+                        continue;
+                case -ENOENT:
+                        pr_err("%s: Unknown parameter `%s'\n", doing, param);
+                        break;
+                case -ENOSPC:
+                        pr_err("%s: `%s' too large for parameter `%s'\n",
+                               doing, val ?: "", param);
+                        break;
+                default:
+                        pr_err("%s: `%s' invalid for parameter `%s'\n",
+                               doing, val ?: "", param);
+                        break;
+                }
+
+                err = ERR_PTR(ret);
+        }
+
+        return err;
+{% endhighlight %}
+
+函数最后对 ret 处理结果进行说明。如果 ret 是错误值，那么函数
+返回错误信息。
+
+> - [skip_spaces](#A0182)
+>
+> - [next_arg](#A0183)
+>
+> - [parse_one](#A0187)
+
+------------------------------------
+
+#### <span id="A0189"></span>
+
+{% highlight c %}
+                switch (ret) {
+                case 0:
+                        continue;
+                case -ENOENT:
+                        pr_err("%s: Unknown parameter `%s'\n", doing, param);
+                        break;
+                case -ENOSPC:
+                        pr_err("%s: `%s' too large for parameter `%s'\n",
+                               doing, val ?: "", param);
+                        break;
+                default:
+                        pr_err("%s: `%s' invalid for parameter `%s'\n",
+                               doing, val ?: "", param);
+                        break;
+                }
+
+                err = ERR_PTR(ret);
+        }
+
+        return err;
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190">do_early_param</span>
+
+{% highlight c %}
+/* Check for early params. */
+static int __init do_early_param(char *param, char *val,
+                                 const char *unused, void *arg)
+{
+        const struct obs_kernel_param *p;
+
+        for (p = __setup_start; p < __setup_end; p++) {
+                if ((p->early && parameq(param, p->str)) ||
+                    (strcmp(param, "console") == 0 &&
+                     strcmp(p->str, "earlycon") == 0)
+                ) {
+                        if (p->setup_func(val) != 0)
+                                pr_warn("Malformed early option '%s'\n", param);
+                }
+        }
+        /* We accept everything at this stage. */
+        return 0;
+}
+{% endhighlight %}
+
+do_early_param() 函数的作用是从 cmdline 中设置内核早期启动需要的
+参数。cmdline 对应的参数在内核源码中可以通过 __setup() 函数进行
+设置，函数会将设置的参数加入到 ".init.setup" section 内，并且
+__setup_start 指向该 section 开始的位置，__setup_end 指向
+该 section 结束的位置。参数 param 指向参数名字，参数 val
+指向参数的值，参数 unused 代表是否使用过。函数使用 for() 循环，
+从 __setup_start 开始遍历 ".init.setup" section 内的所有
+obs_kernel_param 结构。每次遍历到的 obs_kernel_param 结构，
+如果其 early 成员不为零，且 param 与 str 成员相同，或者
+parma 与 "console" 相同，且 str 成员与 "earlycon" 相同，
+那么此时执行 obs_kernel_param 的 setup_func 成员对应的
+函数，如果函数执行完毕之后返回错误值，那么函数打印错误信息，
+
+> - [parameq](#A0186)
+
+------------------------------------
+
+#### <span id="A0191">parse_early_options</span>
+
+{% highlight c %}
+void __init parse_early_options(char *cmdline)
+{
+        parse_args("early options", cmdline, NULL, 0, 0, 0, NULL,
+                   do_early_param);
+}
+{% endhighlight %}
+
+parse_early_options() 函数用于初始化 cmdline 内早期启动参数。
+参数 cmdline 指向 CMDLINE，函数通过 parse_args() 函数实现。
+
+> - [parse_args](#A0188)
+>
+> - [do_early_param](#A0190)
+
+------------------------------------
+
+#### <span id="A0192">parse_early_param</span>
+
+{% highlight c %}
+/* Arch code calls this early on, or if not, just before other parsing. */
+void __init parse_early_param(void)
+{
+        static int done __initdata;
+        static char tmp_cmdline[COMMAND_LINE_SIZE] __initdata;
+
+        if (done)
+                return;
+
+        /* All fall through to do_early_param. */
+        strlcpy(tmp_cmdline, boot_command_line, COMMAND_LINE_SIZE);
+        parse_early_options(tmp_cmdline);
+        done = 1;
+}
+{% endhighlight %}
+
+parse_early_param() 函数用于系统启动早期，设置指定的启动参数。
+函数定义了两个静态变量。函数首先判断 done 的值，以防止该函数被
+二次执行。函数继续调用 strlcpy() 函数将 CMDLINE 字符串拷贝到
+tmp_cmdline, 然后调用 parase_early_options() 函数解析系统
+早期启动需要的参数，执行完毕之后，函数将 done 设置为 1.
+
+> - [parse_early_options](#A0191)
+
+------------------------------------
+
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7097,7 +8020,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7105,7 +8028,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7113,7 +8036,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7121,7 +8044,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7129,7 +8052,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7137,7 +8060,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7145,7 +8068,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7153,7 +8076,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7161,7 +8084,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7169,7 +8092,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7177,7 +8100,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7185,7 +8108,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7193,7 +8116,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7201,7 +8124,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7209,7 +8132,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7217,7 +8140,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7225,7 +8148,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7233,7 +8156,7 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
@@ -7241,7 +8164,143 @@ init_mm 包含了内核进程所使用的页目录，然后内核通过内核
 
 ------------------------------------
 
-#### <span id="A00"></span>
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+------------------------------------
+
+#### <span id="A0190"></span>
 
 {% highlight c %}
 
