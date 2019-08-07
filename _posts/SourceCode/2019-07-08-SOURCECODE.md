@@ -7897,33 +7897,6 @@ char *parse_args(const char *doing,
 
 ------------------------------------
 
-#### <span id="A0189"></span>
-
-{% highlight c %}
-                switch (ret) {
-                case 0:
-                        continue;
-                case -ENOENT:
-                        pr_err("%s: Unknown parameter `%s'\n", doing, param);
-                        break;
-                case -ENOSPC:
-                        pr_err("%s: `%s' too large for parameter `%s'\n",
-                               doing, val ?: "", param);
-                        break;
-                default:
-                        pr_err("%s: `%s' invalid for parameter `%s'\n",
-                               doing, val ?: "", param);
-                        break;
-                }
-
-                err = ERR_PTR(ret);
-        }
-
-        return err;
-{% endhighlight %}
-
-------------------------------------
-
 #### <span id="A0190">do_early_param</span>
 
 {% highlight c %}
@@ -8012,83 +7985,952 @@ tmp_cmdline, 然后调用 parase_early_options() 函数解析系统
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A0193">build_mem_type_table</span>
 
 {% highlight c %}
+/*
+ * Adjust the PMD section entries according to the CPU in use.
+ */
+static void __init build_mem_type_table(void)
+{
+        struct cachepolicy *cp;
+        unsigned int cr = get_cr();
+        pteval_t user_pgprot, kern_pgprot, vecs_pgprot;
+        pteval_t hyp_device_pgprot, s2_pgprot, s2_device_pgprot;
+        int cpu_arch = cpu_architecture();
+        int i;
 
+        if (cpu_arch < CPU_ARCH_ARMv6) {
+#if defined(CONFIG_CPU_DCACHE_DISABLE)
+                if (cachepolicy > CPOLICY_BUFFERED)
+                        cachepolicy = CPOLICY_BUFFERED;
+#elif defined(CONFIG_CPU_DCACHE_WRITETHROUGH)
+                if (cachepolicy > CPOLICY_WRITETHROUGH)
+                        cachepolicy = CPOLICY_WRITETHROUGH;
+#endif
+        }
+        if (cpu_arch < CPU_ARCH_ARMv5) {
+                if (cachepolicy >= CPOLICY_WRITEALLOC)
+                        cachepolicy = CPOLICY_WRITEBACK;
+                ecc_mask = 0;
+        }
+
+        if (is_smp()) {
+                if (cachepolicy != CPOLICY_WRITEALLOC) {
+                        pr_warn("Forcing write-allocate cache policy for SMP\n");
+                        cachepolicy = CPOLICY_WRITEALLOC;
+                }
+                if (!(initial_pmd_value & PMD_SECT_S)) {
+                        pr_warn("Forcing shared mappings for SMP\n");
+                        initial_pmd_value |= PMD_SECT_S;
+                }
+        }
+
+        /*
+         * Strip out features not present on earlier architectures.
+         * Pre-ARMv5 CPUs don't have TEX bits.  Pre-ARMv6 CPUs or those
+         * without extended page tables don't have the 'Shared' bit.
+         */
+        if (cpu_arch < CPU_ARCH_ARMv5)
+                for (i = 0; i < ARRAY_SIZE(mem_types); i++)
+                        mem_types[i].prot_sect &= ~PMD_SECT_TEX(7);
+        if ((cpu_arch < CPU_ARCH_ARMv6 || !(cr & CR_XP)) && !cpu_is_xsc3())
+                for (i = 0; i < ARRAY_SIZE(mem_types); i++)
+                        mem_types[i].prot_sect &= ~PMD_SECT_S;
+
+        /*
+         * ARMv5 and lower, bit 4 must be set for page tables (was: cache
+         * "update-able on write" bit on ARM610).  However, Xscale and
+         * Xscale3 require this bit to be cleared.
+         */
+        if (cpu_is_xscale_family()) {
+                for (i = 0; i < ARRAY_SIZE(mem_types); i++) {
+                        mem_types[i].prot_sect &= ~PMD_BIT4;
+                        mem_types[i].prot_l1 &= ~PMD_BIT4;
+                }
+        } else if (cpu_arch < CPU_ARCH_ARMv6) {
+                for (i = 0; i < ARRAY_SIZE(mem_types); i++) {
+                        if (mem_types[i].prot_l1)
+                                mem_types[i].prot_l1 |= PMD_BIT4;
+                        if (mem_types[i].prot_sect)
+                                mem_types[i].prot_sect |= PMD_BIT4;
+                }
+        }
+
+        /*
+         * Mark the device areas according to the CPU/architecture.
+         */
+        if (cpu_is_xsc3() || (cpu_arch >= CPU_ARCH_ARMv6 && (cr & CR_XP))) {
+                if (!cpu_is_xsc3()) {
+                        /*
+                         * Mark device regions on ARMv6+ as execute-never
+                         * to prevent speculative instruction fetches.
+                         */
+                        mem_types[MT_DEVICE].prot_sect |= PMD_SECT_XN;
+                        mem_types[MT_DEVICE_NONSHARED].prot_sect |= PMD_SECT_XN;
+                        mem_types[MT_DEVICE_CACHED].prot_sect |= PMD_SECT_XN;
+                        mem_types[MT_DEVICE_WC].prot_sect |= PMD_SECT_XN;
+
+                        /* Also setup NX memory mapping */
+                        mem_types[MT_MEMORY_RW].prot_sect |= PMD_SECT_XN;
+                }
+                if (cpu_arch >= CPU_ARCH_ARMv7 && (cr & CR_TRE)) {
+                        /*
+                         * For ARMv7 with TEX remapping,
+                         * - shared device is SXCB=1100
+                         * - nonshared device is SXCB=0100
+                         * - write combine device mem is SXCB=0001
+                         * (Uncached Normal memory)
+                         */
+                        mem_types[MT_DEVICE].prot_sect |= PMD_SECT_TEX(1);
+                        mem_types[MT_DEVICE_NONSHARED].prot_sect |= PMD_SECT_TEX(1);
+                        mem_types[MT_DEVICE_WC].prot_sect |= PMD_SECT_BUFFERABLE;
+                } else if (cpu_is_xsc3()) {
+                        /*
+                         * For Xscale3,
+                         * - shared device is TEXCB=00101
+                         * - nonshared device is TEXCB=01000
+                         * - write combine device mem is TEXCB=00100
+                         * (Inner/Outer Uncacheable in xsc3 parlance)
+                         */
+                        mem_types[MT_DEVICE].prot_sect |= PMD_SECT_TEX(1) | PMD_SECT_BUFFERED;
+                        mem_types[MT_DEVICE_NONSHARED].prot_sect |= PMD_SECT_TEX(2);
+                        mem_types[MT_DEVICE_WC].prot_sect |= PMD_SECT_TEX(1);
+                } else {
+                        /*
+                         * For ARMv6 and ARMv7 without TEX remapping,
+                         * - shared device is TEXCB=00001
+                         * - nonshared device is TEXCB=01000
+                         * - write combine device mem is TEXCB=00100
+                         * (Uncached Normal in ARMv6 parlance).
+                         */
+                        mem_types[MT_DEVICE].prot_sect |= PMD_SECT_BUFFERED;
+                        mem_types[MT_DEVICE_NONSHARED].prot_sect |= PMD_SECT_TEX(2);
+                        mem_types[MT_DEVICE_WC].prot_sect |= PMD_SECT_TEX(1);
+                }
+        } else {
+                /*
+                 * On others, write combining is "Uncached/Buffered"
+                 */
+                mem_types[MT_DEVICE_WC].prot_sect |= PMD_SECT_BUFFERABLE;
+        }
+
+        /*
+         * Now deal with the memory-type mappings
+         */
+        cp = &cache_policies[cachepolicy];
+        vecs_pgprot = kern_pgprot = user_pgprot = cp->pte;
+        s2_pgprot = cp->pte_s2;
+        hyp_device_pgprot = mem_types[MT_DEVICE].prot_pte;
+        s2_device_pgprot = mem_types[MT_DEVICE].prot_pte_s2;
+
+#ifndef CONFIG_ARM_LPAE
+        /*
+         * We don't use domains on ARMv6 (since this causes problems with
+         * v6/v7 kernels), so we must use a separate memory type for user
+         * r/o, kernel r/w to map the vectors page.
+         */
+        if (cpu_arch == CPU_ARCH_ARMv6)
+                vecs_pgprot |= L_PTE_MT_VECTORS;
+
+        /*
+         * Check is it with support for the PXN bit
+         * in the Short-descriptor translation table format descriptors.
+         */
+        if (cpu_arch == CPU_ARCH_ARMv7 &&
+                (read_cpuid_ext(CPUID_EXT_MMFR0) & 0xF) >= 4) {
+                user_pmd_table |= PMD_PXNTABLE;
+        }
+#endif
+
+
+        /*
+         * ARMv6 and above have extended page tables.
+         */
+        if (cpu_arch >= CPU_ARCH_ARMv6 && (cr & CR_XP)) {
+#ifndef CONFIG_ARM_LPAE
+                /*
+                 * Mark cache clean areas and XIP ROM read only
+                 * from SVC mode and no access from userspace.
+                 */
+                mem_types[MT_ROM].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+                mem_types[MT_MINICLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+                mem_types[MT_CACHECLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+#endif
+
+                /*
+                 * If the initial page tables were created with the S bit
+                 * set, then we need to do the same here for the same
+                 * reasons given in early_cachepolicy().
+                 */
+                if (initial_pmd_value & PMD_SECT_S) {
+                        user_pgprot |= L_PTE_SHARED;
+                        kern_pgprot |= L_PTE_SHARED;
+                        vecs_pgprot |= L_PTE_SHARED;
+                        s2_pgprot |= L_PTE_SHARED;
+                        mem_types[MT_DEVICE_WC].prot_sect |= PMD_SECT_S;
+                        mem_types[MT_DEVICE_WC].prot_pte |= L_PTE_SHARED;
+                        mem_types[MT_DEVICE_CACHED].prot_sect |= PMD_SECT_S;
+                        mem_types[MT_DEVICE_CACHED].prot_pte |= L_PTE_SHARED;
+                        mem_types[MT_MEMORY_RWX].prot_sect |= PMD_SECT_S;
+                        mem_types[MT_MEMORY_RWX].prot_pte |= L_PTE_SHARED;
+                        mem_types[MT_MEMORY_RW].prot_sect |= PMD_SECT_S;
+                        mem_types[MT_MEMORY_RW].prot_pte |= L_PTE_SHARED;
+                        mem_types[MT_MEMORY_DMA_READY].prot_pte |= L_PTE_SHARED;
+                        mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= PMD_SECT_S;
+                        mem_types[MT_MEMORY_RWX_NONCACHED].prot_pte |= L_PTE_SHARED;
+                }
+        }
+
+
+        /*
+         * Non-cacheable Normal - intended for memory areas that must
+         * not cause dirty cache line writebacks when used
+         */
+        if (cpu_arch >= CPU_ARCH_ARMv6) {
+                if (cpu_arch >= CPU_ARCH_ARMv7 && (cr & CR_TRE)) {
+                        /* Non-cacheable Normal is XCB = 001 */
+                        mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |=
+                                PMD_SECT_BUFFERED;
+                } else {
+                        /* For both ARMv6 and non-TEX-remapping ARMv7 */
+                        mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |=
+                                PMD_SECT_TEX(1);
+                }
+        } else {
+                mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= PMD_SECT_BUFFERABLE;
+        }
+
+#ifdef CONFIG_ARM_LPAE
+        /*
+         * Do not generate access flag faults for the kernel mappings.
+         */
+        for (i = 0; i < ARRAY_SIZE(mem_types); i++) {
+                mem_types[i].prot_pte |= PTE_EXT_AF;
+                if (mem_types[i].prot_sect)
+                        mem_types[i].prot_sect |= PMD_SECT_AF;
+        }
+        kern_pgprot |= PTE_EXT_AF;
+        vecs_pgprot |= PTE_EXT_AF;
+
+        /*
+         * Set PXN for user mappings
+         */
+        user_pgprot |= PTE_EXT_PXN;
+#endif
+
+
+        for (i = 0; i < 16; i++) {
+                pteval_t v = pgprot_val(protection_map[i]);
+                protection_map[i] = __pgprot(v | user_pgprot);
+        }
+
+        mem_types[MT_LOW_VECTORS].prot_pte |= vecs_pgprot;
+        mem_types[MT_HIGH_VECTORS].prot_pte |= vecs_pgprot;
+
+        pgprot_user   = __pgprot(L_PTE_PRESENT | L_PTE_YOUNG | user_pgprot);
+        pgprot_kernel = __pgprot(L_PTE_PRESENT | L_PTE_YOUNG |
+                                 L_PTE_DIRTY | kern_pgprot);
+        pgprot_s2  = __pgprot(L_PTE_PRESENT | L_PTE_YOUNG | s2_pgprot);
+        pgprot_s2_device  = __pgprot(s2_device_pgprot);
+        pgprot_hyp_device  = __pgprot(hyp_device_pgprot);
+
+        mem_types[MT_LOW_VECTORS].prot_l1 |= ecc_mask;
+        mem_types[MT_HIGH_VECTORS].prot_l1 |= ecc_mask;
+        mem_types[MT_MEMORY_RWX].prot_sect |= ecc_mask | cp->pmd;
+        mem_types[MT_MEMORY_RWX].prot_pte |= kern_pgprot;
+        mem_types[MT_MEMORY_RW].prot_sect |= ecc_mask | cp->pmd;
+        mem_types[MT_MEMORY_RW].prot_pte |= kern_pgprot;
+        mem_types[MT_MEMORY_DMA_READY].prot_pte |= kern_pgprot;
+        mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= ecc_mask;
+        mem_types[MT_ROM].prot_sect |= cp->pmd;
+
+        switch (cp->pmd) {
+        case PMD_SECT_WT:
+                mem_types[MT_CACHECLEAN].prot_sect |= PMD_SECT_WT;
+                break;
+        case PMD_SECT_WB:
+        case PMD_SECT_WBWA:
+                mem_types[MT_CACHECLEAN].prot_sect |= PMD_SECT_WB;
+                break;
+        }
+        pr_info("Memory policy: %sData cache %s\n",
+                ecc_mask ? "ECC enabled, " : "", cp->policy);
+
+        for (i = 0; i < ARRAY_SIZE(mem_types); i++) {
+                struct mem_type *t = &mem_types[i];
+                if (t->prot_l1)
+                        t->prot_l1 |= PMD_DOMAIN(t->domain);
+                if (t->prot_sect)
+                        t->prot_sect |= PMD_DOMAIN(t->domain);
+        }
+}
 {% endhighlight %}
+
+build_mem_type_table() 函数的作用就是，由于函数较长并且兼容多个 ARM
+版本，本节只分析与 ARMv7 相关的代码：
+
+{% highlight c %}
+        /*
+         * Mark the device areas according to the CPU/architecture.
+         */
+        if (cpu_is_xsc3() || (cpu_arch >= CPU_ARCH_ARMv6 && (cr & CR_XP))) {
+                if (!cpu_is_xsc3()) {
+                        /*
+                         * Mark device regions on ARMv6+ as execute-never
+                         * to prevent speculative instruction fetches.
+                         */
+                        mem_types[MT_DEVICE].prot_sect |= PMD_SECT_XN;
+                        mem_types[MT_DEVICE_NONSHARED].prot_sect |= PMD_SECT_XN;
+                        mem_types[MT_DEVICE_CACHED].prot_sect |= PMD_SECT_XN;
+                        mem_types[MT_DEVICE_WC].prot_sect |= PMD_SECT_XN;
+
+                        /* Also setup NX memory mapping */
+                        mem_types[MT_MEMORY_RW].prot_sect |= PMD_SECT_XN;
+                }
+{% endhighlight %}
+
+cpu_arch 变量存储 Architecture 信息，ARMv7 此时对应的 cpu_arch
+大于 CPU_ARCH_ARMv6，且 SCTR 寄存器的 XP 位置位。ARMv7 中 SCTR 寄存器
+的 XP 位恒为 1，SCTLR 寄存器的布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000226.png)
+
+因此上面的函数得以执行。函数首先调用
+cpu_is_xsc3() 函数判断如果当前不是 XSC3 CPU，那么函数设置
+mem_types[] 数组各个成员的 prot_sect 标志，增加对 PMD_SECT_XN
+的支持。XN 的意思是 Execute-Never，即用于指明处理器能否在该区域上执行
+程序。例如在支持二级页表的页目录项中，XN 的定义如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000227.png)
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000228.png)
+
+{% highlight c %}
+                if (cpu_arch >= CPU_ARCH_ARMv7 && (cr & CR_TRE)) {
+                        /*
+                         * For ARMv7 with TEX remapping,
+                         * - shared device is SXCB=1100
+                         * - nonshared device is SXCB=0100
+                         * - write combine device mem is SXCB=0001
+                         * (Uncached Normal memory)
+                         */
+                        mem_types[MT_DEVICE].prot_sect |= PMD_SECT_TEX(1);
+                        mem_types[MT_DEVICE_NONSHARED].prot_sect |= PMD_SECT_TEX(1);
+                        mem_types[MT_DEVICE_WC].prot_sect |= PMD_SECT_BUFFERABLE;
+                }
+{% endhighlight %}
+
+在 ARMv7 体系中，如果 SCTLR 寄存器的 "TEX remap enable" 位置位，
+例如在 SCTLR 寄存器布局中：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000226.png)
+
+其中 TRE 位用于 SCTLR 寄存器的 bit 28，用于页表的 TEX remap 使能。
+如果该位置位，那么在页表中，TEX[2:1] 被分配给操作系统管理，而 TEX[0],
+C 位，B 位，以及 MMU remap 寄存器用于描述内存区域的属性；反之如果该
+位清零，那么在页表中，TEX[2:0] 和 C 位，B 位一起用于描述内存区域的
+属性，如下图页目录项中：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000227.png)
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000229.png)
+
+根据 SCTLR 寄存器 CR_TRE 的置位清零情况，如果置位，函数将
+PMD_SECT_TEX(1) 同步到页目录项里。
+
+{% highlight c %}
+        /*
+         * Now deal with the memory-type mappings
+         */
+        cp = &cache_policies[cachepolicy];
+        vecs_pgprot = kern_pgprot = user_pgprot = cp->pte;
+        s2_pgprot = cp->pte_s2;
+        hyp_device_pgprot = mem_types[MT_DEVICE].prot_pte;
+        s2_device_pgprot = mem_types[MT_DEVICE].prot_pte_s2;
+{% endhighlight %}
+
+内核在启动过程中，曾调用过函数 init_default_cache_policy() 函数
+设置了全局变量 cachepolicy，该变量是 cache_policies[] 数组中的
+一个索引，用于指明当前系统 CACHE采用的策略。函数从 cache_policies[]
+数组中获得当前系统 CACHE 采用的策略，并存储到 cp 变量里。函数将
+cp->pte 赋值为 vecs_pgprot, kern_pgprot 和 user_pgrot. 这段函数
+还设置了几个全局变量。
+
+{% highlight c %}
+#ifndef CONFIG_ARM_LPAE
+        /*
+         * We don't use domains on ARMv6 (since this causes problems with
+         * v6/v7 kernels), so we must use a separate memory type for user
+         * r/o, kernel r/w to map the vectors page.
+         */
+        if (cpu_arch == CPU_ARCH_ARMv6)
+                vecs_pgprot |= L_PTE_MT_VECTORS;
+
+        /*
+         * Check is it with support for the PXN bit
+         * in the Short-descriptor translation table format descriptors.
+         */
+        if (cpu_arch == CPU_ARCH_ARMv7 &&
+                (read_cpuid_ext(CPUID_EXT_MMFR0) & 0xF) >= 4) {
+                user_pmd_table |= PMD_PXNTABLE;
+        }
+#endif
+{% endhighlight %}
+
+如果此时没有定义 CONFIG_ARM_LPAE 宏，函数将执行上面的代码，由于
+cpu_arch 在 ARMv7 里面是 CPU_ARCH_ARMv7，如果此时 ID_MMFR0
+寄存器的最低 4 bit 的值大于等于 4。ID_MMFR0 寄存器的布局如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000007.png)
+
+最低的 4 bit 是 VMSA support 域，其定义如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000230.png)
+
+此时，当 VMSA support,bits[3:0] 大于等于 4，那么将 PXN 添加到
+Short-descriptor 页表里面。函数将 user_pmd_table 里面添加了
+PMD_PXNTABLE.
+
+{% highlight c %}
+        /*
+         * ARMv6 and above have extended page tables.
+         */
+        if (cpu_arch >= CPU_ARCH_ARMv6 && (cr & CR_XP)) {
+#ifndef CONFIG_ARM_LPAE
+                /*
+                 * Mark cache clean areas and XIP ROM read only
+                 * from SVC mode and no access from userspace.
+                 */
+                mem_types[MT_ROM].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+                mem_types[MT_MINICLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+                mem_types[MT_CACHECLEAN].prot_sect |= PMD_SECT_APX|PMD_SECT_AP_WRITE;
+#endif
+
+                /*
+                 * If the initial page tables were created with the S bit
+                 * set, then we need to do the same here for the same
+                 * reasons given in early_cachepolicy().
+                 */
+                if (initial_pmd_value & PMD_SECT_S) {
+                        user_pgprot |= L_PTE_SHARED;
+                        kern_pgprot |= L_PTE_SHARED;
+                        vecs_pgprot |= L_PTE_SHARED;
+                        s2_pgprot |= L_PTE_SHARED;
+                        mem_types[MT_DEVICE_WC].prot_sect |= PMD_SECT_S;
+                        mem_types[MT_DEVICE_WC].prot_pte |= L_PTE_SHARED;
+                        mem_types[MT_DEVICE_CACHED].prot_sect |= PMD_SECT_S;
+                        mem_types[MT_DEVICE_CACHED].prot_pte |= L_PTE_SHARED;
+                        mem_types[MT_MEMORY_RWX].prot_sect |= PMD_SECT_S;
+                        mem_types[MT_MEMORY_RWX].prot_pte |= L_PTE_SHARED;
+                        mem_types[MT_MEMORY_RW].prot_sect |= PMD_SECT_S;
+                        mem_types[MT_MEMORY_RW].prot_pte |= L_PTE_SHARED;
+                        mem_types[MT_MEMORY_DMA_READY].prot_pte |= L_PTE_SHARED;
+                        mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= PMD_SECT_S;
+                        mem_types[MT_MEMORY_RWX_NONCACHED].prot_pte |= L_PTE_SHARED;
+                }
+        }
+{% endhighlight %}
+
+在 ARMv7 中 SCTLR 寄存器的 23 bit 恒为 1，那么 "cr&CR_XP"
+为真，那么函数执行上面的代码，并且此时宏 CONFIG_ARM_LPAE 没有
+拓展，那么函数首先标记 MT_CACHECLEAN 与 MT_ROM, MT_MINICLEAN
+的 prot_sect 成员 PMD_SECT_APX,PMD_SECT_AP_WRITE. 函数接下来
+解析 initial_pmd_value 是否包含 PMD_SECT_S,initial_pmd_val
+是通过 init_default_cache_policy() 函数传递的参数设置，该参数
+来自 ARMv7 proc_info_list 的 __cpu_mm_mmu_flags, 在 ARMv7 中，
+该值的定义为：
+
+{% highlight c %}
+.__cpu_mm_mmu_flags = PMD_TYPE_SECT | PMD_SECT_AP_WRITE | PMD_SECT_AP_READ | \
+                        PMD_SECT_AF | PMD_FLAGS_UP
+{% endhighlight %}
+
+从上面的定义可以知道 initial_pmd_value 不包含 PMD_SECT_S 标志，
+因此这段代码不执行。
+
+{% highlight c %}
+        /*
+         * Non-cacheable Normal - intended for memory areas that must
+         * not cause dirty cache line writebacks when used
+         */
+        if (cpu_arch >= CPU_ARCH_ARMv6) {
+                if (cpu_arch >= CPU_ARCH_ARMv7 && (cr & CR_TRE)) {
+                        /* Non-cacheable Normal is XCB = 001 */
+                        mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |=
+                                PMD_SECT_BUFFERED;
+                } else {
+                        /* For both ARMv6 and non-TEX-remapping ARMv7 */
+                        mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |=
+                                PMD_SECT_TEX(1);
+                }
+        } else {
+                mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= PMD_SECT_BUFFERABLE;
+        }
+{% endhighlight %}
+
+在 ARMv7 体系中，如果 SCTLR 寄存器的 "TEX remap enable" 位置位，
+例如在 SCTLR 寄存器布局中：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000226.png)
+
+其中 TRE 位用于 SCTLR 寄存器的 bit 28，用于页表的 TEX remap 使能。
+如果该位置位，那么在页表中，TEX[2:1] 被分配给操作系统管理，而 TEX[0],
+C 位，B 位，以及 MMU remap 寄存器用于描述内存区域的属性；反之如果该
+位清零，那么在页表中，TEX[2:0] 和 C 位，B 位一起用于描述内存区域的
+属性，如下图页目录项中：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000227.png)
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000229.png)
+
+根据 SCTLR 寄存器 CR_TRE 的置位清零情况，如果置位，
+此时将 MT_MEMORY_RWX_NOCACHED 的 prot_sect 加上
+PMD_SECT_BUFFERED。
+
+{% highlight c %}
+        for (i = 0; i < 16; i++) {
+                pteval_t v = pgprot_val(protection_map[i]);
+                protection_map[i] = __pgprot(v | user_pgprot);
+        }
+{% endhighlight %}
+
+函数接下来就是从 protection_map[] 数组中添加对 user_pgprot 的支持。
+
+{% highlight c %}
+        mem_types[MT_LOW_VECTORS].prot_pte |= vecs_pgprot;
+        mem_types[MT_HIGH_VECTORS].prot_pte |= vecs_pgprot;
+
+        pgprot_user   = __pgprot(L_PTE_PRESENT | L_PTE_YOUNG | user_pgprot);
+        pgprot_kernel = __pgprot(L_PTE_PRESENT | L_PTE_YOUNG |
+                                 L_PTE_DIRTY | kern_pgprot);
+        pgprot_s2  = __pgprot(L_PTE_PRESENT | L_PTE_YOUNG | s2_pgprot);
+        pgprot_s2_device  = __pgprot(s2_device_pgprot);
+        pgprot_hyp_device  = __pgprot(hyp_device_pgprot);
+
+        mem_types[MT_LOW_VECTORS].prot_l1 |= ecc_mask;
+        mem_types[MT_HIGH_VECTORS].prot_l1 |= ecc_mask;
+        mem_types[MT_MEMORY_RWX].prot_sect |= ecc_mask | cp->pmd;
+        mem_types[MT_MEMORY_RWX].prot_pte |= kern_pgprot;
+        mem_types[MT_MEMORY_RW].prot_sect |= ecc_mask | cp->pmd;
+        mem_types[MT_MEMORY_RW].prot_pte |= kern_pgprot;
+        mem_types[MT_MEMORY_DMA_READY].prot_pte |= kern_pgprot;
+        mem_types[MT_MEMORY_RWX_NONCACHED].prot_sect |= ecc_mask;
+        mem_types[MT_ROM].prot_sect |= cp->pmd;
+{% endhighlight %}
+
+接下来函数将之前计算好的标记更新到指定的遍历和数组里。每种
+mem_types 成员都有了新的标志。
+
+{% highlight c %}
+        switch (cp->pmd) {
+        case PMD_SECT_WT:
+                mem_types[MT_CACHECLEAN].prot_sect |= PMD_SECT_WT;
+                break;
+        case PMD_SECT_WB:
+        case PMD_SECT_WBWA:
+                mem_types[MT_CACHECLEAN].prot_sect |= PMD_SECT_WB;
+                break;
+        }
+        pr_info("Memory policy: %sData cache %s\n",
+                ecc_mask ? "ECC enabled, " : "", cp->policy);
+
+        for (i = 0; i < ARRAY_SIZE(mem_types); i++) {
+                struct mem_type *t = &mem_types[i];
+                if (t->prot_l1)
+                        t->prot_l1 |= PMD_DOMAIN(t->domain);
+                if (t->prot_sect)
+                        t->prot_sect |= PMD_DOMAIN(t->domain);
+        }
+{% endhighlight %}
+
+函数的最后就是判断 CACHE 的类型，如果是 write-through，
+那么给 MT_CACHECLEAN 添加 PMD_SECT_WT；如果是 write-back，
+那么给 MT_CACHECLEAN 添加 PMD_SECT_WB。最后函数调用 for
+循环，如果遍历到 mem_types[] 成员的 prot_l1 有效，那么函数
+对 prot_l1 添加 PMD_DOMAIN() 的支持。如果成员 port_sect
+有效，那么添加对 PMD_DOMAIN() 的支持。
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A0194">early_mm_init</span>
 
 {% highlight c %}
-
+void __init early_mm_init(const struct machine_desc *mdesc)
+{
+        build_mem_type_table();
+        early_paging_init(mdesc);
+}
 {% endhighlight %}
+
+early_mm_init() 函数用于在初始化简单的页表项 PTE 和 PMD。
+参数 mdesc 指向 machine_desc 结构，函数首先调用
+build_mem_type_table() 函数根据体系设置了 PTE 和 PMD 在
+mem_types[] 数组中的标志，然后调用 early_paging_init()
+函数初始化了早期的页表，不过该函数的具体执行过程与 mdesc 参数
+有关，如果 mdesc 不做特殊处理，该函数不做任何实质性的工作。
+
+> - [build_mem_type_table](#A0193)
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A0195">setup_dma_zone</span>
 
 {% highlight c %}
-
+void __init setup_dma_zone(const struct machine_desc *mdesc)
+{
+#ifdef CONFIG_ZONE_DMA
+        if (mdesc->dma_zone_size) {
+                arm_dma_zone_size = mdesc->dma_zone_size;
+                arm_dma_limit = PHYS_OFFSET + arm_dma_zone_size - 1;
+        } else
+                arm_dma_limit = 0xffffffff;
+        arm_dma_pfn_limit = arm_dma_limit >> PAGE_SHIFT;
+#endif
+}
 {% endhighlight %}
+
+setup_dma_zone() 函数的作用就是设置 DMA 域值。参数 mdesc 指向
+体系相关的信息。如果系统支持 CONFIG_ZONE_DMA, 此时 mdesc 包含了
+dma_zone_size 的信息，那么函数设置 arm_dma_zone_size 的值为
+mdesc->dma_zone_size, 且 arm_dma_limit 为
+"PHYS_OFFSET + arm_dma_zone_size - 1"；反之将 arm_dma_limit
+设置为 0xffffffff. 这是完毕之后，计算 arm_dma_limit 的最大页帧
+号，存储在 arm_dma_pfn_limit. 如果系统不支持 CONFIG_ZONE_DMA,
+那么函数不做任何实质性动作。
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A0196">vmalloc_min</span>
 
 {% highlight c %}
-
+static void * __initdata vmalloc_min =
+        (void *)(VMALLOC_END - (240 << 20) - VMALLOC_OFFSET);
 {% endhighlight %}
+
+vmalloc_min 用于指向 VMALLOC 内存区域最低地址。该地址通过
+将 VMALLOC_END VMALLOC 区域结束地址减去 240M，再减去
+VMALLOC 区域隔离区 VMLLOC_OFFSET (8M)，因此计算出
+VMALLOC 内存区最低地址。
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A0197">adjust_lowmem_bounds</span>
 
 {% highlight c %}
+void __init adjust_lowmem_bounds(void)
+{
+        phys_addr_t memblock_limit = 0;
+        u64 vmalloc_limit;
+        struct memblock_region *reg;
+        phys_addr_t lowmem_limit = 0;
 
+        /*
+         * Let's use our own (unoptimized) equivalent of __pa() that is
+         * not affected by wrap-arounds when sizeof(phys_addr_t) == 4.
+         * The result is used as the upper bound on physical memory address
+         * and may itself be outside the valid range for which phys_addr_t
+         * and therefore __pa() is defined.
+         */
+        vmalloc_limit = (u64)(uintptr_t)vmalloc_min - PAGE_OFFSET + PHYS_OFFSET;
+
+        for_each_memblock(memory, reg) {
+                phys_addr_t block_start = reg->base;
+                phys_addr_t block_end = reg->base + reg->size;
+
+                if (reg->base < vmalloc_limit) {
+                        if (block_end > lowmem_limit)
+                                /*
+                                 * Compare as u64 to ensure vmalloc_limit does
+                                 * not get truncated. block_end should always
+                                 * fit in phys_addr_t so there should be no
+                                 * issue with assignment.
+                                 */
+                                lowmem_limit = min_t(u64,
+                                                         vmalloc_limit,
+                                                         block_end);
+
+                        /*
+                         * Find the first non-pmd-aligned page, and point
+                         * memblock_limit at it. This relies on rounding the
+                         * limit down to be pmd-aligned, which happens at the
+                         * end of this function.
+                         *
+                         * With this algorithm, the start or end of almost any
+                         * bank can be non-pmd-aligned. The only exception is
+                         * that the start of the bank 0 must be section-
+                         * aligned, since otherwise memory would need to be
+                         * allocated when mapping the start of bank 0, which
+                         * occurs before any free memory is mapped.
+                         */
+                        if (!memblock_limit) {
+                                if (!IS_ALIGNED(block_start, PMD_SIZE))
+                                        memblock_limit = block_start;
+                                else if (!IS_ALIGNED(block_end, PMD_SIZE))
+                                        memblock_limit = lowmem_limit;
+                        }
+
+                }
+        }
+
+
+        arm_lowmem_limit = lowmem_limit;
+
+        high_memory = __va(arm_lowmem_limit - 1) + 1;
+
+        if (!memblock_limit)
+                memblock_limit = arm_lowmem_limit;
+
+        /*
+         * Round the memblock limit down to a pmd size.  This
+         * helps to ensure that we will allocate memory from the
+         * last full pmd, which should be mapped.
+         */
+        memblock_limit = round_down(memblock_limit, PMD_SIZE);
+
+        if (!IS_ENABLED(CONFIG_HIGHMEM) || cache_is_vipt_aliasing()) {
+                if (memblock_end_of_DRAM() > arm_lowmem_limit) {
+                        phys_addr_t end = memblock_end_of_DRAM();
+
+                        pr_notice("Ignoring RAM at %pa-%pa\n",
+                                  &memblock_limit, &end);
+                        pr_notice("Consider using a HIGHMEM enabled kernel.\n");
+
+                        memblock_remove(memblock_limit, end - memblock_limit);
+                }
+        }
+
+        memblock_set_current_limit(memblock_limit);
+}
 {% endhighlight %}
+
+adjust_lowmem_bounds() 函数用于调整，由于代码太长，分段解析。
+
+{% highlight c %}
+void __init adjust_lowmem_bounds(void)
+{
+        phys_addr_t memblock_limit = 0;
+        u64 vmalloc_limit;
+        struct memblock_region *reg;
+        phys_addr_t lowmem_limit = 0;
+
+        /*
+         * Let's use our own (unoptimized) equivalent of __pa() that is
+         * not affected by wrap-arounds when sizeof(phys_addr_t) == 4.
+         * The result is used as the upper bound on physical memory address
+         * and may itself be outside the valid range for which phys_addr_t
+         * and therefore __pa() is defined.
+         */
+        vmalloc_limit = (u64)(uintptr_t)vmalloc_min - PAGE_OFFSET + PHYS_OFFSET;
+{% endhighlight %}
+
+函数定义了局部变量 memblock_limit 用于存储 MEMBLOCK 内存分配器的限制值，
+可以上上限也可以是下限。局部变量 vmalloc_limit 用于存储 VMALLOC 内存区的
+极值，lowmem_limit 局部变量用于存储低端物理内存的限制。函数首先将 vmalloc_min
+的值 (vmalloc_min 为 VMALLOC 内存区最低地址) 减去 PAGE_OFFSET (内核虚拟地址
+起始地址), 然后在加上 PHYS_OFFSET (DRAM 在地址总线上的偏移，即 DRAM 的物
+理地址)，通过计算可以获得 VMALLOC 内存区的起始物理地址。
+
+{% highlight c %}
+        for_each_memblock(memory, reg) {
+                phys_addr_t block_start = reg->base;
+                phys_addr_t block_end = reg->base + reg->size;
+
+                if (reg->base < vmalloc_limit) {
+                        if (block_end > lowmem_limit)
+                                lowmem_limit = min_t(u64,
+                                                         vmalloc_limit,
+                                                         block_end);
+
+                        if (!memblock_limit) {
+                                if (!IS_ALIGNED(block_start, PMD_SIZE))
+                                        memblock_limit = block_start;
+                                else if (!IS_ALIGNED(block_end, PMD_SIZE))
+                                        memblock_limit = lowmem_limit;
+                        }
+
+                }
+        }
+{% endhighlight %}
+
+函数接着调用 for_each_memblock() 函数遍历 MEMBLOCK 内存分配器的
+memory 可用物理内存区域内的所有 regions。每遍历一块内存区，函数
+首先获得该内存区的起始物理地址和终止地址。如果该内存区的起始物理
+地址小于 vmalloc_limit，即 VMALLOC 内存区起始物理地址，那么函数
+继续判断，如果此时遍历到的内存区终止物理地址大于 lowmem_limit,
+那么函数调用 min_t() 函数获得 vmalloc_limit 与遍历到内存区块
+的终止物理地址中最小值，这样 lowmem_limit 的最大值不会超过
+vmalloc_limit. 如果此时 memblock_limit 等于 0，那么函数继续
+判断，如果遍历到的内存区块的起始地址没有按 PMD_SIZE 对齐，那么
+函数将 memblock_limit 设置为遍历到内存区块的起始地址；反之
+如果遍历到的内存区块的起始地址按 PMD_SIZE 对齐，但遍历到的内存
+区块的终止地址没有按 PMD_SIZE 对齐，那么 memblock_limit 设置
+为 lowmem_limit，即最大低端物理内存地址；如果两个条件都不满足，
+那么 memblock_limit 依旧是 0。
+
+{% highlight c %}
+        arm_lowmem_limit = lowmem_limit;
+
+        high_memory = __va(arm_lowmem_limit - 1) + 1;
+
+        if (!memblock_limit)
+                memblock_limit = arm_lowmem_limit;
+
+        /*
+         * Round the memblock limit down to a pmd size.  This
+         * helps to ensure that we will allocate memory from the
+         * last full pmd, which should be mapped.
+         */
+        memblock_limit = round_down(memblock_limit, PMD_SIZE);
+{% endhighlight %}
+
+遍历完所有的可用物理内存区块之后，已经找到可用低端物理内存最大物理
+地址，其存储在 lowmem_limit 内，此时将该值赋值给 arm_lowmem_limit,
+因此全局变量 arm_lowmem_limit 指向低端物理内存的结束地址。因此
+低端物理内存结束地址之后便是高端物理内存的起始地址，函数此时调用
+__va() 函数获得高端物理内存的起始虚拟地址。如果此时 memblock_limit
+还是零，那么函数将 memblock_limit 设置为 arm_lowmem_limit, 即
+低端物理内存结束地址。函数使用 round_down() 函数向下将
+memblock_limit 按 PMD_SIZE 对齐。
+
+{% highlight c %}
+        if (!IS_ENABLED(CONFIG_HIGHMEM) || cache_is_vipt_aliasing()) {
+                if (memblock_end_of_DRAM() > arm_lowmem_limit) {
+                        phys_addr_t end = memblock_end_of_DRAM();
+
+                        pr_notice("Ignoring RAM at %pa-%pa\n",
+                                  &memblock_limit, &end);
+                        pr_notice("Consider using a HIGHMEM enabled kernel.\n");
+
+                        memblock_remove(memblock_limit, end - memblock_limit);
+                }
+        }
+
+        memblock_set_current_limit(memblock_limit);
+{% endhighlight %}
+
+如果此时系统没有定义 CONFIG_HIGMEM 宏或者 cache_is_vipt_aliasing()
+函数返回 1，即 CACHE 是 VIPT 的，那么函数继续判断，如果此时调用
+memblock_end_of_DRAM() 函数获得 DRAM 的终止地址大于 arm_lowmem_limit,
+那么函数将会提示，并调用 memblock_remove() 函数将
+[memblock_limit, end-memblock_limit] 区域从 MEMBLOCK 内存分配器
+的 memory 区域内移除。函数最后调用 memblock_set_current_limit()
+函数设置了 MEMBLOCK 内存分配器的限制值。
+
+> - [PHYS_OFFSET](#A0198)
+>
+> - [PAGE_OFFSET](#A0199)
+>
+> - [memblock_remove](#A0200)
+>
+> - [memblock_end_of_DRAM](#A0201)
+>
+> - [memblock_set_current_limit](#A0202)
+>
+> - [round_down](#A0154)
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A0198">PHYS_OFFSET</span>
 
 {% highlight c %}
-
+config PHYS_OFFSET
+        hex "Physical address of main memory" if MMU
+        depends on !ARM_PATCH_PHYS_VIRT
+        default DRAM_BASE if !MMU
+        default 0x00000000 if ARCH_EBSA110 || \
+                        ARCH_FOOTBRIDGE || \
+                        ARCH_INTEGRATOR || \
+                        ARCH_IOP13XX || \                
+                        ARCH_KS8695 || \
+                        ARCH_REALVIEW
+        default 0x10000000 if ARCH_OMAP1 || ARCH_RPC
+        default 0x20000000 if ARCH_S5PV210
+        default 0xc0000000 if ARCH_SA1100
+        help
+          Please provide the physical address corresponding to the
+          location of main memory in your system.
 {% endhighlight %}
+
+PHYS_OFFSET 宏用于指明 DRAM 在地址总线上的偏移。其定义在
+"arch/arm/Kconfig"，从其定义可以看出 PHYS_OFFSET 的大小
+与体系有关。
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A0199">PAGE_OFFSET</span>
 
 {% highlight c %}
-
+config PAGE_OFFSET
+        hex
+        default PHYS_OFFSET if !MMU
+        default 0x40000000 if VMSPLIT_1G
+        default 0x80000000 if VMSPLIT_2G
+        default 0xB0000000 if VMSPLIT_3G_OPT
+        default 0xC0000000
 {% endhighlight %}
+
+PAGE_OFFSET 宏用于指明内核空间虚拟地址的起始地址。其值与用户空间
+和内核空间虚拟地址划分有关，如果用户空间与内核空间按 1:3，那么
+内核空间虚拟地址从 0x40000000 开始；如果用户空间与内核空间按 2:2，
+那么内核空间虚拟地址从 0x80000000 开始；如果用户空间与内核空间按
+3:1，那么内核空间虚拟地址从 0xB0000000 开始。如果都不是，那么
+内核空间虚拟地址从 0xC0000000 开始。
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A0200">memblock_remove</span>
 
 {% highlight c %}
+int __init_memblock memblock_remove(phys_addr_t base, phys_addr_t size)
+{               
+        phys_addr_t end = base + size - 1;
 
+        memblock_dbg("memblock_remove: [%pa-%pa] %pS\n",
+                     &base, &end, (void *)_RET_IP_);
+
+        return memblock_remove_range(&memblock.memory, base, size);
+}
 {% endhighlight %}
+
+memblock_remove() 函数的作用是从 MEMBLOCK 内存分配器的 memory
+区域内移除指定范围的内存区块。参数 base 指向要移除内存区块的起始
+物理地址，size 参数指向要移除内存区的长度。函数首先计算出要移除
+内存区块的结束地址。函数通过调用 memblock_remove_range() 函数
+从 MEMBLOCK 内存分配器的 memory 区域内移除指定大小的内存区块。
+
+> - [memblock_remove_range](#A0160)
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A0201">memblock_end_of_DRAM</span>
 
 {% highlight c %}
+phys_addr_t __init_memblock memblock_end_of_DRAM(void)
+{                       
+        int idx = memblock.memory.cnt - 1;
 
+        return (memblock.memory.regions[idx].base + memblock.memory.regions[idx].size);                 
+}
 {% endhighlight %}
+
+memblock_end_of_DRAM() 函数用于获得 MEMBLOCK 内存分配器 memory
+区域的最大物理地址。函数首先获得 memory 区域内最大内存区块的索引，
+然后返回该内存区块的终止地址，以此代表 DRAM 的终止物理地址。
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A0202">memblock_set_current_limit</span>
 
 {% highlight c %}
-
+void __init_memblock memblock_set_current_limit(phys_addr_t limit)
+{                       
+        memblock.current_limit = limit;
+}
 {% endhighlight %}
+
+memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限制值，
+其可以是上限也可以是下限。MEMBLOCK 的现在存储在 current_limit 成员里。
 
 ------------------------------------
 
