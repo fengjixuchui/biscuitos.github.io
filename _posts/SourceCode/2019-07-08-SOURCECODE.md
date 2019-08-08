@@ -8704,7 +8704,8 @@ void __init adjust_lowmem_bounds(void)
 }
 {% endhighlight %}
 
-adjust_lowmem_bounds() 函数用于调整，由于代码太长，分段解析。
+adjust_lowmem_bounds() 函数用于调整获得低端物理内存的信息。
+由于代码太长，分段解析。
 
 {% highlight c %}
 void __init adjust_lowmem_bounds(void)
@@ -8934,7 +8935,2444 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A0203">memblock_reserve</span>
+
+{% highlight c %}
+int __init_memblock memblock_reserve(phys_addr_t base, phys_addr_t size)
+{       
+        phys_addr_t end = base + size - 1;
+
+        memblock_dbg("memblock_reserve: [%pa-%pa] %pF\n",
+                     &base, &end, (void *)_RET_IP_);
+
+        return memblock_add_range(&memblock.reserved, base, size, MAX_NUMNODES, 0);     
+}
+{% endhighlight %}
+
+memblock_reserve() 函数用于将内存区块加入到 MEMBLOCK 的保留区内。
+加入保留区内之后，该内存区块不能在被 MEMBLOCK 分配器使用。参数 base
+指向需要预留内存区块的起始物理地址，size 参数表示区块的大小。
+函数通过 memblock_add_range() 函数将内存区块加入到 MEMBLOCK 内存
+分配器的 reserved 内存区。
+
+> - [memblock_add_range](#A0165)
+
+------------------------------------
+
+#### <span id="A0204">KERNEL_START</span>
+
+{% highlight c %}
+#ifdef CONFIG_XIP_KERNEL
+#define KERNEL_START            _sdata
+#else
+#define KERNEL_START            _stext
+#endif
+{% endhighlight %}
+
+KERNEL_START 宏代表内核镜像的起始虚拟地址。其定义与
+CONFIG_XIP_KERNEL 有关，如果该宏定义，那么 KERNEL_START
+指向 _sdata; 反之指向 _stext.
+
+------------------------------------
+
+#### <span id="A0205">KERNEL_END</span>
+
+{% highlight c %}
+#define KERNEL_END              _end
+{% endhighlight %}
+
+KERNEL_END 宏指向内核镜像结束虚拟地址。其指向 _end.
+
+------------------------------------
+
+#### <span id="A0206">memblock_addrs_overlap</span>
+
+{% highlight c %}
+/*
+ * Address comparison utilities
+ */
+static unsigned long __init_memblock memblock_addrs_overlap(phys_addr_t base1, phys_addr_t size1,
+                                       phys_addr_t base2, phys_addr_t size2)
+{
+        return ((base1 < (base2 + size2)) && (base2 < (base1 + size1)));
+}
+{% endhighlight %}
+
+memblock_addrs_overlap() 函数用于确认两块内存区块是否存在重叠。
+如果存在，那么函数返回 1；反之返回 0.
+
+------------------------------------
+
+#### <span id="A0207">memblock_overlaps_region</span>
+
+{% highlight c %}
+bool __init_memblock memblock_overlaps_region(struct memblock_type *type,
+                                        phys_addr_t base, phys_addr_t size)
+{
+        unsigned long i;
+
+        for (i = 0; i < type->cnt; i++)
+                if (memblock_addrs_overlap(base, size, type->regions[i].base,
+                                           type->regions[i].size))
+                        break;
+        return i < type->cnt;
+}
+{% endhighlight %}
+
+memblock_overlaps_region() 函数用于判断内存区块在 MEMBLOCK 内存分配器
+指定 type 的 regions 内是否存在重叠部分，如果存在，那么函数返回第一个
+重叠区块的索引。函数使用 for 循环遍历 type 的所有 regions，每次遍历
+一个 region，通过函数 memblock_addrs_overlap() 确认该区块是否和参数
+对应的区块存在重合部分，如果存在，那么函数终止循环；反之继续查找。
+如果找到，那么返回 true；反之返回 false。
+
+> - [memblock_addrs_overlap](#A0206)
+
+------------------------------------
+
+#### <span id="A0208">memblock_is_region_memory</span>
+
+{% highlight c %}
+/**
+ * memblock_is_region_memory - check if a region is a subset of memory
+ * @base: base of region to check
+ * @size: size of region to check
+ *
+ * Check if the region [@base, @base + @size) is a subset of a memory block.
+ *
+ * Return:
+ * 0 if false, non-zero if true
+ */
+bool __init_memblock memblock_is_region_memory(phys_addr_t base, phys_addr_t size)
+{
+        int idx = memblock_search(&memblock.memory, base);
+        phys_addr_t end = base + memblock_cap_size(base, &size);
+
+        if (idx == -1)
+                return false;
+        return (memblock.memory.regions[idx].base +
+                 memblock.memory.regions[idx].size) >= end;
+}
+{% endhighlight %}
+
+memblock_is_region_memory() 函数的作用是确认内存区块是否在
+MEMBLOCK 内存分配器 memory regions 里。参数 base 指向内存区块
+的起始物理地址，参数 size 代表内存区块的长度。函数首先调用
+memblock_search() 函数查找 base 参数在 memory regions 的
+索引，如果该索引为 -1，那么代表所要查找的内存区不在 memory
+regions 里。反之如果此时找到的内存区的结束地址大于需要查找的
+结束地址，那么函数直接返回 true，代表需要查找的区域都在
+MEMBLOCK memory 里；反之返回 false。
+
+> - [memblock_search](#A0209)
+>
+> - [memblock_cap_size](#A0159)
+
+------------------------------------
+
+#### <span id="A0209">memblock_search</span>
+
+{% highlight c %}
+static int __init_memblock memblock_search(struct memblock_type *type, phys_addr_t addr)
+{
+        unsigned int left = 0, right = type->cnt;
+
+        do {
+                unsigned int mid = (right + left) / 2;
+
+                if (addr < type->regions[mid].base)
+                        right = mid;
+                else if (addr >= (type->regions[mid].base +
+                                  type->regions[mid].size))
+                        left = mid + 1;
+                else
+                        return mid;
+        } while (left < right);
+        return -1;
+}
+{% endhighlight %}
+
+memblock_search() 函数的作用是根据起始地址，在 MEMBLOCK 指定
+type regions 内找到与起始地址最靠近的内存区块。函数采用二分法，
+在 MEMBLOCK 内存分配器 type regions 中查找内存区块，只要参数
+addr 的值大于内存区块的起始地址但又小于终止地址，那么直接返回
+该内存区块的索引。否则循环结束后没有找到，则直接返回 -1.
+
+------------------------------------
+
+#### <span id="A0210">memblock_is_region_reserved</span>
+
+{% highlight c %}
+/**
+ * memblock_is_region_reserved - check if a region intersects reserved memory
+ * @base: base of region to check
+ * @size: size of region to check
+ *
+ * Check if the region [@base, @base + @size) intersects a reserved
+ * memory block.
+ *
+ * Return:
+ * True if they intersect, false if not.
+ */     
+bool __init_memblock memblock_is_region_reserved(phys_addr_t base, phys_addr_t size)    
+{               
+        memblock_cap_size(base, &size);
+        return memblock_overlaps_region(&memblock.reserved, base, size);
+}
+{% endhighlight %}
+
+memblock_is_region_reserved() 函数的作用是检查参数对应的内存区块
+是否在 MEMBLOCK 内存分配器的预留区内，如果在则返回 true；反之返回
+false。参数 base 指向查找区块的起始地址，参数 size 指向查找区块的
+长度。函数首先调用 memblock_cap_size() 函数得到了查找区域的安全
+长度，然后调用 memblock_overlaps_region() 函数判断查找的区域是否
+在 MEMBLOCK reserved 区域内重合，如果重合则返回 ture，反之返回
+true。
+
+------------------------------------
+
+#### <span id="A0211">arm_initrd_init</span>
+
+{% highlight c %}
+static void __init arm_initrd_init(void)
+{
+#ifdef CONFIG_BLK_DEV_INITRD
+        phys_addr_t start;
+        unsigned long size;
+
+        initrd_start = initrd_end = 0;
+
+        if (!phys_initrd_size)
+                return;
+
+        /*      
+         * Round the memory region to page boundaries as per free_initrd_mem()
+         * This allows us to detect whether the pages overlapping the initrd
+         * are in use, but more importantly, reserves the entire set of pages
+         * as we don't want these pages allocated for other purposes.
+         */
+        start = round_down(phys_initrd_start, PAGE_SIZE);
+        size = phys_initrd_size + (phys_initrd_start - start);
+        size = round_up(size, PAGE_SIZE);
+
+        if (!memblock_is_region_memory(start, size)) {
+                pr_err("INITRD: 0x%08llx+0x%08lx is not a memory region - disabling initrd\n",
+                       (u64)start, size);
+                return;
+        }
+
+        if (memblock_is_region_reserved(start, size)) {
+                pr_err("INITRD: 0x%08llx+0x%08lx overlaps in-use memory region - disabling initrd\n",
+                       (u64)start, size);
+                return;
+        }
+
+        memblock_reserve(start, size);
+
+        /* Now convert initrd to virtual addresses */
+        initrd_start = __phys_to_virt(phys_initrd_start);
+        initrd_end = initrd_start + phys_initrd_size;
+#endif   
+}
+{% endhighlight %}
+
+arm_initrd_init() 函数的作用是将 INITRD 所占用的物理内存加入到
+MEMBLOCK 内存分配器的预留区内。如果定义了宏 CONFIG_BLK_DEV_INITRD，
+那么系统启动的过程中，uboot 将 INITRD 占用的物理地址信息存储在 DTB
+的 chosen 节点内，在 early_init_dt_check_for_initrd() 函数里，就
+是从 DTB 中解析出 INITRD 的物理信息存储在 phys_initrd_start 和
+phys_initrd_size 两个全局变量里。在该函数内，首先判断
+phys_initrd_size, 如果该值为 0，那么函数直接返回。接着函数调用
+round_down() 函数和 round_up() 函数对 phys_initrd_start 和
+phys_initrd_size 进行对齐操作，对齐后的结果存储在 start 和 size
+局部变量里。函数接下来检查 start 与 size 对应的内存区域是否
+已经在 MEMBLOCK reserved 和 memory 区域内，如果调用
+memblock_is_region_memory() 函数发现 INITRD 对应的物理区块
+不全在 MEMBLOCK memory regions 内，那么函数就报错，并返回。
+函数接着调用 memblock_is_region_reserved() 函数发现 start
+和 size 对应的区域已经在 MEMBLOCK reserved 区域内，那么
+函数也同样报错并直接返回。
+
+函数通过检查之后，调用 memblock_reserve() 函数将 start 和
+size 对应的区域加入到 MEMBLOCK 的预留区内，并将 phys_initrd_start
+对应的虚拟地址赋值给 initrd_start, 并将 INITRD 结束的虚拟地址
+存储在 initrd_end 全局变量里。
+
+> - [round_down](#A0154)
+>
+> - [round_up](#A0149)
+>
+> - [memblock_is_region_memory](#A0208)
+>
+> - [memblock_is_region_reserved](#A0210)
+>
+> - [memblock_reserve](#A0203)
+
+------------------------------------
+
+#### <span id="A0212">arm_mm_memblock_reserve</span>
+
+{% highlight c %}
+/*
+ * Reserve the special regions of memory
+ */
+void __init arm_mm_memblock_reserve(void)
+{
+        /*
+         * Reserve the page tables.  These are already in use,
+         * and can only be in node 0.
+         */            
+        memblock_reserve(__pa(swapper_pg_dir), SWAPPER_PG_DIR_SIZE);
+
+#ifdef CONFIG_SA1111
+        /*
+         * Because of the SA1111 DMA bug, we want to preserve our
+         * precious DMA-able memory...
+         */
+        memblock_reserve(PHYS_OFFSET, __pa(swapper_pg_dir) - PHYS_OFFSET);
+#endif
+}
+{% endhighlight %}
+
+arm_mm_memblock_reserve() 函数的作用就是将 ARM 所使用的页目录占用
+的物理内存加入到 MEMBLOCK 预留区内。内核中 swapper_pg_dir 指向内核
+页目录所在的虚拟地址，函数调用 memblock_reserve() 函数将
+swapper_pg_dir 对应的物理内存区块加入到 MEMBLOCK 内存分配的
+预留区内。此处不讨论 SA1111.
+
+------------------------------------
+
+#### <span id="A0213">early_init_dt_reserve_memory_arch</span>
+
+{% highlight c %}
+int __init __weak early_init_dt_reserve_memory_arch(phys_addr_t base,
+                                        phys_addr_t size, bool nomap)
+{                                         
+        if (nomap)
+                return memblock_remove(base, size);
+        return memblock_reserve(base, size);
+}
+{% endhighlight %}
+
+early_init_dt_reserve_memory_arch() 函数的作用就是根据不同条件，
+将 DTB 占用的物理内存加入到 MEMBLOCK 的指定区域，参数 base 指向
+DTB 占用物理内存区的起始地址，size 代表大小，nomap 参数是否给
+DTB 所占用的物理内存建立页表。函数首先判断 nomap 参数，如果该
+参数为真，那么函数不给 DTB 占用的物理内存建立页表，并将这段物理
+内存区域从 MEMBLOCK memory 区域内移除；反之函数直接调用
+memblock_reserve() 将 DTB 加入到 MEMBLOCK 的预留区内。
+
+> - [memblock_remove](#A0200)
+>
+> - [memblock_reserve](#A0203)
+
+------------------------------------
+
+#### <span id="A0214">early_init_fdt_reserve_self</span>
+
+{% highlight c %}
+/**
+ * early_init_fdt_reserve_self() - reserve the memory used by the FDT blob
+ */
+void __init early_init_fdt_reserve_self(void)
+{
+        if (!initial_boot_params)
+                return;
+
+        /* Reserve the dtb region */
+        early_init_dt_reserve_memory_arch(__pa(initial_boot_params),
+                                          fdt_totalsize(initial_boot_params),
+                                          0);
+}
+{% endhighlight %}
+
+early_init_fdt_reserve_self() 函数的作用就是将 DTB 加入到
+MEMBLOCK 的预留区内。initial_boot_params 指向 DTB 所在的虚拟地址，
+函数首先判断 initial_boot_params 的有效性，如果无效，则直接返回。
+函数接着调用 early_init_dt_reserve_memory_arch() 函数将
+DTB 所在的物理地址加入到 MEMBLOCK 预留区内。
+
+> - [early_init_dt_reserve_memory_arch](#A0213)
+>
+> - [fdt_totalsize](#A0078)
+
+------------------------------------
+
+#### <span id="A0215">fdt_mem_rsv_</span>
+
+{% highlight c %}
+static inline const struct fdt_reserve_entry *fdt_mem_rsv_(const void *fdt, int n)
+{
+        const struct fdt_reserve_entry *rsv_table =
+                (const struct fdt_reserve_entry *)
+                ((const char *)fdt + fdt_off_mem_rsvmap(fdt));
+
+        return rsv_table + n;
+}
+{% endhighlight %}
+
+fdt_mem_rsv_() 函数的作用是从 DTB 的 memory reserve map 区域
+读取指定保留区数据。在 memory reserve map 区域，每个保留区使用
+struct fdt_erserve_entry 数据结构维护一个保留区，其定义如下：
+
+{% highlight c %}
+struct fdt_reserve_entry {
+        fdt64_t address;
+        fdt64_t size;
+};
+{% endhighlight %}
+
+参数 fdt 指向 DTB 所在的虚拟地址，通过 fdt_off_mem_rsvmap()
+函数可以获得 DTB memory reserve map 区域的起始地址，然后
+通过 n 做索引获得指定的 fdt_reserve_entry 结构。
+
+> - [fdt_off_mem_rsvmap](#A0081)
+
+------------------------------------
+
+#### <span id="A0216">fdt_mem_rsv_w_</span>
+
+{% highlight c %}
+static inline struct fdt_reserve_entry *fdt_mem_rsv_w_(void *fdt, int n)
+{
+        return (void *)(uintptr_t)fdt_mem_rsv_(fdt, n);
+}
+{% endhighlight %}
+
+fdt_mem_rsv_w_() 用于获得 DTB memory reserve map 表第
+n 个 fdt_reserve_entry 结构。参数 fdt 指向 DTB 所在的虚拟
+地址，n 参数指向索引。函数通过调用 fdt_mem_rsw_() 函数
+做索引获得指定的保留项。
+
+> - [fdt_mem_rsv_](#A0215)
+
+------------------------------------
+
+#### <span id="A0217">fdt_mem_rsv</span>
+
+{% highlight c %}
+static const struct fdt_reserve_entry *fdt_mem_rsv(const void *fdt, int n)
+{
+        int offset = n * sizeof(struct fdt_reserve_entry);
+        int absoffset = fdt_off_mem_rsvmap(fdt) + offset;
+
+        if (absoffset < fdt_off_mem_rsvmap(fdt))
+                return NULL;
+        if (absoffset > fdt_totalsize(fdt) - sizeof(struct fdt_reserve_entry))
+                return NULL;
+        return fdt_mem_rsv_(fdt, n);
+}
+{% endhighlight %}
+
+fdt_mem_rsv() 函数的作用是从 DTB memory reserve mapping
+中读出特定的表项目。参数 fdt 指向 DTB，参数 n 指向表项的偏移。
+函数首先计算表项在 DTB memory reserve mapping 中的偏移，
+然后根据这个偏移，调用 fdt_off_mem_rswmap() 函数计算出表项
+的虚拟地址，函数对表项的虚拟地址进行检测，如果检测通过，那么函数
+直接调用 fdt_mem_rsv_() 函数获得该表项。
+
+> - [fdt_off_mem_rsvmap](#A0081)
+>
+> - [fdt_totalsize](#A0078)
+>
+> - [fdt_mem_rsv_](#A0215)
+
+------------------------------------
+
+#### <span id="A0218">fdt_get_mem_rsv</span>
+
+{% highlight c %}
+int fdt_get_mem_rsv(const void *fdt, int n, uint64_t *address, uint64_t *size)
+{       
+        const struct fdt_reserve_entry *re;
+
+        FDT_RO_PROBE(fdt);
+        re = fdt_mem_rsv(fdt, n);
+        if (!re)
+                return -FDT_ERR_BADOFFSET;
+
+        *address = fdt64_ld(&re->address);
+        *size = fdt64_ld(&re->size);
+        return 0;
+}
+{% endhighlight %}
+
+fdt_get_mem_rsv() 函数用于获得 DTB 保留区中指定区域的地址
+和长度。参数 fdt 指向 DTB，n 指向 DTB memory reserve mapping
+的偏移，参数 address 用于存储找到的地址，参数 size 用于存储
+找到的长度。函数首先调用 FDT_RO_PROBE() 函数检查 DTB 的健全性，
+然后调用 fdt_mem_rsv() 函数获得保留区的入口地址，如果此时入口
+地址为空，那么直接返回 -FDT_ERR_BADOFFSET；反之如果找到保留区
+入口地址，那么函数通过 fdt64_ld() 函数将保留区的长度和起始地址
+存储到参数 address 和 size 里。
+
+> - [FDT_RO_PROBE](#A0219)
+>
+> - [fdt_mem_rsv](#A0217)
+>
+> - [fdt64_ld](#A0220)
+
+------------------------------------
+
+#### <span id="A0219">FDT_RO_PROBE</span>
+
+{% highlight c %}
+#define FDT_RO_PROBE(fdt)                       \
+        { \
+                int err_; \
+                if ((err_ = fdt_ro_probe_(fdt)) != 0)   \
+                        return err_; \
+        }
+{% endhighlight %}
+
+FDT_RO_PROBE() 函数用于检查 DTB 的完整性，如果 DTB
+不满足最小健全性检查，那么函数直接返回错误。
+
+> - [fdt_ro_probe_](#A0108)
+
+------------------------------------
+
+#### <span id="A0220">fdt64_ld</span>
+
+{% highlight c %}
+static inline uint64_t fdt64_ld(const fdt64_t *p)
+{       
+        const uint8_t *bp = (const uint8_t *)p;
+
+        return ((uint64_t)bp[0] << 56)
+                | ((uint64_t)bp[1] << 48)
+                | ((uint64_t)bp[2] << 40)
+                | ((uint64_t)bp[3] << 32)
+                | ((uint64_t)bp[4] << 24)
+                | ((uint64_t)bp[5] << 16)
+                | ((uint64_t)bp[6] << 8)
+                | bp[7];
+}
+{% endhighlight %}
+
+fdt64_ld() 函数用于从 DTB 的属性中读取一个 64 位
+的属性值。参数 p 指向 64 位属性值所在的地址。由于
+DTB 是按大端模式存储，所以需要将数据转换成小端模式
+进行存储。
+
+------------------------------------
+
+#### <span id="A0221">__reserved_mem_check_root</span>
+
+{% highlight c %}
+/**
+ * __reserved_mem_check_root() - check if #size-cells, #address-cells provided
+ * in /reserved-memory matches the values supported by the current implementation,
+ * also check if ranges property has been provided
+ */
+static int __init __reserved_mem_check_root(unsigned long node)
+{
+        const __be32 *prop;
+
+        prop = of_get_flat_dt_prop(node, "#size-cells", NULL);
+        if (!prop || be32_to_cpup(prop) != dt_root_size_cells)
+                return -EINVAL;
+
+        prop = of_get_flat_dt_prop(node, "#address-cells", NULL);
+        if (!prop || be32_to_cpup(prop) != dt_root_addr_cells)
+                return -EINVAL;
+
+        prop = of_get_flat_dt_prop(node, "ranges", NULL);
+        if (!prop)
+                return -EINVAL;
+        return 0;
+}
+{% endhighlight %}
+
+__reserved_mem_check_root() 函数的作用是检查指定 node 的
+"#size-cells" 属性值和 "#address-cells" 属性值是否和根节点的
+属性值一致，并确保节点包含 "ranges" 属性。函数通过调用
+of_get_flat_dt_prop() 函数读取节点指定属性的属性值，然后与
+全局变量 dt_root_size_cells 和 dt_root_addr_cells 进行
+对比，如果不相同则直接返回 -EINVAL；反之相同，那么函数继续
+检查节点是否包含 "ranges" ，如果不包含则返回 -EINVAL；反之
+返回 0. 改函数通常用于检查 "reserved-memory" 节点。
+
+> - [of_get_flat_dt_prop](#A0117)
+
+------------------------------------
+
+#### <span id="A0222">of_fdt_device_is_available</span>
+
+{% highlight c %}
+static bool of_fdt_device_is_available(const void *blob, unsigned long node)
+{
+        const char *status = fdt_getprop(blob, node, "status", NULL);
+
+        if (!status)
+                return true;
+
+        if (!strcmp(status, "ok") || !strcmp(status, "okay"))
+                return true;
+
+        return false;
+}
+{% endhighlight %}
+
+of_fdt_device_is_available() 函数的作用是检查节点的 "status"
+属性值是否为 "okay" 或者 "ok", 以此确保节点对应的驱动是否启用。
+参数 blob 指向 DTB，node 参数指向节点的偏移。函数首先调用
+fdt_getprop() 函数获得节点的 "status" 属性值，如果属性值为
+空，那么函数直接返回 true，代表节点可用；反之如果获得属性值不是 "ok"
+或者 "okay"，那么函数返回直接返回 false，代表节点对应的驱动
+不启用；反之返回 true。
+
+> - [fdt_getprop](#A0113)
+
+------------------------------------
+
+#### <span id="A0223">fdt_reserved_mem_save_node</span>
+
+{% highlight c %}
+#define MAX_RESERVED_REGIONS    32
+static struct reserved_mem reserved_mem[MAX_RESERVED_REGIONS];
+static int reserved_mem_count;
+
+/**     
+ * res_mem_save_node() - save fdt node for second pass initialization
+ */     
+void __init fdt_reserved_mem_save_node(unsigned long node, const char *uname,
+                                      phys_addr_t base, phys_addr_t size)
+{
+        struct reserved_mem *rmem = &reserved_mem[reserved_mem_count];
+
+        if (reserved_mem_count == ARRAY_SIZE(reserved_mem)) {
+                pr_err("not enough space all defined regions.\n");
+                return;
+        }
+
+        rmem->fdt_node = node;
+        rmem->name = uname;
+        rmem->base = base;
+        rmem->size = size;
+
+        reserved_mem_count++;
+        return;
+}
+{% endhighlight %}
+
+fdt_reserved_mem_save_node() 函数用于将 DTS 中 "reserved-memory"
+添加到系统的 reserved_mem[] 数组中。内核使用一个 struct reserved_mem
+数组维护着系统中所有的保留区。参数 node 指向节点偏移，参数 uname
+指向预留区的名字，参数 base 指向预留区的起始地址，参数 size 指向
+预留区的长度。函数首先从全局变量 reserved_mem[] 数组中获得一个空闲的
+reserved_mem 结构，如果此时 reserved_mem_count 的数量超出
+reserved_mem[] 数组的范围，那么函数将报错，并直接返回；如果检查通过，
+函数将新的保留区加入到 reserved_mem[] 内。
+
+> - [ARRAY_SIZE](#A0034)
+
+------------------------------------
+
+#### <span id="A0224">__reserved_mem_reserve_reg</span>
+
+{% highlight c %}
+/**
+ * res_mem_reserve_reg() - reserve all memory described in 'reg' property
+ */
+static int __init __reserved_mem_reserve_reg(unsigned long node,
+                                             const char *uname)
+{
+        int t_len = (dt_root_addr_cells + dt_root_size_cells) * sizeof(__be32);
+        phys_addr_t base, size;
+        int len;
+        const __be32 *prop;
+        int nomap, first = 1;
+
+        prop = of_get_flat_dt_prop(node, "reg", &len);
+        if (!prop)
+                return -ENOENT;
+
+        if (len && len % t_len != 0) {
+                pr_err("Reserved memory: invalid reg property in '%s', skipping node.\n",              
+                       uname);
+                return -EINVAL;
+        }
+
+        nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
+
+        while (len >= t_len) {
+                base = dt_mem_next_cell(dt_root_addr_cells, &prop);
+                size = dt_mem_next_cell(dt_root_size_cells, &prop);
+
+                if (size &&
+                    early_init_dt_reserve_memory_arch(base, size, nomap) == 0)
+                        pr_debug("Reserved memory: reserved region for node '%s': base %pa, size %ld MiB\n",
+                                uname, &base, (unsigned long)size / SZ_1M);
+                else    
+                        pr_info("Reserved memory: failed to reserve memory for node '%s': base %pa, size %ld MiB\n",
+                                uname, &base, (unsigned long)size / SZ_1M);
+
+                len -= t_len;
+                if (first) {
+                        fdt_reserved_mem_save_node(node, uname, base, size);
+                        first = 0;
+                }
+        }
+        return 0;
+}
+{% endhighlight %}
+
+__reserved_mem_reserve_reg() 函数用于将 DTS 中 "reserved-memory"
+节点内的保留区加入到系统中进行维护。参数 node 指向预留区对应的节点，
+参数 uname 指向节点的名字。函数首先调用 of_get_flat_dt_prop() 函数
+从节点中读取 "reg" 属性的值，该值包含了基地址和长度两部分。然后对属性值
+进行检测，如果不符合条件，那么函数直接返回错误码。函数接着从节点中读取
+"no-map" 属性值。函数接着使用了一个 while() 循环，在每次循环中，函数
+从 "reg" 属性值读取一对数据，其包含了保留区的基地址以及长度，将其存储
+在局部变量 base 和 size 里。函数将预留区通过调用
+early_init_dt_reserve_memory_arch() 函数加入到 MEMBLOCK 分配器
+的预留区内，如果加入失败或者 size 参数有问题，那么函数打印相应的错误
+信息，函数接着减少 len 的值，由于 reg 属性可能包含多对 "基地址+长度"
+的数据，所以需要遍历所有的数据对。如果 first 为 1，那么函数调用
+fdt_reserved_mem_save_node() 函数将保留区加入系统保留区数组内，
+并将 first 设置为 0，以此只加入节点的第一个预留区到系统预留区内。
+
+> - [of_get_flat_dt_prop](#A0117)
+>
+> - [dt_mem_next_cell](#A0129)
+>
+> - [early_init_dt_reserve_memory_arch](#A0213)
+>
+> - [fdt_reserved_mem_save_node](#A0223)
+
+------------------------------------
+
+#### <span id="A0225">__fdt_scan_reserved_mem</span>
+
+{% highlight c %}
+/**
+ * fdt_scan_reserved_mem() - scan a single FDT node for reserved memory
+ */
+static int __init __fdt_scan_reserved_mem(unsigned long node, const char *uname,
+                                          int depth, void *data)
+{
+        static int found;
+        int err;
+
+        if (!found && depth == 1 && strcmp(uname, "reserved-memory") == 0) {
+                if (__reserved_mem_check_root(node) != 0) {
+                        pr_err("Reserved memory: unsupported node format, ignoring\n");
+                        /* break scan */
+                        return 1;
+                }
+                found = 1;
+                /* scan next node */
+                return 0;
+        } else if (!found) {
+                /* scan next node */
+                return 0;
+        } else if (found && depth < 2) {
+                /* scanning of /reserved-memory has been finished */
+                return 1;
+        }
+
+        if (!of_fdt_device_is_available(initial_boot_params, node))
+                return 0;
+
+        err = __reserved_mem_reserve_reg(node, uname);
+        if (err == -ENOENT && of_get_flat_dt_prop(node, "size", NULL))
+                fdt_reserved_mem_save_node(node, uname, 0, 0);
+
+        /* scan next node */
+        return 0;
+}
+{% endhighlight %}
+
+__fdt_scan_reserved_mem() 函数用于将 DTS 中 "reserved-memory" 节点
+包含的子节点预留区加入到系统内进行维护。参数 node 指向子节点的
+索引，参数 uname 指向子节点的名字，参数 depth 代表子节点的深度，
+参数 data 代表私有数据。函数首先判断节点是 "reseved-memory" 节点内的
+子节点，如果是再调用 of_fdt_device_is_available() 子节点是否启动，
+即几点的 status 是否为 "okay", 如果启用，那么函数调用
+__reserved_mem_reserve_reg() 函数将节点的 "reg" 属性对应的预留区
+加入到 MEMBLOCK 内存分配器的保留区和系统 reserved_mem[]
+数组进行维护。如果 __reserved_mem_reserve_reg() 函数返回 -ENOENT，
+且节点的 "size" 属性不为空，那么函数调用 fdt_reserved_mem_save_node()
+函数将节点的保留区加入系统 reserved_mem[] 数组进行维护。
+
+> - [\_\_reserved_mem_check_root](#A0221)
+>
+> - [of_fdt_device_is_available](#A0222)
+>
+> - [\_\_reserved_mem_reserve_reg](#A0224)
+>
+> - [of_get_flat_dt_prop](#A0117)
+>
+> - [fdt_reserved_mem_save_node](#A0223)
+
+------------------------------------
+
+#### <span id="A0226">__rmem_check_for_overlap</span>
+
+{% highlight c %}
+static void __init __rmem_check_for_overlap(void)
+{
+        int i;
+
+        if (reserved_mem_count < 2)
+                return;
+
+        sort(reserved_mem, reserved_mem_count, sizeof(reserved_mem[0]),
+             __rmem_cmp, NULL);
+        for (i = 0; i < reserved_mem_count - 1; i++) {
+                struct reserved_mem *this, *next;
+
+                this = &reserved_mem[i];
+                next = &reserved_mem[i + 1];
+                if (!(this->base && next->base))
+                        continue;
+                if (this->base + this->size > next->base) {
+                        phys_addr_t this_end, next_end;
+
+                        this_end = this->base + this->size;
+                        next_end = next->base + next->size;
+                        pr_err("OVERLAP DETECTED!\n%s (%pa--%pa) overlaps with %s (%pa--%pa)\n",
+                               this->name, &this->base, &this_end,
+                               next->name, &next->base, &next_end);
+                }
+        }
+}
+{% endhighlight %}
+
+__rmem_check_for_overlap() 函数的作用是检查 reserved_mem[] 维护
+的预留区是否存在重叠部分。函数首先判断当前 reserved_mem[] 中预留区
+的数量，如果小于 2，那么没必要检测；反之函数首调用 sort() 函数
+将 reserved_mem[] 数组的中预留区按基地址地址进行排序。接着函数使用
+for 循环遍历 reserved_mem[] 数组中的所有预留区，每次遍历到一个预留区，
+如果当前预留区的基地址和下一个预留区的基地址相与为 0，那么结束
+本次循环进行下一次循环。如果本次循环在此时不结束，那么函数判断
+如果当前预留区的结束地址大于下一个预留区的起始地址，那么存在重叠，
+函数此时就会进行报错。
+
+------------------------------------
+
+#### <span id="A0227">memblock_alloc_range_nid</span>
+
+{% highlight c %}
+static phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
+                                        phys_addr_t align, phys_addr_t start,
+                                        phys_addr_t end, int nid,
+                                        enum memblock_flags flags)
+{
+        phys_addr_t found;
+
+        if (!align) {
+                /* Can't use WARNs this early in boot on powerpc */
+                dump_stack();
+                align = SMP_CACHE_BYTES;
+        }
+
+        found = memblock_find_in_range_node(size, align, start, end, nid,
+                                            flags);
+        if (found && !memblock_reserve(found, size)) {
+                /*
+                 * The min_count is set to 0 so that memblock allocations are
+                 * never reported as leaks.
+                 */
+                kmemleak_alloc_phys(found, size, 0, 0);
+                return found;
+        }
+        return 0;
+}
+{% endhighlight %}
+
+memblock_alloc_range_nid() 函数用于从指定 NUMA 上分配物理内存。
+参数 size 指定分配物理内存的长度，参数 align 指定分配物理内存对齐
+方式，参数 start 指定分配物理内存的起始物理地址，参数 end 指向
+分配物理内存的终止地址，参数 nid 指向 NUMA 信息，参数 flags 指向
+分配物理内存的 flags 信息。函数首先检查 align 参数是否有效，如果
+无效，那么函数就 dump 堆栈并设置 align 为 SMP_CACHE_BYTES。接着
+函数调用 memblock_find_in_range_node() 查找符合要求的物理内存块，
+如果找到，那么函数返回起始物理地址，反之返回 0.
+
+> - [memblock_find_in_range_node](#A0155)
+
+------------------------------------
+
+#### <span id="A0228">memblock_alloc_base_nid</span>
+
+{% highlight c %}
+phys_addr_t __init memblock_alloc_base_nid(phys_addr_t size,
+                                        phys_addr_t align, phys_addr_t max_addr,
+                                        int nid, enum memblock_flags flags)
+{
+        return memblock_alloc_range_nid(size, align, 0, max_addr, nid, flags);
+}
+{% endhighlight %}
+
+memblock_alloc_base_nid() 用于从指定 NUMA 节点上分配物理内存。
+参数 size 指定分配的长度，align 参数指定对齐方式，max_addr 指向
+最大可分配物理地址，nid 指定 NUMA 信息，参数 flags 指向分配
+物理内存的 flags 信息。函数通过调用 memblock_alloc_range_nid()
+函数获得指定物理内存。
+
+> - [memblock_alloc_base_nid](#A0227)
+
+------------------------------------
+
+#### <span id="A0229">__memblock_alloc_base</span>
+
+{% highlight c %}
+phys_addr_t __init __memblock_alloc_base(phys_addr_t size, phys_addr_t align, phys_addr_t max_addr)
+{
+        return memblock_alloc_base_nid(size, align, max_addr, NUMA_NO_NODE,
+                                       MEMBLOCK_NONE);
+}
+{% endhighlight %}
+
+__memblock_alloc_base() 函数用于分配指定大小的物理内存。参数 size
+指向分配物理内存的大小，参数 align 指向对齐方式，参数 max_addr 指向
+可分配的最大物理地址。函数通过调用 memblock_alloc_base_nid 实现。
+
+> - [memblock_alloc_base_nid](#A0228)
+
+------------------------------------
+
+#### <span id="A0230">early_init_dt_alloc_reserved_memory_arch</span>
+
+{% highlight c %}
+int __init __weak early_init_dt_alloc_reserved_memory_arch(phys_addr_t size,
+        phys_addr_t align, phys_addr_t start, phys_addr_t end, bool nomap,
+        phys_addr_t *res_base)
+{
+        phys_addr_t base;
+        /*
+         * We use __memblock_alloc_base() because memblock_alloc_base()
+         * panic()s on allocation failure.
+         */
+        end = !end ? MEMBLOCK_ALLOC_ANYWHERE : end;
+        align = !align ? SMP_CACHE_BYTES : align;
+        base = __memblock_alloc_base(size, align, end);
+        if (!base)
+                return -ENOMEM;
+
+        /*
+         * Check if the allocated region fits in to start..end window
+         */
+        if (base < start) {
+                memblock_free(base, size);
+                return -ENOMEM;
+        }
+
+        *res_base = base;
+        if (nomap)
+                return memblock_remove(base, size);
+        return 0;
+}
+{% endhighlight %}
+
+early_init_dt_alloc_reserved_memory_arch() 函数用于为 DTS 中
+"reserved-memory" 节点中的特定预留区分配物理内存，该类预留区
+节点不包含 "reg" 属性，只包含 "size" 属性，因此需要对这里预留区
+分配物理内存。参数 size 指向分配的大小，参数 align 指向对齐方式，
+参数 start 指向可以分配的起始地址，end 参数指向可以分配的终止
+地址，参数 nomap 指向是否为预留区内存建立页表，参数 res_base
+用于存储分配物理内存的起始地址。函数首先处理 end 参数和 align
+参数，使其符合要求，然后调用 __memblock_alloc_base() 函数从
+指定的物理内存中分配所需要大小的物理内存，并返回分配成功的物理
+起始地址。如果此时分配失败，直接返回 -ENOMEM；反之检查分配成功
+的物理块的起始地址是否小于指定的起始物理地址，如果小于，则调用
+memblock_free() 函数释放掉刚刚分配的物理内存；反之即分配的物理
+内存符合要求，然后将分配成功的起始物理地址存储在 res_base 里面。
+如果此时 nomap 参数为真，那么表示不需要对新分配的物理内存建立
+页表，于是调用 memblock_remove() 函数将该段物理内存块从
+MEMBLOCK 内存分配器 memory regions 中移除。最后返回 0.
+
+> - [\_\_memblock_alloc_base](#A0229)
+>
+> - [memblock_free](#A0162)
+>
+> - [memblock_remove](#A0200)
+
+------------------------------------
+
+#### <span id="A0231">__reserved_mem_alloc_size</span>
+
+{% highlight c %}
+/**
+ * res_mem_alloc_size() - allocate reserved memory described by 'size', 'align'
+ *                        and 'alloc-ranges' properties
+ */
+static int __init __reserved_mem_alloc_size(unsigned long node,
+        const char *uname, phys_addr_t *res_base, phys_addr_t *res_size)
+{
+        int t_len = (dt_root_addr_cells + dt_root_size_cells) * sizeof(__be32);
+        phys_addr_t start = 0, end = 0;
+        phys_addr_t base = 0, align = 0, size;
+        int len;
+        const __be32 *prop;
+        int nomap;
+        int ret;
+
+        prop = of_get_flat_dt_prop(node, "size", &len);
+        if (!prop)
+                return -EINVAL;
+
+        if (len != dt_root_size_cells * sizeof(__be32)) {
+                pr_err("invalid size property in '%s' node.\n", uname);
+                return -EINVAL;
+        }
+        size = dt_mem_next_cell(dt_root_size_cells, &prop);
+
+        nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
+
+        prop = of_get_flat_dt_prop(node, "alignment", &len);
+        if (prop) {
+                if (len != dt_root_addr_cells * sizeof(__be32)) {
+                        pr_err("invalid alignment property in '%s' node.\n",
+                                uname);
+                        return -EINVAL;
+                }
+                align = dt_mem_next_cell(dt_root_addr_cells, &prop);
+        }
+
+        /* Need adjust the alignment to satisfy the CMA requirement */
+        if (IS_ENABLED(CONFIG_CMA)
+            && of_flat_dt_is_compatible(node, "shared-dma-pool")
+            && of_get_flat_dt_prop(node, "reusable", NULL)
+            && !of_get_flat_dt_prop(node, "no-map", NULL)) {
+                unsigned long order =
+                        max_t(unsigned long, MAX_ORDER - 1, pageblock_order);
+
+                align = max(align, (phys_addr_t)PAGE_SIZE << order);
+        }
+
+        prop = of_get_flat_dt_prop(node, "alloc-ranges", &len);
+        if (prop) {
+
+                if (len % t_len != 0) {
+                        pr_err("invalid alloc-ranges property in '%s', skipping node.\n",
+                               uname);
+                        return -EINVAL;
+                }
+
+                base = 0;
+
+                while (len > 0) {
+                        start = dt_mem_next_cell(dt_root_addr_cells, &prop);
+                        end = start + dt_mem_next_cell(dt_root_size_cells,
+                                                       &prop);
+
+                        pr_info("\n\nStart: %#lx END: %#lx\n", start, end);
+                        ret = early_init_dt_alloc_reserved_memory_arch(size,
+                                        align, start, end, nomap, &base);
+                        if (ret == 0) {
+                                pr_debug("allocated memory for '%s' node: base %pa, size %ld MiB\n",
+                                        uname, &base,
+                                        (unsigned long)size / SZ_1M);
+                                break;
+                        }
+                        len -= t_len;
+                }
+
+        } else {
+                ret = early_init_dt_alloc_reserved_memory_arch(size, align,
+                                                        0, 0, nomap, &base);
+                if (ret == 0)
+                        pr_debug("allocated memory for '%s' node: base %pa, size %ld MiB\n",
+                                uname, &base, (unsigned long)size / SZ_1M);
+        }
+
+        if (base == 0) {
+                pr_info("failed to allocate memory for node '%s'\n", uname);
+                return -ENOMEM;
+        }
+
+        *res_base = base;
+        *res_size = size;
+
+        return 0;
+}
+{% endhighlight %}
+
+__reserved_mem_alloc_size() 用于为 DTS "reserved-memory" 节点
+中特定子节点分配内存，该类节点包含 "size" 属性，但不包含 "reg"
+属性，因此需要对这类子节点分配物理内存，这类子节点例如：
+
+{% highlight bash %}
+        reserved-memory {
+                #address-cells = <1>;
+                #size-cells = <1>;
+                ranges;
+
+                default-pool {
+                        compatible = "shared-dma-pool";
+                        size = <0x2000000>;
+                        alloc-ranges = <0x61000000 0x4000000>;
+                        alignment = <0x100000>;
+                        reusable;
+                        linux,cma-default;
+                };
+        };
+{% endhighlight %}
+
+由于代码太长，分段解析：
+
+{% highlight c %}
+static int __init __reserved_mem_alloc_size(unsigned long node,
+        const char *uname, phys_addr_t *res_base, phys_addr_t *res_size)
+{
+        int t_len = (dt_root_addr_cells + dt_root_size_cells) * sizeof(__be32);
+        phys_addr_t start = 0, end = 0;
+        phys_addr_t base = 0, align = 0, size;
+        int len;
+        const __be32 *prop;
+        int nomap;
+        int ret;
+
+        prop = of_get_flat_dt_prop(node, "size", &len);
+        if (!prop)
+                return -EINVAL;
+
+        if (len != dt_root_size_cells * sizeof(__be32)) {
+                pr_err("invalid size property in '%s' node.\n", uname);
+                return -EINVAL;
+        }
+        size = dt_mem_next_cell(dt_root_size_cells, &prop);
+
+        nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
+
+        prop = of_get_flat_dt_prop(node, "alignment", &len);
+        if (prop) {
+                if (len != dt_root_addr_cells * sizeof(__be32)) {
+                        pr_err("invalid alignment property in '%s' node.\n",
+                                uname);
+                        return -EINVAL;
+                }
+                align = dt_mem_next_cell(dt_root_addr_cells, &prop);
+        }
+{% endhighlight %}
+
+参数 node 指向需要预留的节点，参数 uname 指向节点的名字，参数
+res_base 用于存储分配成功的物理内存的起始物理地址，参数 res_size
+用于存储分配到物理内存的长度。函数首先从节点中读取 "size"
+属性的值，并对属性值进行检测。接着调用 of_get_flat_dt_prop()
+函数获得 "no-map" 属性值。函数继续获得 "alignment" 属性值，
+并对属性值进行检测。
+
+{% highlight c %}
+        /* Need adjust the alignment to satisfy the CMA requirement */
+        if (IS_ENABLED(CONFIG_CMA)
+            && of_flat_dt_is_compatible(node, "shared-dma-pool")
+            && of_get_flat_dt_prop(node, "reusable", NULL)
+            && !of_get_flat_dt_prop(node, "no-map", NULL)) {
+                unsigned long order =
+                        max_t(unsigned long, MAX_ORDER - 1, pageblock_order);
+
+                align = max(align, (phys_addr_t)PAGE_SIZE << order);
+        }
+{% endhighlight %}
+
+函数测试内核是否打开 CONFIG_CMA 宏，即系统是否支持 CMA，如果系统支持
+CMA，那么函数同时检测节点是否包含 "shared-dma-pool" 和 "reusable" 属性，
+以及不包含 "no-map" 属性，如果满足上面的条件，此时调整 align 参数。
+
+{% highlight c %}
+        prop = of_get_flat_dt_prop(node, "alloc-ranges", &len);
+        if (prop) {
+
+                if (len % t_len != 0) {
+                        pr_err("invalid alloc-ranges property in '%s', skipping node.\n",
+                               uname);
+                        return -EINVAL;
+                }
+
+                base = 0;
+
+                while (len > 0) {
+                        start = dt_mem_next_cell(dt_root_addr_cells, &prop);
+                        end = start + dt_mem_next_cell(dt_root_size_cells,
+                                                       &prop);
+
+                        pr_info("\n\nStart: %#lx END: %#lx\n", start, end);
+                        ret = early_init_dt_alloc_reserved_memory_arch(size,
+                                        align, start, end, nomap, &base);
+                        if (ret == 0) {
+                                pr_debug("allocated memory for '%s' node: base %pa, size %ld MiB\n",
+                                        uname, &base,
+                                        (unsigned long)size / SZ_1M);
+                                break;
+                        }
+                        len -= t_len;
+                }
+
+        } else {
+                ret = early_init_dt_alloc_reserved_memory_arch(size, align,
+                                                        0, 0, nomap, &base);
+                if (ret == 0)
+                        pr_debug("allocated memory for '%s' node: base %pa, size %ld MiB\n",
+                                uname, &base, (unsigned long)size / SZ_1M);
+        }
+{% endhighlight %}
+
+函数继续调用 of_get_flat_dt_prop() 函数读取节点 "alloc-ranges" 属性
+值，以此确定节点预留内存的地址范围。其中 start 指向可用物理地址的起始地址，
+end 指向可用物理地址的终止地址。函数在这段地址范围内查找 size 大小的物理
+内存块，通过调用 early_init_dt_alloc_reserved_memory_arch() 函数进行
+分配。如果此时分配失败则报错；如果节点不包含 "alloc-ranges" 属性，那么
+函数就从系统可用物理内存中找一块满足要求的物理内存块，通过调用
+early_init_dt_alloc_reserved_memory_arch() 函数实现，分配失败则报错。
+
+{% highlight c %}
+        if (base == 0) {
+                pr_info("failed to allocate memory for node '%s'\n", uname);
+                return -ENOMEM;
+        }
+
+        *res_base = base;
+        *res_size = size;
+
+        return 0;
+{% endhighlight %}
+
+需要的物理内存分配成功之后，函数将获得物理内存起始物理地址存储在
+res_base 中，将长度存储在 res_size 中，最后返回 0.
+
+> - [of_get_flat_dt_prop](#A0117)
+>
+> - [dt_mem_next_cell](#A0129)
+>
+> - [of_flat_dt_is_compatible](#A0115)
+>
+> - [early_init_dt_alloc_reserved_memory_arch](#A0230)
+
+------------------------------------
+
+#### <span id="A0232">_OF_DECLARE</span>
+
+{% highlight c %}
+#if defined(CONFIG_OF) && !defined(MODULE)
+#define _OF_DECLARE(table, name, compat, fn, fn_type)                   \
+        static const struct of_device_id __of_table_##name              \
+                __used __section(__##table##_of_table)                  \
+                 = { .compatible = compat,                              \
+                     .data = (fn == (fn_type)NULL) ? fn : fn  }
+#else    
+#define _OF_DECLARE(table, name, compat, fn, fn_type)                   \
+        static const struct of_device_id __of_table_##name              \
+                __attribute__((unused))                                 \
+                 = { .compatible = compat,                              \
+                     .data = (fn == (fn_type)NULL) ? fn : fn }
+#endif
+{% endhighlight %}
+
+_OF_DECLARE() 宏用于定义一个 DTS compatible 表。宏定义了
+一个 struct of_device_id 结构，并将该改数据结构存储在私有
+section 内，宏为数据结构提供了 compat 和 fn 两个初始参数。
+
+------------------------------------
+
+#### <span id="A0233">RESERVEDMEM_OF_DECLARE</span>
+
+{% highlight c %}
+#define RESERVEDMEM_OF_DECLARE(name, compat, init)                      \
+        _OF_DECLARE(reservedmem, name, compat, init, reservedmem_of_init_fn)
+{% endhighlight %}
+
+RESERVEDMEM_OF_DECLARE 宏用在 __reservedmem_of_table section
+内建立一个 struct of_device_id, 其 compat 成员就是 compat 参数，
+并且该数据结构的 data 成员是就是 init 参数。该宏通过 _OF_DECLARE
+宏实现。在内核源码中，通过这个宏可以自定私有 DTS "reserved-memory"
+节点中，其子节点 compatile 为特定值的初始化函数。
+
+------------------------------------
+
+#### <span id="A0234">cma_init_reserved_mem</span>
+
+{% highlight c %}
+/**
+ * cma_init_reserved_mem() - create custom contiguous area from reserved memory
+ * @base: Base address of the reserved area
+ * @size: Size of the reserved area (in bytes),
+ * @order_per_bit: Order of pages represented by one bit on bitmap.
+ * @name: The name of the area. If this parameter is NULL, the name of
+ *        the area will be set to "cmaN", where N is a running counter of
+ *        used areas.
+ * @res_cma: Pointer to store the created cma region.
+ *
+ * This function creates custom contiguous area from already reserved memory.
+ */
+int __init cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
+                                 unsigned int order_per_bit,
+                                 const char *name,
+                                 struct cma **res_cma)
+{
+        struct cma *cma;
+        phys_addr_t alignment;
+
+        /* Sanity checks */
+        if (cma_area_count == ARRAY_SIZE(cma_areas)) {
+                pr_err("Not enough slots for CMA reserved regions!\n");
+                return -ENOSPC;
+        }
+
+        if (!size || !memblock_is_region_reserved(base, size))
+                return -EINVAL;
+
+        /* ensure minimal alignment required by mm core */
+        alignment = PAGE_SIZE <<
+                        max_t(unsigned long, MAX_ORDER - 1, pageblock_order);
+
+        /* alignment should be aligned with order_per_bit */
+        if (!IS_ALIGNED(alignment >> PAGE_SHIFT, 1 << order_per_bit))
+                return -EINVAL;
+
+        if (ALIGN(base, alignment) != base || ALIGN(size, alignment) != size)
+                return -EINVAL;
+
+        /*
+         * Each reserved area must be initialised later, when more kernel
+         * subsystems (like slab allocator) are available.
+         */
+        cma = &cma_areas[cma_area_count];
+        if (name) {
+                cma->name = name;
+        } else {
+                cma->name = kasprintf(GFP_KERNEL, "cma%d\n", cma_area_count);
+                if (!cma->name)
+                        return -ENOMEM;
+        }
+        cma->base_pfn = PFN_DOWN(base);
+        cma->count = size >> PAGE_SHIFT;
+        cma->order_per_bit = order_per_bit;
+        *res_cma = cma;
+        cma_area_count++;
+        totalcma_pages += (size / PAGE_SIZE);
+
+        return 0;
+}
+{% endhighlight %}
+
+cma_init_reserved_mem() 函数用于添加并初始化一个 CMA region。内核支持多块
+CMA，每一个块 CMA 称为 CMA region。CMA 将所有的 CMA region 维护
+在 cma_areas[] 数组里，使用全局变量 cma_area_count 指明当前 CMA
+region 的数量。函数代码较长，分段解析：
+
+{% highlight c %}
+int __init cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
+                                 unsigned int order_per_bit,
+                                 const char *name,
+                                 struct cma **res_cma)
+{
+        struct cma *cma;
+        phys_addr_t alignment;
+
+        /* Sanity checks */
+        if (cma_area_count == ARRAY_SIZE(cma_areas)) {
+                pr_err("Not enough slots for CMA reserved regions!\n");
+                return -ENOSPC;
+        }
+{% endhighlight %}
+
+参数 base 指向 CMA region 的基地址，size 参数指向其长度，参数
+order_per_bit 指向 bitmap，参数 name 指向 CMA region 的名字，
+参数 res_cma 指向新分配的 cma 结构。函数首先判断当前 CMA regions
+数量是否已经达到 cma_areas[] 数组支持的最大值，如果已经达到，
+那么函数提示错误消息之后，返回错误码。
+
+{% highlight c %}
+        if (!size || !memblock_is_region_reserved(base, size))
+                return -EINVAL;
+
+        /* ensure minimal alignment required by mm core */
+        alignment = PAGE_SIZE <<
+                        max_t(unsigned long, MAX_ORDER - 1, pageblock_order);
+
+        /* alignment should be aligned with order_per_bit */
+        if (!IS_ALIGNED(alignment >> PAGE_SHIFT, 1 << order_per_bit))
+                return -EINVAL;
+
+        if (ALIGN(base, alignment) != base || ALIGN(size, alignment) != size)
+                return -EINVAL;
+{% endhighlight %}
+
+函数接着调用 memblock_is_region_reserved() 函数判断新增加
+的 CMA region 对应的物理块是否在 MEMBLOCK 分配器的预留区内，
+如果不属于且长度为 0，那么函数直接返回错误码。如果对齐并未按
+order_per_bit 的方式对齐，那么函数直接返回错误码。
+
+{% highlight c %}
+        /*
+         * Each reserved area must be initialised later, when more kernel
+         * subsystems (like slab allocator) are available.
+         */
+        cma = &cma_areas[cma_area_count];
+        if (name) {
+                cma->name = name;
+        } else {
+                cma->name = kasprintf(GFP_KERNEL, "cma%d\n", cma_area_count);
+                if (!cma->name)
+                        return -ENOMEM;
+        }
+        cma->base_pfn = PFN_DOWN(base);
+        cma->count = size >> PAGE_SHIFT;
+        cma->order_per_bit = order_per_bit;
+        *res_cma = cma;
+        cma_area_count++;
+        totalcma_pages += (size / PAGE_SIZE);
+
+        return 0;
+{% endhighlight %}
+
+cma_area_count 代表目前系统含有 CMA region 的数量，函数
+从 cma_areas[] 数组中获得一个 cma 结构，如果此时 name 参数
+有效，那么将新 CMA 名字设置为 name；反之使用 ksprintf()
+函数分配一个新名字。接下来初始化新的 cma 结构，base_pfn
+成员指向 CMA region 基地址的页帧，count 成员设置为
+CMA region 包含的 page 数。order_per_bit 设置为参数
+order_per_bit，将新 cma 结构存储到 res_cma 参数，
+更新 cma_area_count，最后增加 cma totalcma_pages
+引用计数。
+
+> - [ARRAY_SIZE](#A0034)
+>
+> - [memblock_is_region_reserved](#A0210)
+
+------------------------------------
+
+#### <span id="A0235">dma_contiguous_early_fixup</span>
+
+{% highlight c %}
+void __init dma_contiguous_early_fixup(phys_addr_t base, unsigned long size)
+{
+        dma_mmu_remap[dma_mmu_remap_num].base = base;
+        dma_mmu_remap[dma_mmu_remap_num].size = size;
+        dma_mmu_remap_num++;
+}
+{% endhighlight %}
+
+dma_contiguous_early_fixup() 函数的作用就是将一块物理内存添加到
+dma_mmu_remap[] 数组进行维护，函数使用 dma_mmu_remap_num 变量
+dma_mmu_remap[] 数组成员的数量。
+
+------------------------------------
+
+#### <span id="A0236">dma_contiguous_set_default</span>
+
+{% highlight c %}
+static inline void dma_contiguous_set_default(struct cma *cma)
+{
+        dma_contiguous_default_area = cma;
+}
+{% endhighlight %}
+
+dma_contiguous_set_default() 函数用于设置默认的 CMA region。
+当系统支持多个 CMA region，该函数就用于设置默认的 CMA region。
+dma_contiguous_default_area 用于维护默认的 CMA region。
+
+------------------------------------
+
+#### <span id="A0237">dev_set_cma_area</span>
+
+{% highlight c %}
+static inline void dev_set_cma_area(struct device *dev, struct cma *cma)
+{
+        if (dev)
+                dev->cma_area = cma;
+}
+{% endhighlight %}
+
+dev_set_cma_area() 函数用于设置设备使用的 CMA region。参数
+dev 指向设备，cma 指向 CMA region。函数首先判断 dev 是否
+存在，如果存在，则将 cma_area 成员指向 cma，这样该设备就从
+这个 CMA region 获得物理内存。
+
+------------------------------------
+
+#### <span id="A0238">rmem_cma_device_init</span>
+
+{% highlight c %}
+static int rmem_cma_device_init(struct reserved_mem *rmem, struct device *dev)
+{
+        dev_set_cma_area(dev, rmem->priv);
+        return 0;
+}
+{% endhighlight %}
+
+rmem_cma_device_init() 函数用于在 CMA region 初始化过程中，
+设置 CMA region 对应的 device。参数 rmem 指向 CMA region，
+参数 dev 指向特定设备。
+
+> - [dev_set_cma_area](#A0237)
+
+------------------------------------
+
+#### <span id="A0239">rmem_cma_device_release</span>
+
+{% highlight c %}
+static void rmem_cma_device_release(struct reserved_mem *rmem,
+                                    struct device *dev)
+{
+        dev_set_cma_area(dev, NULL);
+}
+{% endhighlight %}
+
+rmem_cma_device_release() 解除 device 的 CMA region。
+函数通过 dev_set_cma_area() 函数将 dev 对应的设备解除
+绑定。
+
+------------------------------------
+
+#### <span id="A0240">rmem_cma_setup</span>
+
+{% highlight c %}
+static int __init rmem_cma_setup(struct reserved_mem *rmem)
+{
+        phys_addr_t align = PAGE_SIZE << max(MAX_ORDER - 1, pageblock_order);
+        phys_addr_t mask = align - 1;
+        unsigned long node = rmem->fdt_node;
+        struct cma *cma;
+        int err;
+
+        if (!of_get_flat_dt_prop(node, "reusable", NULL) ||
+            of_get_flat_dt_prop(node, "no-map", NULL))
+                return -EINVAL;
+
+        if ((rmem->base & mask) || (rmem->size & mask)) {
+                pr_err("Reserved memory: incorrect alignment of CMA region\n");
+                return -EINVAL;
+        }
+
+        err = cma_init_reserved_mem(rmem->base, rmem->size, 0, rmem->name, &cma);
+        if (err) {
+                pr_err("Reserved memory: unable to setup CMA region\n");
+                return err;
+        }
+        /* Architecture specific contiguous memory fixup. */
+        dma_contiguous_early_fixup(rmem->base, rmem->size);
+
+        if (of_get_flat_dt_prop(node, "linux,cma-default", NULL))
+                dma_contiguous_set_default(cma);
+
+        rmem->ops = &rmem_cma_ops;
+        rmem->priv = cma;
+
+        pr_info("Reserved memory: created CMA memory pool at %pa, size %ld MiB\n",
+                &rmem->base, (unsigned long)rmem->size / SZ_1M);
+
+        return 0;
+}
+RESERVEDMEM_OF_DECLARE(cma, "shared-dma-pool", rmem_cma_setup);
+{% endhighlight %}
+
+rmem_cma_setup() 函数的作用就是作为 DTS 中，"reserved-memory" 节点
+的子节点，其 compatible 属性值为 "shared-dma-pool" ，函数用于初始化
+该节点为 CMA region。参数 rmem 指向 reserved_mem[] 数组中的一个成员。
+函数首先从 rmem 对应的节点中查找 "reusable" 和 "no-map" 属性，如果
+节点包含了 "no-map" 属性或不包含 "reusable" 属性，那么函数直接返回
+错误码。接着函数检查 rmem 对应的起始物理地址和长度是否按 mask 方式对齐，
+如果不对齐直接返回错误码。函数接着调用 cma_iit_reserved_mem() 函数将
+该区域作为一个新的 CMA region 加入到 CMA 内存分配器内，如果添加失败，
+则打印错误信息并返回错误码。函数继续调用 dma_contiguous_early_fixup()
+函数将该 CMA region 加入到 dma_mmu_remap[] 数组里面。函数从 rmem
+对应的节点中读取 "linux,cma-default" 属性，如果该属性存在，那么该
+CMA region 作为 CMA 内存管理器默认的 CMA region (内核可以同时支持
+多个 CMA regions)。最后将 rmem 的 ops 成员设置为 rmem_cma_ops,
+其包含了两个具体的实现接口 rmem_cma_device_init() 函数用于设置
+设备使用的 CMA region，以及 rmem_cma_device_release() 函数用于
+解除对特定 CMA region 的绑定。函数最后将 rmem 的 priv 成员指向了
+CMA region，即 cma_init_reserved_mem() 函数返回的 cma。
+
+函数通过 RESERVEDMEM_OF_DECLARE() 宏将 rmem_cma_setup 加入到
+__reservedmem_of_table section 内并建立一个 struct of_device_id,
+该结构的 compatible 指向 "shared-dma-pool".
+
+> - [of_get_flat_dt_prop](#A0117)
+>
+> - [cma_init_reserved_mem](#A0234)
+>
+> - [dma_contiguous_early_fixup](#A0235)
+>
+> - [dma_contiguous_set_default](#A0236)
+>
+> - [rmem_cma_device_init](#A0238)
+>
+> - [rmem_cma_device_release](#A0239)
+>
+> - [RESERVEDMEM_OF_DECLARE](#A0233)
+
+------------------------------------
+
+#### <span id="A0241">__reserved_mem_init_node</span>
+
+{% highlight c %}
+/**
+ * res_mem_init_node() - call region specific reserved memory init code
+ */
+static int __init __reserved_mem_init_node(struct reserved_mem *rmem)
+{
+        extern const struct of_device_id __reservedmem_of_table[];
+        const struct of_device_id *i;
+
+        for (i = __reservedmem_of_table; i < &__rmem_of_table_sentinel; i++) {
+                reservedmem_of_init_fn initfn = i->data;
+                const char *compat = i->compatible;
+
+                if (!of_flat_dt_is_compatible(rmem->fdt_node, compat))
+                        continue;
+
+                if (initfn(rmem) == 0) {
+                        pr_info("initialized node %s, compatible id %s\n",
+                                rmem->name, compat);
+                        return 0;
+                }
+        }
+        return -ENOENT;
+}
+{% endhighlight %}
+
+__reserved_mem_init_node() 用于初始化 rmem 对应的节点。参数 rmem 为
+reserved_mem[] 数组中的成员。函数首先获得 __reservedmem_of_table 表
+基地址，表里都是 __reservedmem_of_table section 内成员，每个成员都
+包含特定的初始化程序。函数遍历表中的所有成员，如果 rmem 对应节点的
+compatible 属性值与遍历到成员的 compatible 相同，那么 rmem 就使用
+成员的初始化函数初始化该节点。该函数会将节点进行 DMA 或者 CMA 初始化，
+关键看 rmem 对应节点是 CMA 还是 DMA，如果是 CMA，那么初始化函数就是
+rmem_cma_setup()；如果节点是 DMA，那么初始化函数就是 rmem_dma_setup().
+
+> - [rmem_cma_setup](#A0240)
+>
+> - [rmem_dma_setup](#A0242)
+
+------------------------------------
+
+#### <span id="A0242">rmem_dma_setup</span>
+
+{% highlight c %}
+static int __init rmem_dma_setup(struct reserved_mem *rmem)
+{
+        unsigned long node = rmem->fdt_node;
+
+        if (of_get_flat_dt_prop(node, "reusable", NULL))
+                return -EINVAL;
+
+#ifdef CONFIG_ARM
+        if (!of_get_flat_dt_prop(node, "no-map", NULL)) {
+                pr_err("Reserved memory: regions without no-map are not yet supported\n");
+                return -EINVAL;
+        }
+
+        if (of_get_flat_dt_prop(node, "linux,dma-default", NULL)) {
+                WARN(dma_reserved_default_memory,
+                     "Reserved memory: region for default DMA coherent area is redefined\n");
+                dma_reserved_default_memory = rmem;
+        }
+#endif
+
+        rmem->ops = &rmem_dma_ops;
+        pr_info("Reserved memory: created DMA memory pool at %pa, size %ld MiB\n",
+                &rmem->base, (unsigned long)rmem->size / SZ_1M);
+        return 0;
+}
+{% endhighlight %}
+
+rmem_dma_setup() 函数用于初始化 DMA 的预留区。参数 rmem 是
+reserved_mem[] 数组中的成员，并且 rmem 对应的节点是一个 DMA。
+函数首先判断 rmem 对应的节点是否包含 reusable 属性，如果包含，
+则返回错误，由于 DMA 的物理内存域是不能给其他程序使用，所以要
+将 DMA 设置为独占，但 "reusable" 属性的存在代表不独占重复使用，
+这正好和 DMA 的定义相反，所以直接返回错误码。如果宏 CONFIG_ARM
+定义，那么函数从节点读取属性 "no-map", 如果节点没有改属性，那么
+函数返回错误码，DMA 节点必须带 "no-map" 属性。如果节点包含属性
+"linux,dma-default" 属性，那么函数将该节点设置为 DMA 默认分配
+的 DMA region (DMA 支持多个 DMA region). 函数最后将 rmem_dma_ops
+赋值到 rmem->ops 内，其包含了两个具体的实现: rmem_dma_device_init()
+函数用于 DMA device 的初始化，rmem_dma_device_release() 函数
+用于 DMA device release.
+
+------------------------------------
+
+#### <span id="A0243">fdt_init_reserved_mem</span>
+
+{% highlight c %}
+/**
+ * fdt_init_reserved_mem - allocate and init all saved reserved memory regions
+ */
+void __init fdt_init_reserved_mem(void)
+{
+        int i;
+
+        /* check for overlapping reserved regions */
+        __rmem_check_for_overlap();
+
+        for (i = 0; i < reserved_mem_count; i++) {
+                struct reserved_mem *rmem = &reserved_mem[i];
+                unsigned long node = rmem->fdt_node;
+                int len;
+                const __be32 *prop;
+                int err = 0;
+
+                prop = of_get_flat_dt_prop(node, "phandle", &len);
+                if (!prop)
+                        prop = of_get_flat_dt_prop(node, "linux,phandle", &len);
+                if (prop)
+                        rmem->phandle = of_read_number(prop, len/4);
+
+                if (rmem->size == 0)
+                        err = __reserved_mem_alloc_size(node, rmem->name,
+                                                 &rmem->base, &rmem->size);
+                if (err == 0)
+                        __reserved_mem_init_node(rmem);
+        }
+}
+{% endhighlight %}
+
+fdt_init_reserved_mem() 函数的作用为 reserved_mem[] 数组内的保留区
+分配内存并初始化预留区。函数首先调用 __rmem_check_for_overlap() 函数
+检查 reserved_mem[] 数组对应的预留区是否存在重叠部分，如果存在则报错。
+函数接着使用 for 循环遍历 reserved_mem[] 数组内的所有预留区，每个
+预留区对应一个节点，函数首先获得节点的 "phandle" 或 "linux,phandle"
+属性，并将该属性对应的属性值存储在预留区 rmem 的 phandle 内。如果
+预留区 rmem 的 size 为 0，那么函数调用 __reserved_mem_alloc_size()
+函数为预留区分配内存，如果分配成功，函数继续调用
+__reserved_mem_init_node() 函数初始化预留区，预留区可能是 DMA，也可能
+是 CMA。
+
+> - [\_\_rmem_check_for_overlap](#A0226)
+>
+> - [of_get_flat_dt_prop](#A0117)
+>
+> - [of_read_number](#A0123)
+>
+> - [\_\_reserved_mem_alloc_size](#A0231)
+>
+> - [\_\_reserved_mem_init_node](#A0241)
+
+------------------------------------
+
+#### <span id="A0244">early_init_fdt_scan_reserved_mem</span>
+
+{% highlight c %}
+/**
+ * early_init_fdt_scan_reserved_mem() - create reserved memory regions
+ *
+ * This function grabs memory from early allocator for device exclusive use
+ * defined in device tree structures. It should be called by arch specific code
+ * once the early allocator (i.e. memblock) has been fully activated.
+ */
+void __init early_init_fdt_scan_reserved_mem(void)
+{
+        int n;
+        u64 base, size;
+
+        if (!initial_boot_params)
+                return;
+
+        /* Process header /memreserve/ fields */
+        for (n = 0; ; n++) {
+                fdt_get_mem_rsv(initial_boot_params, n, &base, &size);
+                if (!size)
+                        break;
+                early_init_dt_reserve_memory_arch(base, size, 0);
+        }
+
+        of_scan_flat_dt(__fdt_scan_reserved_mem, NULL);
+        fdt_init_reserved_mem();
+}
+{% endhighlight %}
+
+early_init_fdt_scan_reserved_mem() 函数用于将 DTB 中
+"memory reserved mapping" 区域内的预留区加入到 MEMBLOCK
+内存分配器的预留区，并将 DTS "reserved-memory" 节点内的子节点
+加入到系统预留区，并初始化节点。函数首先判断 initial_boot_params
+的有效性，其指向 DTB 所在的虚拟地址。如果有效，函数继续调用 for
+循环，遍历 DTB "memory reserved mapping" 区域内的所有预留区，
+并调用 fdt_get_mem_rsv() 函数将这些预留区的起始地址和长度传递给
+early_init_dt_reserve_memory_arch() 函数，该函数将预留区加入到
+MEMBLOCK 分配器的预留区内。遍历完 DTB 中的预留区，函数继续调用
+of_scan_flat_dt() 函数和 __fdt_scan_reserved_mem() 函数将
+DTS "reserved-memory" 节点中的子节点对应的预留区加入到系统
+的 reserved_mem[] 数组，并在 fdt_init_reserved_mem() 函数
+中为 reserved_mem[] 数组成员分配内存，并初始化这些预留区。
+至此，系统 DTS/DTB 提供的预留区初始化完毕。
+
+> - [fdt_get_mem_rsv](#A0218)
+>
+> - [early_init_dt_reserve_memory_arch](#A0213)
+>
+> - [of_scan_flat_dt](#A0127)
+>
+> - [\_\_fdt_scan_reserved_mem](#A0225)
+>
+> - [fdt_init_reserved_mem](#A0243)
+
+------------------------------------
+
+#### <span id="A0245">cma_early_percent_memory</span>
+
+{% highlight c %}
+static phys_addr_t __init __maybe_unused cma_early_percent_memory(void)
+{
+        struct memblock_region *reg;
+        unsigned long total_pages = 0;
+
+        /*
+         * We cannot use memblock_phys_mem_size() here, because
+         * memblock_analyze() has not been called yet.
+         */
+        for_each_memblock(memory, reg)
+                total_pages += memblock_region_memory_end_pfn(reg) -
+                               memblock_region_memory_base_pfn(reg);
+
+        return (total_pages * CONFIG_CMA_SIZE_PERCENTAGE / 100) << PAGE_SHIFT;
+}
+{% endhighlight %}
+
+cma_early_percent_memory() 函数的作用是当启用宏 CONFIG_CMA_SIZE_PERCENTAGE,
+并且 CMDLINE 中不包含 "cma=" 参数，那么函数从可用物理内存中获得指定
+百分比的物理内存，并返回指定百分比内存的长度。函数首先调用 for_each_memblock()
+函数计算 MEMBLOCK 分配器目前可用物理内存的数量，然后将可用物理内存
+乘与指定的百分比，之后返回该物理内存的大小。在 Linux 中，通过 Kbuild
+可以配置 CONFIG_CMA_SIZE_PERCENTAGE 的值。
+
+> - [for_each_memblock](#A0246)
+
+------------------------------------
+
+#### <span id="A0246">for_each_memblock</span>
+
+{% highlight c %}
+#define for_each_memblock(memblock_type, region)                                        \
+        for (region = memblock.memblock_type.regions;                                   \
+             region < (memblock.memblock_type.regions + memblock.memblock_type.cnt);    \       
+             region++)
+{% endhighlight %}
+
+for_each_memblock() 函数用于遍历 MEMBLOCK memory regions
+上所有物理内存区块。函数使用 for 循环遍历 memory 内部所有
+region。
+
+------------------------------------
+
+#### <span id="A0247">cma_declare_contiguous</span>
+
+{% highlight c %}
+/**
+ * cma_declare_contiguous() - reserve custom contiguous area
+ * @base: Base address of the reserved area optional, use 0 for any
+ * @size: Size of the reserved area (in bytes),
+ * @limit: End address of the reserved memory (optional, 0 for any).
+ * @alignment: Alignment for the CMA area, should be power of 2 or zero
+ * @order_per_bit: Order of pages represented by one bit on bitmap.
+ * @fixed: hint about where to place the reserved area
+ * @name: The name of the area. See function cma_init_reserved_mem()
+ * @res_cma: Pointer to store the created cma region.
+ *
+ * This function reserves memory from early allocator. It should be
+ * called by arch specific code once the early allocator (memblock or bootmem)
+ * has been activated and all other subsystems have already allocated/reserved
+ * memory. This function allows to create custom reserved areas.
+ *      
+ * If @fixed is true, reserve contiguous area at exactly @base.  If false,
+ * reserve in range from @base to @limit.
+ */                     
+int __init cma_declare_contiguous(phys_addr_t base,
+                        phys_addr_t size, phys_addr_t limit,
+                        phys_addr_t alignment, unsigned int order_per_bit,
+                        bool fixed, const char *name, struct cma **res_cma)
+{
+        phys_addr_t memblock_end = memblock_end_of_DRAM();
+        phys_addr_t highmem_start;
+        int ret = 0;            
+
+        /*
+         * We can't use __pa(high_memory) directly, since high_memory
+         * isn't a valid direct map VA, and DEBUG_VIRTUAL will (validly)
+         * complain. Find the boundary by adding one to the last valid
+         * address.
+         */
+        highmem_start = __pa(high_memory - 1) + 1;
+        pr_debug("%s(size %pa, base %pa, limit %pa alignment %pa)\n",
+                __func__, &size, &base, &limit, &alignment);
+
+        if (cma_area_count == ARRAY_SIZE(cma_areas)) {
+                pr_err("Not enough slots for CMA reserved regions!\n");
+                return -ENOSPC;
+        }
+
+        if (!size)
+                return -EINVAL;        
+
+        if (alignment && !is_power_of_2(alignment))
+                return -EINVAL;
+
+
+        /*
+         * Sanitise input arguments.
+         * Pages both ends in CMA area could be merged into adjacent unmovable
+         * migratetype page by page allocator's buddy algorithm. In the case,
+         * you couldn't get a contiguous memory, which is not what we want.
+         */
+        alignment = max(alignment,  (phys_addr_t)PAGE_SIZE <<
+                          max_t(unsigned long, MAX_ORDER - 1, pageblock_order));
+        base = ALIGN(base, alignment);
+        size = ALIGN(size, alignment);
+        limit &= ~(alignment - 1);
+
+        if (!base)
+                fixed = false;
+
+        /* size should be aligned with order_per_bit */
+        if (!IS_ALIGNED(size >> PAGE_SHIFT, 1 << order_per_bit))
+                return -EINVAL;
+
+        /*
+         * If allocating at a fixed base the request region must not cross the
+         * low/high memory boundary.
+         */
+        if (fixed && base < highmem_start && base + size > highmem_start) {
+                ret = -EINVAL;
+                pr_err("Region at %pa defined on low/high memory boundary (%pa)\n",
+                        &base, &highmem_start);
+                goto err;
+        }
+
+        /*
+         * If the limit is unspecified or above the memblock end, its effective
+         * value will be the memblock end. Set it explicitly to simplify further
+         * checks.
+         */
+        if (limit == 0 || limit > memblock_end)
+                limit = memblock_end;
+
+        /* Reserve memory */
+        if (fixed) {
+                if (memblock_is_region_reserved(base, size) ||
+                    memblock_reserve(base, size) < 0) {
+                        ret = -EBUSY;
+                        goto err;
+                }
+        } else {
+                phys_addr_t addr = 0;
+
+                /*
+                 * All pages in the reserved area must come from the same zone.
+                 * If the requested region crosses the low/high memory boundary,
+                 * try allocating from high memory first and fall back to low
+                 * memory in case of failure.
+                 */
+                if (base < highmem_start && limit > highmem_start) {
+                        addr = memblock_alloc_range(size, alignment,
+                                                    highmem_start, limit,
+                                                    MEMBLOCK_NONE);
+                        limit = highmem_start;
+                }
+
+                if (!addr) {
+                        addr = memblock_alloc_range(size, alignment, base,
+                                                    limit,
+                                                    MEMBLOCK_NONE);
+                        if (!addr) {
+                                ret = -ENOMEM;
+                                goto err;
+                        }
+                }
+
+                /*
+                 * kmemleak scans/reads tracked objects for pointers to other
+                 * objects but this address isn't mapped and accessible
+                 */
+                kmemleak_ignore_phys(addr);
+                base = addr;
+        }
+
+        ret = cma_init_reserved_mem(base, size, order_per_bit, name, res_cma);
+        if (ret)
+                goto err;
+
+        pr_info("Reserved %ld MiB at %pa\n", (unsigned long)size / SZ_1M,
+                &base);
+        return 0;
+
+err:
+        pr_err("Failed to reserve %ld MiB\n", (unsigned long)size / SZ_1M);
+        return ret;
+}
+{% endhighlight %}
+
+cma_declare_contiguous() 函数用于给 CMA 分配指定大小的物理内存。
+通过 CMDLINE 或内核配置方式传递给 CMA 参数，那么系统就调用该函数
+进行 CMA 物理内存的分配。由于函数比较长，分段解析：
+
+{% highlight c %}
+int __init cma_declare_contiguous(phys_addr_t base,
+                        phys_addr_t size, phys_addr_t limit,
+                        phys_addr_t alignment, unsigned int order_per_bit,
+                        bool fixed, const char *name, struct cma **res_cma)
+{
+        phys_addr_t memblock_end = memblock_end_of_DRAM();
+        phys_addr_t highmem_start;
+        int ret = 0;
+{% endhighlight %}
+
+参数 base 指定 CMA 的基地址，size 参数指定 CMA 的长度，limit
+参数指定最大 CMA 分配地址，参数 alignment 代表 CMA 对齐方式，
+参数 order_per_bit 指定 CMA 分配器使用的 bitmap 信息，fixed
+代表 CMA 是否需要 fixed，参数 name 指定 CMA region 的名字，
+参数 res_cma 指向 struct cma 结构。函数首先调用
+memblock_end_of_DRAM() 函数获得 MEMBLOCK 物理内存分配器
+支持的最大可用物理内存地址。
+
+{% highlight c %}
+        /*
+         * We can't use __pa(high_memory) directly, since high_memory
+         * isn't a valid direct map VA, and DEBUG_VIRTUAL will (validly)
+         * complain. Find the boundary by adding one to the last valid
+         * address.
+         */
+        highmem_start = __pa(high_memory - 1) + 1;
+        pr_debug("%s(size %pa, base %pa, limit %pa alignment %pa)\n",
+                __func__, &size, &base, &limit, &alignment);
+
+        if (cma_area_count == ARRAY_SIZE(cma_areas)) {
+                pr_err("Not enough slots for CMA reserved regions!\n");
+                return -ENOSPC;
+        }
+
+        if (!size)
+                return -EINVAL;        
+
+        if (alignment && !is_power_of_2(alignment))
+                return -EINVAL;
+{% endhighlight %}
+
+函数首先对参数进行检测，其中包括 cma_areas[] 数组是否已经
+分配完了，如果 cma_area_count 等于 cma_areas[] 数组的长度，
+那么代表系统 CMA regions 数组 cma_areas[] 已经分配完，没有
+可用的 cma 结构，那么函数打印错误信息，并返回错误码。如果 size
+参数无效，获得 alignment 无效，那么函数直接返回错误码。
+
+{% highlight c %}
+        /*
+         * Sanitise input arguments.
+         * Pages both ends in CMA area could be merged into adjacent unmovable
+         * migratetype page by page allocator's buddy algorithm. In the case,
+         * you couldn't get a contiguous memory, which is not what we want.
+         */
+        alignment = max(alignment,  (phys_addr_t)PAGE_SIZE <<
+                          max_t(unsigned long, MAX_ORDER - 1, pageblock_order));
+        base = ALIGN(base, alignment);
+        size = ALIGN(size, alignment);
+        limit &= ~(alignment - 1);
+
+        if (!base)
+                fixed = false;
+
+        /* size should be aligned with order_per_bit */
+        if (!IS_ALIGNED(size >> PAGE_SHIFT, 1 << order_per_bit))
+                return -EINVAL;
+
+        /*
+         * If allocating at a fixed base the request region must not cross the
+         * low/high memory boundary.
+         */
+        if (fixed && base < highmem_start && base + size > highmem_start) {
+                ret = -EINVAL;
+                pr_err("Region at %pa defined on low/high memory boundary (%pa)\n",
+                        &base, &highmem_start);
+                goto err;
+        }
+{% endhighlight %}
+
+函数接下来调整 CMA region 的基地址和长度，以及最大分配地址，最后当
+fixed 有效，且基地址小于 highmem_start，且 CMA region 的结束地址
+大于 highmem_start，那么系统将会打印错误消息并返回错误码。
+
+{% highlight c %}
+        /*
+         * If the limit is unspecified or above the memblock end, its effective
+         * value will be the memblock end. Set it explicitly to simplify further
+         * checks.
+         */
+        if (limit == 0 || limit > memblock_end)
+                limit = memblock_end;
+
+        /* Reserve memory */
+        if (fixed) {
+                if (memblock_is_region_reserved(base, size) ||
+                    memblock_reserve(base, size) < 0) {
+                        ret = -EBUSY;
+                        goto err;
+                }
+{% endhighlight %}
+
+函数检查到 limit 为 0 或则 limit 大于 memblock_end，那么
+函数将 limit 设置为 memblock_end。如果 fixed 为 true，
+那么函数此时调用 memblock_is_region_reserved() 检查申请的
+CMA region 是否在 MEMBLOCK 的预留区内，如果在则返回错误代码，
+如果不在，那么调用 memblock_reserve() 函数将申请的 CMA region
+加入到 MEMBLOCK 的预留区内，如果添加失败，那么函数返回错误码。
+
+{% highlight c %}
+        } else {
+                phys_addr_t addr = 0;
+
+                /*
+                 * All pages in the reserved area must come from the same zone.
+                 * If the requested region crosses the low/high memory boundary,
+                 * try allocating from high memory first and fall back to low
+                 * memory in case of failure.
+                 */
+                if (base < highmem_start && limit > highmem_start) {
+                        addr = memblock_alloc_range(size, alignment,
+                                                    highmem_start, limit,
+                                                    MEMBLOCK_NONE);
+                        limit = highmem_start;
+                }
+
+                if (!addr) {
+                        addr = memblock_alloc_range(size, alignment, base,
+                                                    limit,
+                                                    MEMBLOCK_NONE);
+                        if (!addr) {
+                                ret = -ENOMEM;
+                                goto err;
+                        }
+                }
+
+                /*
+                 * kmemleak scans/reads tracked objects for pointers to other
+                 * objects but this address isn't mapped and accessible
+                 */
+                kmemleak_ignore_phys(addr);
+                base = addr;
+        }
+{% endhighlight %}
+
+如果 fixed 为 false，那么函数判断如果 base 小于 highmen_start 且 limit
+大小 highmem_start，那么函数就调用 memblock_alloc_range() 函数
+分配指定大小的物理内存区块，并肩 limit 设置为 highmem_start。如果
+分配失败，函数继续调用 memblock_alloc_rnage() 函数再次分配，如果
+分配还是失败，那么函数直接返回错误码。
+
+{% highlight c %}
+        ret = cma_init_reserved_mem(base, size, order_per_bit, name, res_cma);
+        if (ret)
+                goto err;
+
+        pr_info("Reserved %ld MiB at %pa\n", (unsigned long)size / SZ_1M,
+                &base);
+        return 0;
+
+err:
+        pr_err("Failed to reserve %ld MiB\n", (unsigned long)size / SZ_1M);
+        return ret;
+{% endhighlight %}
+
+函数在分配物理内存之后，调用 cma_init_reserved_mem() 函数
+添加进 CMA 分配器内，最后打印相应的信息。
+
+> - [memblock_end_of_DRAM](#A0201)
+>
+> - [memblock_is_region_reserved](#A0210)
+>
+> - [memblock_reserve](#A0203)
+>
+> - [memblock_alloc_range](#A0248)
+>
+> - [cma_init_reserved_mem](#A0234)
+
+------------------------------------
+
+#### <span id="A0248">memblock_alloc_range</span>
+
+{% highlight c %}
+phys_addr_t __init memblock_alloc_range(phys_addr_t size, phys_addr_t align,
+                                        phys_addr_t start, phys_addr_t end,
+                                        enum memblock_flags flags)
+{                       
+        return memblock_alloc_range_nid(size, align, start, end, NUMA_NO_NODE,
+                                        flags);
+}
+{% endhighlight %}
+
+memblock_alloc_range() 函数用于从 MEMBLOCK 可用物理内存指定范围
+内分配物理内存。参数 size 指向申请物理内存的长度，align 参数指向
+对齐方式，start 参数指向分配范围的起始物理地址，参数 end 指向分配
+范围的终止物理地址，flags 指向分配标志。函数通过调用
+memblock_alloc_range_nid() 函数实现。
+
+> - [memblock_alloc_range_nid](#A0227)
+
+------------------------------------
+
+#### <span id="A0249">dma_contiguous_reserve_area</span>
+
+{% highlight c %}
+/**
+ * dma_contiguous_reserve_area() - reserve custom contiguous area
+ * @size: Size of the reserved area (in bytes),
+ * @base: Base address of the reserved area optional, use 0 for any
+ * @limit: End address of the reserved memory (optional, 0 for any).
+ * @res_cma: Pointer to store the created cma region.
+ * @fixed: hint about where to place the reserved area
+ *
+ * This function reserves memory from early allocator. It should be
+ * called by arch specific code once the early allocator (memblock or bootmem)
+ * has been activated and all other subsystems have already allocated/reserved
+ * memory. This function allows to create custom reserved areas for specific
+ * devices.
+ *
+ * If @fixed is true, reserve contiguous area at exactly @base.  If false,
+ * reserve in range from @base to @limit.
+ */
+int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
+                                       phys_addr_t limit, struct cma **res_cma,
+                                       bool fixed)
+{
+        int ret;
+
+        ret = cma_declare_contiguous(base, size, limit, 0, 0, fixed,
+                                        "reserved", res_cma);
+        if (ret)
+                return ret;
+
+        /* Architecture specific contiguous memory fixup. */
+        dma_contiguous_early_fixup(cma_get_base(*res_cma),
+                                cma_get_size(*res_cma));
+
+        return 0;
+}
+{% endhighlight %}
+
+dma_contiguous_reserve_area() 函数的作用就是申请一块新的物理内存
+给 CMA region，并将 CMA region 加入到 CMA 分配器。最后调用将
+CMA region 加入到 dma_mmu_remap[] 数组。参数 size 指定申请 CMA
+region 的大小，base 指向申请的基地址，limit 参数指定最大申请
+地址，参数 res_cma 用于存储 cma 结构。函数首先调用
+cma_declare_contiguous() 函数申请一个新的 CMA region，并添加
+到 CMA 内存分配器里，然后调用 dma_contiguous_early_fixup()
+函数将新的 CMA region 加入到 dma_mmu_remap[] 数组。
+
+> - [cma_declare_contiguous](#A0247)
+>
+> - [dma_contiguous_early_fixup](#A0235)
+
+------------------------------------
+
+#### <span id="A0250">dma_contiguous_reserve</span>
+
+{% highlight c %}
+/**
+ * dma_contiguous_reserve() - reserve area(s) for contiguous memory handling
+ * @limit: End address of the reserved memory (optional, 0 for any).
+ *              
+ * This function reserves memory from early allocator. It should be
+ * called by arch specific code once the early allocator (memblock or bootmem)
+ * has been activated and all other subsystems have already allocated/reserved
+ * memory.
+ */     
+void __init dma_contiguous_reserve(phys_addr_t limit)
+{                               
+        phys_addr_t selected_size = 0;
+        phys_addr_t selected_base = 0;
+        phys_addr_t selected_limit = limit;
+        bool fixed = false;
+
+        pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
+
+        if (size_cmdline != -1) {
+                selected_size = size_cmdline;
+                selected_base = base_cmdline;
+                selected_limit = min_not_zero(limit_cmdline, limit);
+                if (base_cmdline + size_cmdline == limit_cmdline)
+                        fixed = true;
+        } else {
+#ifdef CONFIG_CMA_SIZE_SEL_MBYTES
+                selected_size = size_bytes;
+#elif defined(CONFIG_CMA_SIZE_SEL_PERCENTAGE)
+                selected_size = cma_early_percent_memory();
+#elif defined(CONFIG_CMA_SIZE_SEL_MIN)
+                selected_size = min(size_bytes, cma_early_percent_memory());
+#elif defined(CONFIG_CMA_SIZE_SEL_MAX)
+                selected_size = max(size_bytes, cma_early_percent_memory());
+#endif  
+        }
+
+        if (selected_size && !dma_contiguous_default_area) {
+                pr_debug("%s: reserving %ld MiB for global area\n", __func__,
+                         (unsigned long)selected_size / SZ_1M);
+
+                dma_contiguous_reserve_area(selected_size, selected_base,
+                                            selected_limit,
+                                            &dma_contiguous_default_area,
+                                            fixed);
+        }
+}
+{% endhighlight %}
+
+dma_contiguous_reserve() 函数的作用是定义默认的 CMA region。
+CMA 可以通过 DTS，CMDLINE 或则 Kbuild 进行定义，内核如果没有
+使用 DTS 定义默认的 CMA region 的话，该函数就定义申请一块物理
+内存用于 CMA，并定义这块 CMA 为默认的 CMA。参数 limit 指向
+DMA 的限制地址。函数首先判断 size_cmdline 是否有效，size_cmdline
+的作用是判断当前系统是否通过 CMDLINE 方式传递 cma 的信息，
+如果在 CMDLINE 中已经传递了 cma 的信息，那么 size_cmdline
+不为 -1. 如果系统使用 CMDLINE 传递 cma 参数，内核启动过程中，
+解析 cmdline 中的 cma 会调用 early_cma() 函数，该函数用于解析
+cmdline 中 cma 的参数，包括 cma 的大小，cma 可用的起始物理地址
+和终止地址。CMDLINE 中定义了 cma 参数之后，会将长度存储在
+selected_size 变量里，将基地址存储在 selected_base, 将 cma
+最大物理地址存储在 selected_limit 里；如果 CMDLINE 中不存在
+cma 参数，那么可以通过 Kbuild 内核配置实现，如果
+CONFIG_CMA_SIZE_SEL_MBYTES 宏打开，那么 CMA 的长度由
+size_bytes 指定；如果 CONFIG_CMA_SIZE_SEL_PERCENTAGE 宏
+打开，那么 CMA 大小由可用物理内存的百分比决定，其通过函数
+cma_early_percent_memory() 实现；如果宏 CONFIG_CMA_SIZE_SEL_MIN
+定义，那么 CMA 的大小由 size_bytes 和 cma_early_percent_memory()
+返回值中选择最小的值；如果宏 CONFIG_CMA_SIZE_SEL_MAX
+定义，那么 CMA 的大小由 size_bytes 和 cma_early_percent_memory()
+之中最大的值。
+
+函数获得 selected_size 的值之后，如果此时 DTS 并未包含默认
+CMA 配置，并且 selected_size 不为空，那么函数调用
+dma_contiguous_reserve_area() 函数为 CMA region 分配内存，
+并加入 CMA 分配器里；如果 DTS 已经有默认 CMA 的配置，那么
+函数不做任何实质性的动作，直接使用 DTS 默认的 CMA。
+
+> - [cma_early_percent_memory](#A0245)
+>
+> - [dma_contiguous_reserve_area](#A0249)
+>
+> - [early_cma](#A0251)
+
+------------------------------------
+
+#### <span id="A0251">early_cma</span>
+
+{% highlight c %}
+static int __init early_cma(char *p)
+{
+        if (!p) {
+                pr_err("Config string not provided\n");
+                return -EINVAL;
+        }
+
+        size_cmdline = memparse(p, &p);
+        if (*p != '@')
+                return 0;
+        base_cmdline = memparse(p + 1, &p);
+        if (*p != '-') {
+                limit_cmdline = base_cmdline + size_cmdline;
+                return 0;
+        }
+        limit_cmdline = memparse(p + 1, &p);
+
+        return 0;
+}
+early_param("cma", early_cma);
+{% endhighlight %}
+
+early_cma() 函数用于从 CMDLINE 中解析 "cma=" 参数，
+cma 参数支持的格式如下：
+
+{% highlight c %}
+cma=nn[MG]@[start[MG][-end[MG]]]
+
+例如：
+
+"cma=20M@0x68000000-0x70000000"
+{% endhighlight %}
+
+上面的例子就是 CMA 的大小为 20M, 这 20M 物理内存必须在
+0x68000000-0x7000000 范围内查找。函数首先调用 memparse()
+解析出 "cma" 字符串中长度域，存储在 size_cmdline，然后检查
+字符串中是否含有 "@" 符号，如果有继续调用 memparse() 函数
+解析基地址，并存储在 base_cmdline 里；如果字符串中还含有
+"-" 字符，那么函数继续调用 memparse() 函数解析终止地址，
+并存储在 limit_cmdline 里。early_cma() 函数通过
+early_param() 函数将 "cma" 参数于 early_cma()
+函数挂钩。
+
+------------------------------------
+
+#### <span id="A0252">arm_memblock_init</span>
+
+{% highlight c %}
+void __init arm_memblock_init(const struct machine_desc *mdesc)
+{
+        /* Register the kernel text, kernel data and initrd with memblock. */
+        memblock_reserve(__pa(KERNEL_START), KERNEL_END - KERNEL_START);
+
+        arm_initrd_init();
+
+        arm_mm_memblock_reserve();
+
+        /* reserve any platform specific memblock areas */
+        if (mdesc->reserve)
+                mdesc->reserve();
+
+        early_init_fdt_reserve_self();
+        early_init_fdt_scan_reserved_mem();
+
+        /* reserve memory for DMA contiguous allocations */
+        dma_contiguous_reserve(arm_dma_limit);
+
+        arm_memblock_steal_permitted = false;
+        memblock_dump_all();
+}
+{% endhighlight %}
+
+arm_memblock_init() 函数用于将系统需要预留的内存加入到
+MEMBLOCK 内存分配器的预留区里。参数 mdesc 指向体系相关的
+结构。函数首先将内核镜像所在物理块加入到保留区里，然后将
+INITRD 所占用的物理内存区加入到保留区内，arm_mm_memblock_reserve()
+函数将内核全局页目录所在的物理地址加入都保留区内。接下来。
+函数将 DTB memory reserved mapping 中指定的区域加入到
+保留区，并将 DTS "reserved-memory" 节点的子节点对应的
+区域加入到保留区。函数接着调用 dma_contiguous_reserve()
+函数设置内核使用的默认 CMA。最后将 arm_memblock_steal_permitted
+设置为 false，如果 MEMBLOCK 分配器 debug 功能启用，那么
+函数 memblock_dump_all() 函数将会打印相应的信息。
+
+> - [memblock_reserve](#A0203)
+>
+> - [arm_initrd_init](#A0211)
+>
+> - [arm_mm_memblock_reserve](#A0212)
+>
+> - [early_init_fdt_reserve_self](#A0214)
+>
+> - [early_init_fdt_scan_reserved_mem](#A0244)
+>
+> - [dma_contiguous_reserve](#A0250)
+
+------------------------------------
+
+#### <span id="A0253">pmd_clear</span>
+
+{% highlight c %}
+#define pmd_clear(pmdp)                 \
+        do {                            \
+                pmdp[0] = __pmd(0);     \
+                pmdp[1] = __pmd(0);     \
+                clean_pmd_entry(pmdp);  \
+        } while (0)
+{% endhighlight %}
+
+pmd_clear() 函数用于清除一个 PMD 入口项。函数将 PMD 入口的
+值都设置为 __pmd(0), 然后使用 clean_pmd_entry() 函数刷新
+对应的 TLB 和 cache。
+
+------------------------------------
+
+#### <span id="A0254">__pmd</span>
+
+{% highlight c %}
+#define __pmd(x)        ((pmd_t) { (x) } )
+{% endhighlight %}
+
+__pmd() 函数用于制作 PMD 入口项的值。
+
+------------------------------------
+
+#### <span id="A02"></span>
 
 {% highlight c %}
 
@@ -8942,7 +11380,7 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A02"></span>
 
 {% highlight c %}
 
@@ -8950,7 +11388,7 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A02"></span>
 
 {% highlight c %}
 
@@ -8958,7 +11396,7 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A02"></span>
 
 {% highlight c %}
 
@@ -8966,7 +11404,7 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A02"></span>
 
 {% highlight c %}
 
@@ -8974,7 +11412,7 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A02"></span>
 
 {% highlight c %}
 
@@ -8982,7 +11420,7 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A02"></span>
 
 {% highlight c %}
 
@@ -8990,7 +11428,7 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A02"></span>
 
 {% highlight c %}
 
@@ -8998,7 +11436,7 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A02"></span>
 
 {% highlight c %}
 
@@ -9006,7 +11444,7 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A02"></span>
 
 {% highlight c %}
 
@@ -9014,7 +11452,7 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
+#### <span id="A02"></span>
 
 {% highlight c %}
 
@@ -9022,127 +11460,7 @@ memblock_set_current_limit() 函数用于设置 MEMBLOCK 内存分配器的限�
 
 ------------------------------------
 
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-------------------------------------
-
-#### <span id="A0190"></span>
+#### <span id="A02"></span>
 
 {% highlight c %}
 
