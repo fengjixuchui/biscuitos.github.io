@@ -11372,11 +11372,289 @@ __pmd() 函数用于制作 PMD 入口项的值。
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A0255">pmd_off_k</span>
 
 {% highlight c %}
-
+static inline pmd_t *pmd_off_k(unsigned long virt)
+{
+        return pmd_offset(pud_offset(pgd_offset_k(virt), virt), virt);
+}
 {% endhighlight %}
+
+pmd_off_k() 函数用于获得内核虚拟地址对应的 PMD 入口。
+函数首先通过 pgd_offset_k() 函数获得内核虚拟地址的全局页目录
+入口地址，基于这个地址调用 pud_offset() 获得对应的 PUD 入口
+地址，最后调用 pmd_offset() 函数获得对应的 PMD 入口地址。
+
+> - [pgd_offset_k](#A0170)
+>
+> - [pud_offset](#A0171)
+>
+> - [pmd_offset](#A0172)
+
+------------------------------------
+
+#### <span id="A0256">prepare_page_table</span>
+
+{% highlight c %}
+static inline void prepare_page_table(void)
+{
+        unsigned long addr;
+        phys_addr_t end;
+
+        /*
+         * Clear out all the mappings below the kernel image.
+         */
+        for (addr = 0; addr < MODULES_VADDR; addr += PMD_SIZE)
+                pmd_clear(pmd_off_k(addr));
+
+#ifdef CONFIG_XIP_KERNEL
+        /* The XIP kernel is mapped in the module area -- skip over it */
+        addr = ((unsigned long)_exiprom + PMD_SIZE - 1) & PMD_MASK;
+#endif  
+        for ( ; addr < PAGE_OFFSET; addr += PMD_SIZE)
+                pmd_clear(pmd_off_k(addr));
+
+        /*
+         * Find the end of the first block of lowmem.
+         */
+        end = memblock.memory.regions[0].base + memblock.memory.regions[0].size;
+        if (end >= arm_lowmem_limit)
+                end = arm_lowmem_limit;
+
+        /*
+         * Clear out all the kernel space mappings, except for the first
+         * memory bank, up to the vmalloc region.
+         */
+        for (addr = __phys_to_virt(end);
+             addr < VMALLOC_START; addr += PMD_SIZE)
+                pmd_clear(pmd_off_k(addr));
+}
+{% endhighlight %}
+
+prepare_page_table() 函数的作用是在建立页表之前，清除未使用的
+页表。函数分别找了三段虚拟地址，分别为： 1）0 地址到 MODULE_VADDR
+2）MODULE_VADDR 到 PAGE_OFFSET 3）第一块 DRM 大于 arm_lowmem_limit
+部分。函数对于这三段地址分贝使用 pmd_off_k() 算出对于的 PMD 入口之后，
+使用 pmd_clear() 函数将 PMD 项清除，并刷新 TLB 和 Cache。
+
+> - [pmd_off_k](#A0255)
+>
+> - [pmd_clear](#A0253)
+
+------------------------------------
+
+#### <span id="A0257">vectors_high</span>
+
+{% highlight c %}
+#if __LINUX_ARM_ARCH__ >= 4
+#define vectors_high()  (get_cr() & CR_V)
+#else
+#define vectors_high()  (0)
+#endif
+{% endhighlight %}
+
+vectors_high() 用于指明 Exception Vector 所在的位置，由 SCTLR
+寄存器的 "bit-13 V" 决定，如果该 bit 为 0，那么 Exception Vector
+位于 0x00000000；反之如果为 1，那么 Exception Vector 位于
+0xFFFF0000.
+
+------------------------------------
+
+#### <span id="A0258">vectors_base</span>
+
+{% highlight c %}
+#define vectors_base()  (vectors_high() ? 0xffff0000 : 0)
+{% endhighlight %}
+
+vectors_base() 用于返回 Exception Vector 所在的虚拟地址，其
+通过 vectors_high() 函数定义，最终由 SCTLR寄存器的 "bit-13 V"
+决定，如果该 bit 为 0，那么 Exception Vector 位于 0x00000000；
+反之如果为 1，那么 Exception Vector 位于 0xFFFF0000.
+
+> - [vectors_high](#A0257)
+
+------------------------------------
+
+#### <span id="A0259">pgd_addr_end</span>
+
+{% highlight c %}
+#define pgd_addr_end(addr, end)                                         \
+({      unsigned long __boundary = ((addr) + PGDIR_SIZE) & PGDIR_MASK;  \
+        (__boundary - 1 < (end) - 1)? __boundary: (end);                \
+})
+{% endhighlight %}
+
+pgd_addr_end() 函数用于获得 addr 下一个 PGDIR_SIZE 地址。
+函数首先将 addr 加上 PGDIR_SIZE，然后判断该值是否比 end 参数
+小，如果小，那么函数返回 addr 加上 PGDIR_SIZE 的值；反之返回
+end 参数值。函数确保获得下一个 PGDIR_SIZE 地址是安全的。
+
+------------------------------------
+
+#### <span id="A0260">pud_addr_end</span>
+
+{% highlight c %}
+#define pud_addr_end(addr, end)                                         \
+({      unsigned long __boundary = ((addr) + PUD_SIZE) & PUD_MASK;      \
+        (__boundary - 1 < (end) - 1)? __boundary: (end);                \
+})
+{% endhighlight %}
+
+pud_addr_end() 函数用于获得 addr 下一个 PUD_SIZE 地址。
+函数首先将 addr 加上 PUD_SIZE，然后判断该值是否比 end 参数
+小，如果小，那么函数返回 addr 加上 PUD_SIZE 的值；反之返回
+end 参数值。函数确保获得下一个 PUD_SIZE 地址是安全的。
+
+------------------------------------
+
+#### <span id="A0261">pmd_addr_end</span>
+
+{% highlight c %}
+#define pmd_addr_end(addr, end)                                         \
+({      unsigned long __boundary = ((addr) + PMD_SIZE) & PMD_MASK;      \
+        (__boundary - 1 < (end) - 1)? __boundary: (end);                \
+})
+{% endhighlight %}
+
+pmd_addr_end() 函数用于获得 addr 下一个 PMD_SIZE 地址。
+函数首先将 addr 加上 PMD_SIZE，然后判断该值是否比 end 参数
+小，如果小，那么函数返回 addr 加上 PMD_SIZE 的值；反之返回
+end 参数值。函数确保获得下一个 PMD_SIZE 地址是安全的。
+
+------------------------------------
+
+#### <span id="A0262">__map_init_section</span>
+
+{% highlight c %}
+static void __init __map_init_section(pmd_t *pmd, unsigned long addr,
+                        unsigned long end, phys_addr_t phys,
+                        const struct mem_type *type, bool ng)
+{
+        pmd_t *p = pmd;
+
+#ifndef CONFIG_ARM_LPAE
+        /*
+         * In classic MMU format, puds and pmds are folded in to
+         * the pgds. pmd_offset gives the PGD entry. PGDs refer to a
+         * group of L1 entries making up one logical pointer to
+         * an L2 table (2MB), where as PMDs refer to the individual
+         * L1 entries (1MB). Hence increment to get the correct
+         * offset for odd 1MB sections.
+         * (See arch/arm/include/asm/pgtable-2level.h)
+         */
+        if (addr & SECTION_SIZE)
+                pmd++;
+#endif
+        do {
+                *pmd = __pmd(phys | type->prot_sect | (ng ? PMD_SECT_nG : 0));
+                phys += SECTION_SIZE;
+        } while (pmd++, addr += SECTION_SIZE, addr != end);
+
+        flush_pmd_entry(p);
+}
+{% endhighlight %}
+
+__map_init_section() 函数用于建立一个 "Section" 一级页表。
+在 ARMv7 中，页目录项支持多种方式，包括 "Page table",
+"Section", 以及 "Supersection". ARMv7 默认使用了 "Section" 方式
+作为页目录项，如下图：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000231.png)
+
+在 PGD 中，一个 PGD 入口地址指向了一个 2M 的地址空间，且一个
+PGD 由两个 PMD 组成，每个 PMD 各指向 1M 的地址空间，在 ARM
+中，PMD 入口与 PTE 页表的关系如图所示：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000225.png)
+
+PMD 入口所指的 PTE 页表大小为 4K，每个 PTE 入口占 4 个字节，
+PTE 页表被分作两个部分，第一个部分供 Linux 使用，第二个部分
+供硬件使用。因此一个 PMD 指向 1M 的地址空间，如果参数 addr
+没有按 SECTION_SIZE 对齐，也就是 addr 指向了第二个 1M 地址，
+因此需要使用第二个 pmd，第一个 PMD 则设置为空。函数调用 __pmd()
+函数将起始物理地址 phys，prot_sect 以及 ng 的信息写到 PMD 项里，
+这里 prot_sect 就是一级页表即页目录的值，即 "Section" 页目录
+的值。设置完毕之后，将 phys 增加 SECTION_SIZE 的值，addr 的
+值也增加 SECTION_SIZE，如果此时 addr 等于 end，那么函数停止
+循环，并调用 flush_pmd_entry() 刷新 TLB 页表。
+
+> - [\_\_pmd](#A0254)
+>
+> - [flush_pmd_entry](#A0174)
+
+------------------------------------
+
+#### <span id="A0263">arm_pte_alloc</span>
+
+{% highlight c %}
+static pte_t * __init arm_pte_alloc(pmd_t *pmd, unsigned long addr,
+                                unsigned long prot,
+                                void *(*alloc)(unsigned long sz))
+{
+        if (pmd_none(*pmd)) {
+                pte_t *pte = alloc(PTE_HWTABLE_OFF + PTE_HWTABLE_SIZE);
+                __pmd_populate(pmd, __pa(pte), prot);
+        }
+        BUG_ON(pmd_bad(*pmd));
+        return pte_offset_kernel(pmd, addr);
+}
+{% endhighlight %}
+
+arm_pte_alloc() 函数用于分配并安装一个新的 PTE 页表。参数 pmd 指向
+PMD 入口，addr 指向虚拟地址，prot 指向页表属性，alloc 指向内存分配函数。
+函数调用 pmd_none() 函数 PMD 入口是否为空，如果不为空，函数调用
+alloc() 对应的函数进行内存分配，分配长度为 "PTE_HWTABLE_OFF+PTE_HWTABLE_SIZE"
+的内存给 pte，然后调用 __pmd_populate() 函数将 PTE 填充到 PMD
+入口项里。执行成功之后，函数调用 pmd_bad() 函数检测 pmd
+入口项的有效性，如果无效则报错。函数最后调用
+pte_offset_kernel() 函数返回 addr 虚拟地址对应的 pte 入口。
+
+> - [pmd_none](#A0265)
+>
+> - [__pmd_populate](#A0175)
+>
+> - [pmd_bad](#A0)
+>
+> - [pte_offset_kernel](#A0)
+
+------------------------------------
+
+#### <span id="A0264">pmd_val</span>
+
+{% highlight c %}
+#define pmd_val(x)      ((x).pmd)
+{% endhighlight %}
+
+pmd_val() 函数的作用是获得 PMD 入口项的值。
+
+------------------------------------
+
+#### <span id="A0265">pmd_none</span>
+
+{% highlight c %}
+#define pmd_none(pmd)           (!pmd_val(pmd))
+{% endhighlight %}
+
+pmd_none() 函数的作用是判断 PMD 入口项是否为空。函数通过
+pmd_val() 函数读取 PMD 入口项的值，如果值为 0，那么函数返回
+true 表示 PMD 入口项是空的；反之返回 0，代表 PMD 入口
+项目是非空的。
+
+> - [pmd_val](#A0264)
+
+------------------------------------
+
+#### <span id="A0266">pmd_bad</span>
+
+{% highlight c %}
+#define pmd_bad(pmd)            (pmd_val(pmd) & 2)
+{% endhighlight %}
+
+pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
+反之返回 false。
+
+> - [pmd_val](#A0264)
 
 ------------------------------------
 
@@ -11386,13 +11664,8 @@ __pmd() 函数用于制作 PMD 入口项的值。
 
 {% endhighlight %}
 
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
+> - [](#A0)
+>
 
 ------------------------------------
 
@@ -11402,13 +11675,8 @@ __pmd() 函数用于制作 PMD 入口项的值。
 
 {% endhighlight %}
 
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
+> - [](#A0)
+>
 
 ------------------------------------
 
@@ -11418,13 +11686,8 @@ __pmd() 函数用于制作 PMD 入口项的值。
 
 {% endhighlight %}
 
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
+> - [](#A0)
+>
 
 ------------------------------------
 
@@ -11434,13 +11697,8 @@ __pmd() 函数用于制作 PMD 入口项的值。
 
 {% endhighlight %}
 
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
+> - [](#A0)
+>
 
 ------------------------------------
 
@@ -11450,13 +11708,8 @@ __pmd() 函数用于制作 PMD 入口项的值。
 
 {% endhighlight %}
 
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
+> - [](#A0)
+>
 
 ------------------------------------
 
@@ -11465,6 +11718,515 @@ __pmd() 函数用于制作 PMD 入口项的值。
 {% highlight c %}
 
 {% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
+
+------------------------------------
+
+#### <span id="A02"></span>
+
+{% highlight c %}
+
+{% endhighlight %}
+
+> - [](#A0)
+>
 
 
 
