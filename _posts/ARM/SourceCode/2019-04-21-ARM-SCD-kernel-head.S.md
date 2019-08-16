@@ -1712,6 +1712,37 @@ ENDPROC(__fixup_a_pv_table)
 
 首先调用 adr 获得 3f 对应的物理地址存储到 r0 寄存器中，然后将 __pv_offset 的地址
 加载到 r6 寄存器，接着再通过 r3 寄存器调整为 __pv_offset 对应的物理地址。
+此时内核将 r6 寄存器高 4 字节的内容存储到 r0 寄存器，再将 r6 寄存器低 4
+字节的内容存储到 r6 寄存器，并将 r6 寄存器的值向右移动 24 bit，内核继续调用
+cmn 和 moveq 两条指令设置 r0 寄存器的值。接下来就是比较重点的内容，内核
+首先获得 __pv_table_begin 的地址，然后使用循环遍历表中每一项，表中的每一项
+就是一个 long 变量，其指向一个段指令所在的地址，内核通过 "ldr ip, [r7, r3]"
+指令获得一条指令所在的地址，这里指的注意的是。__pv_table 里面的内容基本
+都是 "ADD/SUB" 指令，因此内核通过修改这两条指令的立即数域，以此修改虚拟地址
+和物理地址转换的偏移，如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000232.png)
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000233.png)
+
+两个指令的机器码格式中，shifter_operand 域都是一致，其定义如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000234.png)
+
+上面为 ARMv7 中立即数的表示方式，其包含了 rotate_imm 域和 immed_8 域，
+ARMv7 通过将 immed_8 域的值向右循环移动 (2 * rotate_imm 域值)，即：
+
+{% highlight c %}
+立即数 = immed_8 >> (2 * rotate_imm)  "循环右移"                      
+{% endhighlight %}
+
+因此 __pv_stub 宏将指令添加到 .init.pv_table section 之后，可以通过
+__pv_table_begin 遍历里面的所有指令，并可以修改每条 ADD 或 SUB
+指令的指定域，其中包括立即数域。内核首先调用 "bic ip, ip, #0xff"
+指令清除 ADD/SUB 指令的 immed_8 域，然后调用 "tst ip, #0xf00"
+指令检查 ADD/SUB 指令的 rotate_imm 域是否有效，如果有效，那么
+将 r6 寄存器的内容，即物理地址和虚拟地址之间的偏移存储到指令的
+立即数域。这样就完成了内核对 .init.pv_table section 内容的修改。
 
 <span id="__create_page_tables"></span>
 {% highlight haskell %}

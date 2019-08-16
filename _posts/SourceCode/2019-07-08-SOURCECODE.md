@@ -11658,7 +11658,1905 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A0267">arm_pte_alloc</span>
+
+{% highlight c %}
+static pte_t * __init arm_pte_alloc(pmd_t *pmd, unsigned long addr,
+                                unsigned long prot,
+                                void *(*alloc)(unsigned long sz))
+{
+        if (pmd_none(*pmd)) {
+                pte_t *pte = alloc(PTE_HWTABLE_OFF + PTE_HWTABLE_SIZE);
+                __pmd_populate(pmd, __pa(pte), prot);
+        }
+        BUG_ON(pmd_bad(*pmd));
+        return pte_offset_kernel(pmd, addr);
+}
+{% endhighlight %}
+
+arm_pte_alloc() 函数用于分配并安装一个 PTE 页表。参数 pmd 指向 PMD
+入口，addr 指向虚拟地址，参数 prot 指向页表标志，参数 alloc 用于分配
+内存的函数。函数首先调用 pmd_none() 判断 PMD 是否已经指向一个 PTE 页表，
+如果没有指向，那么函数调用 alloc() 对应的函数分配一个 PTE 页表，PTE 页表
+有两部分组成，两部分总共 1024 个 PTE 入口，如下图：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000225.png)
+
+如上图，函数将 PMD 的两个入口指向了 PTE 页表 PTE_HWTABLE_OFF 处，
+每个 PMD 入口指向 1M 的地址空间，函数通过调用 __pmd_populate()
+函数实现 PMD 入口与 PTE 页表的绑定。安装好页表之后，函数调用
+pmd_bad() 函数将查 PMD 入口对应的入口项是否有效，如果无效，则
+报错，最后函数调用 pte_offset_kernel() 函数返回虚拟地址 addr 对应的
+PTE 入口。
+
+> - [pte_offset_kernel](#A0270)
+
+------------------------------------
+
+#### <span id="A0268">pte_index</span>
+
+{% highlight c %}
+#define pte_index(addr)         (((addr) >> PAGE_SHIFT) & (PTRS_PER_PTE - 1))
+{% endhighlight %}
+
+pte_index() 函数的作用是获得虚拟地址对应的 PTE 入口。函数从
+虚拟地址中截取 PTE 入口的偏移。如下图：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000222.png)
+
+函数先将虚拟地址向右移 PAGE_SHIFT 位，然后与 "PTRS_PER_PTE-1"
+相与，以此获得 PTE 页表的偏移。
+
+------------------------------------
+
+#### <span id="A0269">pmd_page_vaddr</span>
+
+{% highlight c %}
+static inline pte_t *pmd_page_vaddr(pmd_t pmd)
+{
+        return __va(pmd_val(pmd) & PHYS_MASK & (s32)PAGE_MASK);
+}
+{% endhighlight %}
+
+pmd_page_vaddr() 函数的作用是获得 PMD 入口对应的 PTE 页表
+基地址，pmd 指向 PMD 入口。函数首先调用 pmd_val() 获得
+PTE 页表基地址，此时是物理地址，然后进行掩码操作，将标志去掉，
+获得 PTE 页表原始物理地址，最后通过 __va() 函数获得物理地址
+对应的虚拟地址。
+
+> - [pmd_val](#A0264)
+
+------------------------------------
+
+#### <span id="A0270">pte_offset_kernel</span>
+
+{% highlight c %}
+#define pte_offset_kernel(pmd,addr)     (pmd_page_vaddr(*(pmd)) + pte_index(addr))
+{% endhighlight %}
+
+pte_offset_kernel() 函数的作用就是获得虚拟地址对应的 PTE 入口。
+参数 pmd 指向 PMD 入口，addr 参数指向虚拟地址。函数通过调用
+pmd_page_vaddr() 函数获得 PMD 入口指向的 PTE 页表的基地址，此时
+地址是虚拟地址，函数在通过 pte_index() 函数获得虚拟地址对应的
+PTE 偏移，最后 PTE 页表基地址加上 PTE 偏移就获得了虚拟地址对应
+的 PTE 入口。
+
+> - [pmd_page_vaddr](#A0269)
+>
+> - [pte_index](#A0268)
+
+------------------------------------
+
+#### <span id="A0271">alloc_init_pte</span>
+
+{% highlight c %}
+static void __init alloc_init_pte(pmd_t *pmd, unsigned long addr,
+                                  unsigned long end, unsigned long pfn,
+                                  const struct mem_type *type,
+                                  void *(*alloc)(unsigned long sz),
+                                  bool ng)
+{
+        pte_t *pte = arm_pte_alloc(pmd, addr, type->prot_l1, alloc);
+        do {
+                set_pte_ext(pte, pfn_pte(pfn, __pgprot(type->prot_pte)),
+                            ng ? PTE_EXT_NG : 0);
+                pfn++;
+        } while (pte++, addr += PAGE_SIZE, addr != end);
+}
+{% endhighlight %}
+
+alloc_init_pte() 函数用于分配一个 PTE 页表，并设置 PTE 页表中指定
+PTE 入口。参数 pmd 指向 PMD 入口，addr 参数指向虚拟地址，参数 end
+指向终止地址，参数 pfn 指向物理页的页帧号，参数 type 指向内存分配
+类型，alloc 指向内存分配函数，ng 参数。函数首先调用
+arm_pte_alloc() 函数分配一个内存给 PTE，并将 PMD 指向 PTE，
+然后使用 do while() 循环给指定范围的虚拟地址建立 PTE 入口
+项的映射。函数通过 pfn_pte() 函数将一个页帧与 __pgprot() 生成
+的 PTE 页表标志合成一个 PTE 入口项，然后通过 set_pte_ext()
+函数将 set_pte_ext() 函数设置 pte 页表，最后将 pte, pfn 加一操作，
+将 addr 加上 PAGE_SIZE，进入下一次循环，当 addr 等于 end 的
+时候，循环结束。
+
+> - [arm_pte_alloc](#A0267)
+>
+> - [pfn_pte](#A0276)
+>
+> - [__pgprot](#A0277)
+
+------------------------------------
+
+#### <span id="A0272">__pte</span>
+
+{% highlight c %}
+#define __pte(x)        ((pte_t) { (x) } )
+{% endhighlight %}
+
+__pte() 函数的作用是将参数 x 转换为 pte_t 类型。
+
+------------------------------------
+
+#### <span id="A0273">PFN_PHYS</span>
+
+{% highlight c %}
+#define PFN_PHYS(x)     ((phys_addr_t)(x) << PAGE_SHIFT)
+{% endhighlight %}
+
+PFN_PHYS() 函数的作用是将物理页帧转换为物理地址。参数 x
+指向物理页帧号。函数将物理页帧左移 PAGE_SHIFT 位，以此
+获得物理地址。
+
+------------------------------------
+
+#### <span id="A0274">__pfn_to_phys</span>
+
+{% highlight c %}
+#define __pfn_to_phys(pfn)      PFN_PHYS(pfn)
+{% endhighlight %}
+
+__pfn_to_phys() 函数用于获得物理页帧对应的物理地址。
+函数通过 PFN_PHYS() 函数实现。
+
+> - [PFN_PHYS](#A0273)
+
+------------------------------------
+
+#### <span id="A0275">pgprot_val</span>
+
+{% highlight c %}
+#define pgprot_val(x)   ((x).pgprot)
+{% endhighlight %}
+
+pgprot_val() 函数用于获得 PTE 入口标志。
+
+------------------------------------
+
+#### <span id="A0276">pfn_pte</span>
+
+{% highlight c %}
+#define pfn_pte(pfn,prot)       __pte(__pfn_to_phys(pfn) | pgprot_val(prot))
+{% endhighlight %}
+
+pfn_pte() 函数用于制作一个 PTE 入口项。pfn 指向物理页帧，prot 指向
+PTE 页表项的标志。
+
+> - [\_\_pte](#A0272)
+>
+> - [\_\_pfn_to_phys](#A0274)
+>
+> - [pgprot_val](#A0275)
+
+------------------------------------
+
+#### <span id="A0277">__pgprot</span>
+
+{% highlight c %}
+#define __pgprot(x)     ((pgprot_t) { (x) } )
+{% endhighlight %}
+
+__pgprot() 函数将参数 x 转换成 pgprot_t 类型。
+
+------------------------------------
+
+#### <span id="A0278">alloc_init_pmd</span>
+
+{% highlight c %}
+static void __init alloc_init_pmd(pud_t *pud, unsigned long addr,
+                                      unsigned long end, phys_addr_t phys,
+                                      const struct mem_type *type,
+                                      void *(*alloc)(unsigned long sz), bool ng)
+{
+        pmd_t *pmd = pmd_offset(pud, addr);
+        unsigned long next;
+
+        do {
+                /*
+                 * With LPAE, we must loop over to map
+                 * all the pmds for the given range.
+                 */
+                next = pmd_addr_end(addr, end);
+
+                /*
+                 * Try a section mapping - addr, next and phys must all be
+                 * aligned to a section boundary.
+                 */
+                if (type->prot_sect &&
+                                ((addr | next | phys) & ~SECTION_MASK) == 0) {
+                        __map_init_section(pmd, addr, next, phys, type, ng);
+                } else {
+                        alloc_init_pte(pmd, addr, next,
+                                       __phys_to_pfn(phys), type, alloc, ng);
+                }
+
+                phys += next - addr;
+
+        } while (pmd++, addr = next, addr != end);
+}
+{% endhighlight %}
+
+alloc_init_pmd() 函数用于分配或初始化 PMD 入口。参数 pud 指向
+PUD 入口，参数 addr 指向虚拟地址，参数 end 指向结束虚拟地址，phys
+参数指向物理地址，type 参数指向内存类型，参数 alloc 指向分配函数。
+函数首先调用 pmd_offset() 函数获得 PMD 入口。然后调用 do while()
+循环，函数在每次循环中，首先调用 pmd_addr_end() 函数获得 addr 对应
+的下一个 PMD 入口。函数此时判断 type->prot_sect，如果该值有效，
+代表仅仅设置 PMD 入口项, 并调用 __map_init_section() 函数初始化
+PMD 入口项；反之调用 alloc_init_pte() 函数分配一个 PTE 页并
+初始化 PMD 页表指向 PTE 页表。函数最后增加 phys 的值和 pmd 的
+值，只要 addr 等于 end，那么函数结束循环。
+
+> - [pmd_offset](#A0172)
+>
+> - [pmd_addr_end](#A0261)
+>
+> - [\_\_map_init_section](#A0262)
+>
+> - [alloc_init_pte](#A0271)
+>
+> - [\_\_phys_to_pfn](#A0274)
+
+------------------------------------
+
+#### <span id="A0279">alloc_init_pud</span>
+
+{% highlight c %}
+static void __init alloc_init_pud(pgd_t *pgd, unsigned long addr,
+                                  unsigned long end, phys_addr_t phys,
+                                  const struct mem_type *type,
+                                  void *(*alloc)(unsigned long sz), bool ng)
+{
+        pud_t *pud = pud_offset(pgd, addr);
+        unsigned long next;
+
+        do {
+                next = pud_addr_end(addr, end);
+                alloc_init_pmd(pud, addr, next, phys, type, alloc, ng);
+                phys += next - addr;
+        } while (pud++, addr = next, addr != end);
+}
+{% endhighlight %}
+
+alloc_init_pud() 函数用于分配或初始化 PUD 入口。参数 pgd 指向 PGD
+入口，addr 参数指向起始虚拟地址，end 参数指向终止虚拟地址，参数
+phys 指向起始物理地址，参数 type 指向内存类型，参数 alloc 指向分配
+函数。函数首先调用过 pud_offset() 函数获得 PUD 入口，然后调用 do while()
+循环，每次循环，函数首先调用 pud_addr_end() 获得下一个 PUD 对应的虚拟
+地址，然后调用 alloc_init_pmd() 函数初始化 PUD 入口项，初始化
+完毕，函数增加 phys 的值和 pud 的值，如果 addr 等于 end，那么
+停止循环。
+
+> - [pud_offset](#A0171)
+>
+> - [pud_addr_end](#A0260)
+>
+> - [alloc_init_pmd](#A0278)
+
+------------------------------------
+
+#### <span id="A0280">__create_mapping</span>
+
+{% highlight c %}
+static void __init __create_mapping(struct mm_struct *mm, struct map_desc *md,
+                                    void *(*alloc)(unsigned long sz),
+                                    bool ng)
+{
+        unsigned long addr, length, end;
+        phys_addr_t phys;
+        const struct mem_type *type;
+        pgd_t *pgd;
+
+        type = &mem_types[md->type];
+
+#ifndef CONFIG_ARM_LPAE
+        /*
+         * Catch 36-bit addresses
+         */
+        if (md->pfn >= 0x100000) {
+                create_36bit_mapping(mm, md, type, ng);
+                return;
+        }
+#endif
+
+        addr = md->virtual & PAGE_MASK;
+        phys = __pfn_to_phys(md->pfn);
+        length = PAGE_ALIGN(md->length + (md->virtual & ~PAGE_MASK));
+
+        if (type->prot_l1 == 0 && ((addr | phys | length) & ~SECTION_MASK)) {
+                pr_warn("BUG: map for 0x%08llx at 0x%08lx can not be mapped using pages, ignoring.\n",
+                        (long long)__pfn_to_phys(md->pfn), addr);
+                return;
+        }
+
+        pgd = pgd_offset(mm, addr);
+        end = addr + length;
+        do {
+                unsigned long next = pgd_addr_end(addr, end);
+
+                alloc_init_pud(pgd, addr, next, phys, type, alloc, ng);
+
+                phys += next - addr;
+                addr = next;
+        } while (pgd++, addr != end);
+}
+{% endhighlight %}
+
+__create_mapping() 函数的作用就是建立页表。参数 mm 指向进程的 mm_struct
+结构，map_desc 参数指向映射关系，alloc 指向分配参数。由于代码较长，分段解析。
+
+{% highlight c %}
+        type = &mem_types[md->type];
+
+#ifndef CONFIG_ARM_LPAE
+        /*
+         * Catch 36-bit addresses
+         */
+        if (md->pfn >= 0x100000) {
+                create_36bit_mapping(mm, md, type, ng);
+                return;
+        }
+#endif
+{% endhighlight %}
+
+函数首先通过 md->type 参数获得对应的内存类型，其存储在 mem_types[]
+数组内。如果此时系统没有定义 CONFIG_ARM_LPAE 宏，且当前映射关系结构
+md->pfn 大于 0x100000, 那么此时 32 位物理地址已经无法存储现有
+的物理内存，函数调用 create_36bit_mapping() 建立 36 位页表，并
+直接返回。
+
+{% highlight c %}
+        addr = md->virtual & PAGE_MASK;
+        phys = __pfn_to_phys(md->pfn);
+        length = PAGE_ALIGN(md->length + (md->virtual & ~PAGE_MASK));
+
+        if (type->prot_l1 == 0 && ((addr | phys | length) & ~SECTION_MASK)) {
+                pr_warn("BUG: map for 0x%08llx at 0x%08lx can not be mapped using pages, ignoring.\n",
+                        (long long)__pfn_to_phys(md->pfn), addr);
+                return;
+        }
+{% endhighlight %}
+
+函数接着从映射关系结构中获得虚拟地址，并调用 __pfn_to_phys() 函数
+获得物理地址，函数调用 PAGE_ALIGN() 函数获得映射关系对齐的终止虚拟地址，
+如果 type->prot_l1 等于 0 且 addr,phys,length 没有按 SECTION_MASK
+对齐，那么函数报错并返回。
+
+{% highlight c %}
+        pgd = pgd_offset(mm, addr);
+        end = addr + length;
+        do {
+                unsigned long next = pgd_addr_end(addr, end);
+
+                alloc_init_pud(pgd, addr, next, phys, type, alloc, ng);
+
+                phys += next - addr;
+                addr = next;
+        } while (pgd++, addr != end);
+{% endhighlight %}
+
+函数继续调用 pgd_offset() 函数获得虚拟地址 addr 对应的 PGD 入口，
+并计算终止虚拟地址，接着使用 do while() 循环，在循环中，函数调用
+pgd_addr_end() 函数获得下一个 PGD 入口对应的虚拟地址。并调用
+alloc_init_pud() 函数分配获得初始化一个 PUD 入口地址。建立完毕之后
+增加 phys 和 addr，以及 pgd 的值，只有 addr 等于 end 的时候，
+循环才停止。
+
+> - [\_\_pfn_to_phys](#A0274)
+>
+> - [pgd_offset](#A0169)
+>
+> - [alloc_init_pud](#A0279)
+
+------------------------------------
+
+#### <span id="A0281">create_mapping</span>
+
+{% highlight c %}
+/*
+ * Create the page directory entries and any necessary
+ * page tables for the mapping specified by `md'.  We
+ * are able to cope here with varying sizes and address
+ * offsets, and we take full advantage of sections and
+ * supersections.
+ */
+static void __init create_mapping(struct map_desc *md)
+{
+        if (md->virtual != vectors_base() && md->virtual < TASK_SIZE) {
+                pr_warn("BUG: not creating mapping for 0x%08llx at 0x%08lx in user region\n",
+                        (long long)__pfn_to_phys((u64)md->pfn), md->virtual);
+                return;
+        }
+
+        if ((md->type == MT_DEVICE || md->type == MT_ROM) &&
+            md->virtual >= PAGE_OFFSET && md->virtual < FIXADDR_START &&
+            (md->virtual < VMALLOC_START || md->virtual >= VMALLOC_END)) {
+                pr_warn("BUG: mapping for 0x%08llx at 0x%08lx out of vmalloc space\n",
+                        (long long)__pfn_to_phys((u64)md->pfn), md->virtual);
+        }
+
+        __create_mapping(&init_mm, md, early_alloc, false);
+}
+{% endhighlight %}
+
+create_mapping() 函数用于建立一段页表。参数 md 指向映射关系结构。
+函数首先判断当虚拟地址小于 TASK_SIZE，即用户空间堆栈的栈底，且
+虚拟地址不等于 Exception Verctor Table，此时系统报错并直接返回。
+如果此时映射关系对应的是 Device 或 ROM，且虚拟地址大于内核空间的起始
+虚拟地址，但小于 FIXADDR_START，也小于 VMALLOC_START，也或大于
+VMALLOC_END, 那么函数提示存错，即函数只映射低端内核虚拟地址。
+检测通过后，函数调用 __create_mapping() 函数建立页表。
+
+> - [vectors_base](#A0258)
+>
+> - [\_\_pfn_to_phys](#A0274)
+>
+> - [\_\_create_mapping](#A0280)
+>
+> - [early_alloc](#A0286)
+
+------------------------------------
+
+#### <span id="A0282">TASK_SIZE</span>
+
+{% highlight c %}
+/*      
+ * TASK_SIZE - the maximum size of a user space task.
+ * TASK_UNMAPPED_BASE - the lower boundary of the mmap VM area
+ */                     
+#define TASK_SIZE               (UL(CONFIG_PAGE_OFFSET) - UL(SZ_16M))
+{% endhighlight %}
+
+TASK_SIZE 宏指向了用户空间堆栈的最大长度。CONFIG_PAGE_OFFSET
+指向内核虚拟空间的起始地址。
+
+> - [PAGE_OFFSET](#A0199)
+
+------------------------------------
+
+#### <span id="A0283">memblock_phys_alloc</span>
+
+{% highlight c %}
+phys_addr_t __init memblock_phys_alloc(phys_addr_t size, phys_addr_t align)
+{
+        return memblock_alloc_base(size, align, MEMBLOCK_ALLOC_ACCESSIBLE);
+}
+{% endhighlight %}
+
+memblock_phys_alloc() 函数用于获得指定长度的物理内存。参数 size
+指向需求物理内存的长度，align 参数指向对齐方式。函数通过调用
+memblock_alloc_base() 函数获得需求的物理内存。
+
+> - [memblock_alloc_base](#A0284)
+
+------------------------------------
+
+#### <span id="A0284">memblock_alloc_base</span>
+
+{% highlight c %}
+phys_addr_t __init memblock_alloc_base(phys_addr_t size, phys_addr_t align, phys_addr_t max_addr)
+{               
+        phys_addr_t alloc;
+
+        alloc = __memblock_alloc_base(size, align, max_addr);
+
+        if (alloc == 0)
+                panic("ERROR: Failed to allocate %pa bytes below %pa.\n",
+                      &size, &max_addr);
+
+        return alloc;
+}
+{% endhighlight %}
+
+memblock_alloc_base() 函数用于获得指定长度的物理内存。参数 size 代表
+需求物理内存的长度，参数 align 代表对齐方式，参数 max_addr 代表最大
+可分配物理地址。函数首先调用 __memblock_alloc_base() 函数获得指定
+长度的物理内存，然后判断分配是否成功，如果失败，则调用 panic() 函数
+报错；反之返回 alloc 地址。
+
+> - [\_\_memblock_alloc_base](#A0229)
+
+------------------------------------
+
+#### <span id="A0285">early_alloc_aligned</span>
+
+{% highlight c %}
+static void __init *early_alloc_aligned(unsigned long sz, unsigned long align)
+{           
+        void *ptr = __va(memblock_phys_alloc(sz, align));
+        memset(ptr, 0, sz);
+        return ptr;
+}
+{% endhighlight %}
+
+early_alloc_aligned() 函数用于早期分配指定长度的物理内存。参数 sz 指向
+需求物理内存的长度，align 参数指向对齐方式。函数首先通过
+memblock_phys_alloc() 函数分配指定长度的物理内存，然后通过 __va()
+函数获得物理内存对应的虚拟地址，然后使用 memset() 函数初始化内存，最后
+返回内存的指针。
+
+> - [memblock_phys_alloc](#A0283)
+
+------------------------------------
+
+#### <span id="A0286">early_alloc</span>
+
+{% highlight c %}
+static void __init *early_alloc(unsigned long sz)
+{
+        return early_alloc_aligned(sz, sz);
+}
+{% endhighlight %}
+
+early_alloc() 函数用早期分配物理指定长度物理内存。参数 sz 指向
+需求物理内存的长度。函数通过调用 early_alloc_aligned() 函数
+分配指定长度的物理内存。
+
+> - [early_alloc_aligned](#A0285)
+
+------------------------------------
+
+#### <span id="A0287">map_lowmem</span>
+
+{% highlight c %}
+static void __init map_lowmem(void)
+{
+        struct memblock_region *reg;
+        phys_addr_t kernel_x_start = round_down(__pa(KERNEL_START), SECTION_SIZE);
+        phys_addr_t kernel_x_end = round_up(__pa(__init_end), SECTION_SIZE);
+
+        /* Map all the lowmem memory banks. */
+        for_each_memblock(memory, reg) {
+                phys_addr_t start = reg->base;
+                phys_addr_t end = start + reg->size;
+                struct map_desc map;
+
+                if (memblock_is_nomap(reg))
+                        continue;
+
+                if (end > arm_lowmem_limit)
+                        end = arm_lowmem_limit;
+                if (start >= end)
+                        break;
+
+                if (end < kernel_x_start) {
+                        map.pfn = __phys_to_pfn(start);
+                        map.virtual = __phys_to_virt(start);
+                        map.length = end - start;
+                        map.type = MT_MEMORY_RWX;
+
+                        create_mapping(&map);
+                } else if (start >= kernel_x_end) {
+                        map.pfn = __phys_to_pfn(start);
+                        map.virtual = __phys_to_virt(start);
+                        map.length = end - start;
+                        map.type = MT_MEMORY_RW;
+
+                        create_mapping(&map);
+                } else {
+                        /* This better cover the entire kernel */
+                        if (start < kernel_x_start) {
+                                map.pfn = __phys_to_pfn(start);
+                                map.virtual = __phys_to_virt(start);
+                                map.length = kernel_x_start - start;
+                                map.type = MT_MEMORY_RW;
+
+                                create_mapping(&map);
+                        }
+
+                        map.pfn = __phys_to_pfn(kernel_x_start);
+                        map.virtual = __phys_to_virt(kernel_x_start);
+                        map.length = kernel_x_end - kernel_x_start;
+                        map.type = MT_MEMORY_RWX;
+
+                        create_mapping(&map);
+
+                        if (kernel_x_end < end) {
+                                map.pfn = __phys_to_pfn(kernel_x_end);
+                                map.virtual = __phys_to_virt(kernel_x_end);
+                                map.length = end - kernel_x_end;
+                                map.type = MT_MEMORY_RW;
+
+                                create_mapping(&map);
+                        }
+                }
+        }
+}
+{% endhighlight %}
+
+map_lowmem() 用于映射低端物理内存。低端物理内存的起始地址为 DRM，
+低端物理内存的结束地址是 arm_lowmem_limit。代码较长，分段解析：
+
+{% highlight c %}
+        struct memblock_region *reg;
+        phys_addr_t kernel_x_start = round_down(__pa(KERNEL_START), SECTION_SIZE);
+        phys_addr_t kernel_x_end = round_up(__pa(__init_end), SECTION_SIZE);
+{% endhighlight %}
+
+函数首先调用 round_doun() 函数和 round_up() 函数分别计算
+内核镜像的起始物理地址和内核镜像的终止物理地址。
+
+{% highlight c %}
+        for_each_memblock(memory, reg) {
+                phys_addr_t start = reg->base;
+                phys_addr_t end = start + reg->size;
+                struct map_desc map;
+
+                if (memblock_is_nomap(reg))
+                        continue;
+
+                if (end > arm_lowmem_limit)
+                        end = arm_lowmem_limit;
+                if (start >= end)
+                        break;
+{% endhighlight %}
+
+for_each_memblock() 用于遍历系统中所有可用物理内存，每次遍历一块
+可用的物理内存，函数首先通过函数 memblock_is_nomap() 判断这段物理
+内存块是否建立页表，如果不建立，那么函数直接结束这次循环。如果当前
+物理内存的终止地址已经大于低端物理内存，那么函数将 end 设置为
+arm_lowmem_limit, 以此只映射低端物理内存，如果遍历到的物理内存区块
+的起始地址已经大于低端物理内存区块，那么直接跳出循环。
+
+{% highlight c %}
+                if (end < kernel_x_start) {
+                        map.pfn = __phys_to_pfn(start);
+                        map.virtual = __phys_to_virt(start);
+                        map.length = end - start;
+                        map.type = MT_MEMORY_RWX;
+
+                        create_mapping(&map);
+                } else if (start >= kernel_x_end) {
+                        map.pfn = __phys_to_pfn(start);
+                        map.virtual = __phys_to_virt(start);
+                        map.length = end - start;
+                        map.type = MT_MEMORY_RW;
+
+                        create_mapping(&map);
+                }
+{% endhighlight %}
+
+如果物理内存小于内核镜像的起始地址，那么这段物理内存建立一个映射关系，
+起始页帧设置为物理内存区块的起始地址对应的页帧，再使用 __phys_to_virt()
+函数获得起始物理地址对应的虚拟地址，物理区块的长度存储在 length 成员里，
+映射的类型设置为 MT_MEMORY_RWX, 即可读可写可执行；如果物理内存区块
+的起始地址大于内核镜像的起始物理地址，那么特意将内存类型设置为 MT_MEMORY_RW,
+即只能读写不能执行。最后都调用 create_mapping() 函数建立页表。
+
+{% highlight c %}
+                } else {
+                        /* This better cover the entire kernel */
+                        if (start < kernel_x_start) {
+                                map.pfn = __phys_to_pfn(start);
+                                map.virtual = __phys_to_virt(start);
+                                map.length = kernel_x_start - start;
+                                map.type = MT_MEMORY_RW;
+
+                                create_mapping(&map);
+                        }
+
+                        map.pfn = __phys_to_pfn(kernel_x_start);
+                        map.virtual = __phys_to_virt(kernel_x_start);
+                        map.length = kernel_x_end - kernel_x_start;
+                        map.type = MT_MEMORY_RWX;
+
+                        create_mapping(&map);
+
+                        if (kernel_x_end < end) {
+                                map.pfn = __phys_to_pfn(kernel_x_end);
+                                map.virtual = __phys_to_virt(kernel_x_end);
+                                map.length = end - kernel_x_end;
+                                map.type = MT_MEMORY_RW;
+
+                                create_mapping(&map);
+                        }
+                }
+{% endhighlight %}
+
+如果遍历到的物理内存块将内核镜像包含在其中，那么物理地址就包含了三个部分，
+第一个部分为小于内核镜像的物理内核，第二部分为内核镜像占用的物理内存，第三
+部分为大于内核镜像但小于低端物理内存结束地址的物理内存。其中特殊之处是
+第一和第三部分的内存类型都设置为 MT_MEMORY_RW, 而第二部分则设置为
+MT_MEMORY_RWX. 最终调用 create_mapping() 函数进行页表创建。
+
+> - [create_mapping](#A0281)
+
+------------------------------------
+
+#### <span id="A0288">__pv_stub</span>
+
+{% highlight c %}
+#define __pv_stub(from,to,instr,type)                   \
+        __asm__("@ __pv_stub\n"                         \
+        "1:     " instr "       %0, %1, %2\n"           \
+        "       .pushsection .pv_table,\"a\"\n"         \
+        "       .long   1b\n"                           \
+        "       .popsection\n"                          \
+        : "=r" (to)                                     \
+        : "r" (from), "I" (type))
+{% endhighlight %}
+
+
+首先来看下面三行代码的含义：
+
+{% highlight c %}
+               .pushsection .pv_table,\"a\"\n"         
+               .long   1b\n"                           
+               .popsection\n"                          
+{% endhighlight %}
+
+在一个文件中出现这三行代码，那么在这个编译生成的 .o 文件中，
+会插入一个名为 ".pv_table" 的 section，段的内容是一个 long
+型的地址，其指向标号 1b 处的地址，对于标号 1，1f 表示
+forword 1 表示在本句之后的标号 1，1b 表示 backword 1 就是
+本句之前的标号 1. 指令 ".pushsection" 的作用就是向当前目标
+文件的 .text section 中插入一个名为指定名字的 section。
+".popsection" 指令表示 section 结束之后仍然归于 .text section。
+内核在编译过程中，根据链接脚本: arch/arm/kernel/vmlinux.lds.S
+
+{% highlight c %}
+        .init.pv_table : {
+                __pv_table_begin = .;
+                *(.pv_table)
+                __pv_table_end = .;
+        }                        
+{% endhighlight %}
+
+编译系统会将所有目标文件的 .pv_table section 加入到 vmlinux
+的 .init.pv_table section 内，该 section 的起始虚拟地址是
+__pv_table_begin, 终止地址是 __pv_table_end. 再回到 __pv_stub
+宏，这个 section 中每一个 long 型都是一个地址，位于这些地址处的
+内容就是各个标号 1 处的指令，于是在内核启动时就能够通过 __pv_table_begin
+找到所有这些标号 1 处的指令，然后就可以修改这些指令的操作数。
+例如在 ARMv7 内核启动过程中，在汇编阶段就通过 __fixup_pv_table
+对 .init.pv_table section 进行修改，具体可以参考：
+
+> - [__fixup_pv_table](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__fixup_pv_table)
+
+这里还涉及一个比较有意思的地方，1 标志处的代码为：
+
+{% highlight c %}
+        "1:     " instr "       %0, %1, %2\n"                       
+{% endhighlight %}
+
+通过内核源码统计之后可知，instr 可以是 ADD 指令，也可以是 SUB
+指令，两条指令机器码格式如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000232.png)
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000233.png)
+
+两个指令的机器码格式中，shifter_operand 域都是一致，其定义如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000234.png)
+
+上面为 ARMv7 中立即数的表示方式，其包含了 rotate_imm 域和 immed_8 域，
+ARMv7 通过将 immed_8 域的值向右循环移动 (2 * rotate_imm 域值)，即：
+
+{% highlight c %}
+立即数 = immed_8 >> (2 * rotate_imm)  "循环右移"                      
+{% endhighlight %}
+
+因此 __pv_stub 宏将指令添加到 .pv_table section 之后，可以通过
+__pv_table_begin 遍历里面的所有指令，并可以修改每条 ADD 或 SUB
+指令的指定域，其中包括立即数域。
+
+------------------------------------
+
+#### <span id="A0289">__phys_to_virt</span>
+
+{% highlight c %}
+static inline unsigned long __phys_to_virt(phys_addr_t x)
+{
+        unsigned long t;
+
+        /*
+         * 'unsigned long' cast discard upper word when
+         * phys_addr_t is 64 bit, and makes sure that inline
+         * assembler expression receives 32 bit argument
+         * in place where 'r' 32 bit operand is expected.
+         */
+        __pv_stub((unsigned long) x, t, "sub", __PV_BITS_31_24);
+        return t;
+}                      
+{% endhighlight %}
+
+__phys_to_virt() 函数的作用是通过物理地址获得对应的虚拟地址。
+在内核空间，通过物理地址获得对应的虚拟地址，可以通过一个线性
+运算获得，即加上或减去指定的偏移。内核就通过 __pv_stub() 函数
+实现物理地址到虚拟地址的转换，其通过调用 sub 指令，将物理地址
+减去一个偏移就可以得到虚拟地址，这里内核增加了一个技巧，内核
+将这条减法指令添加到了 vmlinux 内核镜像的 .init.pv_table section
+内，并在内核启动的过程中，根据实际运行情况，校正了偏移值，
+这样内核就可以获得正确的偏移，而不是使用 __PV_BITS_31_24 使用的
+偏移值。
+
+> - [\_\_pv_stub](#A0288)
+
+------------------------------------
+
+#### <span id="A0290">__va</span>
+
+{% highlight c %}
+#define __va(x)                 ((void *)__phys_to_virt((phys_addr_t)(x)))
+{% endhighlight %}
+
+__va() 函数用于将一个物理地址转换成虚拟地址。函数通过调用
+__phys_to_virt() 函数实现。
+
+> - [\_\_phys_to_virt](#A0289)
+
+------------------------------------
+
+#### <span id="A0291">vm_area_add_early</span>
+
+{% highlight c %}
+static struct vm_struct *vmlist __initdata;
+/**
+ * vm_area_add_early - add vmap area early during boot
+ * @vm: vm_struct to add
+ *
+ * This function is used to add fixed kernel vm area to vmlist before
+ * vmalloc_init() is called.  @vm->addr, @vm->size, and @vm->flags
+ * should contain proper values and the other fields should be zero.
+ *
+ * DO NOT USE THIS FUNCTION UNLESS YOU KNOW WHAT YOU'RE DOING.
+ */
+void __init vm_area_add_early(struct vm_struct *vm)
+{
+        struct vm_struct *tmp, **p;
+
+        BUG_ON(vmap_initialized);
+        for (p = &vmlist; (tmp = *p) != NULL; p = &tmp->next) {
+                if (tmp->addr >= vm->addr) {
+                        BUG_ON(tmp->addr < vm->addr + vm->size);
+                        break;
+                } else
+                        BUG_ON(tmp->addr + tmp->size > vm->addr);
+        }
+        vm->next = *p;
+        *p = vm;
+}
+{% endhighlight %}
+
+vm_area_add_early() 函数的作用是将一个 vm_struct 加入到内核
+早期的 vmlist 中。函数首先判断 vmap_initialized 是否为 true，
+如果为，那么函数直接报错；反之，函数使用 for 循环，从 vmlist 的
+第一个 vm_struct 开始遍历所有的成员，当找到 vmlist 中的成员 addr
+大于参数 vm 的 addr，那么函数将 vm 插入到 vmlist 的当前位置。
+
+------------------------------------
+
+#### <span id="A0292">add_static_vm_early</span>
+
+{% highlight c %}
+void __init add_static_vm_early(struct static_vm *svm)
+{
+        struct static_vm *curr_svm;
+        struct vm_struct *vm;
+        void *vaddr;
+
+        vm = &svm->vm;
+        vm_area_add_early(vm);
+        vaddr = vm->addr;
+
+        list_for_each_entry(curr_svm, &static_vmlist, list) {
+                vm = &curr_svm->vm;
+
+                if (vm->addr > vaddr)
+                        break;
+        }
+        list_add_tail(&svm->list, &curr_svm->list);
+}
+{% endhighlight %}
+
+add_static_vm_early() 函数用于内核启动早期，将一个 static_vm 加入
+到内核维护的 vmlist 和 static_vmlist 里。函数首先获得参数 svm 对应
+的 vm，并通过函数 vm_area_add_early() 函数将该 vm 加入到系统早期的
+vmlist 里。函数接着使用 list_for_each_entry() 函数遍历系统的
+static_vmlist 链表，直到在链表中找到一个成员的地址大于参数 svm 对应
+的地址，然后函数调用 list_add_tail() 函数添加到链表的当前位置。
+
+> - [vm_area_add_early](#A0291)
+>
+> - [list_for_each_entry](https://biscuitos.github.io/blog/LIST_list_for_each_entry/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+>
+> - [list_add_tail](https://biscuitos.github.io/blog/LIST_list_add_tail/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+
+------------------------------------
+
+#### <span id="A0293">iotable_init</span>
+
+{% highlight c %}
+/*
+ * Create the architecture specific mappings
+ */
+void __init iotable_init(struct map_desc *io_desc, int nr)
+{        
+        struct map_desc *md;
+        struct vm_struct *vm;
+        struct static_vm *svm;
+
+        if (!nr)
+                return;
+
+        svm = early_alloc_aligned(sizeof(*svm) * nr, __alignof__(*svm));
+
+        for (md = io_desc; nr; md++, nr--) {
+                create_mapping(md);
+
+                vm = &svm->vm;
+                vm->addr = (void *)(md->virtual & PAGE_MASK);
+                vm->size = PAGE_ALIGN(md->length + (md->virtual & ~PAGE_MASK));
+                vm->phys_addr = __pfn_to_phys(md->pfn);
+                vm->flags = VM_IOREMAP | VM_ARM_STATIC_MAPPING;
+                vm->flags |= VM_ARM_MTYPE(md->type);
+                vm->caller = iotable_init;
+                add_static_vm_early(svm++);
+        }
+}
+{% endhighlight %}
+
+iotable_init() 函数的作用是建立体系 IO 映射表。函数首先调用
+early_alloc_aligned() 函数给 static_vm 分配了内存，然后使用
+for 循环，给参数 io_desc 映射结构建立指定的页表，每次遍历过程
+中，函数通过调用 create_mapping() 执行真正的页表建立，建立完毕
+之后，更新 svm 的 vm 结构，其中包含起始虚拟地址，长度，映射的物理
+地址，虚拟地址标志设置，VM_IOREMAP 表示指明了该映射是 IO，以及
+VM_ARM_STATIC_MAPPING 指令了该映射是静态映射。函数最后调用
+add_static_vm_early() 函数将静态映射结构 svm 加入到系统早期
+的 vmlist 和 static_vmlist 数据结构里。循环知道 nr 为零停止。
+
+> - [early_alloc_aligned](#A0285)
+>
+> - [\_\_pfn_to_phys](#A0274)
+>
+> - [add_static_vm_early](#A0292)
+
+------------------------------------
+
+#### <span id="A0294">dma_contiguous_remap</span>
+
+{% highlight c %}
+void __init dma_contiguous_remap(void)
+{
+        int i;
+        for (i = 0; i < dma_mmu_remap_num; i++) {
+                phys_addr_t start = dma_mmu_remap[i].base;
+                phys_addr_t end = start + dma_mmu_remap[i].size;
+                struct map_desc map;
+                unsigned long addr;
+
+                if (end > arm_lowmem_limit)
+                        end = arm_lowmem_limit;
+                if (start >= end)
+                        continue;
+
+                map.pfn = __phys_to_pfn(start);
+                map.virtual = __phys_to_virt(start);
+                map.length = end - start;
+                map.type = MT_MEMORY_DMA_READY;
+
+                /*
+                 * Clear previous low-memory mapping to ensure that the
+                 * TLB does not see any conflicting entries, then flush
+                 * the TLB of the old entries before creating new mappings.
+                 *
+                 * This ensures that any speculatively loaded TLB entries
+                 * (even though they may be rare) can not cause any problems,
+                 * and ensures that this code is architecturally compliant.
+                 */
+                for (addr = __phys_to_virt(start); addr < __phys_to_virt(end);
+                     addr += PMD_SIZE)
+                        pmd_clear(pmd_off_k(addr));
+
+                flush_tlb_kernel_range(__phys_to_virt(start),
+                                       __phys_to_virt(end));
+
+                iotable_init(&map, 1);
+        }
+}
+{% endhighlight %}
+
+dma_contiguous_remap() 函数的作用就是个连续物理内存 CMA
+重新建立页表。函数使用 for 循环，遍历 dma_mmu_remap[] 中
+的所有成员，每个成员代表一块物理地址分配成功的 CMA，每遍历
+一块 CMA，函数首先获得块 CMA 的起始物理地址和长度，以此计算
+该块 CMA 的终止物理地址。函数接下来检查终止物理地址是否已经
+超出低端物理地址的范围，如果查出，则将终止物理地址 end 设置
+为 arm_lowmem_limit. 如果此时 CMA 物理块的起始地址已经大于
+终止地址，那么函数停止本次循环，继续遍历其他 CMA 物理块。
+如果遍历到的 CMA 块有效，那么函数设置映射结构体 map，设置
+起始物理页帧，设置 CMA 物理块的起始虚拟地址，设置长度，设置
+映射类型为 MT_MEMORY_DMA_READ。设置完映射关系之后，函数将
+CMA 物理块原先占用的页表都清除调用，并调用 flush_tlb_kernel_range()
+函数清除对应虚拟地址的 TLB。最后调用 iotable_init() 函数
+建立指定的 CMA 页表。
+
+> - [\_\_phys_to_pfn](#A0296)
+>
+> - [\_\_phys_to_virt](#A0289)
+>
+> - [pmd_clear](#A0253)
+>
+> - [iotable_init](#A0293)
+
+------------------------------------
+
+#### <span id="A0295">PHYS_PFN</span>
+
+{% highlight c %}
+#define PHYS_PFN(x)     ((unsigned long)((x) >> PAGE_SHIFT))
+{% endhighlight %}
+
+PHYS_PFN() 宏用于将物理地址转换成物理页帧号。函数通过将
+物理地址向右移动 PAGE_SHIFT 位实现。
+
+------------------------------------
+
+#### <span id="A0296">__phys_to_pfn</span>
+
+{% highlight c %}
+#define __phys_to_pfn(paddr)    PHYS_PFN(paddr)
+{% endhighlight %}
+
+__phys_to_pfn() 函数用于将物理地址转换成物理页帧。函数通过
+PHYS_PFN() 函数实现。
+
+> - [PHYS_PFN](#A0295)
+
+------------------------------------
+
+#### <span id="A0297">__fix_to_virt</span>
+
+{% highlight c %}
+#define __fix_to_virt(x)        (FIXADDR_TOP - ((x) << PAGE_SHIFT))
+{% endhighlight %}
+
+__fix_to_virt() 用于 FIXMAP 索引获得对应的虚拟地址。首先获得 x 对应
+也偏移，然后将 FIXADDR_TOP 减去也偏移就是 x 对应的虚拟地址。
+
+------------------------------------
+
+#### <span id="A0298">fix_to_virt</span>
+
+{% highlight c %}
+/*      
+ * 'index to address' translation. If anyone tries to use the idx
+ * directly without translation, we catch the bug with a NULL-deference
+ * kernel oops. Illegal ranges of incoming indices are caught too.
+ */     
+static __always_inline unsigned long fix_to_virt(const unsigned int idx)
+{
+        BUILD_BUG_ON(idx >= __end_of_fixed_addresses);
+        return __fix_to_virt(idx);
+}
+{% endhighlight %}
+
+fix_to_virt() 函数通过 FIXMAP 索引获得对应的虚拟地址。函数
+首先判断参数 idx 索引是否大于等于 __end_of_fixed_addresses,
+如果为真，那么函数将会报错；反之函数调用 __fix_to_virt()
+函数获得 FIXMAP 索引对应的虚拟地址。
+
+> - [\_\_fix_to_virt](#A0297)
+
+------------------------------------
+
+#### <span id="A0299">pte_val</span>
+
+{% highlight c %}
+#define pte_val(x)      ((x).pte)
+{% endhighlight %}
+
+pte_val() 函数用于获得 PTE 入口对应的值。
+
+------------------------------------
+
+#### <span id="A0300">pte_none</span>
+
+{% highlight c %}
+#define pte_none(pte)           (!pte_val(pte))
+{% endhighlight %}
+
+pte_none() 函数用于判读 PTE 入口指向的内容为空。函数通过
+pte_val() 获得函数的入口项值，然后判断该值是否为空，如果为
+空则返回 ture；反之返回 false。
+
+> - [pte_val](#A0299)
+
+------------------------------------
+
+#### <span id="A0301">pte_pfn</span>
+
+{% highlight c %}
+#define pte_pfn(pte)            ((pte_val(pte) & PHYS_MASK) >> PAGE_SHIFT)
+{% endhighlight %}
+
+pte_pfn() 函数用于获得 PTE 入口对应的物理页帧号。函数通过
+pte_val() 函数获得 PTE 入口对应的值，然后使用掩码获得对应
+的物理页帧号。
+
+> - [pte_val](#A0299)
+
+------------------------------------
+
+#### <span id="A0302">early_fixmap_shutdown</span>
+
+{% highlight c %}
+static void __init early_fixmap_shutdown(void)
+{
+        int i;
+        unsigned long va = fix_to_virt(__end_of_permanent_fixed_addresses - 1);
+
+        pte_offset_fixmap = pte_offset_late_fixmap;
+        pmd_clear(fixmap_pmd(va));
+        local_flush_tlb_kernel_page(va);
+
+        for (i = 0; i < __end_of_permanent_fixed_addresses; i++) {
+                pte_t *pte;
+                struct map_desc map;
+
+                map.virtual = fix_to_virt(i);
+                pte = pte_offset_early_fixmap(pmd_off_k(map.virtual), map.virtual);
+
+                /* Only i/o device mappings are supported ATM */
+                if (pte_none(*pte) ||
+                    (pte_val(*pte) & L_PTE_MT_MASK) != L_PTE_MT_DEV_SHARED)
+                        continue;
+
+                map.pfn = pte_pfn(*pte);
+                map.type = MT_DEVICE;
+                map.length = PAGE_SIZE;
+
+                create_mapping(&map);
+        }
+}
+{% endhighlight %}
+
+early_fixmap_shutdown() 函数的作用是为 FIXMAP 区域建立页表。
+函数首先调用 fix_to_virt() 获得 __end_of_permanent_fixed_addresses
+对应的虚拟地址，然后使用 pmd_clear() 函数清除虚拟地址对应的 PMD
+入口。接着调用 local_flush_tlb_kernel_page() 刷新 TLB。函数接着
+使用 for 循环将遍历所欲的 __end_of_permanent_fixed_addresses，
+每编译一个 FIXMAP 项，函数通过 fix_to_virt() 函数获得 FIXMAP
+区域内的虚拟地址，然后通过调用 pte_offset_early_fixmap() 获得
+虚拟地址对应的 PTE 入口，如果该 PTE 为空，或者 PTE 表项不包含
+L_PTE_MT_DEV_SHARD, 那么函数不会为其建立页表，结束本次循环；反之
+如果 PTE 页表检测通过，那么函数设置映射结构体，将 pfn 指向 pte
+页表指向的页，长度设置为 PAGE_SIZE，最后调用 create_mapping()
+函数建立页表。
+
+> - [fix_to_virt](#A0298)
+>
+> - [pmd_clear](#A0253)
+>
+> - [fixmap_pmd](#A0173)
+>
+> - [pte_offset_early_fixmap](#A0176)
+>
+> - [pmd_off_k](#A0255)
+>
+> - [pte_none](#A0300)
+>
+> - [pte_val](#A0299)
+>
+> - [pte_pfn](#A0301)
+>
+> - [create_mapping](#A0281)
+
+------------------------------------
+
+#### <span id="A0303">kuser_init</span>
+
+{% highlight c %}
+static void __init kuser_init(void *vectors)
+{
+        extern char __kuser_helper_start[], __kuser_helper_end[];
+        int kuser_sz = __kuser_helper_end - __kuser_helper_start;
+
+        memcpy(vectors + 0x1000 - kuser_sz, __kuser_helper_start, kuser_sz);
+
+        /*
+         * vectors + 0xfe0 = __kuser_get_tls
+         * vectors + 0xfe8 = hardware TLS instruction at 0xffff0fe8
+         */
+        if (tls_emu || has_tls_reg)
+                memcpy(vectors + 0xfe0, vectors + 0xfe8, 4);
+}
+{% endhighlight %}
+
+kuser_init() 函数用于将 __kuser_helper_start 到 __kuser_helper_end 之间
+的内容拷贝到异常向量表的指定位置，该区域包含了多个有空的函数。
+函数首先计算 __kuser_helper_start 到 __kuser_helper_end 的大小，然后
+使用 memcpy() 函数将该区域拷贝到 vector + 0x1000 处。接下来的
+函数是体系特殊处理，需要具体分析。
+
+------------------------------------
+
+#### <span id="A0304">early_trap_init</span>
+
+{% highlight c %}
+void __init early_trap_init(void *vectors_base)
+{
+#ifndef CONFIG_CPU_V7M
+        unsigned long vectors = (unsigned long)vectors_base;
+        extern char __stubs_start[], __stubs_end[];
+        extern char __vectors_start[], __vectors_end[];
+        unsigned i;
+
+        vectors_page = vectors_base;
+
+        /*
+         * Poison the vectors page with an undefined instruction.  This
+         * instruction is chosen to be undefined for both ARM and Thumb
+         * ISAs.  The Thumb version is an undefined instruction with a
+         * branch back to the undefined instruction.
+         */
+        for (i = 0; i < PAGE_SIZE / sizeof(u32); i++)
+                ((u32 *)vectors_base)[i] = 0xe7fddef1;
+
+        /*
+         * Copy the vectors, stubs and kuser helpers (in entry-armv.S)
+         * into the vector page, mapped at 0xffff0000, and ensure these
+         * are visible to the instruction stream.
+         */
+        memcpy((void *)vectors, __vectors_start, __vectors_end - __vectors_start);      
+        memcpy((void *)vectors + 0x1000, __stubs_start, __stubs_end - __stubs_start);
+
+        kuser_init(vectors_base);
+
+        flush_icache_range(vectors, vectors + PAGE_SIZE * 2);
+#else /* ifndef CONFIG_CPU_V7M */
+        /*
+         * on V7-M there is no need to copy the vector table to a dedicated
+         * memory area. The address is configurable and so a table in the kernel
+         * image can be used.
+         */
+#endif
+}
+{% endhighlight %}
+
+early_trap_init() 函数用于早期异常向量表的建立。参数 vectors_base
+指向新异常向量表所在的虚拟地址。函数首先将 vectors_base 赋值给
+vectors_page, 然后使用 for 循环将异常向量表中的所有项设置
+为 0xe7fddef1，即未定义指令。函数接着调用 memcpy() 函数将
+__vectors_start 到 __vectors_end 区域拷贝到 vectors 处，
+同样也调用 memcpy() 函数将 __stubs_start 到 __stubs_end
+区域拷贝到 vectors + 0x1000 处，接着调用 kuser_init() 函数
+安装 kuser 相关的函数到 vector 指定的位置。最后调用
+flush_icache_range() 函数刷新指定的 cache。
+
+> - [kuser_init](#A0303)
+
+------------------------------------
+
+#### <span id="A0305">pmd_empty_section_gap</span>
+
+{% highlight c %}
+static void __init pmd_empty_section_gap(unsigned long addr)
+{
+        vm_reserve_area_early(addr, SECTION_SIZE, pmd_empty_section_gap);
+}
+
+{% endhighlight %}
+
+pmd_empty_section_gap() 函数的作用是将 addr 对应的虚拟空间
+加入到系统静态映射中预留。函数通过调用 vm_reserve_area_early()
+函数实现。
+
+> - [vm_reserve_area_early](#A0306)
+
+------------------------------------
+
+#### <span id="A0306">vm_reserve_area_early</span>
+
+{% highlight c %}
+void __init vm_reserve_area_early(unsigned long addr, unsigned long size,
+                                  void *caller)
+{
+        struct vm_struct *vm;
+        struct static_vm *svm;
+
+        svm = early_alloc_aligned(sizeof(*svm), __alignof__(*svm));
+
+        vm = &svm->vm;
+        vm->addr = (void *)addr;
+        vm->size = size;
+        vm->flags = VM_IOREMAP | VM_ARM_EMPTY_MAPPING;
+        vm->caller = caller;
+        add_static_vm_early(svm);
+}
+{% endhighlight %}
+
+vm_reserve_area_early() 函数的作用是给指定虚拟地址建立静态预留映射，
+但不对应实际的物理地址，只做预留作用。参数 addr 指向预留虚拟地址，
+参数 size 指向预留的长度，caller 指代静态预留的调用函数。
+函数首先调用 early_alloc_aligned() 函数分配指定大小的内存，
+然后设置静态映射对应的结构，最后调用 add_static_vm_early()
+函数将该静态映射添加到系统的静态映射链表里。
+
+> - [early_alloc_aligned](#A0285)
+>
+> - [add_static_vm_early](#A0292)
+
+------------------------------------
+
+#### <span id="A0307">fill_pmd_gaps</span>
+
+{% highlight c %}
+static void __init fill_pmd_gaps(void)
+{
+        struct static_vm *svm;
+        struct vm_struct *vm;
+        unsigned long addr, next = 0;
+        pmd_t *pmd;
+
+        list_for_each_entry(svm, &static_vmlist, list) {
+                vm = &svm->vm;
+                addr = (unsigned long)vm->addr;
+                if (addr < next)
+                        continue;
+
+                /*
+                 * Check if this vm starts on an odd section boundary.
+                 * If so and the first section entry for this PMD is free
+                 * then we block the corresponding virtual address.
+                 */
+                if ((addr & ~PMD_MASK) == SECTION_SIZE) {
+                        pmd = pmd_off_k(addr);
+                        if (pmd_none(*pmd))
+                                pmd_empty_section_gap(addr & PMD_MASK);
+                }
+
+                /*
+                 * Then check if this vm ends on an odd section boundary.
+                 * If so and the second section entry for this PMD is empty
+                 * then we block the corresponding virtual address.
+                 */
+                addr += vm->size;
+                if ((addr & ~PMD_MASK) == SECTION_SIZE) {
+                        pmd = pmd_off_k(addr) + 1;
+                        if (pmd_none(*pmd))
+                                pmd_empty_section_gap(addr);
+                }
+
+                /* no need to look at any vm entry until we hit the next PMD */
+                next = (addr + PMD_SIZE - 1) & PMD_MASK;
+        }
+}
+{% endhighlight %}
+
+fill_pmd_gaps() 函数的作用是检查静态映射区内的虚拟地址，是否存在 PMD
+入口值占用了一个，并且是基数 PMD 入口。在 linux 中，PMD 入口包含了两个
+连续的 SECTION 入口用于指向 2M 地址空间。然而调用 create_mapping() 函数
+可以通过使用单独 1M 地址空间来优化静态映射。如果不使用顶部或底部的 SECTION
+入口，实际上 PMD 入口会减半。如果 ioremap() 获得 vmalloc() 函数视图使用
+这些未使用的 PMD 入口，那么会引发问题。该问题可以通过插入虚假的 vm 入口
+来覆盖未使用的 PMD 入口。函数首先使用 list_for_each_entry() 函数遍历
+系统所有静态映射，如果遍历到的静态映射的起始虚拟地址小于 next，那么函数
+继续遍历下一个静态映射；反之如果函数检测到当前虚拟地址使用了奇数的 PMD
+入口，并调用函数 pmd_none() 检测到虚拟对应的 pmd 是空的，那么函数调用
+pmd_empty_section_gap() 函数填充该 PMD 入口，同理检查静态映射的终止
+地址对应的 PMD 入口是否也存在其中一个 PMD 入口也是空的情况。最后函数
+将 next 指向该静态映射的结尾。
+
+> - [list_for_each_entry](https://biscuitos.github.io/blog/LIST_list_for_each_entry/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+>
+> - [pmd_off_k](#A0255)
+>
+> - [pmd_none](#A0265)
+>
+> - [pmd_empty_section_gap](#A0305)
+
+------------------------------------
+
+#### <span id="A0308">devicemaps_init</span>
+
+{% highlight c %}
+/*
+ * Set up the device mappings.  Since we clear out the page tables for all
+ * mappings above VMALLOC_START, except early fixmap, we might remove debug
+ * device mappings.  This means earlycon can be used to debug this function
+ * Any other function or debugging method which may touch any device _will_
+ * crash the kernel.
+ */
+static void __init devicemaps_init(const struct machine_desc *mdesc)
+{
+        struct map_desc map;
+        unsigned long addr;
+        void *vectors;
+
+        /*
+         * Allocate the vector page early.
+         */
+        vectors = early_alloc(PAGE_SIZE * 2);
+
+        early_trap_init(vectors);
+
+        /*
+         * Clear page table except top pmd used by early fixmaps
+         */
+        for (addr = VMALLOC_START; addr < (FIXADDR_TOP & PMD_MASK); addr += PMD_SIZE)
+                pmd_clear(pmd_off_k(addr));
+
+        /*
+         * Map the kernel if it is XIP.
+         * It is always first in the modulearea.
+         */
+#ifdef CONFIG_XIP_KERNEL
+        map.pfn = __phys_to_pfn(CONFIG_XIP_PHYS_ADDR & SECTION_MASK);
+        map.virtual = MODULES_VADDR;
+        map.length = ((unsigned long)_exiprom - map.virtual + ~SECTION_MASK) & SECTION_MASK;
+        map.type = MT_ROM;
+        create_mapping(&map);
+#endif
+
+        /*
+         * Map the cache flushing regions.
+         */
+#ifdef FLUSH_BASE
+        map.pfn = __phys_to_pfn(FLUSH_BASE_PHYS);
+        map.virtual = FLUSH_BASE;
+        map.length = SZ_1M;
+        map.type = MT_CACHECLEAN;
+        create_mapping(&map);
+#endif
+#ifdef FLUSH_BASE_MINICACHE
+        map.pfn = __phys_to_pfn(FLUSH_BASE_PHYS + SZ_1M);
+        map.virtual = FLUSH_BASE_MINICACHE;
+        map.length = SZ_1M;
+        map.type = MT_MINICLEAN;
+        create_mapping(&map);
+#endif
+
+        /*
+         * Create a mapping for the machine vectors at the high-vectors
+         * location (0xffff0000).  If we aren't using high-vectors, also
+         * create a mapping at the low-vectors virtual address.
+         */
+        map.pfn = __phys_to_pfn(virt_to_phys(vectors));
+        map.virtual = 0xffff0000;
+        map.length = PAGE_SIZE;
+#ifdef CONFIG_KUSER_HELPERS
+        map.type = MT_HIGH_VECTORS;
+#else
+        map.type = MT_LOW_VECTORS;
+#endif
+        create_mapping(&map);
+
+        if (!vectors_high()) {
+                map.virtual = 0;
+                map.length = PAGE_SIZE * 2;
+                map.type = MT_LOW_VECTORS;
+                create_mapping(&map);
+        }
+
+        /* Now create a kernel read-only mapping */
+        map.pfn += 1;
+        map.virtual = 0xffff0000 + PAGE_SIZE;
+        map.length = PAGE_SIZE;
+        map.type = MT_LOW_VECTORS;
+        create_mapping(&map);
+
+
+        /*
+         * Ask the machine support to map in the statically mapped devices.
+         */
+        if (mdesc->map_io)
+                mdesc->map_io();
+        else
+                debug_ll_io_init();
+        fill_pmd_gaps();
+
+        /* Reserve fixed i/o space in VMALLOC region */
+        pci_reserve_io();
+
+        /*
+         * Finally flush the caches and tlb to ensure that we're in a
+         * consistent state wrt the writebuffer.  This also ensures that
+         * any write-allocated cache lines in the vector page are written
+         * back.  After this point, we can start to touch devices again.
+         */
+        local_flush_tlb_all();
+        flush_cache_all();
+
+        /* Enable asynchronous aborts */
+        early_abt_enable();
+}
+{% endhighlight %}
+
+devicemaps_init() 函数用于 IO 设备建立映射。由于函数太长，分段解析：
+
+{% highlight c %}
+static void __init devicemaps_init(const struct machine_desc *mdesc)
+{
+        struct map_desc map;
+        unsigned long addr;
+        void *vectors;
+
+        /*
+         * Allocate the vector page early.
+         */
+        vectors = early_alloc(PAGE_SIZE * 2);
+
+        early_trap_init(vectors);
+
+        /*
+         * Clear page table except top pmd used by early fixmaps
+         */
+        for (addr = VMALLOC_START; addr < (FIXADDR_TOP & PMD_MASK); addr += PMD_SIZE)
+                pmd_clear(pmd_off_k(addr));
+{% endhighlight %}
+
+函数首先调用 early_alloc() 函数为新的异常向量表分配内存空间，然后
+调用 early_trap_init() 将系统的异常向量表和特定的函数拷贝到新
+的异常向量表所在的空间。函数接着使用 for 循环，接着 pmd_clear() 函数，
+将 VMALLOC_START 到 FIXMAP 之间的虚拟地址的 PMD 入口都清零了。
+
+{% highlight c %}
+#ifdef CONFIG_XIP_KERNEL
+        map.pfn = __phys_to_pfn(CONFIG_XIP_PHYS_ADDR & SECTION_MASK);
+        map.virtual = MODULES_VADDR;
+        map.length = ((unsigned long)_exiprom - map.virtual + ~SECTION_MASK) & SECTION_MASK;
+        map.type = MT_ROM;
+        create_mapping(&map);
+#endif
+
+        /*
+         * Map the cache flushing regions.
+         */
+#ifdef FLUSH_BASE
+        map.pfn = __phys_to_pfn(FLUSH_BASE_PHYS);
+        map.virtual = FLUSH_BASE;
+        map.length = SZ_1M;
+        map.type = MT_CACHECLEAN;
+        create_mapping(&map);
+#endif
+#ifdef FLUSH_BASE_MINICACHE
+        map.pfn = __phys_to_pfn(FLUSH_BASE_PHYS + SZ_1M);
+        map.virtual = FLUSH_BASE_MINICACHE;
+        map.length = SZ_1M;
+        map.type = MT_MINICLEAN;
+        create_mapping(&map);
+#endif
+{% endhighlight %}
+
+如果系统定义了 CONFIG_XIP_KERNEL 宏，FLUSH_BASE 宏，或则
+FLUSH_BASE_MINICACHE 宏，那么系统会为这几个 IO 或设备建立
+页表。
+
+{% highlight c %}
+        /*
+         * Create a mapping for the machine vectors at the high-vectors
+         * location (0xffff0000).  If we aren't using high-vectors, also
+         * create a mapping at the low-vectors virtual address.
+         */
+        map.pfn = __phys_to_pfn(virt_to_phys(vectors));
+        map.virtual = 0xffff0000;
+        map.length = PAGE_SIZE;
+#ifdef CONFIG_KUSER_HELPERS
+        map.type = MT_HIGH_VECTORS;
+#else
+        map.type = MT_LOW_VECTORS;
+#endif
+        create_mapping(&map);
+
+        if (!vectors_high()) {
+                map.virtual = 0;
+                map.length = PAGE_SIZE * 2;
+                map.type = MT_LOW_VECTORS;
+                create_mapping(&map);
+        }
+{% endhighlight %}
+
+函数接下来为新的异常向量表建立页表，新页表的虚拟地址
+设置为 0xffff0000, 如果此时定义了 CONFIG_KUSER_HELPER
+宏，那么将异常向量表的映射类型设置为 MT_HIGH_VECTOR,
+反之设置为 MT_LOW_VECTORS, 最后调用 create_mapping()
+函数建立页表。如果函数通过调用 vectors_high() 函数发现
+异常向量表不在高地址，那么函数为低端的异常向量表建立
+映射。
+
+{% highlight c %}
+        /* Now create a kernel read-only mapping */
+        map.pfn += 1;
+        map.virtual = 0xffff0000 + PAGE_SIZE;
+        map.length = PAGE_SIZE;
+        map.type = MT_LOW_VECTORS;
+        create_mapping(&map);
+{% endhighlight %}
+
+接下来函数建立了一个只读的页表，虚拟地址位于 0xffff0000+PAGE_SZIE
+处，该映射的物理地址紧跟异常向量的物理地址。映射的类型是
+MT_LOW_VECTORS.
+
+{% highlight c %}
+        /*
+         * Ask the machine support to map in the statically mapped devices.
+         */
+        if (mdesc->map_io)
+                mdesc->map_io();
+        else
+                debug_ll_io_init();
+        fill_pmd_gaps();
+
+        /* Reserve fixed i/o space in VMALLOC region */
+        pci_reserve_io();
+{% endhighlight %}
+
+如果此时包含了体系相关的 IO 映射，则调用体系对应的 map_io()
+函数进行映射。函数通过调用 fill_pmd_gaps() 函数将 IO 或 设备
+建立的映射中 PMD 只使用了其中一个入口，将另外一个空的 PMD
+入口填充。函数最后调用 pci_reserve_io() 为 PCI 设备建立映射。
+
+{% highlight c %}
+        /*
+         * Finally flush the caches and tlb to ensure that we're in a
+         * consistent state wrt the writebuffer.  This also ensures that
+         * any write-allocated cache lines in the vector page are written
+         * back.  After this point, we can start to touch devices again.
+         */
+        local_flush_tlb_all();
+        flush_cache_all();
+
+        /* Enable asynchronous aborts */
+        early_abt_enable();
+{% endhighlight %}
+
+函数最后调用 local_flush_tabl_all() 函数和 flush_cache_all()
+函数刷新 TLB 和 cache，最后函数调用 early_abt_enable()
+函数使能同步 ABORT 异常处理。
+
+> - [early_alloc](#A0286)
+>
+> - [early_trap_init](#A0304)
+>
+> - [pmd_off_k](#A0255)
+>
+> - [pmd_clear](#A0253)
+>
+> - [\_\_phys_to_pfn](#A0296)
+>
+> - [create_mapping](#A0281)
+>
+> - [fill_reserve_io](#A0307)
+
+------------------------------------
+
+#### <span id="A0309">early_pte_alloc</span>
+
+{% highlight c %}
+static pte_t * __init early_pte_alloc(pmd_t *pmd, unsigned long addr,
+                                      unsigned long prot)
+{
+        return arm_pte_alloc(pmd, addr, prot, early_alloc);
+}
+{% endhighlight %}
+
+early_pte_alloc() 函数的作用是内核启动早期，分配并初始化一个 PTE 页表。
+pmd 参数指向 PMD 入口，addr 参数指向虚拟地址，prot 参数指向页表标志。
+函数通过 arm_pte_alloc() 函数分配了一个 PTE 页表，并将 pmd 入口指向
+该 PTE 页表。最后返回参数 addr 虚拟地址对应的 PTE 入口。
+
+> - [arm_pte_alloc](#A0263)
+
+------------------------------------
+
+#### <span id="A0310">kmap_init</span>
+
+{% highlight c %}
+static void __init kmap_init(void)
+{
+#ifdef CONFIG_HIGHMEM
+        pkmap_page_table = early_pte_alloc(pmd_off_k(PKMAP_BASE),
+                PKMAP_BASE, _PAGE_KERNEL_TABLE);
+#endif
+
+        early_pte_alloc(pmd_off_k(FIXADDR_START), FIXADDR_START,
+                        _PAGE_KERNEL_TABLE);
+}
+{% endhighlight %}
+
+kmap_init() 函数用于建立 PMD 对应的 PTE 页表。如果内核启用了
+CONFIG_HIGHMEM 宏，即高端物理内存，那么系统调用 early_pte_alloc()
+函数建立一个页表给 pkmap_page_table, 其起始虚拟地址是 PKMAP_BASE,
+函数同样调用 early_pte_alloc() 函数，为 FIXADDR_START 建立
+PTE 页表。
+
+> - [early_pte_alloc](#A0309)
+>
+> - [pmd_off_k](#A0255)
+
+------------------------------------
+
+#### <span id="A0311">memblock_allow_resize</span>
+
+{% highlight c %}
+void __init memblock_allow_resize(void)
+{       
+        memblock_can_resize = 1;
+}
+{% endhighlight %}
+
+memblock_allow_resize() 函数用于设置 MEMBLOCK 内存分配器的
+memblock_can_resize 变量，设置其为 1.
+
+------------------------------------
+
+#### <span id="A0312">PFN_UP</span>
+
+{% highlight c %}
+#define PFN_UP(x)       (((x) + PAGE_SIZE-1) >> PAGE_SHIFT)
+{% endhighlight %}
+
+PFN_UP() 函数用于将参数 x 对应的下一个页帧号。
+
+------------------------------------
+
+#### <span id="A0313">PFN_DOWN</span>
+
+{% highlight c %}
+#define PFN_DOWN(x)     ((x) >> PAGE_SHIFT)
+{% endhighlight %}
+
+PFN_DOWN() 函数用于获得参数 x 对应的页帧号。
+
+------------------------------------
+
+#### <span id="A0314">memblock_get_current_limit</span>
+
+{% highlight c %}
+phys_addr_t __init_memblock memblock_get_current_limit(void)
+{       
+        return memblock.current_limit;
+}
+{% endhighlight %}
+
+memblock_get_current_limit() 函数用于获得 MEMBLOCK 内存分配器
+当前最大可分配物理地址。MEMBLOCK 内存分配器中，最大可分配物理地址
+存储在 memblock.current_limit 成员里。
+
+------------------------------------
+
+#### <span id="A0315">memblock_start_of_DRAM</span>
+
+{% highlight c %}
+/* lowest address */
+phys_addr_t __init_memblock memblock_start_of_DRAM(void)
+{       
+        return memblock.memory.regions[0].base;
+}
+{% endhighlight %}
+
+memblock_start_of_DRAM() 函数用于获得 MEMBLOCK 内存分配器
+里，第一块 DRAM 的起始物理地址。在 MEMBLOCK 内存分配器中，可用
+物理内存存储在 memblock.memory 里，其按起始地址从低到高排列，
+因此 DRAM 的起始地址就是第一个 region 的起始物理地址。
+
+------------------------------------
+
+#### <span id="A0316">find_limits</span>
+
+{% highlight c %}
+static void __init find_limits(unsigned long *min, unsigned long *max_low,
+                               unsigned long *max_high)
+{
+        *max_low = PFN_DOWN(memblock_get_current_limit());
+        *min = PFN_UP(memblock_start_of_DRAM());
+        *max_high = PFN_DOWN(memblock_end_of_DRAM());
+}
+{% endhighlight %}
+
+find_limits() 函数的作用是获得物理地址低端物理内存的起始页帧
+和终止页帧，以及 MEMBLOCK 内存分配器支持的最大页帧。
+memblock_get_current_limit() 函数获得 MEMBLOCK 内存分配器支持
+的最大物理地址，然后通过 PFN_DOWN() 函数获得对应的页帧。
+memblock_start_of_DRAM() 函数获得第一块 DRM 对应的物理地址，
+然后使用 PFN_UP() 函数获得其对应的页帧，memblock_end_of_DRAM()
+函数获得 MEMBLOCK 内存分配器可用物理内存的终止物理地址，再通过
+PFN_DOWN() 函数获得对应的页帧号。
+
+> - [memblock_get_current_limit](#A0314)
+>
+> - [memblock_start_of_DRAM](#A0315)
+>
+> - [memblock_end_of_DRAM](#A0201)
+>
+> - [PFN_DOWN](#A0313)
+>
+> - [PFN_UP](#A0312)
+
+------------------------------------
+
+#### <span id="A0317">memblock_region_memory_base_pfn</span>
+
+{% highlight c %}
+/**     
+ * memblock_region_memory_base_pfn - get the lowest pfn of the memory region
+ * @reg: memblock_region structure
+ *
+ * Return: the lowest pfn intersecting with the memory region
+ */
+static inline unsigned long memblock_region_memory_base_pfn(const struct memblock_region *reg)
+{
+        return PFN_UP(reg->base);
+}
+{% endhighlight %}
+
+memblock_region_memory_base_pfn() 函数的作用是获得 memblock_region
+起始物理地址对应的页帧。参数 reg 对应指定的 memblock_region。函数
+调用 PFN_UP() 函数获得起始页帧号。
+
+> - [PFN_UP](#A0312)
+
+------------------------------------
+
+#### <span id="A0318">memblock_region_memory_end_pfn</span>
+
+{% highlight c %}
+/**
+ * memblock_region_memory_end_pfn - get the end pfn of the memory region
+ * @reg: memblock_region structure
+ *
+ * Return: the end_pfn of the reserved region
+ */     
+static inline unsigned long memblock_region_memory_end_pfn(const struct memblock_region *reg)   
+{
+        return PFN_DOWN(reg->base + reg->size);
+}
+{% endhighlight %}
+
+memblock_region_memory_end_pfn() 函数用于获得 memblock_region
+终止物理地址对应的页帧号。参数 reg 对应指定的 memblock_region。函数
+调用 PFN_DOWN() 函数获得终止页帧号。
+
+> - [PFN_DOWN](#A0313)
+
+------------------------------------
+
+#### <span id="A0319">arm_adjust_dma_zone</span>
+
+{% highlight c %}
+static void __init arm_adjust_dma_zone(unsigned long *size, unsigned long *hole,
+        unsigned long dma_size)
+{
+        if (size[0] <= dma_size)
+                return;
+
+        size[ZONE_NORMAL] = size[0] - dma_size;
+        size[ZONE_DMA] = dma_size;
+        hole[ZONE_NORMAL] = hole[0];
+        hole[ZONE_DMA] = 0;
+}
+{% endhighlight %}
+
+arm_adjust_dma_zone() 函数的作用是调整 DMA_ZONE 和 NORMAL_ZONE
+统计数组。参数 size 指向可用物理页帧数组，hole 参数指向碎片物理页帧
+数组，dma_size 参数指向 DMA_ZONE 占用的物理页帧。函数首先检查
+NORMAL_ZONE 包含的可用物理页帧数是否比 dna_size 小，如果小，那么
+函数直接返回；反之函数跳转 size[] 数组和 hole[] 数组的数据，使
+DMA_ZONE 和 NORMAL_ZONE 有正确的统计数据。
+
+------------------------------------
+
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11669,7 +13567,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11680,7 +13578,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11691,7 +13589,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11702,7 +13600,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11713,7 +13611,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11724,7 +13622,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11735,7 +13633,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11746,7 +13644,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11757,7 +13655,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11768,7 +13666,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11779,7 +13677,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11790,7 +13688,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11801,7 +13699,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11812,7 +13710,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11823,7 +13721,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11834,7 +13732,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11845,7 +13743,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11856,7 +13754,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11867,7 +13765,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11878,7 +13776,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11889,7 +13787,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11900,7 +13798,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11911,7 +13809,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11922,7 +13820,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11933,7 +13831,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11944,7 +13842,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
@@ -11955,271 +13853,7 @@ pmd_bad() 函数判断 PMD 入口项是否有效，如果无效则返回 true，
 
 ------------------------------------
 
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
-
-{% highlight c %}
-
-{% endhighlight %}
-
-> - [](#A0)
->
-
-------------------------------------
-
-#### <span id="A02"></span>
+#### <span id="A03"></span>
 
 {% highlight c %}
 
