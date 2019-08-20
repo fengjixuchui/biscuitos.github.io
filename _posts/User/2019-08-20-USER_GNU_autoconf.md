@@ -1,20 +1,20 @@
 ---
 layout: post
-title:  "GNU hello"
+title:  "GNU autoconf"
 date:   2019-08-20 05:30:30 +0800
 categories: [HW]
-excerpt: GNU hello.
+excerpt: GNU autoconf.
 tags:
   - GNU
 ---
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000G.jpg)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
 ## 目录
 
-> - [GNU hello 简介](#A00)
+> - [GNU autoconf 简介](#A00)
 >
 > - [前期准备](#A010)
 >
@@ -38,11 +38,12 @@ tags:
 
 ------------------------------------------
 
-##### <span id="A00">GNU hello 简介</span>
+##### <span id="A00">GNU autoconf 简介</span>
 
-GNU hello 项目用于提供一个简单的项目模板，开发者可以使用这个
-简单的实例了解 GNU 项目的基本组成框架。目前 BiscuitOS 已经支持 GNU
-hello 的移植和实践。开发者可用通过下面的章节进行 GNU hello 的使用。
+GNU autoconf 是一个用于生成 shell 脚本的工具，可以自动配置软件源代
+码以适应多种类似 POSIX 的系统。为了让你的软件包在所有的不同系统上都可
+以进行编译。目前 BiscuitOS 已经支持 GNU autoconf 的移植和实践。开发者
+可用通过下面的章节进行 GNU autoconf 的使用。
 
 ------------------------------------------
 
@@ -76,17 +77,18 @@ make menuconfig
 Kbuild 编译系统启用之后如上图，对应应用程序，开发者应该选择
 "Package" 并按下回车：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000247.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000254.png)
 
-此界面是 Package 支持软件的配置界面，开发者将光标移动到 "GNU - hello",
-按下 "Y" 按键之后再按下回车键，进入 "GNU - hello" 配置界面。
+此界面是 Package 支持软件的配置界面，开发者将光标移动到 "GNU - autoconf",
+按下 "Y" 按键之后再按下回车键，进入 "GNU - autoconf" 配置界面。
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000248.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000255.png)
 
-上图正是 "GNU hello" 应用程序的配置界面，"version" 选项代表当前软件的版本。
+上图正是 "GNU autoconf" 应用程序的配置界面，"version" 选项代表当前软件的版本。
 "tar type" 选项代表应用程序如果是压缩包，则压缩的类型。"url" 选项代表
 软件的下载链接。"configure" 代表用户自定义的 configure 标志，
-"source code list" 代表需要编译的文件。开发者可以使用默认属性，保存并退出，
+"source code list" 代表需要编译的文件, "LDFLAGS" 代表用户自定义的链接
+标志，"CFLAGS" 代表用户自定义的编译标志。开发者可以使用默认属性，保存并退出，
 至此，应用程序的配置已经完成。
 
 ------------------------------------------------
@@ -105,27 +107,27 @@ make
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000243.png)
 
 此时会在 BiscuitOS/output/linux-5.0-arm32/package/ 目录下生成一个目录
-"hello-2.4", 进入该目录，可以获得两个文件: Makefile 和 README.md。至此
+"autoconf-2.69", 进入该目录，可以获得两个文件: Makefile 和 README.md。至此
 应用程序的移植前期准备已经结束。
 
 ------------------------------------------------
 
 #### <span id="A013">获取源码</span>
 
-进过上面的步骤之后，开发者在 "BiscuitOS/output/linux-5.0-arm32/package/hello-2.4"
+进过上面的步骤之后，开发者在 "BiscuitOS/output/linux-5.0-arm32/package/autoconf-2.69"
 目录下获得移植所需的 Makefile，然后开发者接下来需要做的就是下载源码，
 使用如下命令：
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-arm32/package/hello-2.4
+cd BiscuitOS/output/linux-5.0-arm32/package/autoconf-2.69
 make download
 {% endhighlight %}
 
 此时终端输出相关的信息，如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000249.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000256.png)
 
-此时在当前目录下会获得一个新的目录 "hello-2.4"，里面存储着源码相关的文件，
+此时在当前目录下会获得一个新的目录 "autoconf-2.69"，里面存储着源码相关的文件，
 至此源码下载完毕。
 
 ------------------------------------------------
@@ -137,14 +139,14 @@ GNU 项目大多使用 automake 进行开发，因此开发者可以使用如下
 命令：
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-arm32/package/hello-2.4
+cd BiscuitOS/output/linux-5.0-arm32/package/autoconf-2.69
 make tar
 make configure
 {% endhighlight %}
 
 此时终端输出相关的信息，如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000250.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000257.png)
 
 至此源码配置完成。
 
@@ -155,13 +157,13 @@ make configure
 获得源码之后，只需简单的命令就可以编译源码，使用如下命令：
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-arm32/package/hello-2.4
+cd BiscuitOS/output/linux-5.0-arm32/package/autoconf-2.69
 make
 {% endhighlight %}
 
 编译成功输出如下信息：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000251.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000258.png)
 
 ------------------------------------------------
 
@@ -171,13 +173,13 @@ make
 只需简单的命令就可以实现，使用如下命令：
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-arm32/package/hello-2.4
+cd BiscuitOS/output/linux-5.0-arm32/package/autoconf-2.69
 make install
 {% endhighlight %}
 
 安装成功输出如下信息：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000252.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000259.png)
 
 ------------------------------------------------
 
@@ -187,7 +189,7 @@ make install
 的镜像里，只需简单的命令就可以实现，使用如下命令：
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-arm32/package/hello-2.4
+cd BiscuitOS/output/linux-5.0-arm32/package/autoconf-2.69
 make pack
 {% endhighlight %}
 
@@ -209,7 +211,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 程序运行成功输出如下信息：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000253.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000260.png)
 
 -----------------------------------------------
 
