@@ -67,6 +67,8 @@ tags:
 >
 >   - [Snake](https://biscuitos.github.io/blog/USER_GAME_snake/)
 >
+>   - [2048](https://biscuitos.github.io/blog/USER_GAME_2048/)
+>
 > - [附录](#附录)
 
 -----------------------------------
@@ -158,6 +160,8 @@ tags:
 文档进行移植使用。
 
 > - [Snake](https://biscuitos.github.io/blog/USER_GAME_snake/)
+>
+> - [2048](https://biscuitos.github.io/blog/USER_GAME_2048/)
 
 -----------------------------------------------
 
