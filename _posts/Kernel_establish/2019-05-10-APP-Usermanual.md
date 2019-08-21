@@ -37,6 +37,12 @@ tags:
 >
 > - [动态库移植](#C00)
 >
+>   - [libtool](https://biscuitos.github.io/blog/USER_DLIB_libtool/)
+>
+>   - [libuuid](https://biscuitos.github.io/blog/USER_DLIB_libuuid/)
+>
+>   - [ncurses](https://biscuitos.github.io/blog/USER_DLIB_ncurses/)
+>
 > - [静态块移植](#D00)
 >
 > - [BiscuitOS 项目移植](#E00)
@@ -82,7 +88,7 @@ tags:
 -----------------------------------
 <span id="B00"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000G.jpg)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
 
 ## GNU 项目移植
 
@@ -97,11 +103,26 @@ tags:
 >
 > - [hello](https://biscuitos.github.io/blog/USER_GNU_hello/)
 
+-----------------------------------
+<span id="C00"></span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
+
+## GNU 项目移植
+
+目前 BiscuitOS 已经支持多种动态库，开发者可以通过下面的
+文档进行移植使用。
+
+> - [libtool](https://biscuitos.github.io/blog/USER_DLIB_libtool/)
+>
+> - [libuuid](https://biscuitos.github.io/blog/USER_DLIB_libuuid/)
+>
+> - [ncurses](https://biscuitos.github.io/blog/USER_DLIB_ncurses/)
 
 -----------------------------------
 <span id="E00"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000G.jpg)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
 
 ## BiscuitOS 项目移植
 
