@@ -65,9 +65,11 @@ tags:
 >
 > - [游戏移植](#F00)
 >
->   - [Snake](https://biscuitos.github.io/blog/USER_GAME_snake/)
+>   - [Snake 贪吃蛇](https://biscuitos.github.io/blog/USER_GAME_snake/)
 >
 >   - [2048](https://biscuitos.github.io/blog/USER_GAME_2048/)
+>
+>   - [tetris 俄罗斯方块](https://biscuitos.github.io/blog/USER_GAME_tetris/)
 >
 > - [附录](#附录)
 
@@ -162,6 +164,8 @@ tags:
 > - [Snake](https://biscuitos.github.io/blog/USER_GAME_snake/)
 >
 > - [2048](https://biscuitos.github.io/blog/USER_GAME_2048/)
+>
+> - [tetris](https://biscuitos.github.io/blog/USER_GAME_tetris/)
 
 -----------------------------------------------
 

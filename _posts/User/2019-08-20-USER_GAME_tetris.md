@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "Game - 2048"
+title:  "Game - tetris 俄罗斯方块"
 date:   2019-08-20 05:30:30 +0800
 categories: [HW]
-excerpt: Game 2048.
+excerpt: Game tetris.
 tags:
   - Game
 ---
@@ -14,7 +14,7 @@ tags:
 
 ## 目录
 
-> - [Game 2048 简介](#A00)
+> - [Game tetris 简介](#A00)
 >
 > - [前期准备](#A010)
 >
@@ -36,31 +36,22 @@ tags:
 
 ------------------------------------------
 
-##### <span id="A00">Game 2048 简介</span>
+##### <span id="A00">Game tetris 简介</span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000338.jpeg)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000343.jpg)
 
-2014 年 Gabriele Cirulli 利用周末的时间写 2048 这个游戏的程序，
-仅仅只是好玩而已。他想用一种不同的视觉展现效果和更快速的动画来创
-造属于自己的游戏版本.
+顾名思义，俄罗斯方块自然是俄罗斯人发明的。这人叫阿列克谢·帕基特诺
+夫（Алексей Пажитнов 英文：Alexey Pazhitnov）。俄罗斯方块原名是
+俄语Тетрис（英语是Tetris），这个名字来源于希腊语tetra，意思是“四”，
+而游戏的作者最喜欢网球（tennis）。于是，他把两个词tetra和tennis合
+而为一，命名为 Tetris，这也就是俄罗斯方块名字的由来。
 
-游戏规则很简单，每次可以选择上下左右其中一个方向去滑动，每滑动一次，
-所有的数字方块都会往滑动的方向靠拢外，系统也会在空白的地方乱数出现
-一个数字方块，相同数字的方块在靠拢、相撞时会相加。系统给予的数字方
-块不是 2 就是 4，玩家要想办法在这小小的 16 格范围中凑出 “2048” 这
-个数字方块。
-
-游戏的画面很简单，一开整体 16 个方格大部分都是灰色的，当玩家拼图出
-现数字之后就会改变颜色，整体格调很是简单。在玩法规则也非常的简单，
-一开始方格内会出现 2 或者 4 等这两个小数字，玩家只需要上下左右其中
-一个方向来移动出现的数字，所有的数字就会想滑动的方向靠拢，而滑出的
-空白方块就会随机出现一个数字，相同的数字相撞时会叠加靠拢，然后一直
-这样，不断的叠加最终拼凑出 2048 这个数字就算成功。
-
-如果你是一个数字爱好者，或者是比较有天赋的数学天才，就算不是数学天才，
-一般的玩家也能够玩转这款游戏，感兴趣的话就去下载体验一番.
-目前 BiscuitOS 已经支持 Game 2048 的移植和实践。开发者
-可用通过下面的章节进行 Game 2048 的使用。
+俄罗斯方块由小方块组成的不同形状的板块陆续从屏幕上方落下来，玩家通过
+调整板块的位置和方向，使它们在屏幕底部拼出完整的一条或几条。这些完整
+的横条会随即消失，给新落下来的板块腾出空间，与此同时，玩家得到分数奖
+励。没有被消除掉的方块不断堆积起来，一旦堆到屏幕顶端，玩家便告输，游
+戏结束。目前 BiscuitOS 已经支持 Game tetris 的移植和实践。开发者
+可用通过下面的章节进行 Game tetris 的使用。
 
 ------------------------------------------
 
@@ -92,14 +83,14 @@ make menuconfig
 Kbuild 编译系统启用之后如上图，对应应用程序，开发者应该选择
 "Package" 并按下回车：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000333.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000339.png)
 
-此界面是 Package 支持软件的配置界面，开发者将光标移动到 "Game - 2048",
-按下 "Y" 按键之后再按下回车键，进入 "Game - 2048" 配置界面。
+此界面是 Package 支持软件的配置界面，开发者将光标移动到 "Game - tetris",
+按下 "Y" 按键之后再按下回车键，进入 "Game - tetris" 配置界面。
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000334.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000340.png)
 
-上图正是 "Game 2048" 应用程序的配置界面，"version" 选项代表当前软件的版本。
+上图正是 "Game tetris" 应用程序的配置界面，"version" 选项代表当前软件的版本。
 "tar type" 选项代表应用程序如果是压缩包，则压缩的类型。"url" 选项代表
 软件的下载链接。"configure" 代表用户自定义的 configure 标志，
 "source code list" 代表需要编译的文件, "LDFLAGS" 代表用户自定义的链接
@@ -123,37 +114,42 @@ make
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000243.png)
 
 此时会在 BiscuitOS/output/linux-5.0-arm32/package/ 目录下生成一个目录
-"game_2048-0.11", 进入该目录，可以获得两个文件: Makefile 和 README.md。至此
+"tetris-0.11", 进入该目录，可以获得两个文件: Makefile 和 README.md。至此
 应用程序的移植前期准备已经结束。
 
 ------------------------------------------------
 
 #### <span id="A013">获取源码</span>
 
-进过上面的步骤之后，开发者在 "BiscuitOS/output/linux-5.0-arm32/package/game_2048-0.11"
+进过上面的步骤之后，开发者在 "BiscuitOS/output/linux-5.0-arm32/package/tetris-0.11"
 目录下获得移植所需的 Makefile，然后开发者接下来需要做的就是下载源码，
 使用如下命令：
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-arm32/package/game_2048-0.11
+cd BiscuitOS/output/linux-5.0-arm32/package/tetris-0.11
 make download
 {% endhighlight %}
 
 此时终端输出相关的信息，如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000335.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000341.png)
 
-此时在当前目录下会获得一个新的目录 "game_2048-0.11"，里面存储着源码相关的文件，
+此时在当前目录下会获得一个新的目录 "tetris-0.11"，里面存储着源码相关的文件，
 至此源码下载完毕。
 
 ------------------------------------------------
 
 #### <span id="A014">源码编译</span>
 
+获得源码之后，由于贪吃蛇源码编译依赖 ncurses 库，所以在编译之前，
+需要准备好 ncurses 库，请参考下面链接安装 ncurses 库：
+
+> - [ncurses 库安装使用](https://biscuitos.github.io/blog/USER_DLIB_ncurses/#A013)
+
 接下来，只需简单的命令就可以编译源码，使用如下命令：
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-arm32/package/game_2048-0.11
+cd BiscuitOS/output/linux-5.0-arm32/package/tetris-0.11
 make
 {% endhighlight %}
 
@@ -171,7 +167,7 @@ make
 只需简单的命令就可以实现，使用如下命令：
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-arm32/package/game_2048-0.11
+cd BiscuitOS/output/linux-5.0-arm32/package/tetris-0.11
 make install
 {% endhighlight %}
 
@@ -189,7 +185,7 @@ make install
 的镜像里，只需简单的命令就可以实现，使用如下命令：
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-arm32/package/game_2048-0.11
+cd BiscuitOS/output/linux-5.0-arm32/package/tetris-0.11
 make pack
 {% endhighlight %}
 
@@ -211,9 +207,11 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 程序运行成功输出如下信息：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000336.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000342.png)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000337.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000344.png)
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000345.png)
 
 -----------------------------------------------
 
