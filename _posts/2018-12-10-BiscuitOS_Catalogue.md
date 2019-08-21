@@ -213,6 +213,60 @@ tags:
 
 > - [Open VnetCard](https://biscuitos.github.io/blog/VnetCard/)
 
+## <span id="Userland">Userland</span>
+
+> - [应用程序移植](#A00)
+>
+>   - [应用程序移植最小实践](https://biscuitos.github.io/blog/USER_APP_mini/)
+>
+> - [GNU 项目移植](#B00)
+>
+>   - [autoconf](https://biscuitos.github.io/blog/USER_GNU_autoconf/)
+>
+>   - [automake](https://biscuitos.github.io/blog/USER_GNU_automake/)
+>
+>   - [binutils](https://biscuitos.github.io/blog/USER_GNU_binutils/)
+>
+>   - [hello](https://biscuitos.github.io/blog/USER_GNU_hello/)
+>
+> - [动态库移植](#C00)
+>
+>   - [glibc](https://biscuitos.github.io/blog/USER_GNU_glibc/)
+>
+>   - [libtool](https://biscuitos.github.io/blog/USER_DLIB_libtool/)
+>
+>   - [libuuid](https://biscuitos.github.io/blog/USER_DLIB_libuuid/)
+>
+>   - [ncurses](https://biscuitos.github.io/blog/USER_DLIB_ncurses/)
+>
+> - [静态块移植](#D00)
+>
+> - [BiscuitOS 项目移植](#E00)
+>
+>   - [binary-tree 二叉树](https://biscuitos.github.io/blog/USER_Algo_binarytree/)
+>
+>   - [IDA](https://biscuitos.github.io/blog/USER_Algo_IDA/)
+>
+>   - [IDR](https://biscuitos.github.io/blog/USER_Algo_IDR/)
+>
+>   - [bind-list 双链表](https://biscuitos.github.io/blog/USER_Algo_bindlist/)
+>
+>   - [bitmap](https://biscuitos.github.io/blog/USER_Algo_bitmap/)
+>
+>   - [2-3 tree](https://biscuitos.github.io/blog/USER_Algo_tree23/)
+>
+>   - [radix tree](https://biscuitos.github.io/blog/USER_Algo_radixtree/)
+>
+>   - [rbtree](https://biscuitos.github.io/blog/USER_Algo_rbtree/)
+>
+> - [游戏移植](#F00)
+>
+>   - [Snake 贪吃蛇](https://biscuitos.github.io/blog/USER_GAME_snake/)
+>
+>   - [2048](https://biscuitos.github.io/blog/USER_GAME_2048/)
+>
+>   - [tetris 俄罗斯方块](https://biscuitos.github.io/blog/USER_GAME_tetris/)
+
 ## <span id="Debug">Debug</span>
 
 > - [ARM GDB debug Usermanual](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/)

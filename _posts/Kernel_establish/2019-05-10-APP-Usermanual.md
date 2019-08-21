@@ -21,10 +21,6 @@ tags:
 >
 >   - [应用程序移植最小实践](https://biscuitos.github.io/blog/USER_APP_mini/)
 >
->   - [快速移植开发者的应用程序](#A02)
->
->   - [完整移植开发者的应用程序](#A03)
->
 > - [GNU 项目移植](#B00)
 >
 >   - [autoconf](https://biscuitos.github.io/blog/USER_GNU_autoconf/)
@@ -36,6 +32,8 @@ tags:
 >   - [hello](https://biscuitos.github.io/blog/USER_GNU_hello/)
 >
 > - [动态库移植](#C00)
+>
+>   - [glibc](https://biscuitos.github.io/blog/USER_GNU_glibc/)
 >
 >   - [libtool](https://biscuitos.github.io/blog/USER_DLIB_libtool/)
 >
@@ -85,11 +83,6 @@ tags:
 与实践，开发者可以通过参考下面的文章了解更多的详情。
 
 > - [应用程序移植最小实践](https://biscuitos.github.io/blog/USER_APP_mini/)
->
-> - [快速移植开发者的应用程序](#A02)
->
-> - [完整移植开发者的应用程序](#A03)
-
 
 -----------------------------------
 <span id="B00"></span>
