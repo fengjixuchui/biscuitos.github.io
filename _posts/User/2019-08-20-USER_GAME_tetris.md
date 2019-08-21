@@ -38,7 +38,7 @@ tags:
 
 ##### <span id="A00">Game tetris 简介</span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000343.jpg)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000343.png)
 
 顾名思义，俄罗斯方块自然是俄罗斯人发明的。这人叫阿列克谢·帕基特诺
 夫（Алексей Пажитнов 英文：Alexey Pazhitnov）。俄罗斯方块原名是
