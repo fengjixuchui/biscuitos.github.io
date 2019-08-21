@@ -8,7 +8,7 @@ tags:
   - Userland
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Y.jpg)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/GIF000210.gif)
 
 > [Github: BiscuitOS HardStack](https://github.com/BiscuitOS/HardStack)
 >
