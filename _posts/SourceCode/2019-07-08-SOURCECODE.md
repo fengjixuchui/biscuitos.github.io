@@ -13556,190 +13556,744 @@ DMA_ZONE 和 NORMAL_ZONE 有正确的统计数据。
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0320">zone_spanned_pages_in_node</span>
 
 {% highlight c %}
+static inline unsigned long __init zone_spanned_pages_in_node(int nid,
+                                        unsigned long zone_type,
+                                        unsigned long node_start_pfn,
+                                        unsigned long node_end_pfn,
+                                        unsigned long *zone_start_pfn,
+                                        unsigned long *zone_end_pfn,
+                                        unsigned long *zones_size)
+{
+        unsigned int zone;
+
+        *zone_start_pfn = node_start_pfn;
+        for (zone = 0; zone < zone_type; zone++)
+                *zone_start_pfn += zones_size[zone];
+
+        *zone_end_pfn = *zone_start_pfn + zones_size[zone_type];
+
+        return zones_size[zone_type];
+}
 
 {% endhighlight %}
 
-> - [](#A0)
->
+zone_spanned_pages_in_node() 用于计算每个 zone 的起始页帧和结束页帧。
+参数 nid 指向 NUMA 信息，参数 zone_type 指向 zones_size[] 数组的偏移，
+node_start_pfn 参数指向 ZONE 的起始页帧，node_end_pfn 参数指向 ZONE
+的结束页帧，参数 zone_start_pfn 用于存储 ZONE 的起始页帧，zone_end_pfn
+用于存储 ZONE 的结束页帧，zones_size[] 数组用于存储 ZONE 信息。函数
+通过遍历 zones_size[] 中的信息获得该 ZONE 的起始页帧和结束页帧，并返回
+该 zone 的长度。
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0321">zone_absent_pages_in_node</span>
 
 {% highlight c %}
+static inline unsigned long __init zone_absent_pages_in_node(int nid,
+                                                unsigned long zone_type,
+                                                unsigned long node_start_pfn,
+                                                unsigned long node_end_pfn,
+                                                unsigned long *zholes_size)
+{
+        if (!zholes_size)
+                return 0;
 
+        return zholes_size[zone_type];
+}
 {% endhighlight %}
 
-> - [](#A0)
->
+zone_absent_pages_in_node() 函数用于计算两个 ZONE 之间的
+hole 占用的页帧数。hole 的信息都存储在 zholes_size[] 数组
+里，函数首先判断 zholes_size[] 数组的有效性，如果无效，直接
+返回；如果有效，那么函数返回 zholes_size[] 对应的页帧数。
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0322">calculatode_totalpages</span>
 
 {% highlight c %}
+static void __init calculate_node_totalpages(struct pglist_data *pgdat,
+                                                unsigned long node_start_pfn,
+                                                unsigned long node_end_pfn,
+                                                unsigned long *zones_size,
+                                                unsigned long *zholes_size)
+{
+        unsigned long realtotalpages = 0, totalpages = 0;
+        enum zone_type i;
 
+        for (i = 0; i < MAX_NR_ZONES; i++) {
+                struct zone *zone = pgdat->node_zones + i;
+                unsigned long zone_start_pfn, zone_end_pfn;
+                unsigned long size, real_size;
+
+                size = zone_spanned_pages_in_node(pgdat->node_id, i,
+                                                  node_start_pfn,
+                                                  node_end_pfn,
+                                                  &zone_start_pfn,
+                                                  &zone_end_pfn,
+                                                  zones_size);
+                real_size = size - zone_absent_pages_in_node(pgdat->node_id, i,
+                                                  node_start_pfn, node_end_pfn,
+                                                  zholes_size);
+                if (size)
+                        zone->zone_start_pfn = zone_start_pfn;
+                else
+                        zone->zone_start_pfn = 0;
+                zone->spanned_pages = size;
+                zone->present_pages = real_size;
+
+                totalpages += size;
+                realtotalpages += real_size;
+        }
+
+        pgdat->node_spanned_pages = totalpages;
+        pgdat->node_present_pages = realtotalpages;
+        printk(KERN_DEBUG "On node %d totalpages: %lu\n", pgdat->node_id,
+                                                        realtotalpages);
+}
 {% endhighlight %}
 
-> - [](#A0)
+calculate_node_totalpages() 函数的作用是用于计算系统占用的物理页帧
+和实际物理页帧的数量，所谓占用物理页帧指的是多块物理内存中间存在 hole，
+但这些 hole 是不可用的物理页帧，因此系统占用的物理页帧就是 hole 加上
+实际物理页帧数量。如下图，存在多块物理内存块，内存块之间存在 hole，因此
+"spanned pages" 指的就是第一块物理内存块到最后一块物理内存块横跨了多少
+物理页帧，而 "real pages" 指的就是实际物理内存块占用了多少个物理页帧。
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000353.png)
+
+对于 ZONE 来讲，spanned 和 present 的关系如下：
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000354.png)
+
+函数使用 for() 循环，遍历了所有的 ZONE，每遍历一个 zone，
+函数调用 zone_spanned_pages_in_node() 函数计算了该 ZONE
+横跨了多少个物理页帧，然后调用 zone_absent_pages_in_node()
+函数计算 hole 的大小，以此计算该 ZONE 真正占用了多少个物理
+页帧。计算完毕后，进行统计，更新 zone 对应的 spanned_pages
+和 present_pages 数据，并且更新全局变量 totalpages 和
+realtotalpages 的数量。最后将所有 zone 的 spanned 物理页帧
+数据存储到 pglist 的 node_spanned_pages 里，也将所有 zone
+的 real 物理页帧存储到 pglist 的 node_present_pages 里。
+最后打印消息。
+
+> - [zone_spanned_pages_in_node](#A0320)
 >
+> - [zone_absent_pages_in_node](#A0321)
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0323">pgdat_end_pfn</span>
 
 {% highlight c %}
-
+static inline unsigned long pgdat_end_pfn(pg_data_t *pgdat)
+{
+        return pgdat->node_start_pfn + pgdat->node_spanned_pages;
+}
 {% endhighlight %}
 
-> - [](#A0)
->
+pgdat_end_pfn() 函数用于获得 pglist 指向的结束页帧号。函数通过从
+pglist 结构中获得起始页帧加上横跨页帧的数量，以此获得结束页帧号。
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0324">memblock_alloc_internal</span>
 
 {% highlight c %}
+/**
+ * memblock_alloc_internal - allocate boot memory block
+ * @size: size of memory block to be allocated in bytes
+ * @align: alignment of the region and block's size
+ * @min_addr: the lower bound of the memory region to allocate (phys address)
+ * @max_addr: the upper bound of the memory region to allocate (phys address)
+ * @nid: nid of the free area to find, %NUMA_NO_NODE for any node
+ *
+ * The @min_addr limit is dropped if it can not be satisfied and the allocation
+ * will fall back to memory below @min_addr. Also, allocation may fall back
+ * to any node in the system if the specified node can not
+ * hold the requested memory.
+ *
+ * The allocation is performed from memory region limited by
+ * memblock.current_limit if @max_addr == %MEMBLOCK_ALLOC_ACCESSIBLE.
+ *
+ * The phys address of allocated boot memory block is converted to virtual and
+ * allocated memory is reset to 0.
+ *
+ * In addition, function sets the min_count to 0 using kmemleak_alloc for
+ * allocated boot memory block, so that it is never reported as leaks.
+ *
+ * Return:
+ * Virtual address of allocated memory block on success, NULL on failure.
+ */
+static void * __init memblock_alloc_internal(
+                                phys_addr_t size, phys_addr_t align,
+                                phys_addr_t min_addr, phys_addr_t max_addr,
+                                int nid)
+{
+        phys_addr_t alloc;
+        void *ptr;
+        enum memblock_flags flags = choose_memblock_flags();
 
+        if (WARN_ONCE(nid == MAX_NUMNODES, "Usage of MAX_NUMNODES is deprecated. Use NUMA_NO_NODE instead\n"))
+                nid = NUMA_NO_NODE;
+
+        /*
+         * Detect any accidental use of these APIs after slab is ready, as at
+         * this moment memblock may be deinitialized already and its
+         * internal data may be destroyed (after execution of memblock_free_all)
+         */
+        if (WARN_ON_ONCE(slab_is_available()))
+                return kzalloc_node(size, GFP_NOWAIT, nid);
+
+        if (!align) {
+                dump_stack();
+                align = SMP_CACHE_BYTES;
+        }
+
+        if (max_addr > memblock.current_limit)
+                max_addr = memblock.current_limit;
+again:
+        alloc = memblock_find_in_range_node(size, align, min_addr, max_addr,
+                                            nid, flags);
+        if (alloc && !memblock_reserve(alloc, size))
+                goto done;
+
+        if (nid != NUMA_NO_NODE) {
+                alloc = memblock_find_in_range_node(size, align, min_addr,
+                                                    max_addr, NUMA_NO_NODE,
+                                                    flags);
+                if (alloc && !memblock_reserve(alloc, size))
+                        goto done;
+        }
+
+        if (min_addr) {
+                min_addr = 0;
+                goto again;
+        }
+
+        if (flags & MEMBLOCK_MIRROR) {
+                flags &= ~MEMBLOCK_MIRROR;
+                pr_warn("Could not allocate %pap bytes of mirrored memory\n",
+                        &size);
+                goto again;
+        }
+
+        return NULL;
+done:
+        ptr = phys_to_virt(alloc);
+
+        /* Skip kmemleak for kasan_init() due to high volume. */
+        if (max_addr != MEMBLOCK_ALLOC_KASAN)
+                /*
+                 * The min_count is set to 0 so that bootmem allocated
+                 * blocks are never reported as leaks. This is because many
+                 * of these blocks are only referred via the physical
+                 * address which is not looked up by kmemleak.
+                 */
+                kmemleak_alloc(ptr, size, 0, 0);
+
+        return ptr;
+}
 {% endhighlight %}
 
-> - [](#A0)
+memblock_alloc_internal() 用于从 MEMBLOCK 内存分配器中获得指定
+大小的物理内存。参数 size 指向需要分配物理内存的带下，参数 align
+指向对齐方式，参数 min_addr 指向分配的最小物理地址，参数 max_addr
+指向分配的最大物理地址，参数 nid 指向 NUMA 信息。由于代码较长，分段
+解析：
+
+{% highlight c %}
+        if (WARN_ONCE(nid == MAX_NUMNODES, "Usage of MAX_NUMNODES is deprecated. Use NUMA_NO_NODE instead\n"))
+                nid = NUMA_NO_NODE;
+
+        /*
+         * Detect any accidental use of these APIs after slab is ready, as at
+         * this moment memblock may be deinitialized already and its
+         * internal data may be destroyed (after execution of memblock_free_all)
+         */
+        if (WARN_ON_ONCE(slab_is_available()))
+                return kzalloc_node(size, GFP_NOWAIT, nid);
+{% endhighlight %}
+
+函数首先检查 nid 的有效性，然后判断当前 slab 内存分配器是否启用。
+如果启用，直接低啊用 kzalloc_node() 函数分配内存，并返回；反之继续
+指向下面的代码：
+
+{% highlight c %}
+        if (!align) {
+                dump_stack();
+                align = SMP_CACHE_BYTES;
+        }
+
+        if (max_addr > memblock.current_limit)
+                max_addr = memblock.current_limit;
+{% endhighlight %}
+
+如果 align 参数为零，那么函数调用 dump_stack() 函数打印堆栈
+信息，并且将 align 设置为 SMP_CACHE_BYTES. 如果 max_addr
+参数大于 MEMBLOCK 内存分配器最大设置 current_limit，那么
+函数将 max_addr 设置为 MEMBLOCK 最大限制。
+
+{% highlight c %}
+again:
+        alloc = memblock_find_in_range_node(size, align, min_addr, max_addr,
+                                            nid, flags);
+        if (alloc && !memblock_reserve(alloc, size))
+                goto done;
+
+        if (nid != NUMA_NO_NODE) {
+                alloc = memblock_find_in_range_node(size, align, min_addr,
+                                                    max_addr, NUMA_NO_NODE,
+                                                    flags);
+                if (alloc && !memblock_reserve(alloc, size))
+                        goto done;
+        }
+
+        if (min_addr) {
+                min_addr = 0;
+                goto again;
+        }
+
+        if (flags & MEMBLOCK_MIRROR) {
+                flags &= ~MEMBLOCK_MIRROR;
+                pr_warn("Could not allocate %pap bytes of mirrored memory\n",
+                        &size);
+                goto again;
+        }
+{% endhighlight %}
+
+检查通过之后，函数调用 memblock_find_in_range_node() 函数就从
+MEMBLOCK 分配器中获得指定物理内存，如果分配成功，函数此时调用
+memblock_reserve() 函数将分配的物理内存加入到预留区。添加成功
+直接跳转到 done。如果 nid 不是 NUMA_NO_NODE, 那么此时重新调用
+memblock_find_in_range_node() 函数从 NUMA_NO_NODE 中分配内存，
+同样的操作，将该区域加入到系统预留区内。如果分配的物理内存含有
+MEMBLOCK_MINOR 标志，那么函数去掉 MEMBLOCK_MINOR 标志并答应
+信息后跳转到 again 处。
+
+{% highlight c %}
+done:
+        ptr = phys_to_virt(alloc);
+
+        /* Skip kmemleak for kasan_init() due to high volume. */
+        if (max_addr != MEMBLOCK_ALLOC_KASAN)
+                /*
+                 * The min_count is set to 0 so that bootmem allocated
+                 * blocks are never reported as leaks. This is because many
+                 * of these blocks are only referred via the physical
+                 * address which is not looked up by kmemleak.
+                 */
+                kmemleak_alloc(ptr, size, 0, 0);
+
+        return ptr;
+}
+{% endhighlight %}
+
+如果物理内存分配成功，那么函数调用 phys_to_virt() 函数
+获得物理地址对应的虚拟地址。
+
+> - [memblock_find_in_range_node](#A0155)
 >
+> - [memblock_reserve](#A0203)
+>
+> - [phys_to_virt](#A0325)
+>
+> - [choose_memblock_flags](#A0157)
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0326">phys_to_virt</span>
 
 {% highlight c %}
-
+static inline void *phys_to_virt(phys_addr_t x)
+{
+        return (void *)__phys_to_virt(x);
+}
 {% endhighlight %}
 
-> - [](#A0)
->
+phys_to_virt() 用于将物理地址转换成虚拟地址。函数通过调用
+__phys_to_virt() 函数实现。
+
+> - [\_\_phys_to_virt](#A0289)
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0327">memblock_alloc_try_nid_nopanic</span>
 
 {% highlight c %}
+/**
+ * memblock_alloc_try_nid_nopanic - allocate boot memory block
+ * @size: size of memory block to be allocated in bytes
+ * @align: alignment of the region and block's size
+ * @min_addr: the lower bound of the memory region from where the allocation
+ *        is preferred (phys address)
+ * @max_addr: the upper bound of the memory region from where the allocation
+ *            is preferred (phys address), or %MEMBLOCK_ALLOC_ACCESSIBLE to
+ *            allocate only from memory limited by memblock.current_limit value
+ * @nid: nid of the free area to find, %NUMA_NO_NODE for any node
+ *
+ * Public function, provides additional debug information (including caller
+ * info), if enabled. This function zeroes the allocated memory.
+ *
+ * Return:
+ * Virtual address of allocated memory block on success, NULL on failure.
+ */
+void * __init memblock_alloc_try_nid_nopanic(
+                                phys_addr_t size, phys_addr_t align,
+                                phys_addr_t min_addr, phys_addr_t max_addr,
+                                int nid)
+{
+        void *ptr;
 
+        memblock_dbg("%s: %llu bytes align=0x%llx nid=%d from=%pa max_addr=%pa %pF\n",
+                     __func__, (u64)size, (u64)align, nid, &min_addr,
+                     &max_addr, (void *)_RET_IP_);
+
+        ptr = memblock_alloc_internal(size, align,
+                                           min_addr, max_addr, nid);
+        if (ptr)
+                memset(ptr, 0, size);
+        return ptr;
+}
 {% endhighlight %}
 
-> - [](#A0)
->
+memblock_alloc_try_nid_nopanic() 函数用于从指定的 NUMA 中分配
+物理内存，不能失败。参数 size 指向分配物理内存的大小，参数 align
+代表对齐方式，参数 min_addr 指向分配的最小物理地址，参数 max_addr
+指向分配最大物理地址。函数通过 memblock_alloc_internal() 函数
+不失败的分配内存，然后将分配出来的物理内存进行初始化操作。
+
+> - [memblock_alloc_internal](#A0325)
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0328">memblock_alloc_node_nopanic</span>
 
 {% highlight c %}
-
+static inline void * __init memblock_alloc_node_nopanic(phys_addr_t size,
+                                                        int nid)
+{
+        return memblock_alloc_try_nid_nopanic(size, SMP_CACHE_BYTES,
+                                              MEMBLOCK_LOW_LIMIT,
+                                              MEMBLOCK_ALLOC_ACCESSIBLE, nid);
+}
 {% endhighlight %}
 
-> - [](#A0)
->
+memblock_alloc_node_nopanic() 函数的作用是从 MEMBLOCK 内存
+分配器中不失败的分配指定大小的物理内存。参数 size 指向需要分配
+物理内存的大小，参数 nid 指向 NUMA。函数通过调用
+memblock_alloc_try_nid_nopanic() 函数实现。
+
+> - [memblock_alloc_try_nid_nopanic](#A0327)
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0329">alloc_node_mem_map</span>
 
 {% highlight c %}
+static void __ref alloc_node_mem_map(struct pglist_data *pgdat)
+{
+        unsigned long __maybe_unused start = 0;
+        unsigned long __maybe_unused offset = 0;
 
+        /* Skip empty nodes */
+        if (!pgdat->node_spanned_pages)                 
+                return;                                 
+
+        start = pgdat->node_start_pfn & ~(MAX_ORDER_NR_PAGES - 1);
+        offset = pgdat->node_start_pfn - start;
+        /* ia64 gets its own node_mem_map, before this, without bootmem */
+        if (!pgdat->node_mem_map) {
+                unsigned long size, end;
+                struct page *map;
+
+                /*
+                 * The zone's endpoints aren't required to be MAX_ORDER
+                 * aligned but the node_mem_map endpoints must be in order
+                 * for the buddy allocator to function correctly.
+                 */
+                end = pgdat_end_pfn(pgdat);
+                end = ALIGN(end, MAX_ORDER_NR_PAGES);   
+                size =  (end - start) * sizeof(struct page);
+                map = memblock_alloc_node_nopanic(size, pgdat->node_id);
+                pgdat->node_mem_map = map + offset;
+        }
+        pr_debug("%s: node %d, pgdat %08lx, node_mem_map %08lx\n",
+                                __func__, pgdat->node_id, (unsigned long)pgdat,
+                                (unsigned long)pgdat->node_mem_map);
+#ifndef CONFIG_NEED_MULTIPLE_NODES            
+        /*
+         * With no DISCONTIG, the global mem_map is just set as node 0's
+         */
+        if (pgdat == NODE_DATA(0)) {
+                mem_map = NODE_DATA(0)->node_mem_map;
+#if defined(CONFIG_HAVE_MEMBLOCK_NODE_MAP) || defined(CONFIG_FLATMEM)
+                if (page_to_pfn(mem_map) != pgdat->node_start_pfn)
+                        mem_map -= offset;
+#endif /* CONFIG_HAVE_MEMBLOCK_NODE_MAP */
+        }
+#endif
+}
 {% endhighlight %}
 
-> - [](#A0)
+alloc_node_mem_map() 函数用于创建全局 struct page 数组 mem_map，并将
+mem_map 与节点 0 的物理页帧进行映射。参数 pglist 指向当前节点的 pglist
+结构。分段解析函数：
+
+{% highlight c %}
+        unsigned long __maybe_unused start = 0;
+        unsigned long __maybe_unused offset = 0;
+
+        /* Skip empty nodes */
+        if (!pgdat->node_spanned_pages)                 
+                return;                                 
+
+        start = pgdat->node_start_pfn & ~(MAX_ORDER_NR_PAGES - 1);
+        offset = pgdat->node_start_pfn - start;
+{% endhighlight %}
+
+函数首先判断 pgdat 对应的节点是否包含物理页帧，其通过
+node_spanned_pages 可以知道，如果该值为 0，那么函数直接返回；
+如果不为零，那么函数首先获得当前节点的起始页帧，然后按
+MAX_ORDER_NR_PAGES 对齐之后，然后将该值与当前节点的起始
+页帧相减以此作为偏移。
+
+{% highlight c %}
+        /* ia64 gets its own node_mem_map, before this, without bootmem */
+        if (!pgdat->node_mem_map) {
+                unsigned long size, end;
+                struct page *map;
+
+                /*
+                 * The zone's endpoints aren't required to be MAX_ORDER
+                 * aligned but the node_mem_map endpoints must be in order
+                 * for the buddy allocator to function correctly.
+                 */
+                end = pgdat_end_pfn(pgdat);
+                end = ALIGN(end, MAX_ORDER_NR_PAGES);   
+                size =  (end - start) * sizeof(struct page);
+                map = memblock_alloc_node_nopanic(size, pgdat->node_id);
+                pgdat->node_mem_map = map + offset;
+        }
+{% endhighlight %}
+
+如果当前节点的 node_mem_map 为零，那么函数通过计算当前节点
+包含的页帧数量，并乘与 "sizeof(struct page)", 以此计算当前
+节点维护节点所有页帧所需要的内存大小，然后调用 memblock_alloc_node_nopanic()
+函数从 MEMBLOCK 内存分配器中分配指定大小的物理内存用于存储
+页帧信息。最后函数将分配的内存使用 node_mem_map 指定，并添加
+偏移。
+
+{% highlight c %}
+#ifndef CONFIG_NEED_MULTIPLE_NODES            
+        /*
+         * With no DISCONTIG, the global mem_map is just set as node 0's
+         */
+        if (pgdat == NODE_DATA(0)) {
+                mem_map = NODE_DATA(0)->node_mem_map;
+#if defined(CONFIG_HAVE_MEMBLOCK_NODE_MAP) || defined(CONFIG_FLATMEM)
+                if (page_to_pfn(mem_map) != pgdat->node_start_pfn)
+                        mem_map -= offset;
+#endif /* CONFIG_HAVE_MEMBLOCK_NODE_MAP */
+        }
+#endif
+}
+{% endhighlight %}
+
+如果宏 CONFIG_NEED_MULTIPLE_NODES 没有定义，那么函数首先
+判断当前节点是否为节点 0，如果是，那么将全局变量 mem_map
+指向当前节点的 node_mem_map 区域，以此维护系统所有 struct page。
+如果此时定义了宏 CONFIG_HAVE_MEMBLOCK_NODE_MAP 或者宏 CONFIG_FLATMEM,
+那么 mem_map 对应的页帧不等于当前节点的起始页帧，那么将
+mem_map 减去偏移。这里实际做了一个 struct page 到物理页帧的
+映射，确保 mem_map 的第一个 struct page 指向节点 0 的起始物理页帧。
+
+> - [memblock_alloc_node_nopanic](#A0328)
 >
+> - [pgdat_end_pfn](#A0323)
+>
+> - [page_to_pfn](#A0331)
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0330">__page_to_pfn</span>
 
 {% highlight c %}
-
+#define __page_to_pfn(page)     ((unsigned long)((page) - mem_map) + \
+                                 ARCH_PFN_OFFSET)
 {% endhighlight %}
 
-> - [](#A0)
->
+__page_to_pfn() 函数用于将 struct page 转换成物理页帧号。参数 page
+指向 struct page 结构，函数通过参数 page 与 mem_map 之间的差值，然后
+在加上 ARCH_PFN_OFFSET，以此获得物理页帧号。
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0331">page_to_pfn</span>
 
 {% highlight c %}
-
+#define page_to_pfn __page_to_pfn
 {% endhighlight %}
 
-> - [](#A0)
->
+page_to_pfn() 函数用于获得 struct page 对应的物理页帧号。
+函数通过 __page_to_pfn() 函数实现。
+
+> - [\_\_page_to_pfn](#A0330)
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0332">calc_memmap_size</span>
 
 {% highlight c %}
+static unsigned long __init calc_memmap_size(unsigned long spanned_pages,
+                                                unsigned long present_pages)
+{
+        unsigned long pages = spanned_pages;
 
+        /*
+         * Provide a more accurate estimation if there are holes within
+         * the zone and SPARSEMEM is in use. If there are holes within the
+         * zone, each populated memory region may cost us one or two extra
+         * memmap pages due to alignment because memmap pages for each
+         * populated regions may not be naturally aligned on page boundary.
+         * So the (present_pages >> 4) heuristic is a tradeoff for that.
+         */
+        if (spanned_pages > present_pages + (present_pages >> 4) &&
+            IS_ENABLED(CONFIG_SPARSEMEM))
+                pages = present_pages;
+
+        return PAGE_ALIGN(pages * sizeof(struct page)) >> PAGE_SHIFT;
+}
 {% endhighlight %}
 
-> - [](#A0)
->
+calc_memmap_size() 函数用于计算当前节点用于维护 spanned
+物理页帧的 struct page 占用的页的数量。函数首先判断是否
+启用 CONFIG_SPARSEMEM 宏，如果没有启用，那么函数直接将当前
+节点的 spanned_pages 与 sizeof(struct page) 相乘以此得到
+所需要的内存，最后在向右偏移 PAGE_SHIFT, 以此计算需要的
+页数量。
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0333">zone_movable_is_highmem</span>
 
 {% highlight c %}
-
+static inline int zone_movable_is_highmem(void)
+{
+#ifdef CONFIG_HAVE_MEMBLOCK_NODE_MAP
+        return movable_zone == ZONE_HIGHMEM;
+#else
+        return (ZONE_MOVABLE - 1) == ZONE_HIGHMEM;
+#endif
+}
 {% endhighlight %}
 
-> - [](#A0)
->
+zone_movable_is_highmem() 函数用于判断 ZONE_MOVABLE
+是否是 ZONE_HIGHMEM. 如果系统定义了 CONFIG_HAVE_MEMBLOCK_NODE_MAP，
+那么当 movable_zone 是 ZONE_HIGHMEM 是，那么函数返回 1；
+反之如果没有定义该宏，只有当 ZONE_MOVABLE - 1 等于
+ZONE_HIGHMEM 的时候，函数返回 1.
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0334">is_highmem_idx</span>
 
 {% highlight c %}
-
+static inline int is_highmem_idx(enum zone_type idx)
+{
+#ifdef CONFIG_HIGHMEM
+        return (idx == ZONE_HIGHMEM ||
+                (idx == ZONE_MOVABLE && zone_movable_is_highmem()));
+#else
+        return 0;
+#endif
+}
 {% endhighlight %}
 
-> - [](#A0)
->
+is_highmem_idx() 函数用于判断参数 idx 是否指向高端内存。当
+系统启用了 CONFIG_HIGHMEM 宏，则当 idx 是 ZONE_HIGHMEM 或者
+idx 是 ZONE_MOVABLE 且 zone_movable_is_highmem() 函数返回 1，
+那么此时 idx 对应的区域就是高端内存。
+
+> - [zone_movable_is_highmem](#A0333)
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0335">populated_zone</span>
 
 {% highlight c %}
-
+/* Returns true if a zone has memory */
+static inline bool populated_zone(struct zone *zone)
+{
+        return zone->present_pages;
+}
 {% endhighlight %}
 
-> - [](#A0)
->
+populated_zone() 函数用于判断 ZONE 是否已经包含物理内存。
+参数 zone 指向特定 ZONE。当参数 zone 的 present_pages 不为
+零时，代表该 ZONE 已经包含了物理内存，即 ZONE 已经 populated。
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0336">zone_pcp_init</span>
 
 {% highlight c %}
+static __meminit void zone_pcp_init(struct zone *zone)
+{
+        /*
+         * per cpu subsystem is not up at this point. The following code
+         * relies on the ability of the linker to provide the
+         * offset of a (static) per cpu variable into the per cpu area.
+         */
+        zone->pageset = &boot_pageset;
 
+        if (populated_zone(zone))
+                printk(KERN_DEBUG "  %s zone: %lu pages, LIFO batch:%u\n",
+                        zone->name, zone->present_pages,
+                                         zone_batchsize(zone));
+}
 {% endhighlight %}
 
-> - [](#A0)
->
+zone_pcp_init() 函数用于初始化 ZONE 的 PCP 分配器。参数 zone
+指向特定的 ZONE。函数首先将 zone 的 pageset 指向 boot_pageset。
+接着调用函数 populated_zone() 函数判断该 zone 是否已经维护内存，
+如果 ZONE 已经包含内存，那么打印相关信息。
+
+> - [populated_zone](#A0335)
 
 ------------------------------------
 
-#### <span id="A03"></span>
+#### <span id="A0337">zone_init_internals</span>
 
 {% highlight c %}
-
+static void __meminit zone_init_internals(struct zone *zone, enum zone_type idx, int nid,
+                                                        unsigned long remaining_pages)
+{
+        atomic_long_set(&zone->managed_pages, remaining_pages);
+        zone_set_nid(zone, nid);
+        zone->name = zone_names[idx];
+        zone->zone_pgdat = NODE_DATA(nid);
+        spin_lock_init(&zone->lock);
+        zone_seqlock_init(zone);
+        zone_pcp_init(zone);
+}
 {% endhighlight %}
 
-> - [](#A0)
->
+zone_init_internals() 函数用于初始化 zone。参数 zone 指向
+特定的 ZONE，参数 idx 指向 ZONE 索引，参数 remaining_pages
+参数指向 ZONE 维护的 page 数量。函数首先调用 atomic_long_set()
+实现原子操作，将 zone 的 managed_pages 设置为 remaining_pages，
+以此管理该 ZONE 所维护的 page 数量。函数调用 zone_set_nid()
+函数设置 ZONE 的 NUMA 信息，函数继续填充 ZONE 的结构，包括
+name，zone_pgdat，函数调用 zone_seqlock_init() 初始化 zone
+的锁，最后调用 zoen_pcp_init() 函数初始化当前 ZONE 的 PCP
+分配器。
+
+> - [zone_pcp_init](#A0336)
 
 ------------------------------------
 
