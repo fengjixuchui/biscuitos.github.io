@@ -13,9 +13,9 @@ tags:
 
 ## <span id="Kernel_Establish">Kernel Establish</span>
 
-> - [Build Linux 5.2 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.2-arm32-Usermanual/)
+> - [Build Linux 5.3 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.x-arm32-Usermanual/)
 >
-> - [Build Linux 5.2 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.2-arm64-Usermanual/)
+> - [Build Linux 5.3 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.x-arm64-Usermanual/)
 >
 > - [Build Newest Linux Running on ARM32](https://biscuitos.github.io/blog/Linux-newest-arm32-Usermanual/)
 >
