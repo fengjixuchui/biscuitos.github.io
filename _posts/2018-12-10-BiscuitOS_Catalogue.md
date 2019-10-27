@@ -207,8 +207,8 @@ tags:
 >
 > - [DTS](https://biscuitos.github.io/blog/DTS/)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000000.png)
 <span id="RaspberryPi"></span>
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000000.png)
 
 > - I2C
 >
