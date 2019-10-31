@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Catalogue"
+title:  ""
 date:   2018-12-10 09:13:33 +0800
 categories: [Top]
 excerpt: Catalogue.
@@ -139,9 +139,9 @@ tags:
 <span id="RaspberryPi"></span>
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000000.png)
 
-## Hardware platform Practice
+## Hardware Platform Practice
 
-> - [New!! Build BiscuitOS on RaspberryPi 4B](https://biscuitos.github.io/blog/RaspberryPi_4B-Usermanual/)
+> - [Build BiscuitOS on RaspberryPi 4B](https://biscuitos.github.io/blog/RaspberryPi_4B-Usermanual/)
 >
 > - I2C
 >
@@ -166,8 +166,6 @@ tags:
 ## <span id="Userland">Userland Develop</span>
 
 > - [应用程序移植](#A00)
->
->   - [应用程序移植最小实践](https://biscuitos.github.io/blog/USER_APP_mini/)
 >
 > - [GNU 项目移植](#B00)
 >
@@ -209,6 +207,7 @@ tags:
 >
 > - [Small Biscuit](https://biscuitos.github.io/blog/Story_SmallBiscuitOS/)
 
+---------------------------------------------
 
 ## Donation 🙂
 
