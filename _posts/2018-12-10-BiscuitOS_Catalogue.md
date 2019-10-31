@@ -35,17 +35,7 @@ tags:
 >
 > - [Architecture Computer English](https://biscuitos.github.io/blog/Architecture_English_note/)
 
-## Linux 源码分析及实践
-
-> - [Linux 5.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
->
-> - [Linux 5.x 函数列表](https://biscuitos.github.io/blog/SC-LIST-5.0/)
->
-> - [Linux 6.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
->
-> - [Linux 7.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
-
-## Basic
+## Basic Research
 
 > - [Bit: bitmap/bitops/bitmask/bit find](https://biscuitos.github.io/blog/BITMAP/)
 >
@@ -86,6 +76,16 @@ tags:
 
 > - [thread_info 与内核堆栈的关系](https://biscuitos.github.io/blog/TASK-thread_info_stack/)
 
+## Linux Source Code list
+
+> - [Linux 5.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
+>
+> - [Linux 5.x 函数列表](https://biscuitos.github.io/blog/SC-LIST-5.0/)
+>
+> - [Linux 6.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
+>
+> - [Linux 7.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
+
 ## <span id="Uboot">Bootloader</span>
 
 > - [Build u-boot-2019.04](https://biscuitos.github.io/blog/u-boot-2019.04-Usermanual/)
@@ -107,6 +107,10 @@ tags:
 > - [ARM64]()
 >
 > - [X86]()
+>
+> - [RISCV-32]()
+>
+> - [RISCV-64]()
 
 ## <span id="Enginerring">Enginerring Practice</span>
 
@@ -135,21 +139,31 @@ tags:
 <span id="RaspberryPi"></span>
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000000.png)
 
+## Hardware platform Practice
+
 > - [New!! Build BiscuitOS on RaspberryPi 4B](https://biscuitos.github.io/blog/RaspberryPi_4B-Usermanual/)
 >
 > - I2C
 >
->   - [EEPROM AT24C08 on RaspberryPi 4B](https://biscuitos.github.io/blog/LDD_I2C_AT24C08/)
+>   - [EEPROM AT24C08](https://biscuitos.github.io/blog/LDD_I2C_AT24C08/)
 >
->   - [Temperature LM75A on RaspberryPi 4B](https://biscuitos.github.io/blog/LDD_I2C_LM75A/)
+>   - [Temperature LM75A](https://biscuitos.github.io/blog/LDD_I2C_LM75A/)
 >
->   - [IO Expand FPC8574 on RaspberryPi 4B](https://biscuitos.github.io/blog/LDD_I2C_FPC8574/)
+>   - [IO Expand FPC8574](https://biscuitos.github.io/blog/LDD_I2C_FPC8574/)
+>
+> - SPI
+>
+> - 1-wire
+>
+> - CAN
+>
+> - Input
+>
+> - Platform
+>
+> - PWM
 
-## <span id="OpenProject">Open Project</span>
-
-> - [Open VnetCard](https://biscuitos.github.io/blog/VnetCard/)
-
-## <span id="Userland">Userland</span>
+## <span id="Userland">Userland Develop</span>
 
 > - [应用程序移植](#A00)
 >
@@ -171,14 +185,12 @@ tags:
 >
 >   - [tetris 俄罗斯方块](https://biscuitos.github.io/blog/USER_GAME_tetris/)
 
-## <span id="Debug">Debug</span>
+## <span id="Debug">Debug Tools and Usermanual </span>
 
-> - [ARM GDB debug Usermanual](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/)
+> - [Linux 5.x ARM32 Debug Usermanual](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/)
 >
-> - [Linux 0.11 调试手册](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/#linux%200.11%20%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95)
-
-## <span id="Debug_tools">Tools</span>
-
+> - [Linux 0.1x i386 Debug Usermanual](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/#linux%200.11%20%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95)
+>
 > - [Linux 内核开发工具合集](https://biscuitos.github.io/blog/Linux-development-tools/)
 >
 > - [perf: Linux 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-perf/)
@@ -187,8 +199,17 @@ tags:
 >
 > - [Linux 内核源码静态分析工具 sparse](https://biscuitos.github.io/blog/SPARSE/#header)
 
+## <span id="OpenProject">Open Project</span>
+
+> - [Open VnetCard](https://biscuitos.github.io/blog/VnetCard/)
+
 ## My Hobbies
 
 > - [ASCII Animation](https://biscuitos.github.io/blog/Animator/)
 >
 > - [Small Biscuit](https://biscuitos.github.io/blog/Story_SmallBiscuitOS/)
+
+
+## Donation 🙂
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
