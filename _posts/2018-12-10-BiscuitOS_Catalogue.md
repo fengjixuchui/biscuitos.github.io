@@ -165,23 +165,23 @@ tags:
 
 ## <span id="Userland">Userland Develop</span>
 
-> - [应用程序移植](#A00)
+> - [应用程序移植](https://biscuitos.github.io/blog/APP-Usermanual/)
 >
-> - [GNU 项目移植](#B00)
+> - [GNU 项目移植](https://biscuitos.github.io/blog/APP-Usermanual/)
 >
-> - [动态库移植](#C00)
+> - [动态库移植](https://biscuitos.github.io/blog/APP-Usermanual/)
 >
-> - [静态块移植](#D00)
+> - [静态块移植](https://biscuitos.github.io/blog/APP-Usermanual/)
 >
-> - [BiscuitOS 项目移植](#E00)
+> - [BiscuitOS 项目移植](https://biscuitos.github.io/blog/APP-Usermanual/)
 >
-> - [游戏移植](#F00)
+> - [游戏移植](https://biscuitos.github.io/blog/APP-Usermanual/)
 >
->   - [Snake 贪吃蛇](https://biscuitos.github.io/blog/USER_GAME_snake/)
+>   - [Snake 贪吃蛇](https://biscuitos.github.io/blog/USER_snake/)
 >
->   - [2048](https://biscuitos.github.io/blog/USER_GAME_2048/)
+>   - [2048](https://biscuitos.github.io/blog/USER_2048/)
 >
->   - [tetris 俄罗斯方块](https://biscuitos.github.io/blog/USER_GAME_tetris/)
+>   - [tetris 俄罗斯方块](https://biscuitos.github.io/blog/USER_tetris/)
 
 ## <span id="Debug">Debug Tools and Usermanual </span>
 

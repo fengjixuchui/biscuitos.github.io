@@ -46,15 +46,15 @@ tags:
 >
 >   - [驱动实践](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#RaspberryPi)
 >
-> - [应用开发](#A030)
+> - [应用程序部署](#F)
 >
->   - [应用程序](#A031)
+>   - [BiscuitOS 部署](#F0)
 >
->   - [动态库](#A032)
->
->   - [游戏](#A033)
+>   - [游戏部署](#F2)
 >
 > - [BiscuitOS 使用](#A060)
+>
+>   - [升级 RaspberyPi 内核](#A0601)
 >
 > - [调试](#A040)
 >
@@ -181,10 +181,6 @@ Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
 
 开发者首先准备一台 Linux 发行版电脑，推荐 Ubuntu 16.04/Ubuntu 18.04, 
 Ubuntu 电脑的安装可以上网查找相应的教程。准备好相应的开发主机之后，
-由于不同的版本存在差异，请进一步参考下面文章进行配置。
-
-> [BiscuitOS 开发环境搭建](https://biscuitos.github.io/blog/PlatformBuild/)
-
 接下来是安装运行 BiscuitOS 项目所需的基础开发工具。以 Ubuntu 为例
 安装基础的开发工具。开发者可以按如下命令进行安装：
 
@@ -735,6 +731,46 @@ RaspberryPi 上使用命令:
 cd /lib/modules/5.0.21-v7l+/kernel/drivers/BiscuitOS/
 insmod BiscuitOS_drv.ko
 {% endhighlight %}
+
+------------------------------------------
+
+<span id="F"></span>
+
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
+
+## 应用程序部署
+
+BiscuitOS 目前提供了一套完整的应用程序开发系统，开发者可以
+使用这套系统快速实践应用程序，开发者也可以使用传统的方法
+在 BiscuitOS 上实践应用程序:
+
+> - [BiscuitOS 部署](#F0)
+>
+> - [游戏部署](#F1)
+
+----------------------------------
+
+## <span id="F0">BiscuitOS 部署</span>
+
+BiscuitOS 提供了多种动态库、静态块、GNU 工具、BiscuitOS 应用程序，
+以及各种开源项目，开发者可以参考下文进行使用:
+
+> - [BiscuitOS 上使用 GNU hello 项目](https://biscuitos.github.io/blog/USER_hello/)
+>
+> - [BiscuitOS 支持应用列表](https://biscuitos.github.io/blog/APP-Usermanual/)
+
+----------------------------------
+
+## <span id="F1">游戏部署</span>
+
+BiscuitOS 也支持游戏，开发者可以参考如下文章，为自己的
+开发之旅带来更多的快乐:
+
+> - [Snake 贪吃蛇](https://biscuitos.github.io/blog/USER_snake/)
+>
+> - [2048](https://biscuitos.github.io/blog/USER_2048/)
+>
+> - [tetris 俄罗斯方块](https://biscuitos.github.io/blog/USER_tetris/)
 
 -----------------------------------------------
 

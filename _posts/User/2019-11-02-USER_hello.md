@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "autoconf"
+title:  "hello"
 date:   2019-08-21 05:30:30 +0800
 categories: [HW]
-excerpt: GNU autoconf.
+excerpt: GNU hello.
 tags:
   - Application
 ---
@@ -14,7 +14,7 @@ tags:
 
 ## 目录
 
-> - [autoconf 简介](#A00)
+> - [hello 简介](#A00)
 >
 > - [实践准备](#B00)
 >
@@ -22,17 +22,17 @@ tags:
 >
 >   - [软件准备](#B001)
 >
-> - [autoconf 部署](#C00)
+> - [hello 部署](#C00)
 >
 >   - [BiscuitOS 部署](#C0000)
 >
 >   - [工程实践部署](#C0001)
 >
-> - [autoconf 使用](#D00)
+> - [hello 使用](#D00)
 >
-> - [autoconf 测试](#E00)
+> - [hello 测试](#E00)
 >
-> - [autoconf 进阶研究](#F0)
+> - [hello 进阶研究](#F0)
 >
 > - [附录/捐赠](#Donate)
 
@@ -42,12 +42,11 @@ tags:
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000G.jpg)
 
-## autoconf 简介
+## hello 简介
 
-GNU autoconf 是一个用于生成 shell 脚本的工具，可以自动配置软件源代
-码以适应多种类似 POSIX 的系统。为了让你的软件包在所有的不同系统上都可
-以进行编译。目前 BiscuitOS 已经支持 GNU autoconf 的移植和实践。开发者
-可用通过下面的章节进行 GNU autoconf 的使用。
+GNU hello 项目用于提供一个简单的项目模板，开发者可以使用这个
+简单的实例了解 GNU 项目的基本组成框架。目前 BiscuitOS 已经支持 GNU
+hello 的移植和实践。开发者可用通过下面的章节进行 GNU hello 的使用。
 
 ------------------------------------------
 
@@ -69,7 +68,7 @@ GNU autoconf 是一个用于生成 shell 脚本的工具，可以自动配置软
 
 ## 硬件准备
 
-BiscuitOS 对 autoconf 的实践分别提供了纯软件实践平台和硬件实践
+BiscuitOS 对 hello 的实践分别提供了纯软件实践平台和硬件实践
 平台，如果开发者需要在硬件平台上实践，那么需要准备本节提到的内容。
 
 > - [硬件平台](#B0000)
@@ -137,7 +136,7 @@ DSCope 示波器采用样图:
 
 ## 软件准备
 
-在进行 autoconf 开发之前，开发者应该准备 BiscuitOS 的开发
+在进行 hello 开发之前，开发者应该准备 BiscuitOS 的开发
 环境，开发者应该根据不同的需求进行准备，如下:
 
 > - [BiscuitOS Qemu 软件方案开发环境部署](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
@@ -150,9 +149,9 @@ DSCope 示波器采用样图:
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
 
-## autoconf 部署
+## hello 部署
 
-autoconf 可以在 BiscuitOS 上实践，也可以在实际的工程实践
+hello 可以在 BiscuitOS 上实践，也可以在实际的工程实践
 中使用，开发者可以参考下面的目录进行使用:
 
 > - [BiscuitOS 部署](#C0000)
@@ -167,21 +166,21 @@ autoconf 可以在 BiscuitOS 上实践，也可以在实际的工程实践
 
 ## BiscuitOS 部署
 
-BiscuitOS 以及完整支持 autoconf，并基于 Kbuild 编译系统，制作了一套
-便捷的 autoconf 开发环境，开发者可以参考如下步骤进行快速开发。
+BiscuitOS 以及完整支持 hello，并基于 Kbuild 编译系统，制作了一套
+便捷的 hello 开发环境，开发者可以参考如下步骤进行快速开发。
 
-> - [autoconf 源码获取](#C00000)
+> - [hello 源码获取](#C00000)
 >
-> - [autoconf 源码编译](#C00001)
+> - [hello 源码编译](#C00001)
 >
-> - [autoconf 应用安装](#C00002)
+> - [hello 应用安装](#C00002)
 
 --------------------------------------------
 
-#### <span id="C00000">autoconf 源码获取</span>
+#### <span id="C00000">hello 源码获取</span>
 
 开发者在准备好了 BiscuitOS 开发环境之后，只需按照下面步骤就可以
-便捷获得 autoconf 开发所需的源码及环境, 以 RaspberryPi 4B 硬件
+便捷获得 hello 开发所需的源码及环境, 以 RaspberryPi 4B 硬件
 开发环境为例，其他 Linux 版本类似，开发者自行进行修改:
 
 {% highlight bash %}
@@ -196,20 +195,20 @@ make menuconfig
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPIALL.png)
 
-设置 "autoconf --->" 为 "Y"。设置完毕之后，
+设置 "hello --->" 为 "Y"。设置完毕之后，
 保存并退出.
 
 -----------------------------------------------
 
-#### <span id="C00001">autoconf 源码编译</span>
+#### <span id="C00001">hello 源码编译</span>
 
-autoconf 的编译很简单，只需执行如下命令就可以快速编
+hello 的编译很简单，只需执行如下命令就可以快速编
 译 (以 RaspberryPi 4B 为例):
 
 {% highlight bash %}
 cd BiscuitOS/
 make
-cd BiscuitOS/output/RaspberryPi_4B/package/autoconf-x.x.x/
+cd BiscuitOS/output/RaspberryPi_4B/package/hello-x.x.x/
 make prepare
 make download
 make
@@ -219,7 +218,7 @@ make pack
 
 ---------------------------------------------------
 
-#### <span id="C00002">autoconf 应用安装</span>
+#### <span id="C00002">hello 应用安装</span>
 
 开发者由于采用了 QEMU 方案或者硬件 RaspberryPi 方案进行实践，
 应用更新采用不同的方式，两种方案的更新方式如下:
@@ -229,7 +228,7 @@ make pack
 
 {% highlight bash %}
 cd BiscuitOS/
-cd BiscuitOS/output/RaspberryPi_4B/package/autoconf-x.x.x/
+cd BiscuitOS/output/RaspberryPi_4B/package/hello-x.x.x/
 make install
 make pack
 {% endhighlight %}
@@ -251,21 +250,21 @@ make pack
 
 ## 工程实践部署
 
-开发者也可以将 autoconf 部署到实际的工程项目中，开发者
+开发者也可以将 hello 部署到实际的工程项目中，开发者
 可以根据 BiscuitOS 中部署的方法加入到工程实践中，请参考
 如下章节:
 
-> - [BiscuitOS autoconf 部署](#C0000)
+> - [BiscuitOS hello 部署](#C0000)
 
 接着使用如下命令 (以 RaspberryPi 4B 为例):
 
 {% highlight bash %}
 cd BiscuitOS/
-cd BiscuitOS/output/RaspberryPi_4B/package/autoconf-x.x.x/
+cd BiscuitOS/output/RaspberryPi_4B/package/hello-x.x.x/
 make download
 {% endhighlight %}
 
-在该目录下，README 和 Makefile 文档介绍了 autoconf 的
+在该目录下，README 和 Makefile 文档介绍了 hello 的
 使用方法，以及 Makefile 编译方法，开发者可以参考以上内容
 进行工程部署。
 
@@ -275,11 +274,12 @@ make download
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000D.jpg)
 
-## autoconf 使用
+## hello 使用
 
-安装完毕之后，启动 BiscuitOS，如下图:
+hello 安装完毕之后，启动 BiscuitOS，在 BiscuitOS 上
+使用 hello 如下:
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000105.png)
+![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000107.png)
 
 ------------------------------------------
 
@@ -287,7 +287,7 @@ make download
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000E.jpg)
 
-## autoconf 测试
+## hello 测试
 
 等待更新
 
@@ -297,7 +297,7 @@ make download
 
 ![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
 
-## autoconf 进阶研究
+## hello 进阶研究
 
 等待更新
 
