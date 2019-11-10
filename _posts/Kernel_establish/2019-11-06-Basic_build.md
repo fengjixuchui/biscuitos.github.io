@@ -1,14 +1,16 @@
 ---
 layout: post
-title:  "Linux 5.x arm32 Usermanual"
-date:   2019-05-06 14:45:30 +0800
+title:  "XXXXXXX"
+date:   2019-11-06 14:45:30 +0800
 categories: [Build]
-excerpt: Linux 5.x arm32 Usermanual.
+excerpt: Basic.
 tags:
   - Linux
 ---
 
 ## 目录
+
+![](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/RPI000.GIF)
 
 > - [4.1 BiscuitOS 实践项目](A0)
 >
