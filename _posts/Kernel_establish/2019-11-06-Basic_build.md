@@ -10,7 +10,7 @@ tags:
 
 ## 目录
 
-![](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/RPI000.GIF)
+![](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/RPI000.GIF)
 
 > - [4.1 BiscuitOS 实践项目](A0)
 >
