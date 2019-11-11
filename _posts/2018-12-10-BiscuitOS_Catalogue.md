@@ -151,7 +151,7 @@ tags:
 >
 >   - [Temperature LM75A](https://biscuitos.github.io/blog/LDD_I2C_LM75A/)
 >
->   - [I/O Expander FPC8574](https://biscuitos.github.io/blog/LDD_I2C_FPC8574AT/)
+>   - [I/O Expander FPC8574](https://biscuitos.github.io/blog/LDD_I2C_PCF8574AT/)
 >
 >   - [A/D D/A Coverter PCF8591](https://biscuitos.github.io/blog/LDD_I2C_PCF8591/)
 >
