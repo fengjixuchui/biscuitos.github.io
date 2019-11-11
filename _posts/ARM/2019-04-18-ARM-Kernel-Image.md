@@ -8,7 +8,7 @@ tags:
   - MMU
 ---
 
-![LINUXP](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/GIF000203.gif)
+![LINUXP](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/GIF000203.gif)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -35,7 +35,7 @@ tags:
 ---------------------------------------------------------
 <span id="原理"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000L.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000L.jpg)
 
 ## 内核镜像介绍
 
@@ -99,7 +99,7 @@ uboot 为了启动内核，将 zImage 经过 mkimage 工具在 zImage 头部添�
 ---------------------------------------------------------
 <span id="vmlinuxEE"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000M.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000M.jpg)
 
 ## vmlinux 构建过程
 
@@ -114,7 +114,7 @@ vmlinux 文件是 Kbuild 编译系统将源码经过编译链接所获得的目�
 ---------------------------------------------------------
 <span id="Image"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000K.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000K.jpg)
 
 ## Image 构建过程
 
@@ -175,7 +175,7 @@ Kernel: arch/arm/boot/Image is ready
 ---------------------------------------------------------
 <span id="piggy.gz/piggy_data"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000O.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000O.jpg)
 
 ## piggy.gz/piggy_data 构建过程
 
@@ -244,7 +244,7 @@ gizp 的参数含义如下：
 ---------------------------------------------------------
 <span id="piggy.o"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000H.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000H.jpg)
 
 ## piggy.o 构建过程
 
@@ -277,7 +277,7 @@ piggy.o 中的起始地址和终止地址，对链接脚本有用。至此，pig
 ---------------------------------------------------------
 <span id="Bootstrap ELF kernel"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000J.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000J.jpg)
 
 ## Bootstrap ELF kernel (vmlinux) 构建过程
 
@@ -624,7 +624,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
 ---------------------------------------------------------
 <span id="zImage"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000F.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000F.jpg)
 
 ## zImage 构建过程
 
@@ -642,7 +642,7 @@ $(obj)/zImage:  $(obj)/compressed/vmlinux FORCE
 ---------------------------------------------------------
 <span id="uImage"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000I.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000I.jpg)
 
 ## uImage 构建过程
 
@@ -671,4 +671,4 @@ mkimage -A arm -O linux -T kernel -C none -a 60008000 -e 60008000 -n linux-5.0 -
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/HAB000036.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/HAB000036.jpg)

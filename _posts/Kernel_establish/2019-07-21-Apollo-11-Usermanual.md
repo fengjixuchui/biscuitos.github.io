@@ -8,7 +8,7 @@ tags:
   - Apollo
 ---
 
-![](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/GIF000202.gif)
+![](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/GIF000202.gif)
 
 > [GitHub: BiscuitOS](https://github.com/BiscuitOS/BiscuitOS)
 >
@@ -31,7 +31,7 @@ tags:
 -----------------------------------
 # <span id="A00"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000A.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000A.jpg)
 
 ## Apollo-11 简介
 
@@ -70,7 +70,7 @@ AGC 模拟所需的要的的工具，从网站可以获取各种版本的原始A
 -----------------------------------
 # <span id="B00"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000H.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000H.jpg)
 
 ## Apollo-11 开发环境搭建
 
@@ -133,7 +133,7 @@ BiscuitOS 项目是一个用于制作精简 linux/xv6 发行版，开发者可�
 -----------------------------------
 # <span id="C00"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000Q.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000Q.jpg)
 
 ## Apollo-11 源码编译
 
@@ -191,7 +191,7 @@ Reserved by @BiscuitOS
 -----------------------------------
 # <span id="D00"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000K.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000K.jpg)
 
 ## Apollo-11 运行使用
 
@@ -258,7 +258,7 @@ by reading the file Validation/Validation.agc.
 -----------------------------------
 # <span id="E00"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000A.jpg)
+![DTS](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000A.jpg)
 
 ## Apollo-11 源码查看
 
@@ -292,4 +292,4 @@ rce)
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/HAB000036.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/HAB000036.jpg)

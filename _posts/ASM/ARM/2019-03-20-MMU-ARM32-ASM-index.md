@@ -8,7 +8,7 @@ tags:
   - MMU
 ---
 
-![LINUXP](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/GIF000204.gif)
+![LINUXP](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/GIF000204.gif)
 
 > [GitHub ARM Assembly Set](https://github.com/BiscuitOS/HardStack/tree/master/Language/Assembly/ARM-GNU-Assembly/Instruction)
 >
@@ -27,7 +27,7 @@ tags:
 --------------------------------------------------------------
 <span id="ARM 汇编index"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000A.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000A.jpg)
 
 # ARM 汇编
 
@@ -55,7 +55,7 @@ ARM 汇编语句中. 当前语句很多时候要隐含的使用上一句的执�
 --------------------------------------------------------------
 <span id="ARM 汇编实践"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000H.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000H.jpg)
 
 # ARM 汇编实践
 
@@ -203,7 +203,7 @@ Device Driver--->
 --------------------------------------------------------------
 <span id="ARM_INS_LIST"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000K.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000K.jpg)
 
 # ARM 汇编 List
 
@@ -349,4 +349,4 @@ Device Driver--->
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/HAB000036.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/HAB000036.jpg)

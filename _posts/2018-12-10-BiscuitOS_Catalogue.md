@@ -7,7 +7,7 @@ excerpt: Catalogue.
 tags:
 ---
 
-![](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/GIF000204.gif)
+![](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/GIF000204.gif)
 
 > Blog State: In maintenance
 
@@ -215,4 +215,4 @@ tags:
 
 ## Donation 🙂
 
-![](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/HAB000036.jpg)
+![](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/HAB000036.jpg)

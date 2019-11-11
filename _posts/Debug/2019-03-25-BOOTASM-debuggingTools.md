@@ -8,7 +8,7 @@ tags:
   - MMU
 ---
 
-![LINUXP](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/GIF000200.gif)
+![LINUXP](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/GIF000200.gif)
 
 > [GitHub BiscuitOS](https://github.com/BiscuitOS/BiscuitOS)
 >
@@ -33,7 +33,7 @@ tags:
 --------------------------------------------------------------
 <span id="ARM Boot-Stage1"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000A.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000A.jpg)
 
 # ARM zImage 重定位前 gdb 调试方法
 
@@ -163,7 +163,7 @@ ENTRY(BS_debug)
 
 实际运行情况如下图：
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/ASM000001.png)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/ASM000001.png)
 
 ##### 拓展
 
@@ -195,7 +195,7 @@ add-symbol-file BiscuitOS/output/linux-5.0-arm32/linux/linux/arch/arm/boot/compr
 --------------------------------------------------------------
 <span id="ARM Boot-Stage2"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000Q.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000Q.jpg)
 
 # ARM zImage 重定位后 gdb 调试方法
 
@@ -418,7 +418,7 @@ printf "%#x\n", $final;
 --------------------------------------------------------------
 <span id="Linux_decompress_before"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000F.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000F.jpg)
 
 # 内核解压后 (MMU OFF) start_kernel 之前 gdb 调试方法
 
@@ -608,7 +608,7 @@ BiscuitOS 已经自动生成 gdb_Image 文件，开发者只需按照教程 READ
 --------------------------------------------------------------
 <span id="Linux_decompress_before2"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000F.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000F.jpg)
 
 # 内核解压后 (MMU ON) start_kernel 之前 gdb 调试方法
 
@@ -778,7 +778,7 @@ BiscuitOS 已经自动生成 gdb_RImage 文件，开发者只需按照教程 REA
 --------------------------------------------------------------
 <span id="Linux_decompress_after"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/IND00000H.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000H.jpg)
 
 # 内核解压后 start_kernel 之后 gdb 调试方法
 
@@ -860,4 +860,4 @@ start_kernel 之后的 kernel GDB 调试都可以使用通用的 GDB 进行断�
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/GIFBase/raw/master/RPI/HAB000036.jpg)
+![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/HAB000036.jpg)
