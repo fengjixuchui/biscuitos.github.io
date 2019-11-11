@@ -13,7 +13,7 @@ tags:
 
 ## <span id="Kernel_Establish">Kernel Establish</span>
 
-> - [New!! Build BiscuitOS on RaspberryPi 4B](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#RaspberryPi)
+> - [New!! Build BiscuitOS on RaspberryPi 4B/3B](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#RaspberryPi)
 >
 > - [Build Linux 5.3 - RISCV32/RISCV64/ARM32/ARM64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5.3x)
 >
@@ -143,13 +143,17 @@ tags:
 
 > - [Build BiscuitOS on RaspberryPi 4B](https://biscuitos.github.io/blog/RaspberryPi_4B-Usermanual/)
 >
+> - [Build BiscuitOS on RaspberryPi 3B](https://biscuitos.github.io/blog/RaspberryPi_3B-Usermanual/)
+>
 > - I2C
 >
 >   - [EEPROM AT24C08](https://biscuitos.github.io/blog/LDD_I2C_AT24C08/)
 >
 >   - [Temperature LM75A](https://biscuitos.github.io/blog/LDD_I2C_LM75A/)
 >
->   - [IO Expand FPC8574](https://biscuitos.github.io/blog/LDD_I2C_FPC8574/)
+>   - [I/O Expander FPC8574](https://biscuitos.github.io/blog/LDD_I2C_FPC8574/)
+>
+>   - [A/D D/A Coverter PCF8591](https://biscuitos.github.io/blog/LDD_I2C_PCF8591/)
 >
 > - SPI
 >
