@@ -1,18 +1,20 @@
 ---
 layout: post
-title:  "Linux 5.x arm64 Usermanual"
-date:   2019-05-06 14:45:30 +0800
+title:  "BiscuitOS-Desktop arm32 Usermanual"
+date:   2019-11-24 14:45:30 +0800
 categories: [Build]
-excerpt: Linux 5.x arm64 Usermanual.
+excerpt: BiscuitOS-Desktop arm32 Usermanual.
 tags:
   - Linux
 ---
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000303.png)
 
 > [GitHub: BiscuitOS](https://github.com/BiscuitOS/BiscuitOS)
 >
 > Email: BuddyZhang1 <Buddy.zhang@aliyun.com>
 
-# 目录
+## 目录
 
 > - [开发环境部署](#A)
 >
@@ -20,23 +22,13 @@ tags:
 >
 >   - [软件准备](#A1)
 >
-> - [Bootloader 部署](#B)
->
->   - [配置 Bootloader](#B0)
->
->   - [编译 Bootloader](#B1)
->
->   - [测试 Bootloader](#B2)
->
 > - [内核部署](#C)
 >
->   - [5.x arm64 项目部署](#C0)
+>   - [BiscuitOS-Desktop 项目部署](#C0)
 >
 >   - [内核配置](#C1)
 >
 >   - [内核编译](#C2)
->
->   - [rootfs 制作](#C3)
 >
 > - [BiscuitOS 使用](#D)
 >
@@ -66,7 +58,7 @@ tags:
 
 <span id="A"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L0.PNG)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
 
 ## 开发环境部署
 
@@ -80,14 +72,16 @@ tags:
 
 <span id="A2"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
 
 ## 项目简介
 
-BiscuitOS 项目是一个用于制作 Linux 0.x、1.x、2.x、3.x、4.x、5.x
+BiscuitOS 项目是一个用于制作 Linux 0.x、1.x、2.x、3.x、4.x、5.0
 通用精简操作系统，其目标是为开发者提供一套纯软件的 Qemu 实践平台
 或者硬件 RaspberryPi 实践平台，让开发者能够便捷、简单、快速的
-在各个版本上实践 Linux。更多 BiscuitOS 信息请范围下列网站:
+在各个版本上实践 Linux。BiscuitOS-Destop 项目是基于 BiscuitOS
+构建的桌面操作系统，开发者可以使用该项目从源码开始构建并定制
+属于自己的桌面操作系统。更多 BiscuitOS 信息请范围下列网站:
 
 > - [BiscuitOS 主页](https://biscuitos.github.io/)
 >
@@ -97,11 +91,11 @@ BiscuitOS 项目是一个用于制作 Linux 0.x、1.x、2.x、3.x、4.x、5.x
 
 <span id="A0"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000M.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
 
 ## 硬件准备
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000046.JPG)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000046.JPG)
 
 由于项目构建基于 Ubuntu，因此需要准备一台运行
 Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
@@ -110,12 +104,12 @@ Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
 
 <span id="A1"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
 
 ## 软件准备
 
 BiscuitOS 制作的系统都是由源码编译而来，这个开发者带来
-更多有趣的可能，开发者在使用 BiscuitOS 构建 Linux 5.x
+更多有趣的可能，开发者在使用 BiscuitOS 构建 BiscuitOS-Desktop
 的系统之前，需要做好如下准备:
 
 > - [基础软件安装](#A10)
@@ -146,17 +140,17 @@ cd BiscuitOS
 {% endhighlight %}
 
 至此，BiscuitOS 已经部署完毕.
-BiscuitOS 目前已经支持 5.x arm64 的开发部署，开发者在
+BiscuitOS 目前已经支持 BiscuitOS-Desktop 的开发部署，开发者在
 部署完 BiscuitOS 环境之后，可以参考下面命令进行部署:
 
 {% highlight bash %}
 cd BiscuitOS
-make linux-5.x-arm64_defconfig
+make BiscuitOS-Desktop_defconfig 
 make
-cd BiscuitOS/output/linux-5.x-arm64
+cd BiscuitOS/output/BiscuitOS-Desktop
 {% endhighlight %}
 
-执行上面的命令之后，BiscuitOS 项目就会自动部署 "linux 5.x arm64"
+执行上面的命令之后，BiscuitOS 项目就会自动部署 "BiscuitOS-Desktop"
 的开发环境，并自动生成各个模块编译规则，开发者请自行参考，例如:
 
 {% highlight perl %}
@@ -168,126 +162,57 @@ cd BiscuitOS/output/linux-5.x-arm64
 
 ***********************************************
 Output:
- BiscuitOS/output/linux-5.x-
+ BiscuitOS/output/BiscuitOS-Desktop
 
 linux:
- BiscuitOS/output/linux-5.x-arm64/linux/linux 
+ BiscuitOS/output/BiscuitOS-Desktop/linux/linux 
 
 README:
- BiscuitOS/output/linux-5.x-arm64/README.md 
+ BiscuitOS/output/BiscuitOS-Desktop/README.md 
 
 ***********************************************
 {% endhighlight %}
 
-在上面的输出信息中，指出了 "linux 5.x arm64" 项目
+在上面的输出信息中，指出了 "BiscuitOS-Desktop" 项目
 的目录位置，以及 linux 源码目录，更重要的是各个模块
 编译规则，开发者应该重点参考 README.md 的内容.
 
 ------------------------------------------
 
-<span id="B"></span>
-
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000M.jpg)
-
-## Bootloader 部署
-
-BiscuitOS 为特定版本提供了 uboot 的支持，开发者可以便捷编译
-出一个可引导内核的 bootloader。开发者在编译 bootloader 之前
-要确定 "linux 5.x arm64" 项目项目是否支持 bootloader 源码
-编译，请参考 "[BiscuitOS 部署](#A11)" 一节中自动生成的 "README.md"
-文档。如果文档中有关于 "Build Uboot" 章节，那么 "linux 5.x arm64"
-项目就支持 uboot，否则不支持，那么请跳过 "Bootloader 部署"
-这一节; 如果支持可以参考下面步骤进行 "bootloader" 开发环境部署:
-
-> - [配置 Bootloader](#B0)
->
-> - [编译 Bootloader](#B1)
->
-> - [测试 Bootloader](#B2)
-   
-------------------------------------------
-
-## <span id="B0">配置 Bootloader</span>
-
-开发者首先参考 "linux 5.x arm64" 项目生成的 README.md 文档，
-查看其中关于 uboot 的编译方法，例如:
-
-{% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64
-cd uboot/uboot/
-make ARCH=arm clean
-make ARCH=arm vexpress_ca9x4_defconfig
-make menuconfig
-{% endhighlight %}
-
-参考上面的命令，开发者可以自定义配置 uboot。
-
-------------------------------------------
-
-## <span id="B1">编译 Bootloader</span>
-
-配置完 bootloader 之后，接着是编译 bootloader，开发者
-参考 "linux 5.x arm64" 项目生成的 README.md 文档，例如:
-
-{% highlight bash %}
-make ARCH=arm CROSS_COMPILE=BiscuitOS/output/linux-5.x-arm64/aarch64-linux-gnu/aarch64-linux-gnu/bin/aarch64-linux-gnu-
-{% endhighlight %}
-
-------------------------------------------
-
-## <span id="B2">测试 Bootloader</span>
-
-在编译完 bootloader 之后，开发者可以测试 uboot 是否能
-工作，可以参考 "linux 5.x arm64" 项目生成的 README.md 文档，
-例如:
-
-{% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64
-./RunBiscuitOS.sh uboot
-{% endhighlight %}
-
-更多 uboot 相关的教程，请查看:
-
-> - [Uboot 开发部署教程](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#Uboot)
-
-------------------------------------------
-
 <span id="C"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
 
 ## 内核部署
 
 BiscuitOS 项目的目标就是为开发者提供一套快速实践内核的平台，
 因此 BiscuitOS 支持完整的内核开发，开发者请参考下列步骤进行开发:
 
-> - [5.x arm64 项目部署](#C0)
+> - [BiscuitOS-Desktop 项目部署](#C0)
 >
 > - [内核配置](#C1)
 >
 > - [内核编译](#C2)
->
-> - [rootfs 制作](#C3)
 
 ------------------------------------------
 
 <span id="C0"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000O.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000O.jpg)
 
-## 5.x arm64 项目部署
+## BiscuitOS-Desktop 项目部署
 
-BiscuitOS 目前已经支持 5.x arm64 的开发部署，开发者在
+BiscuitOS 目前已经支持 BiscuitOS-Desktop 的开发部署，开发者在
 部署完 BiscuitOS 环境之后，可以参考下面命令进行部署:
 
 {% highlight bash %}
 cd BiscuitOS
-make linux-5.x-arm64_defconfig
+make BiscuitOS-Desktop_defconfig
 make
-cd BiscuitOS/output/linux-5.x-arm64
+cd BiscuitOS/output/BiscuitOS-Desktop
 {% endhighlight %}
 
-执行上面的命令之后，BiscuitOS 项目就会自动部署 "linux 5.x arm64"
+执行上面的命令之后，BiscuitOS 项目就会自动部署 "BiscuitOS-Desktop"
 的开发环境，并自动生成各个模块编译规则，开发者请自行参考，例如:
 
 {% highlight perl %}
@@ -299,18 +224,18 @@ cd BiscuitOS/output/linux-5.x-arm64
 
 ***********************************************
 Output:
- BiscuitOS/output/linux-5.x-
+ BiscuitOS/output/BiscuitOS-Desktop/
 
 linux:
- BiscuitOS/output/linux-5.x-arm64/linux/linux 
+ BiscuitOS/output/BiscuitOS-Desktop/linux/linux 
 
 README:
- BiscuitOS/output/linux-5.x-arm64/README.md 
+ BiscuitOS/output/BiscuitOS-Desktop/README.md 
 
 ***********************************************
 {% endhighlight %}
 
-在上面的输出信息中，指出了 "linux 5.x arm64" 项目
+在上面的输出信息中，指出了 "BiscuitOS-Desktop" 项目
 的目录位置，以及 linux 源码目录，更重要的是各个模块
 编译规则，开发者应该重点参考 README.md 的内容.
 
@@ -318,7 +243,7 @@ README:
 
 <span id="C1"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
 ## 内核配置
 
@@ -326,9 +251,9 @@ README:
 参考如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64/linux/linux
+cd BiscuitOS/output/BiscuitOS-Desktop/linux/linux
 make ARCH=arm clean
-make ARCH=arm defconfig
+make ARCH=arm vexpress_defconfig
 make ARCH=arm menuconfig
 {% endhighlight %}
 
@@ -336,7 +261,7 @@ make ARCH=arm menuconfig
 
 <span id="C2"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Y.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
 
 ## 内核编译
 
@@ -344,64 +269,17 @@ make ARCH=arm menuconfig
 命令进行编译，具体命令如下:
 
 {% highlight bash %}
-make ARCH=arm CROSS_COMPILE=BiscuitOS/output/linux-5.x-arm64/aarch64-linux-gnu/aarch64-linux-gnu/bin/aarch64-linux-gnu- -j8
-make ARCH=arm CROSS_COMPILE=BiscuitOS/output/linux-5.x-arm64/aarch64-linux-gnu/aarch64-linux-gnu/bin/aarch64-linux-gnu- dtbs
+make ARCH=arm CROSS_COMPILE=BiscuitOS/output/BiscuitOS-Desktop/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi- -j8
+make ARCH=arm CROSS_COMPILE=BiscuitOS/output/BiscuitOS-Desktop/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi- dtbs
 {% endhighlight %}
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000335.png)
-
-------------------------------------------
-
-<span id="C3"></span>
-
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
-
-## rootfs 制作
-
-为了使 BiscuitOS 能够运行，开发者需要为 BiscuitOS 准备运行必备
-的工具，所有的必备工具在 BiscuitOS 项目执行 make 之后都已经准备好，
-现在开发者可以选择优化或不优化这些工具，优化的结果就是是 ROOTFS 
-的体积尽可能的小。如果开发者不想优化，可以跳过这一节。使用默认配
-置源码编译的 BusyBox 体积较大，开发者可以参照如下命令缩减 BusyBox
-
-{% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64/busybox/busybox
-make clean
-make menuconfig
-{% endhighlight %}
-
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000003.png)
-
-选择 **Busybox Settings --->**
-
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000004.png)
-
-选择 **Build Options --->**
-
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000005.png)
-
-选中 **Build BusyBox as a static binary (no shared libs)**，保存并退出。使用
-如下命令编译 BusyBox
-
-{% highlight bash %}
-make CROSS_COMPILE=BiscuitOS/output/linux-5.x-arm64/aarch64-linux-gnu/aarch64-linux-gnu/bin/aarch64-linux-gnu- -j8
-
-make CROSS_COMPILE=BiscuitOS/output/linux-5.x-arm64/aarch64-linux-gnu/aarch64-linux-gnu/bin/aarch64-linux-gnu- install
-{% endhighlight %}
-
-编译完上面的工具和 Linux 之后，运行前的最后一步就是制作一个可运
-行的 Rootfs。开发者可以使用 README 中提供的命令进行制作，如下:
-
-{% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64
-./RunQemuKernel.sh pack
-{% endhighlight %}
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000335.png)
 
 ------------------------------------------
 
 <span id="D"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
 
 ## BiscuitOS 使用
 
@@ -419,11 +297,11 @@ cd BiscuitOS/output/linux-5.x-arm64
 BiscuitOS 系统镜像的安装制作很简单，请参考如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64
+cd BiscuitOS/output/BiscuitOS-Desktop
 ./RunQemuKernel.sh pack
 {% endhighlight %}
 
-运行上面的命令之后，会生成名为 "BiscuitOS.img" 的文件，
+运行上面的命令之后，会生成名为 "BiscuitOS-Desktop.img" 的文件，
 该文件就是 BiscuitOS 系统镜像。
 
 ----------------------------------------
@@ -433,34 +311,31 @@ cd BiscuitOS/output/linux-5.x-arm64
 BiscuitOS 的运行很简单，开发者执行使用如下命令即可:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64
+cd BiscuitOS/output/BiscuitOS-Desktop
 ./RunQemuKernel.sh
 {% endhighlight %}
-
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/Linux-5.x-arm64.png)
 
 如果需要使用网络功能，请使用如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64
+cd BiscuitOS/output/BiscuitOS-Desktop
 ./RunQemuKernel.sh net
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/mall/MALL000003.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000300.png)
 
-连接外网
+默认账号 "biscuitos", 默认密码 "root"
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/mall/MALL000005.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000301.png)
 
-更多网络的使用请参考:
-
-> - [BiscuitOS 网络使用手册](https://biscuitos.github.io/blog/Networking-Usermanual/)
+开发者可以在 BiscuitOS-Desktop 中使用鼠标，当要从恢复
+鼠标可以使用 "Ctrl + Alt + G".
 
 ------------------------------------------
 
 <span id="E"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000M.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
 
 ## 驱动部署
 
@@ -478,7 +353,7 @@ BiscuitOS 目前已经完整支持驱动的开发，开发者可以使用 Biscui
 
 <span id="E0"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
 
 ## BiscuitOS 驱动开发
 
@@ -498,16 +373,16 @@ BiscuitOS 以及完整支持驱动开发体系，并基于 Kbuild 编译系统�
 
 #### <span id="E00">Platform 源码获取</span>
 
-首先开发者应该准备基于 Linux 5.x arm64 开发环境，然后
+首先开发者应该准备基于 BiscuitOS-Desktop arm32 开发环境，然后
 使用如下命令获得 Platform 所需的开发环境：
 
 {% highlight bash %}
 cd BiscuitOS
-make linux-5.x-arm64_defconfig
+make BiscuitOS-Desktop_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000038.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000038.png)
 
 选择 "Package --->" 并进入下一级菜单
 
@@ -528,7 +403,7 @@ Platform 的编译很简单，只需执行如下命令就可以快速编译:
 
 {% highlight bash %}
 make
-cd BiscuitOS/output/linux-5.x-arm64/package/platform_core_module-0.0.1/
+cd BiscuitOS/output/BiscuitOS-Desktop/package/platform_core_module-0.0.1/
 make prepare
 make download
 make
@@ -543,7 +418,7 @@ make pack
 驱动的安装特别简单，使用如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64/package/platform_core_module-0.0.1/
+cd BiscuitOS/output/BiscuitOS-Desktop/package/platform_core_module-0.0.1/
 make install
 make pack
 {% endhighlight %}
@@ -555,14 +430,14 @@ make pack
 模块的使用也很简单，使用如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64/
+cd BiscuitOS/output/BiscuitOS-Desktop/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
 运行 BiscuitOS 之后，在 BiscuitOS 上使用如下命令:
 
 {% highlight bash %}
-cd lib/modules/5.x.0/extra/
+cd lib/modules/5.0.0/extra/
 insmod platform_core_module-0.0.1
 {% endhighlight %}
 
@@ -570,7 +445,7 @@ insmod platform_core_module-0.0.1
 
 <span id="E1"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000W.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000W.jpg)
 
 ## 通用驱动开发
 
@@ -593,20 +468,20 @@ insmod platform_core_module-0.0.1
 
 <span id="E10"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000J.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000J.jpg)
 
 ## 驱动源码
 
 开发者首先准备一份驱动源码，可以操作如下源码，本节中使用一份 
 misc 驱动，并命名为 BiscuitOS_drv.c，具体源码如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000056.PNG)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000056.PNG)
 
 ------------------------------------------
 
 <span id="E11"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 ## 驱动安置
 
@@ -651,26 +526,26 @@ obj-$(CONFIG_BISCUITOS_DRV)  += BiscuitOS/
 
 <span id="E12"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Z.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
 
 ## 驱动配置
 
 准备好所需的文件之后，接下来进行驱动在内核源码树中的配置，使用如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64/linux/linux
+cd BiscuitOS/output/BiscuitOS-Desktop/linux/linux
 make ARCH=arm menuconfig
 {% endhighlight %}
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000337.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000337.png)
 
 首先在目录中找到 **Device Driver --->** 回车并进入其中。
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000338.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000338.png)
 
 接着在目录中找到 **BiscuitOS Driver --->** 按 Y 选中并按回车键进入。
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000339.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000339.png)
 
 最后按 Y 键选中 **BiscuitOS mis driver**，保存并退出内核配置
 
@@ -678,33 +553,33 @@ make ARCH=arm menuconfig
 
 <span id="E13"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Z.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
 
 ## 驱动编译
 
 配置完驱动之后，接下来将编译驱动。开发者使用如下命令编译驱动:
 
 {% highlight bash %}
-make ARCH=arm CROSS_COMPILE=BiscuitOS/output/linux-5.x-arm64/aarch64-linux-gnu/aarch64-linux-gnu/bin/aarch64-linux-gnu- modules -j4
-make ARCH=arm INSTALL_MOD_PATH=BiscuitOS/output/linux-5.x-arm64/rootfs/rootfs/ modules_install
+make ARCH=arm CROSS_COMPILE=BiscuitOS/output/BiscuitOS-Desktop/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi- modules -j4
+make ARCH=arm INSTALL_MOD_PATH=BiscuitOS/output/BiscuitOS-Desktop/rootfs/rootfs/ modules_install
 {% endhighlight %}
 
 从编译的 log 可以看出 BiscuitOS_drv.c 已经被编译进内核。
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000100.jpg)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000100.jpg)
 
 ------------------------------------------
 
 <span id="E14"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000X.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000X.jpg)
 
 ## 驱动安装
 
 驱动安装制作很简单，请参考如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64
+cd BiscuitOS/output/BiscuitOS-Desktop
 ./RunQemuKernel.sh pack
 {% endhighlight %}
 
@@ -715,14 +590,14 @@ cd BiscuitOS/output/linux-5.x-arm64
 模块的使用也很简单，使用如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64/
+cd BiscuitOS/output/BiscuitOS-Desktop/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
 运行 BiscuitOS 之后，在 BiscuitOS 上使用如下命令:
 
 {% highlight bash %}
-cd lib/modules/5.x.0/kernel/driver/BiscuitOS/
+cd lib/modules/5.0.0/kernel/driver/BiscuitOS/
 insmod misc.ko
 {% endhighlight %}
 
@@ -730,7 +605,7 @@ insmod misc.ko
 
 <span id="E2"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Z.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
 
 ## 驱动实践
 
@@ -744,7 +619,7 @@ BiscuitOS 提供了丰富的驱动开发教程，开发者可以参考如下文�
 
 <span id="F"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
 
 ## 应用程序部署
 
@@ -784,7 +659,7 @@ BiscuitOS 也支持游戏，开发者可以参考如下文章，为自己的
 
 <span id="G"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
 
 ## 调试部署
 
@@ -795,16 +670,16 @@ BiscuitOS 的 Linux 内核也支持多种调试，其中比较重
 首先使用 QEMU 的调试工具，将内核挂起等待调试，使用如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.x-arm64
+cd BiscuitOS/output/BiscuitOS-Desktop
 ./RunQemuKernel.sh debug
 {% endhighlight %}
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000315.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000315.png)
 
 接着在另外一个终端中输入如下命令，作为 gdb server
 
 {% highlight bash %}
-BiscuitOS/output/linux-5.x-arm64/aarch64-linux-gnu/aarch64-linux-gnu/bin/aarch64-linux-gnu-gdb BiscuitOS/output/linux-5.x-arm64/linux/linux/vmlinux
+BiscuitOS/output/BiscuitOS-Desktop/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gdb BiscuitOS/output/BiscuitOS-Desktop/linux/linux/vmlinux
 {% endhighlight %}
 
 输入以上命令之后，在第二个终端中，会进入 gdb 模式，此时以此输入一下命名进行
@@ -824,7 +699,7 @@ gdb 挂载：
 (gdb) info reg
 {% endhighlight %}
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000316.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000316.png)
 
 更多内核调试，请查考文档:
 
@@ -844,4 +719,4 @@ gdb 挂载：
 
 ## 捐赠一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
