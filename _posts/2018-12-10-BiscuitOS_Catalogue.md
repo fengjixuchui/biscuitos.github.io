@@ -13,7 +13,9 @@ tags:
 
 ## <span id="Kernel_Establish">Kernel Establish</span>
 
-> - [New!! Build BiscuitOS on RaspberryPi 4B/3B](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#RaspberryPi)
+> - [New!! BiscuitOS-Desktop GOKU](https://biscuitos.github.io/blog/Desktop-GOKU-Usermanual/)
+>
+> - [New!! Build BiscuitOS-Desktop](https://biscuitos.github.io/blog/BiscuitOS-Desktop-arm32-Usermanual/)
 >
 > - [Build Linux 5.3 - RISCV32/RISCV64/ARM32/ARM64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5.3x)
 >

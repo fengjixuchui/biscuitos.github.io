@@ -106,6 +106,12 @@ tags:
 >
 > - [Build Linux 5.x Running on RISCV32/RISCV64](https://biscuitos.github.io/blog/Linux-5.x-riscv-Usermanual/)
 
+## <span id="Desktop">BiscuitOS-Desktop</span>
+
+> - [BiscuitOS-Desktop GOKU](https://biscuitos.github.io/blog/Desktop-GOKU-Usermanual/)
+>
+> - [Build BiscuitOS-Desktop](https://biscuitos.github.io/blog/BiscuitOS-Desktop-arm32-Usermanual/)
+
 ## <span id="Userspace">Userspace</span>
 
 > - [移植应用程序到 BiscuitOS](https://biscuitos.github.io/blog/APP-Usermanual/)
