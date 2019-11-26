@@ -106,6 +106,14 @@ tags:
 >
 > - [Build Linux 5.x Running on RISCV32/RISCV64](https://biscuitos.github.io/blog/Linux-5.x-riscv-Usermanual/)
 
+## <span id="Linux_5.4x">Linux 5.4</span>
+
+> - [Build Linux 5.4 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.4-arm32-Usermanual/)
+>
+> - [Build Linux 5.4 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.4-arm64-Usermanual/)
+>
+> - [Build Linux 5.4 Running on RISCV32/RISCV64](https://biscuitos.github.io/blog/Linux-5.4-riscv-Usermanual/)
+
 ## <span id="Desktop">BiscuitOS-Desktop</span>
 
 > - [BiscuitOS-Desktop GOKU](https://biscuitos.github.io/blog/Desktop-GOKU-Usermanual/)

@@ -17,7 +17,7 @@ tags:
 >
 > - [New!! Build BiscuitOS-Desktop](https://biscuitos.github.io/blog/BiscuitOS-Desktop-arm32-Usermanual/)
 >
-> - [Build Linux 5.3 - RISCV32/RISCV64/ARM32/ARM64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5.3x)
+> - [Build Linux 5.4 - RISCV32/RISCV64/ARM32/ARM64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5.4x)
 >
 > - [Build Linux 0.X](https://biscuitos.github.io/blog/Kernel_Build/#Linux_0X)
 >
