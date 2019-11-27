@@ -77,6 +77,8 @@ tags:
 ## Linux Paper/Article
 
 > - [thread_info 与内核堆栈的关系](https://biscuitos.github.io/blog/TASK-thread_info_stack/)
+>
+> - [快速添加一个系统调用 (arm)](https://biscuitos.github.io/blog/SYSCALL_hello/)
 
 ## Linux Source Code list
 
