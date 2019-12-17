@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Small Biscuit"
+title:  "小饼干，你看起来很好吃"
 date:   2019-01-02 09:38:30 +0800
 categories: [HAB]
 excerpt: Story Small BiscuitOS.
@@ -12,7 +12,7 @@ tags:
 >
 > - 人人小站: 可美味
 >
-> - [漫画壁纸 Download](https://pan.baidu.com/s/12sStm4BuOiTI-EAcYlyafg)
+> - [漫画壁纸 Download](https://pan.baidu.com/s/1Dxk_7Bj-50VWEBr5pCFNJQ)
 >
 > - Date: 2011.08.02
 
