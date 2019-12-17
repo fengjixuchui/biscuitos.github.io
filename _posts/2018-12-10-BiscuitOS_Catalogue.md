@@ -214,7 +214,7 @@ tags:
 
 > - [ASCII Animation](https://biscuitos.github.io/blog/Animator/)
 >
-> - [Small Biscuit](https://biscuitos.github.io/blog/Story_SmallBiscuitOS/)
+> - [小饼干，你看起来很好吃](https://biscuitos.github.io/blog/Story_SmallBiscuitOS/)
 
 ---------------------------------------------
 
