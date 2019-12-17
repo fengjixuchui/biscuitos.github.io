@@ -73,7 +73,7 @@ tags:
 >
 > - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
 >   <span id="MEMBLOCK"></span>
-> - [系统调用]()
+> - [系统调用](https://biscuitos.github.io/blog/syscall/)
 
 ## Linux Paper/Article
 
