@@ -14,7 +14,17 @@ tags:
 
 ## 目录
 
-> - [open flags](#A0)
+> - [Open 标志研究](#A0)
+>
+>   - [文件打开标志](#A00010)
+>
+>   - [文件权限标志](#A00043)
+>
+>   - [文件类型标志](#A00043)
+>
+>   - [文件查找标志](#A00044)
+>
+>   - [错误码](#A0003)
 >
 > - [实践部署](#B0)
 >
@@ -46,6 +56,8 @@ tags:
 > - [文件权限与类型](#A0004)
 >
 > - [文件权限与类型标志](#A00043)
+>
+> - [文件查找标志](#A00044)
 
 ----------------------------------
 
@@ -703,13 +715,147 @@ S_IXUGO 是拥有者、用户组以及其他用户的执行权限掩码，其定
 #define S_IXUGO         (S_IXUSR|S_IXGRP|S_IXOTH)
 {% endhighlight %}
 
+----------------------------------
 
+<span id="A00044"></span>
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
 
+#### 文件查找标志
 
+内核中为了协助文件查找，使用了一组文件查找标志，以此明确查找的意图:
 
+> - [LOOKUP_FOLLOW](#A000440)
+>
+> - [LOOKUP_DIRECTORY](#A000441)
+>
+> - [LOOKUP_AUTOMOUNT](#A000442)
+>
+> - [LOOKUP_PARENT](#A000443)
+>
+> - [LOOKUP_REVAL](#A000444)
+>
+> - [LOOKUP_NO_REVAL](#A000445)
+>
+> - [LOOKUP_OPEN](#A000446)
+>
+> - [LOOKUP_CREATE](#A000447)
+>
+> - [LOOKUP_EXCL](#A000448)
+>
+> - [LOOKUP_RENAME_TARGET](#A000449)
+>
+> - [LOOKUP_JUMPED](#A00044A)
+>
+> - [LOOKUP_ROOT](#A00044B)
+>
+> - [LOOKUP_EMPTY](#A00044C)
+>
+> - [LOOKUP_DOWN](#A00044D)
 
+-------------------------------------
 
+###### <span id="A000440">LOOKUP_FOLLOW</span>
+
+LOOKUP_FOLLOW 标志用于如果路径的最后一个名字是符号链接，则解释（追踪）它。
+
+-------------------------------------
+
+###### <span id="A000441">LOOKUP_DIRECTORY</span>
+
+LOOKUP_DIRECTORY 标志用于表示路径的最后一个名字必须是目录。
+
+-------------------------------------
+
+###### <span id="A000442">LOOKUP_AUTOMOUNT</span>
+
+LOOKUP_MOUNT 表示文件查找时强制自动装载事件的能力。其说明如下:
+
+{% highlight bash %}
+Since we've now turned around and made LOOKUP_FOLLOW *not* force an
+automount, we want to add the ability to force an automount event on
+lookup even if we don't happen to have one of the other flags that force
+it implicitly (LOOKUP_OPEN, LOOKUP_DIRECTORY, LOOKUP_PARENT..)
+
+Most cases will never want to use this, since you'd normally want to
+delay automounting as long as possible, which usually implies
+LOOKUP_OPEN (when we open a file or directory, we really cannot avoid
+the automount any more).
+
+But Trond argued sufficiently forcefully that at a minimum bind mounting
+a file and quotactl will want to force the automount lookup. Some other
+cases (like nfs_follow_remote_path()) could use it too, although
+LOOKUP_DIRECTORY would work there as well.
+
+This commit just adds the flag and logic, no users yet, though. It also
+doesn't actually touch the LOOKUP_NO_AUTOMOUNT flag that is related, and
+was made irrelevant by the same change that made us not follow on
+LOOKUP_FOLLOW.
+{% endhighlight %}
+
+-------------------------------------
+
+###### <span id="A000443">LOOKUP_PARENT</span>
+
+LOOKUP_PARENT 表示在查找文件路径过程中，已经找到文件所在的目录。
+
+-------------------------------------
+
+###### <span id="A000444">LOOKUP_REVAL</span>
+
+如果该标志存在，那么 dentry 中的内容不被信任，强制执行一个真实的
+查找，即从父目录的文件目录项中查找。
+
+-------------------------------------
+
+###### <span id="A000445">LOOKUP_NO_REVAL</span>
+
+LOOKUP_NO_REVAL 标志。
+
+-------------------------------------
+
+###### <span id="A000446">LOOKUP_OPEN</span>
+
+LOOKUP_OPEN 标志表示试图打开一个文件。
+
+-------------------------------------
+
+###### <span id="A000447">LOOKUP_CREATE</span>
+
+LOOKUP_CREATE 标志表示试图去创建一个文件。
+
+-------------------------------------
+
+###### <span id="A000448">LOOKUP_EXCL</span>
+
+LOOKUP_EXCL 标志表示查找的文件可能不存在。
+
+-------------------------------------
+
+###### <span id="A000449">LOOKUP_RENAME_TARGET</span>
+
+LOOKUP_RENAME_TARGET 标志表示
+
+-------------------------------------
+
+###### <span id="A00044A">LOOKUP_JUMPED</span>
+
+LOOKUP_JUMPED 标志表示
+
+-------------------------------------
+
+###### <span id="A00044B">LOOKUP_ROOT</span>
+
+LOOKUP_ROOT 标志表示如果开始查找的文件时候，如果目录是根节点，
+那么设置该标志，以此表示查找过程是从根节点开始的。
+
+-------------------------------------
+
+###### <span id="A00044C">LOOKUP_EMPTY</span>
+
+-------------------------------------
+
+###### <span id="A00044D">LOOKUP_DOWN</span>
 
 
 ----------------------------------
