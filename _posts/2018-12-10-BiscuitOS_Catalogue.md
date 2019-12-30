@@ -80,6 +80,8 @@ tags:
 > - [thread_info 与内核堆栈的关系](https://biscuitos.github.io/blog/TASK-thread_info_stack/)
 >
 > - [快速添加一个系统调用 (arm)](https://biscuitos.github.io/blog/SYSCALL_hello/)
+>
+> - [CMA 碎片问题研究](https://biscuitos.github.io/blog/CMA-hole/)
 
 ## Linux Source Code list
 
