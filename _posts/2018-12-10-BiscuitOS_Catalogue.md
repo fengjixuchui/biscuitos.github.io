@@ -71,6 +71,8 @@ tags:
 >
 >   - [atomic 原子操作](https://biscuitos.github.io/blog/ATOMIC/)
 >
+>   - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
+>
 > - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
 >   <span id="MEMBLOCK"></span>
 > - [系统调用](https://biscuitos.github.io/blog/syscall/)
