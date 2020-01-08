@@ -84,6 +84,8 @@ tags:
 > - [快速添加一个系统调用 (arm)](https://biscuitos.github.io/blog/SYSCALL_hello/)
 >
 > - [CMA 碎片问题研究](https://biscuitos.github.io/blog/CMA-hole/)
+>
+> - [.pushsection/.popsection 有趣的汇编指令](https://biscuitos.github.io/blog/ASM_pushsection/)
 
 ## Linux Source Code list
 
