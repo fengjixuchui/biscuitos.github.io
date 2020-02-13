@@ -261,7 +261,7 @@ CMA 相关的配置位于 DTS 的 "/reserved-memory" 节点内，如果需要向
 2) compatible 属性的属性值必须为 "shared-dma-pool". 3) 节点必须包含
 "reusable" 属性而不应该包含 "no-map" 属性，"reusable" 属性用于说明
 预留区的页是可以映射建立页表的，而 "no-map" 属性则表示预留区的页不
-建立页表，不建立页表的结果就是虚拟看见物理使用这段物理内存。4) 节点
+建立页表，不建立页表的结果就是虚拟内存无法映射这段物理内存。4) 节点
 包含了 size 属性之后就不能包含 reg 属性，size 属性用于指明 CMA 区域
 的长度，size 使用的 cells 数应该从 "/reserved-memory" 的 "#size-cells"
 获得，如果 "/reserved-memory" 的 "#size-cells" 为 1，那么使用一个 32
