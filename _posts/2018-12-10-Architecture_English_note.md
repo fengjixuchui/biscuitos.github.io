@@ -8,7 +8,7 @@ tags:
   - CS
 ---
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/INDA00001.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/INDA00001.png)
 
 # List
 
@@ -71,7 +71,7 @@ tags:
 
 <span id="A"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
 
 # A
 
@@ -79,7 +79,7 @@ tags:
 
 <span id="B"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
 
 # B
 
@@ -87,7 +87,7 @@ tags:
 
 <span id="C"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000C.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000C.jpg)
 
 # C
 
@@ -95,7 +95,7 @@ tags:
 
 <span id="D"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000D.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
 
 # D
 
@@ -103,7 +103,7 @@ tags:
 
 <span id="E"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000E.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
 
 # E
 
@@ -111,7 +111,7 @@ tags:
 
 <span id="F"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
 
 # F
 
@@ -119,7 +119,7 @@ tags:
 
 <span id="G"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000G.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000G.jpg)
 
 # G
 
@@ -127,7 +127,7 @@ tags:
 
 <span id="H"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
 
 # H
 
@@ -135,7 +135,7 @@ tags:
 
 <span id="I"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000I.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
 
 # I
 
@@ -143,7 +143,7 @@ tags:
 
 <span id="J"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000J.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000J.jpg)
 
 # J
 
@@ -151,7 +151,7 @@ tags:
 
 <span id="K"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
 
 # K
 
@@ -159,7 +159,7 @@ tags:
 
 <span id="L"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 # L
 
@@ -167,7 +167,7 @@ tags:
 
 <span id="M"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000M.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
 
 # M
 
@@ -175,7 +175,7 @@ tags:
 
 <span id="N"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000N.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000N.jpg)
 
 # N
 
@@ -183,7 +183,7 @@ tags:
 
 <span id="O"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000O.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000O.jpg)
 
 # O
 
@@ -210,7 +210,7 @@ from address 0 and extending up to the TASK_SIZE.
 
 <span id="P"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
 
 # P
 
@@ -218,7 +218,7 @@ from address 0 and extending up to the TASK_SIZE.
 
 <span id="Q"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
 # Q
 
@@ -226,7 +226,7 @@ from address 0 and extending up to the TASK_SIZE.
 
 <span id="R"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000R.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
 
 # R
 
@@ -234,7 +234,7 @@ from address 0 and extending up to the TASK_SIZE.
 
 <span id="S"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
 
 # S
 
@@ -242,7 +242,7 @@ from address 0 and extending up to the TASK_SIZE.
 
 <span id="T"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
 
 # T
 
@@ -250,7 +250,7 @@ from address 0 and extending up to the TASK_SIZE.
 
 <span id="U"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000U.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000U.jpg)
 
 # U
 
@@ -258,7 +258,7 @@ from address 0 and extending up to the TASK_SIZE.
 
 <span id="V"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000V.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000V.jpg)
 
 # V
 
@@ -266,7 +266,7 @@ from address 0 and extending up to the TASK_SIZE.
 
 <span id="W"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000W.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000W.jpg)
 
 # W
 
@@ -274,7 +274,7 @@ from address 0 and extending up to the TASK_SIZE.
 
 <span id="X"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000X.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000X.jpg)
 
 # X
 
@@ -282,7 +282,7 @@ from address 0 and extending up to the TASK_SIZE.
 
 <span id="Y"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Y.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
 
 # Y
 
@@ -290,6 +290,6 @@ from address 0 and extending up to the TASK_SIZE.
 
 <span id="Z"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Z.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
 
 # Z

@@ -176,7 +176,7 @@ tags:
 > - [DTS](https://biscuitos.github.io/blog/DTS/)
 
 <span id="RaspberryPi"></span>
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000000.png)
 
 ## Hardware Platform Practice
 
@@ -254,4 +254,4 @@ tags:
 
 ## Donation 🙂
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
