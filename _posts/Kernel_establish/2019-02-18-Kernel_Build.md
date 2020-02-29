@@ -6,7 +6,7 @@ categories: [Build]
 excerpt: Establish Linux Kernel.
 tags:
 ---
-![SPI0](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000107.jpg)
+![SPI0](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/DEV000107.jpg)
 
 ## <span id="Linux_newest">Linux Newest</span>
 

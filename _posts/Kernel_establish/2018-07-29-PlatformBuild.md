@@ -101,7 +101,7 @@ sudo update-alternatives --config gcc
 sudo update-alternatives --config g++
 {% endhighlight %}
 
-![GCC_VER](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000029.png)
+![GCC_VER](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000029.png)
 
 每当需要切换 gcc 版本的时候，可以使用如上命令。
 至此，基本的开发工具已经安装完成。
