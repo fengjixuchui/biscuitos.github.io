@@ -745,4 +745,4 @@ for_each_free_mem_range(idx, NUMA_NO_NODE, flags,
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
 
 > [Github: __bitmap_weight](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/bitmap/API/__bitmap_weight)
 >
@@ -199,4 +199,4 @@ oprofile: using arm/armv7-ca9
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

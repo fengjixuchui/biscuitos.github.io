@@ -8,7 +8,7 @@ tags:
   - RBTREE
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
 
 > [Github: rb_last](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/API/rb_last)
 >
@@ -314,4 +314,4 @@ rb_last() 可以便捷获得红黑树最后一个 rb_node.
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

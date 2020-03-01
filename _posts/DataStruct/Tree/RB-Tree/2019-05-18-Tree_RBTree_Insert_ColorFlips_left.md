@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000R.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
 
 > [Github: 插入一个红节点引起颜色翻转](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Insert/Case3)
 >
@@ -100,7 +100,7 @@ if (parent != tmp) { /* parent == gparent->rb_left */
 -----------------------------------
 <span id="23Tree"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
 ### 红黑树插入一个红节点引起颜色翻转与 2-3 树的关系
 
@@ -112,7 +112,7 @@ if (parent != tmp) { /* parent == gparent->rb_left */
 但是由于父节点还是一个红节点，需要等待与更上一层的节点进行融合。由于本文之讲解颜色翻转，
 因此不继续讨论下去，如下图。
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000098.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000098.png)
 
 如上图，在为添加红节点之前，p0 节点是一个 2- 节点，当添加一个红节点 n0 的时候，此时
 n1、p0、n2 节点构成了一个零时的 4- 节点，需要分裂和提取操作，将一个 4- 节点分裂成 3 个
@@ -124,7 +124,7 @@ n1、p0、n2 节点构成了一个零时的 4- 节点，需要分裂和提取操
 --------------------------------------------------
 <span id="实践"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000D.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
 
 # 红黑树插入一个红节点引起颜色翻转实践
 
@@ -301,4 +301,4 @@ rb-tree/Insert$ ./rbtree
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

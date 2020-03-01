@@ -39,7 +39,7 @@ tags:
 
 ## 内核镜像介绍
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000036.png)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000036.png)
 
 vmlinux, Image, zImage, 以及 uImage，各种名词对各位开发者来说是内核开发中比较混淆
 的地方，本文就给各位开发者理顺一下各个名词之间的关系以及构建构成，为内核学习打下扎实

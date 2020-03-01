@@ -100,7 +100,7 @@ gcc DemoC.c -c -fno-builtin
 ld -static -T Demo.lds -o a.out -M
 {% endhighlight %}
 
-![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000512.png)
+![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000512.png)
 
 通过上面的运行数据可知，输出文件的 DemoEH section 没有包含 DemoB.o 和 DemoC.o 
 的 .eh_frame section， 而是被输出文件的 .eh_frame section 包含。DemoEH 中包含
@@ -122,4 +122,4 @@ ld -static -T Demo.lds -o a.out -M
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

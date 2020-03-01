@@ -95,7 +95,7 @@ ld -static -T Demo.lds -o a.out
 objdump -sSdhx a.out
 {% endhighlight %}
 
-![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000493.png)
+![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000493.png)
 
 从上面的数据可知，在链接脚本中指定了 DemoA.o 为第一个输入文件之后，输出文件的 
 Demotext 段开始的代码就是 DemoA.o .text 的代码段。
@@ -133,7 +133,7 @@ ld -static -T Demo.lds -o a.out
 objdump -sSdhx a.out
 {% endhighlight %}
 
-![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000494.png)
+![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000494.png)
 
 从上面的数据可知，在链接脚本中指定了 DemoB.o 为第一个输入文件之后，输出文件的 
 Demotext 段开始的代码就是 DemoB.o .text 的代码段。
@@ -171,7 +171,7 @@ ld -static -T Demo.lds -o a.out
 objdump -sSdhx a.out
 {% endhighlight %}
 
-![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000495.png)
+![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000495.png)
 
 从上面的数据可知，在链接脚本中指定了 DemoC.o 为第一个输入文件之后，输出文件的 
 Demotext 段开始的代码就是 DemoC.o .text 的代码段。
@@ -194,4 +194,4 @@ STARTUP 指令在 bootloader 等需要明确顺序链接的的情况下适用。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

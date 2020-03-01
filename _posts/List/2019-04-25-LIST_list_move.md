@@ -8,7 +8,7 @@ tags:
   - Bidirect-list
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 > [Github: list_move](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_move)
 >
@@ -270,4 +270,4 @@ list_move() 函数将节点从当前链表中移除，然后添加到新的链�
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

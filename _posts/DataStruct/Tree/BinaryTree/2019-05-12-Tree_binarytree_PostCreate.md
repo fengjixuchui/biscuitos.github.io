@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
 
 > [Github: 后序创建二叉树](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/binary-tree/Create/Postorder)
 >
@@ -27,7 +27,7 @@ tags:
 
 # <span id="原理分析">原理分析</span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000071.png)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000071.png)
 
 上图是一棵完美的二叉树，树中非叶子节点的度都是 2 (即每个非叶子的节点都有两个孩子)。
 二叉树的后序指的是：先左孩子，然后右孩子，最后根。例如上面的二叉树，后序的结果就是：
@@ -344,4 +344,4 @@ The Binary-Tree leaf: 8
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

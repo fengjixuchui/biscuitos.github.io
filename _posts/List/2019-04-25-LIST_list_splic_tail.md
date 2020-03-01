@@ -8,7 +8,7 @@ tags:
   - Bidirect-list
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 > [Github: list_splice_tail](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_splice_tail)
 >
@@ -271,4 +271,4 @@ list_splice_tail() 函数的作用可以实现队列的功能。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

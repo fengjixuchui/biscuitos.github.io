@@ -8,7 +8,7 @@ tags:
   - Radix-Tree
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -26,7 +26,7 @@ tags:
 -----------------------------------
 <span id="Radix-Tree 应用场景"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
 
 ## Radix-Tree 应用场景
 
@@ -35,7 +35,7 @@ tags:
 -----------------------------------
 <span id="内核中Radix-Tree 应用分析"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000E.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
 
 ## 内核中 Radix-Tree 应用分析
 
@@ -63,4 +63,4 @@ tags:
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

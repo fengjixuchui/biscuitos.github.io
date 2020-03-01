@@ -110,7 +110,7 @@ make start
 
 运行如下图，SeaBIOS 在中端中输出 BiscuitOS logo
 
-![Menuconfig8](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BIOS000006.png)
+![Menuconfig8](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BIOS000006.png)
 
 #### 修改 SeaBIOS 源码
 
@@ -217,4 +217,4 @@ rce)
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

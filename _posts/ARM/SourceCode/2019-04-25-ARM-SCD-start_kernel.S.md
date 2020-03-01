@@ -21,7 +21,7 @@ tags:
 --------------------------------------------------------------
 <span id="实践"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
 
 # 实践
 
@@ -76,7 +76,7 @@ task_thread_info() 函数将共用 THREAD_SIZE 空间的下一个 struct thread_
 地址作为堆栈的结束地址，因此 init_task 的 thread_info 和 init_stack
 关系如下图：
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000054.png)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000054.png)
 
 因此堆栈结束地址就如上图，更多关于内核堆栈的信息，请看：
 
@@ -202,7 +202,7 @@ arch/arm/include/asm/cputype.h
 
 在执行这段代码之前，先看一下 MPIDR 寄存器，通过 ARMv7 手册可以找到其内存布局如下：
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000055.png)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000055.png)
 
 MPIDR 寄存器的主要作用是在 SMP 系统中，为调度提供了一个附加的处理器识别机制。其中
 每个 Affn 占用 8 bit， Aff0 bits[7:0] 代表 Affinity level 0，Aff1 bits[15:8]
@@ -242,7 +242,7 @@ static inline void set_my_cpu_offset(unsigned long off)
 
 这里使用内嵌汇编将汇编，会对 ARMv7 的 CP15 寄存器操作，此时的 CP15 c13 布局如下：
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOTCP15C13.png)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOTCP15C13.png)
 
 选中的 TPIDRPRW 寄存器，该寄存器的作用是当系统运行在 PL1 或者更高的级别，提供一个
 位置以此听 thread identifying information. smp_setup_processor_id() 中将 0 写入

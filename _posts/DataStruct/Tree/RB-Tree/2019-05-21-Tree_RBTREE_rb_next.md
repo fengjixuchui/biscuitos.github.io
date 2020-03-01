@@ -8,7 +8,7 @@ tags:
   - RBTREE
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
 
 > [Github: rb_next](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/API/rb_next)
 >
@@ -335,4 +335,4 @@ rb_next() 函数用于中序遍历红黑树。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

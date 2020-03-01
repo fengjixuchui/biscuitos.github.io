@@ -8,7 +8,7 @@ tags:
   - Radix-Tree
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
 > [Github: Radix Tree](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree)
 >
@@ -56,7 +56,7 @@ tags:
 
 # <span id="CS00"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
 
 # Radix-Tree 原理
 
@@ -66,7 +66,7 @@ tags:
 >
 > - [Radix Tree 的架构原理](#Radix Tree 的架构原理)
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000124.png)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000124.png)
 
 ### <span id="RaixTree 简介">Raix Tree 简介</span>
 
@@ -191,7 +191,7 @@ Radix-tree 在内核中用于将一个长整型数据与一个指针类型的数
 就是与长整型的特定字段作为 radix-tree 的特定节点的索引进行布局，因此形成了长整型
 数据中多个字段作为 radix-tree 不同层 slots 的入口偏移，如下图：
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000124.png)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000124.png)
 
 如上图所示，存在一个长整型与一棵 radix-tree。linux 从长整型的左到右，依次按特定
 长度的域作为 radix-tree 中每一层的索引。例如 radix-tree 的第一层采用了长整型最左边
@@ -206,7 +206,7 @@ Linux 内核中，radix-tree 的根节点使用 struct radix_tree_root 进行维
 了名为 gfp_mask 的成员，这个成员用于指明 radix-tree 的用途，该成员被拆分做多个
 域进行使用，如下图：
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000125.png)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000125.png)
 
 ROOT tag 域用于指明 radixt-tree 的某些属性；GFP tag 域用于指明 radix-tree 在
 向内存申请节点时使用的 GFP 标志；IDR tag 域用于指明 Radix tree 是否用于 IDR 机制。
@@ -229,7 +229,7 @@ Radix-tree 一共支持 RADIX_TREE_MAX_TAGS 中 tag，每种 tag 包含了一个
 --------------------------------------------------
 <span id="实践"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
 
 ## Radix-tree 实践
 
@@ -240,7 +240,7 @@ Radix-tree 一共支持 RADIX_TREE_MAX_TAGS 中 tag，每种 tag 包含了一个
 --------------------------------------
 <span id="Radix-tree 内核中最小实践"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000C.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000C.jpg)
 
 ### Radix-tree 内核中最小实践
 
@@ -430,7 +430,7 @@ oprofile: using arm/armv7-ca9
 --------------------------------------
 <span id="Radix-tree 在应用程序中最小实践"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000E.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
 
 ### Radix-tree 在应用程序中最小实践
 
@@ -585,7 +585,7 @@ Radix: IDC ID: 321fe
 
 # <span id="CS01"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000I.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
 
 # Radix-Tree 在内核中的应用
 
@@ -611,7 +611,7 @@ radix-tree 是否能够存储 index，如果能，那么继续插入；如果不
 之后，就将 index 的域从中将特定位置开始，从左到右以此作为索引在 radix-tree
 中查找 slots，如下图：
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000124.png)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000124.png)
 
 如上图所示，存在一个长整型与一棵 radix-tree。linux 从长整型的左到右，依次按特定
 长度的域作为 radix-tree 中每一层的索引。例如 radix-tree 的第一层采用了长整型最左边
@@ -636,7 +636,7 @@ Linux 提供了相应的接口用于在 radix-tree 中查找符合条件的节�
 入口地址，然后进入下一层继续查找，知道找到最后一个 slot，如果找到，那么就返回
 私有数据；如果没有找到，则返回对应的错误码。如下图：
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000124.png)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000124.png)
 
 Linux 内核为了加快在 radix-tree 中的查找，采用了一种称为空间换时间的做法，
 在 radix-tree 查找特定的 slots 时候，将节点 tag
@@ -708,7 +708,7 @@ struct radix_tree_iter 数据结构用于存储每次遍历的数据，每次遍
 
 <span id="LIST"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 ## Radix-Tree 内核接口函数列表
 
@@ -824,4 +824,4 @@ struct radix_tree_iter 数据结构用于存储每次遍历的数据，每次遍
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

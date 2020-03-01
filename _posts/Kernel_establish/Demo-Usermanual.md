@@ -71,7 +71,7 @@ tags:
 
 <span id="A"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L0.PNG)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
 
 ## 开发环境部署
 
@@ -85,7 +85,7 @@ tags:
 
 <span id="A2"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
 
 ## 项目简介
 
@@ -102,11 +102,11 @@ BiscuitOS 项目是一个用于制作 Linux 0.x、1.x、2.x、3.x、4.x、5.x
 
 <span id="A0"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000M.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
 
 ## 硬件准备
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000046.JPG)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000046.JPG)
 
 由于项目构建基于 Ubuntu，因此需要准备一台运行
 Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
@@ -115,7 +115,7 @@ Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
 
 <span id="A1"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
 
 ## 软件准备
 
@@ -192,7 +192,7 @@ README:
 
 <span id="B"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000M.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
 
 ## Bootloader 部署
 
@@ -259,7 +259,7 @@ cd BiscuitOS/output/linux-PKVER-PARCH
 
 <span id="C"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
 
 ## 内核部署
 
@@ -278,7 +278,7 @@ BiscuitOS 项目的目标就是为开发者提供一套快速实践内核的平�
 
 <span id="C0"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000O.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000O.jpg)
 
 ## PKVER PARCH 项目部署
 
@@ -323,7 +323,7 @@ README:
 
 <span id="C1"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
 ## 内核配置
 
@@ -341,7 +341,7 @@ make ARCH=arm menuconfig
 
 <span id="C2"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Y.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
 
 ## 内核编译
 
@@ -353,13 +353,13 @@ make ARCH=arm CROSS_COMPILE=BiscuitOS/output/linux-PKVER-PARCH/arm-linux-gnueabi
 make ARCH=arm CROSS_COMPILE=BiscuitOS/output/linux-PKVER-PARCH/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi- dtbs
 {% endhighlight %}
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000335.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000335.png)
 
 ------------------------------------------
 
 <span id="C3"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000B.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
 
 ## rootfs 制作
 
@@ -375,15 +375,15 @@ make clean
 make menuconfig
 {% endhighlight %}
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000003.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000003.png)
 
 选择 **Busybox Settings --->**
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000004.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000004.png)
 
 选择 **Build Options --->**
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000005.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000005.png)
 
 选中 **Build BusyBox as a static binary (no shared libs)**，保存并退出。使用
 如下命令编译 BusyBox
@@ -406,7 +406,7 @@ cd BiscuitOS/output/linux-PKVER-PARCH
 
 <span id="D"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
 
 ## BiscuitOS 使用
 
@@ -442,7 +442,7 @@ cd BiscuitOS/output/linux-PKVER-PARCH
 ./RunQemuKernel.sh
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/Linux-PKVER-PARCH.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/Linux-PKVER-PARCH.png)
 
 如果需要使用网络功能，请使用如下命令:
 
@@ -451,11 +451,11 @@ cd BiscuitOS/output/linux-PKVER-PARCH
 ./RunQemuKernel.sh net
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/mall/MALL000003.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000003.png)
 
 连接外网
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/mall/MALL000005.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000005.png)
 
 更多网络的使用请参考:
 
@@ -465,7 +465,7 @@ cd BiscuitOS/output/linux-PKVER-PARCH
 
 <span id="E"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000M.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
 
 ## 驱动部署
 
@@ -483,7 +483,7 @@ BiscuitOS 目前已经完整支持驱动的开发，开发者可以使用 Biscui
 
 <span id="E0"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
 
 ## BiscuitOS 驱动开发
 
@@ -512,11 +512,11 @@ make linux-PKVER-PARCH_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000038.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000038.png)
 
 选择 "Package --->" 并进入下一级菜单
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPIALL.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPIALL.png)
 
 设置 "LDD: platform Core Module --->" 为 "Y"。设置完毕之后，
 保存并退出.
@@ -571,7 +571,7 @@ insmod LDD_platform_core_module-0.0.1
 
 <span id="E1"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000W.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000W.jpg)
 
 ## 通用驱动开发
 
@@ -594,20 +594,20 @@ insmod LDD_platform_core_module-0.0.1
 
 <span id="E10"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000J.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000J.jpg)
 
 ## 驱动源码
 
 开发者首先准备一份驱动源码，可以操作如下源码，本节中使用一份 
 misc 驱动，并命名为 BiscuitOS_drv.c，具体源码如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000056.PNG)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000056.PNG)
 
 ------------------------------------------
 
 <span id="E11"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 ## 驱动安置
 
@@ -652,7 +652,7 @@ obj-$(CONFIG_BISCUITOS_DRV)  += BiscuitOS/
 
 <span id="E12"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Z.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
 
 ## 驱动配置
 
@@ -663,15 +663,15 @@ cd BiscuitOS/output/linux-PKVER-PARCH/linux/linux
 make ARCH=arm menuconfig
 {% endhighlight %}
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000337.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000337.png)
 
 首先在目录中找到 **Device Driver --->** 回车并进入其中。
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000338.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000338.png)
 
 接着在目录中找到 **BiscuitOS Driver --->** 按 Y 选中并按回车键进入。
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000339.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000339.png)
 
 最后按 Y 键选中 **BiscuitOS mis driver**，保存并退出内核配置
 
@@ -679,7 +679,7 @@ make ARCH=arm menuconfig
 
 <span id="E13"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Z.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
 
 ## 驱动编译
 
@@ -692,13 +692,13 @@ make ARCH=arm INSTALL_MOD_PATH=BiscuitOS/output/linux-PKVER-PARCH/rootfs/rootfs/
 
 从编译的 log 可以看出 BiscuitOS_drv.c 已经被编译进内核。
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000100.jpg)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000100.jpg)
 
 ------------------------------------------
 
 <span id="E14"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000X.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000X.jpg)
 
 ## 驱动安装
 
@@ -731,7 +731,7 @@ insmod misc.ko
 
 <span id="E2"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Z.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
 
 ## 驱动实践
 
@@ -745,7 +745,7 @@ BiscuitOS 提供了丰富的驱动开发教程，开发者可以参考如下文�
 
 <span id="F"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
 
 ## 应用程序部署
 
@@ -785,7 +785,7 @@ BiscuitOS 也支持游戏，开发者可以参考如下文章，为自己的
 
 <span id="G"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
 
 ## 调试部署
 
@@ -800,7 +800,7 @@ cd BiscuitOS/output/linux-PKVER-PARCH
 ./RunQemuKernel.sh debug
 {% endhighlight %}
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000315.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000315.png)
 
 接着在另外一个终端中输入如下命令，作为 gdb server
 
@@ -825,7 +825,7 @@ gdb 挂载：
 (gdb) info reg
 {% endhighlight %}
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUDX000316.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000316.png)
 
 更多内核调试，请查考文档:
 
@@ -845,4 +845,4 @@ gdb 挂载：
 
 ## 捐赠一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

@@ -8,7 +8,7 @@ tags:
   - RBTREE
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
 
 > [Github: RB_EMPTY_NODE](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/API/RB_EMPTY_NODE)
 >
@@ -305,4 +305,4 @@ RB_EMPTY_NODE() 函数用于判断 rb_node 是否插入到红黑树里。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

@@ -96,7 +96,7 @@ ld -static -T Demo.lds DemoA.o -o a.out
 objdump -sSdhx a.out
 {% endhighlight %}
 
-![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000492.png)
+![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000492.png)
 
 从上面的数据可知，在链接脚本中指定了输入文件的搜索路径之后，输入文件 DemoB.o 
 和 DemoC.o 能够正确的被找到。因此可以用 SEARCH_DIR 指定输入文件的路径，该关键
@@ -122,4 +122,4 @@ ld -static -T Demo.lds -L/home/buddy DemoC.o -o a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

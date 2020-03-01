@@ -8,7 +8,7 @@ tags:
   - DTS
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/DEV000106.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/DEV000106.jpg)
 
 > Github: [of_get_phy_mode](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/of_get_phy_mode)
 >

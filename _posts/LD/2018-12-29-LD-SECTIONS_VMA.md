@@ -88,7 +88,7 @@ ld -static -T Demo.lds DemoA.o DemoB.o DemoC.c -o a.out
 objdump -x a.out
 {% endhighlight %}
 
-![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000503.png)
+![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000503.png)
 
 通过上面的数据可以看到 DemoText 的 VMA 为 0x080480b4，DemoData 的 VMA 为 
 0x08058000，.eh_frame 的 VMA 为 0x80680000。结果和设置的都一样。
@@ -109,4 +109,4 @@ objdump -x a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

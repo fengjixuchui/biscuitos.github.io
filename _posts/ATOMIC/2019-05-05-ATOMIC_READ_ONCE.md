@@ -8,7 +8,7 @@ tags:
   - ATOMIC
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 > [Github: READ_ONCE](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/READ_ONCE)
 >
@@ -187,4 +187,4 @@ READ_ONCE() 确保了数据是从内存中读取。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

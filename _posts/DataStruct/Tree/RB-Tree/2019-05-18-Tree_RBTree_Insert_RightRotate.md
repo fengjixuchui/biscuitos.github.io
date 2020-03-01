@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000R.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
 
 > [Github: 插入一个红节点引起右旋转](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Insert/Case2)
 >
@@ -27,22 +27,22 @@ tags:
 -----------------------------------
 <span id="原理分析"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Y.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
 
 # 红黑树插入一个红节点引起右旋转原理
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT100001.gif)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT100001.gif)
 
 对结点 S 做右旋操作时，假设其左孩子为 E 而不是T.nil, 以 S 到 E 的链为 “支轴” 进
 行。使 E 成为该子树新的根结点， S 成为 E 的右孩子，E 的右孩子成为 S 的左孩子。
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000077.png)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000077.png)
 
 如上图，当插入 4 之后，红黑树 5 节点需要进行右旋达到平衡，那么以 5 到 6 的链为
 "支轴" 进行。使用 5 节点成为新的根节点， 6 成为 5 的右孩子，4 称为 5 的左
 孩子。如下图：
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000078.png)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000078.png)
 
 ##### 核心代码实现
 
@@ -113,7 +113,7 @@ root 节点，那么就将 root 节点指向 parent 节点。
 -----------------------------------
 <span id="23Tree"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
 ### 红黑树插入一个红节点引起右旋转与 2-3 树的关系
 
@@ -125,7 +125,7 @@ root 节点，那么就将 root 节点指向 parent 节点。
 的红节点从最左边插入，因此在分裂的时候，零时 4- 节点的最右侧的两个孩子归 4- 节点最右节点
 所有，这样就完成了一次 2-3 树的提取，分离，合并操作，对应到红黑树就是一次右旋转操作。
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000093.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000093.png)
 
 如上图，在 2-3 树中，当向一个 3- (n0:R|p0:B) 节点的左边插入一个红节点 n1，此时变成一个
 零时的 4- (n1:R|n0:R|p0:B) 节点，此时需要进行分离，将 n0:R 节点向上提取，由于要和
@@ -139,7 +139,7 @@ root 节点，那么就将 root 节点指向 parent 节点。
 --------------------------------------------------
 <span id="实践"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000D.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
 
 # 红黑树插入一个红节点引起右旋转实践
 
@@ -314,4 +314,4 @@ rb-tree/Insert/Case0$ ./rbtree
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

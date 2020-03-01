@@ -8,7 +8,7 @@ tags:
   - App
 ---
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
 
 > [Github: Socket: TCP](https://github.com/BiscuitOS/HardStack/tree/master/CodeSegment/socket/TCP)
 >
@@ -34,7 +34,7 @@ tags:
 
 <span id="A0"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
 
 ## Socket: TCP 部署方法
 
@@ -58,7 +58,7 @@ wget https://raw.githubusercontent.com/BiscuitOS/HardStack/master/CodeSegment/so
 
 <span id="A1"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
 
 ## Socket: TCP 使用方法
 
@@ -254,12 +254,12 @@ clean:
 
 将编译生成的两个可指定文件分别在两个 IP 中运行，运行情况如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000133.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000133.png)
 
 上图为客户端程序，只要在里面输入字符串，相应的服务器端程序也会收到并
 显示字符串。如下图
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000132.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000132.png)
 
 -----------------------------------------------
 
@@ -281,4 +281,4 @@ clean:
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

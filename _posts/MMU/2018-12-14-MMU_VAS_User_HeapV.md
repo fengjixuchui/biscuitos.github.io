@@ -76,47 +76,47 @@ make menuconfig
 由于 BiscuitOS 的内核使用 Kbuild 构建起来的，在执行完 make menuconfig 之后，系
 统会弹出内核配置的界面，开发者根据如下步骤进行配置：
 
-![Menuconfig](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000003.png)
+![Menuconfig](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000003.png)
 
 选择 **kernel hacking**，回车
 
-![Menuconfig1](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000004.png)
+![Menuconfig1](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000004.png)
 
 选择 **Demo Code for variable subsystem mechanism**, 回车
 
-![Menuconfig2](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000005.png)
+![Menuconfig2](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000005.png)
 
 选择 **MMU(Memory Manager Unit) on X86 Architecture**, 回车
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000433.png)
+![Menuconfig3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000433.png)
 
 选择 **Debug MMU(Memory Manager Unit) mechanism on X86 Architecture** 之后选择
 **Addressing Mechanism**  回车
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000434.png)
+![Menuconfig3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000434.png)
 
 选择 **Virtual address**, 回车
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000435.png)
+![Menuconfig3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000435.png)
 
 选择 **Virtual address and Virtual space** 之后，接着选择 
 **Choice Kernel/User Virtual Address Space**, 回车。
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000436.png)
+![Menuconfig3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000436.png)
 
 该选项用于选择程序运行在用户空间还是内核空间，这里选择用户空间。选择 
 **User Virtual Address Space**. 回车之后按 Esc 退出。
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000437.png)
+![Menuconfig3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000437.png)
 
 接着选择 Choice Architecture Compiler ，回车。
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000438.png)
+![Menuconfig3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000438.png)
 
 这个选项用于指定用户程序运行的平台。开发者可以根据自己需求选择，这里推荐选择
 **Intel i386 (32bit) Mechine**, 回车并按 Esc 退出。
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000476.png)
+![Menuconfig3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000476.png)
 
 最后开发者选择 **.data segment**,下拉菜单打开后，选择 
 **Heap Data** 选项，回车保存并退出。
@@ -130,7 +130,7 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 ./data.elf
 {% endhighlight %}
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000478.png)
+![Menuconfig3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000478.png)
 
 -----------------------------------------------------------
 
@@ -191,7 +191,7 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 **data.objdump.elf** 文件。开发者可以通过查看 data.objdump.elf 文件查看未初始
 化堆变量在 ELF 文件中的布局。
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000479.png)
+![Menuconfig3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000479.png)
 
 从上图可以看出，main 函数内，汇编代码从 0x6d 行到 0x85 行对堆变量进程赋值操作，
 说明堆变量是运行时分配。
@@ -204,7 +204,7 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 cat ld_scripts.elf
 {% endhighlight %}
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000442.png)
+![Menuconfig3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000442.png)
 
 从链接脚本中，PROVIDE 宏可以将变量导入到进程中，所以开发者可以在源码中使用这些
 变量来指明进程的内存布局，这里使用了 **__executable_start**, **edata**, 
@@ -285,7 +285,7 @@ cd tools/demo/mmu/addressing/virtual_address/user/
 ./data.elf
 {% endhighlight %}
 
-![Menuconfig3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000478.png)
+![Menuconfig3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000478.png)
 
 从运行结果来看，所有的堆变量地址被加载到从 0x9f91018 递减到 0x9f91048，从进程
 的布局可以知道，堆的位置在 0x9f91008. 所以堆变量位于进程的堆中。

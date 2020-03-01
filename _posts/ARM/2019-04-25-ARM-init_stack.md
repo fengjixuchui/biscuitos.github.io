@@ -89,4 +89,4 @@ init_thread_task, 和 init_stack, 这三个变量的地址都是一样的。INIT
 从这里可以看出 THREAD_SIZE 占用了 2 个页，因此可以知道 __start_init_task
 到 __end_init_task 之间的大小是 2 个页。此时 init_stack 的内存布局如下：
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000054.png)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000054.png)

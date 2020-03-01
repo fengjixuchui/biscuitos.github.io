@@ -8,7 +8,7 @@ tags:
   - Bidirect-list
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 > [Github: list_for_each_entry](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_for_each_entry)
 >
@@ -247,4 +247,4 @@ list_for_each_entry() 函数适用于遍历内嵌双链表的结构。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

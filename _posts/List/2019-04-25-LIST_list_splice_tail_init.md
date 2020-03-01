@@ -8,7 +8,7 @@ tags:
   - Bidirect-list
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 > [Github: list_splice_tail_init](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_splice_tail_init)
 >
@@ -280,4 +280,4 @@ input: AT Raw Set 2 keyboard as /devices/platform/smb@4000000/smb@4000000:mother
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

@@ -86,7 +86,7 @@ ld -static -T Demo.lds DemoA.o DemoB.o DemoC.c -o a.out
 objdump -x a.out
 {% endhighlight %}
 
-![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000505.png)
+![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000505.png)
 
 通过上面数据可以知道 DemoText 段的 LMA 地址变成了 0x08058000， DemoData 段的 
 LMA 地址变成了 0x08480d4。所以 AT() 函数可以改变输出段的 LMA 值。
@@ -107,4 +107,4 @@ LMA 地址变成了 0x08480d4。所以 AT() 函数可以改变输出段的 LMA �
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

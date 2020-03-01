@@ -8,7 +8,7 @@ tags:
   - ATOMIC
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
 
 > [Github: atomic_fetch_andnot](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/atomic_fetch_andnot)
 >
@@ -270,4 +270,4 @@ atomic_fetch_andnot() 函数可以用于获得清除特定位之前 atomic_t 变
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

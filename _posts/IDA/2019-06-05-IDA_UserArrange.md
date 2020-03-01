@@ -8,7 +8,7 @@ tags:
   - RBTREE
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
 > [Github: 用户空间 IDA](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/IDA/Basic)
 >
@@ -26,7 +26,7 @@ tags:
 
 <span id="IDA 部署方法"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
 
 ## IDA 部署方法
 
@@ -52,7 +52,7 @@ radix.h 中包含了调用 radix-tree 的接口。
 
 <span id="IDA 使用方法"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
 
 ## IDA 使用方法
 
@@ -144,4 +144,4 @@ int main()
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

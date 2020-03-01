@@ -111,7 +111,7 @@ ld -static -T Demo.lds -o a.out
 objdump -xSsdh a.out
 {% endhighlight %}
 
-![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/BUD000026.png)
+![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUD000026.png)
 
 通过运行的数据可知，输出 DemoDATA section 只包含输入文件的可读可写 section。
 
@@ -131,4 +131,4 @@ objdump -xSsdh a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

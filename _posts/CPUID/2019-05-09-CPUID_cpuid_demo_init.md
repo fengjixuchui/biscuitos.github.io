@@ -8,7 +8,7 @@ tags:
   - CPUID
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000C.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000C.jpg)
 
 > [Github: read_cpuid_revision](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/read_cpuid_revision)
 >
@@ -189,4 +189,4 @@ cpuid_demo_init() 读取 revision 信息。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

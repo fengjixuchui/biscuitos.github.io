@@ -8,7 +8,7 @@ tags:
   - RBTREE
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
 
 > [Github: 用户空间红黑树](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Basic)
 >
@@ -25,7 +25,7 @@ tags:
 -----------------------------------
 <span id="红黑树部署方法"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
 
 ## 红黑树部署方法
 
@@ -47,7 +47,7 @@ rbtree.h 中包含了调用红黑树的接口。
 ------------------------------
 <span id="红黑树使用方法"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
 
 ## 红黑树使用方法
 
@@ -221,4 +221,4 @@ int main()
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

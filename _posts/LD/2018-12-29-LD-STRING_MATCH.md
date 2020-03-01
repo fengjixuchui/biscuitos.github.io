@@ -89,7 +89,7 @@ ld -static -T Demo.lds DemoA.o DemoB.o DemoC.c -o a.out
 objdump -x a.out
 {% endhighlight %}
 
-![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000506.png)
+![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000506.png)
 
 通过上面数据可知，DemoDATA 的输入 section 匹配到了相应的 section，但是 DemoRD 
 并没有匹配到任何输入文件的 section。开发者可以通过 ld -M 选项查看各 section 的
@@ -99,7 +99,7 @@ objdump -x a.out
 ld -static -T Demo.lds DemoA.o DemoB.o DemoC.c -o a.out -M
 {% endhighlight %}
 
-![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000507.png)
+![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000507.png)
 
 -----------------------------------------------
 
@@ -117,4 +117,4 @@ ld -static -T Demo.lds DemoA.o DemoB.o DemoC.c -o a.out -M
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

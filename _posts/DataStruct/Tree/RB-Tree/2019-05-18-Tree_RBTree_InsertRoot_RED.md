@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000R.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
 
 > [Github: 插入一个红节点到黑根节点](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Insert/Case1)
 >
@@ -27,7 +27,7 @@ tags:
 -----------------------------------
 <span id="原理分析"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Y.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
 
 # 红黑树插入一个红节点到黑根节点
 
@@ -80,7 +80,7 @@ __rb_insert(struct rb_node *node, struct rb_root *root,
 -----------------------------------
 <span id="23Tree"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
 # 红黑树插入一个红节点到黑根节点与 2-3 树的关系
 
@@ -88,7 +88,7 @@ __rb_insert(struct rb_node *node, struct rb_root *root,
 黑根节点在 2-3 树中就是一个 2- 节点，因此插入一个红节点之后，红节点与 2- 节点融合成一个 3-
 节点，此时 3- 节点符合 2-3 树的要求，所有无需分裂提取。
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000092.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000092.png)
 
 如上图，在 2-3 树中，新加入的节点与 2- root 节点融合成一个 3- 节点，此时对应的红黑树分
 布如上，更多红黑树与 2-3 树的关系请看文档：
@@ -98,7 +98,7 @@ __rb_insert(struct rb_node *node, struct rb_root *root,
 --------------------------------------------------
 <span id="实践"></span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000D.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
 
 # 红黑树插入根节点实践
 
@@ -271,4 +271,4 @@ rb-tree/Insert/Case0$ ./rbtree
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

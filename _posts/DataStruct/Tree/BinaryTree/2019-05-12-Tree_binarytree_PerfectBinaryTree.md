@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
 
 > [Github: 完美二叉树/满二叉树](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/binary-tree/Class/Perfect_BinaryTree)
 >
@@ -27,7 +27,7 @@ tags:
 
 # <span id="原理">完美二叉树/满二叉树原理</span>
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000071.png)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000071.png)
 
 在二叉树中，一个深度为 k(>=-1) 且有 2^(k+1) - 1 个结点的二叉树称为完美二叉树。
 即除了叶子结点之外的每一个结点都有两个孩子，每一层 (当然包含最后一层) 都被完全填充。
@@ -293,4 +293,4 @@ The Binary-Tree leaf: 8
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

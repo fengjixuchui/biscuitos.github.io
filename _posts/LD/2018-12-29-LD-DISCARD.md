@@ -97,7 +97,7 @@ ld -static -T Demo.lds -o a.out
 objdump -xSsdh a.out
 {% endhighlight %}
 
-![LD](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/MMU000518.png)
+![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000518.png)
 
 通过上面的运行数据可知，在输出文件中，所有输入文件的 .comment section 已经被丢
 弃
@@ -118,4 +118,4 @@ objdump -xSsdh a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

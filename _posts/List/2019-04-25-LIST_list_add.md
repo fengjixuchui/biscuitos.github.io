@@ -8,7 +8,7 @@ tags:
   - Bidirect-list
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 > [Github: list_add](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_add)
 >
@@ -240,4 +240,4 @@ aaci-pl041 10004000.aaci: FIFO 512 entries
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
