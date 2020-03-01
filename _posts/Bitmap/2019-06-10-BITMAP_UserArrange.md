@@ -8,7 +8,7 @@ tags:
   - Bit
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
 > [Github: 用户空间 Bit](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/bitmap/Basic)
 >
@@ -26,7 +26,7 @@ tags:
 
 <span id="Bit 部署方法"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
 
 ## Bit 部署方法
 
@@ -49,7 +49,7 @@ bitmask、bit-find 的核心实现，bitmap.h 中包含了调用 Bit 的接口�
 
 <span id="Bit 使用方法"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
 
 ## Bit 使用方法
 
@@ -145,4 +145,4 @@ int main()
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
