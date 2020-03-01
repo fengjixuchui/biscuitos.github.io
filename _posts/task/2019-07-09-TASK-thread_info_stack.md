@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000T.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
 
 # 目录
 
@@ -36,7 +36,7 @@ thread_info 结构被称为迷你进程描述符，是因为在这个结构中�
 也使用一个页来存储，即 4KB）。一个进程的内核栈和 thread_info
 结构之间的逻辑关系如下图所示：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000192.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000192.png)
 
 从上图可知，内核栈是从该内存区域的顶层向下（从高地址到低地址）增
 长的，而 thread_info  结构则是从该区域的开始处向上（从低地址到高
@@ -177,12 +177,12 @@ THREAD_SIZE.
 结构将 thread_info 和内核态堆栈绑定到一起，并且 thread_info
 位于区域的底部，而堆栈的栈底位于区域的顶部，如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000192.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000192.png)
 
 区域的大小为 THREAD_SIZE，堆栈向下生长，栈顶会不断靠近 thread_info
 的末尾；如果堆栈的生长方式是向上生长，那么 thread_union 的结构如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000193.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000193.png)
 
 区域的大小也是 THREAD_SIZE, 堆栈的栈底就是 thread_info 的结束
 地址，堆栈向上生长，不断靠近区域结束位置。
@@ -190,7 +190,7 @@ THREAD_SIZE.
 --------------------------------------------------
 <span id="A04"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000S.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
 
 ### thread_info 实践
 
@@ -349,4 +349,4 @@ oprofile: using arm/armv7-ca9
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

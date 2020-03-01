@@ -25,7 +25,7 @@ tags:
 --------------------------------------------------------------
 <span id="工具原理"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000P.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
 
 # 工具原理
 
@@ -42,7 +42,7 @@ mispredicted 等信息。Linux kernel 对这些 registers 进行了一系列抽�
 -------------------------------------------------------------
 <span id="工具安装"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000A.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
 
 本教程安装基于 BiscuitOS 制作的 Linux 5.0 系统，其他平台参照安装。如需要安装基于 BiscuitOS
 的 Linux 5.0 开发环境，请参考下面文章：
@@ -87,12 +87,12 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 在 BiscuitOS 中直接执行 perf 命令即可，如下图：
 
-![LINUXP](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/TOOLS000000.png)
+![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/TOOLS000000.png)
 
 -------------------------------------------------------------
 <span id="工具使用"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 # perf 使用方法
 
@@ -221,4 +221,4 @@ perf script --header
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

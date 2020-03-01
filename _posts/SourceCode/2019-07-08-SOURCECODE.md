@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000H.jpg)
+![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
 
 --------------------------------------------
 
@@ -67,7 +67,7 @@ set_task_stack_end_magic() 函数的作用标记进程堆栈生长顶端地址�
 堆栈栈顶的位置，然后在栈顶的位置写入 STACK_END_MAGIC，所以在堆栈
 的使用中，都会防止不要超越这个位置。
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000192.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000192.png)
 
 > - [end_of_stack](#A0002)
 
@@ -100,13 +100,13 @@ end_of_stack() 函数用于获得进程堆栈栈顶的地址。在内核中，�
 联合体进行绑定。如果 CONFIG_STACK_GROWSUP 宏定义了，那么说明
 堆栈向上生长，此时 thread_info 与堆栈的位置关系如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000193.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000193.png)
 
 此时堆栈栈顶的位置就是 thread_info 起始地址加上 THREAD_SIZE - 1;
 如果 CONFIG_STACK_GROWSUP 宏没有定义，那么说明堆栈是向下生长的，
 此时 thread_info 与堆栈的位置关系如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000192.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000192.png)
 
 此时堆栈栈顶的位置就是 thread_info 结束地址 + 1.
 
@@ -291,14 +291,14 @@ read_cpuid_mpidr() 函数的作用是读取 ARM MPDIR 寄存器，MPDIR
 MPIDR_AFFINITY_LEVEL() 函数用于从 ARM 的 MPIDR 中，读取
 不同 level 的 Affinity 信息。MPIDR 寄存器的寄存器布局如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000194.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000194.png)
 
 从上面的定义可以知道，每个 Affinity level 占用了 MPIDR_LEVEL_BITS
 个位，level 0 为最低的 8 bit，所以函数通过向右移动
 MPIDR_LEVEL_BITS 位获得下一个 Affinity level 数据。
 MPDIR 不同的 Affinity level 代表不同的信息，其信息如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000195.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000195.png)
 
 ------------------------------------
 
@@ -407,7 +407,7 @@ static inline void arch_local_irq_disable(void)
 禁止本地中断。在 ARMv7 中，提供了 CPSID 指令与 I 参数用于
 将 CPSR 寄存器中的 Interrupt 标志位清零，以此禁止本地中断。
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000001.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000001.png)
 
 
 > - [CPSID 指令实践](https://github.com/BiscuitOS/HardStack/tree/master/Language/Assembly/ARM-GNU-Assembly/Instruction/cpsid)
@@ -1076,11 +1076,11 @@ __get_cpu_architecture() 函数用于获得当前 ARM 的体系信息。在
 分析源码之前，首先了解 ARM 的 ID_MMFR0 和 MIDR 寄存器。ARMv7 中
 MDIR 寄存器的布局如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000025.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000025.png)
 
 从 MDIR 寄存器的 Architecture 域存储着体系相关的识别码，如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000196
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000196
 .png)
 
 read_cpuid_id() 函数用于读取 ARM 的 MIDR 寄存器，然后
@@ -1091,7 +1091,7 @@ read_cpuid_id() 函数用于读取 ARM 的 MIDR 寄存器，然后
 __get_cpu_architecture() 函数继续调用 read_cpuid_ext()
 函数判断具体 ARMv7 的版本信息。ID_MMFR0 寄存器的内存布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000007
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000007
 .png)
 
 ID_MMFR0 寄存器中存储了体系内存模组相关的信息，如上图，
@@ -1134,7 +1134,7 @@ static inline unsigned long get_cr(void)
 get_cr() 函数用于获得 ARM 的 SCTLR (System Control Register)
 系统控制寄存器。其内存布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000014
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000014
 .png)
 
 ------------------------------------
@@ -1198,7 +1198,7 @@ cpuid_feature_extract_field() 函数用于提取 CPUID 系列寄存器
 中特定的域。在 CPUID 系列寄存器中，每个域都是 4 bits，例如 MIDR
 寄存器布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000025.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000025.png)
 
 函数首先将寄存器的值向右移动 field 位，然后与 0xF 相与。
 如果对于的寄存器对应域的值带符号，如果此时 feature 大于 7，
@@ -1275,11 +1275,11 @@ cpuid_init_hwcaps() 函数用于获得系统指定的硬件支持信息。函数
 函数获得 ID_ISAR0 (Instruction Set Attribute Register) 寄存器
 的 24:27，ID_ISAR0 寄存器布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000197.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000197.png)
 
 在 ID_ISAR0 寄存器中，bit 24:27 域说明如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000198.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000198.png)
 
 从上的定义可以知道，在 cpuid_init_hwcaps() 函数中，如果 24:27
 域的值大于等于 2，那么支持 ARM 指令集的 SDIV 和 UDIV 指令，并将
@@ -1289,12 +1289,12 @@ cpuid_init_hwcaps() 函数用于获得系统指定的硬件支持信息。函数
 读取 ID_MMFR0 (Memory Model Feature Register) 寄存器，
 ID_MMFR0 寄存器用于描述系统内存模组的信息。其寄存器布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000007.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000007.png)
 
 cpuid_init_hwcaps() 函数读取了 ID_MMFR0 寄存器的低 4 bits，
 ID_MMFR0 寄存器的低 4bit 域是 VMSA support 域，其定义如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000199.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000199.png)
 
 cpuid_init_hwcaps() 函数判断该域值是否大于 5，如果大于 5，
 那么系统内存模组就支持 Long-descriptor 页表，那么系统就支持
@@ -1303,7 +1303,7 @@ LPAE，这样就原生支持 LPAE 模式下的 ldrd/strd 指令，此时如果
 函数继续调用 read_cpuid_ext(CPUID_EXT_ISAR5) 函数获得
 ID_ISAR5 寄存器，其在 ARMv7 中的内存布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000200.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000200.png)
 
 cpuid_init_hwcaps() 函数通过读取 ID_ISAR5 寄存器的值，以此
 确定系统是否支持 V8 Crypto 指令。根据各个域值设置 elf_hwcap2
@@ -1444,7 +1444,7 @@ static inline unsigned int __attribute_const__ read_cpuid_part(void)
 read_cpuid_part() 函数用于获得 MIDR 寄存器中 Implementer 域和
 Primary part number 域。MIDR 寄存器的布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000201.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000201.png)
 
 > - [read_cpuid_id](https://biscuitos.github.io/blog/CPUID_read_cpuid_id/)
 
@@ -1486,7 +1486,7 @@ static void __init elf_hwcap_fixup(void)
 elf_hwcap_fixup() 用于修正 ARM 硬件支持的信息。函数首先调用
 read_cpuid_id() 函数获得 MIDR 寄存器的值，其寄存器布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000201.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000201.png)
 
 然后调用 read_cpuid_part() 函数判断当前 ARM 是否是
 ARM_CPU_PART_ARM1136, 并且判断 MIDR 寄存器的 Variant 域
@@ -1498,20 +1498,20 @@ ARM_CPU_PART_ARM1136, 并且判断 MIDR 寄存器的 Variant 域
 实现了 Variant 域，那么函数调用 cpuid_feature_extract() 函数
 读取体系的 ID_ISAR3 寄存器，ID_ISAR4 寄存器，其寄存器布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000202.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000202.png)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000203.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000203.png)
 
 elf_hwcap_fixup() 函数判断，如果 ID_ISAR3 的 bit 12:15 域值，
 该域值的含义如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000204.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000204.png)
 
 该域值与 ID_ISAR4 寄存器的 SynchPrim_instrs_frac 域一同
 判断体系是否实现了 Synchronization Primitive 指令，其中
 ID_ISAR4 寄存器的 SynchPrim_instrs_frac 域定义如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000205.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000205.png)
 
 elf_hwcap_fixup() 函数此时判断，如果 ID_ISAR3 寄存器的
 SynchPrim_instrs 域值大于 1，或者 ID_ISAR3 寄存器的
@@ -1537,7 +1537,7 @@ static inline unsigned int __attribute_const__ read_cpuid_cachetype(void)
 read_cpuid_cachetype() 函数用于读取 ARM 的 CTR (Cache Type Register)
 寄存器，以此读取体系 CACHE 的类型信息。CTR 寄存器的内存布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000206.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000206.png)
 
 > - [read_cpuid](https://biscuitos.github.io/blog/CPUID_read_cpuid/)
 
@@ -1628,7 +1628,7 @@ set_csselr() 函数用于设置 ARM 的 CSSELR (Cache Size Selection Register)
 例如 Dcache 或者 ICACHE，或者 Level1 cache，Level2 cache 等。
 CSSELR 寄存器的寄存器布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000026.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000026.png)
 
 ------------------------------------
 
@@ -1649,7 +1649,7 @@ read_ccsidr() 函数的作用就是读取 ARM 体系的 CCSIDR
 寄存器选中 cache 的 Cache Sets，LineSize 信息。
 CCSIDR 寄存器的寄存器布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000028.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000028.png)
 
 ------------------------------------
 
@@ -1700,11 +1700,11 @@ PAGE_SIZE，如果大于，那么表示 L1 ICACHE 没有对齐；反之
 表示 L1 ICACHE 已经按页对齐。在 ARMv7 中 CSSELR 寄存器
 的布局如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000026.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000026.png)
 
 ARMv7 中 CCSIDR 寄存器的寄存器布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000028.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000028.png)
 
 ARMv6 的情况不讨论，最后返回比较的结果。
 
@@ -1834,7 +1834,7 @@ cacheid_init() 函数用于初始化系统 CACHE 信息。内核使用
 read_cpuid_cachetype() 函数读取 ARM 体系的  CTR (Cache Type Register)
 寄存器，以此读取体系 CACHE 的类型信息。CTR 寄存器的内存布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000206.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000206.png)
 
 如果 arch 参数表明当前体系是 ARMv7M 关于这个 cache type 的
 0:3 域与 16:19 域为 0，这两个域分别是 IminLine 和 DminLine 域，
@@ -1842,14 +1842,14 @@ read_cpuid_cachetype() 函数读取 ARM 体系的  CTR (Cache Type Register)
 cachetype 的 bit 29:31 等于 4，此时对应 CTR 寄存器的 Format 域，
 其定义如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000207.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000207.png)
 
 如果 Format 等于 4，那么此时体系信息是 ARMv7. 此时将
 cacheid 设置为 CACHEID_VIPT_NONALIASING。接着如果此时
 CTR 的 bit 14:16 L1lp 域，即 Level 1 cache policy 域，
 其定义为：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000208.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000208.png)
 
 如果此时域值为 1，即 AIVIVT，那么将宏 CACHEID_ASID_TAGGED
 添加到 cacheid 中；如果此时域值为 3，即 PIPT，那么将宏
@@ -2089,7 +2089,7 @@ cpu_v7_proc_init()。函数接下来使用内嵌汇编，如下：
 这段内嵌汇编首先修改了 CPSR 寄存器，在分析具体的源码之前，
 可以查看一下 ARMv7 的 CPSR 寄存器布局，如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000001.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000001.png)
 
 函数首先调用 MSR 指令，将 PSR_F_BIT，PSR_I_BIT 和
 IRQ_MODE 写入到 CPSR 寄存器中，代码执行之后，CPSR
@@ -2786,7 +2786,7 @@ fdt_off_dt_struct() 函数获得 structure 区块在 DTB 的位置，然后
 将该值加上 DTB 的位置，最后一同加上 offset 偏移就可以获得
 device-node 的地址。DTB 的结构设计如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000213.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000213.png)
 
 > - [fdt_off_dt_struct](#A0079)
 >
@@ -2932,7 +2932,7 @@ fdt_next_tag() 函数用于获得下一个 tag 在 DTB DeviceTree structure
 内的偏移。在解析函数之前，开发者应该先了解 DTB 中 DeviceTree struct
 区块的内存布局如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000214.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000214.png)
 
 从上图可知，每个节点或子节点都是以 FDT_BEGIN_NODE 开始，到
 FDT_END_NODE 结束。节点中可以嵌套节点，嵌套的节点称为父节点，
@@ -7038,7 +7038,7 @@ dump_stack_arch_desc_str 里。dump_stack_arch_desc_str 变量用于
 pgd_index() 函数用于获得虚拟地址 x 在也目录中的索引。
 例如在二级页表的 32 为虚拟地址上，页目录和页表的布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000222.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000222.png)
 
 页目录的偏移值位于虚拟地址的最高端位置，可以通过将
 虚拟地址向右移动 PGDIR_SHIFT 位后获得虚拟地址在
@@ -7057,7 +7057,7 @@ pgd_offset() 函数用于获得虚拟地址对应的页目录内容。
 参数 addr 指向虚拟地址。例如在二级页表中，页目录索引与
 进程页目录的关系如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000223.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000223.png)
 
 页目录索引通过 pgd_index() 函数获得，mm 参数的 pgd
 指向了进程的页目录, 然后将页目录起始地址加上虚拟地址
@@ -7080,7 +7080,7 @@ pgd_offset_k() 函数的作用是获得内核空间虚拟地址对应的页目�
 所使用的页目录。例如在二级页表中，内核虚拟地址对应的页目录关系
 如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000224.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000224.png)
 
 内核进程 task_struct 的 mm 成员指向了 init_mm 结构，
 init_mm 包含了内核进程所使用的页目录，然后内核通过内核
@@ -7206,7 +7206,7 @@ __pmd_populate() 函数的作用是向指定的 PMD 入口上填充 PTE
 标志。在 Linux 的 PMD 入口中，PMD 具有两个入口 (pmd0 和 pmd1)，
 如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000225.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000225.png)
 
 如上图，一个 PTE 页表正好占用 4K 的页，每个 pte 入口占用 4 字节，
 所以一个 PTE 页表可以包含 1024 个 pte 入口。在 Linux 中，PTE 页表
@@ -8294,7 +8294,7 @@ cpu_arch 变量存储 Architecture 信息，ARMv7 此时对应的 cpu_arch
 大于 CPU_ARCH_ARMv6，且 SCTR 寄存器的 XP 位置位。ARMv7 中 SCTR 寄存器
 的 XP 位恒为 1，SCTLR 寄存器的布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000226.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000226.png)
 
 因此上面的函数得以执行。函数首先调用
 cpu_is_xsc3() 函数判断如果当前不是 XSC3 CPU，那么函数设置
@@ -8302,9 +8302,9 @@ mem_types[] 数组各个成员的 prot_sect 标志，增加对 PMD_SECT_XN
 的支持。XN 的意思是 Execute-Never，即用于指明处理器能否在该区域上执行
 程序。例如在支持二级页表的页目录项中，XN 的定义如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000227.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000227.png)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000228.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000228.png)
 
 {% highlight c %}
                 if (cpu_arch >= CPU_ARCH_ARMv7 && (cr & CR_TRE)) {
@@ -8324,7 +8324,7 @@ mem_types[] 数组各个成员的 prot_sect 标志，增加对 PMD_SECT_XN
 在 ARMv7 体系中，如果 SCTLR 寄存器的 "TEX remap enable" 位置位，
 例如在 SCTLR 寄存器布局中：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000226.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000226.png)
 
 其中 TRE 位用于 SCTLR 寄存器的 bit 28，用于页表的 TEX remap 使能。
 如果该位置位，那么在页表中，TEX[2:1] 被分配给操作系统管理，而 TEX[0],
@@ -8332,9 +8332,9 @@ C 位，B 位，以及 MMU remap 寄存器用于描述内存区域的属性；�
 位清零，那么在页表中，TEX[2:0] 和 C 位，B 位一起用于描述内存区域的
 属性，如下图页目录项中：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000227.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000227.png)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000229.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000229.png)
 
 根据 SCTLR 寄存器 CR_TRE 的置位清零情况，如果置位，函数将
 PMD_SECT_TEX(1) 同步到页目录项里。
@@ -8382,11 +8382,11 @@ cp->pte 赋值为 vecs_pgprot, kern_pgprot 和 user_pgrot. 这段函数
 cpu_arch 在 ARMv7 里面是 CPU_ARCH_ARMv7，如果此时 ID_MMFR0
 寄存器的最低 4 bit 的值大于等于 4。ID_MMFR0 寄存器的布局如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000007.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000007.png)
 
 最低的 4 bit 是 VMSA support 域，其定义如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000230.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000230.png)
 
 此时，当 VMSA support,bits[3:0] 大于等于 4，那么将 PXN 添加到
 Short-descriptor 页表里面。函数将 user_pmd_table 里面添加了
@@ -8472,7 +8472,7 @@ PMD_PXNTABLE.
 在 ARMv7 体系中，如果 SCTLR 寄存器的 "TEX remap enable" 位置位，
 例如在 SCTLR 寄存器布局中：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000226.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000226.png)
 
 其中 TRE 位用于 SCTLR 寄存器的 bit 28，用于页表的 TEX remap 使能。
 如果该位置位，那么在页表中，TEX[2:1] 被分配给操作系统管理，而 TEX[0],
@@ -8480,9 +8480,9 @@ C 位，B 位，以及 MMU remap 寄存器用于描述内存区域的属性；�
 位清零，那么在页表中，TEX[2:0] 和 C 位，B 位一起用于描述内存区域的
 属性，如下图页目录项中：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000227.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000227.png)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000229.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000229.png)
 
 根据 SCTLR 寄存器 CR_TRE 的置位清零情况，如果置位，
 此时将 MT_MEMORY_RWX_NOCACHED 的 prot_sect 加上
@@ -11560,13 +11560,13 @@ __map_init_section() 函数用于建立一个 "Section" 一级页表。
 "Section", 以及 "Supersection". ARMv7 默认使用了 "Section" 方式
 作为页目录项，如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000231.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000231.png)
 
 在 PGD 中，一个 PGD 入口地址指向了一个 2M 的地址空间，且一个
 PGD 由两个 PMD 组成，每个 PMD 各指向 1M 的地址空间，在 ARM
 中，PMD 入口与 PTE 页表的关系如图所示：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000225.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000225.png)
 
 PMD 入口所指的 PTE 页表大小为 4K，每个 PTE 入口占 4 个字节，
 PTE 页表被分作两个部分，第一个部分供 Linux 使用，第二个部分
@@ -11680,7 +11680,7 @@ arm_pte_alloc() 函数用于分配并安装一个 PTE 页表。参数 pmd 指向
 如果没有指向，那么函数调用 alloc() 对应的函数分配一个 PTE 页表，PTE 页表
 有两部分组成，两部分总共 1024 个 PTE 入口，如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000225.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000225.png)
 
 如上图，函数将 PMD 的两个入口指向了 PTE 页表 PTE_HWTABLE_OFF 处，
 每个 PMD 入口指向 1M 的地址空间，函数通过调用 __pmd_populate()
@@ -11702,7 +11702,7 @@ PTE 入口。
 pte_index() 函数的作用是获得虚拟地址对应的 PTE 入口。函数从
 虚拟地址中截取 PTE 入口的偏移。如下图：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000222.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000222.png)
 
 函数先将虚拟地址向右移 PAGE_SHIFT 位，然后与 "PTRS_PER_PTE-1"
 相与，以此获得 PTE 页表的偏移。
@@ -12439,13 +12439,13 @@ __pv_table_begin, 终止地址是 __pv_table_end. 再回到 __pv_stub
 通过内核源码统计之后可知，instr 可以是 ADD 指令，也可以是 SUB
 指令，两条指令机器码格式如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000232.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000232.png)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000233.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000233.png)
 
 两个指令的机器码格式中，shifter_operand 域都是一致，其定义如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000234.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000234.png)
 
 上面为 ARMv7 中立即数的表示方式，其包含了 rotate_imm 域和 immed_8 域，
 ARMv7 通过将 immed_8 域的值向右循环移动 (2 * rotate_imm 域值)，即：
@@ -13664,11 +13664,11 @@ calculate_node_totalpages() 函数的作用是用于计算系统占用的物理�
 "spanned pages" 指的就是第一块物理内存块到最后一块物理内存块横跨了多少
 物理页帧，而 "real pages" 指的就是实际物理内存块占用了多少个物理页帧。
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000353.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000353.png)
 
 对于 ZONE 来讲，spanned 和 present 的关系如下：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/boot/BOOT000354.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000354.png)
 
 函数使用 for() 循环，遍历了所有的 ZONE，每遍历一个 zone，
 函数调用 zone_spanned_pages_in_node() 函数计算了该 ZONE
@@ -14420,4 +14420,4 @@ name，zone_pgdat，函数调用 zone_seqlock_init() 初始化 zone
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

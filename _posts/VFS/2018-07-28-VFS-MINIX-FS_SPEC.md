@@ -11,7 +11,7 @@ tags:
   - Linux-1.0
 ---
 
-![MINIX_MAIN](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000028.JPG)
+![MINIX_MAIN](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000028.JPG)
 
 Kernel: **Linux 1.0.1.1**
 
@@ -67,7 +67,7 @@ Linus 在 Linux 1.0 中，支持了 MINIX-FS 1.0 到 3.0 的版本，并将 MINI
 
 ## MINIX-FS 构架
 
-![MINIX_Layout](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIX-Layout.png)
+![MINIX_Layout](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIX-Layout.png)
 
 MINIX-FS 是一款可以存储于磁盘或软盘上的文件系统，由于其简单易用的特点，
 成为了初识文件系统的不二之选。MINIX-FS 的基本逻辑架构如上图。MINIX-FS 
@@ -453,20 +453,20 @@ make menuconfig
 
 输入上面的命令之后，开发者可以获得 Kbuild 提供的可视化配置界面，如下图：
 
-![ROOTFS_MENU0](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000006.png)
+![ROOTFS_MENU0](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000006.png)
 
 此时，选择 **Rootfs: file system --->** 选项 ,如下图：
 
-![ROOTFS_MENU1](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000007.png)
+![ROOTFS_MENU1](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000007.png)
 
 此时，选择 **Main Partition Size (MB)** 选项，如下图
 
-![ROOTFS_MENU2](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000008.png)
+![ROOTFS_MENU2](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000008.png)
 
 此时，开发者根据自己的需求输入 MINIX-FS 的大小，设置完之后，按下回车，
 最后连续按下 ESC 按键保存配置文件，如下图
 
-![ROOTFS_MENU3](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000009.png)
+![ROOTFS_MENU3](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000009.png)
 
 至此，开发者已经设置好了 rootfs 也就是 minix-fs 的大小
 
@@ -498,7 +498,7 @@ dd if=/dev/zero bs=512 count=${MBR_sect} of=${IMAGE_DIR}/mbr.img
 上面的命令，开发者获得一个大小为 1MB 的镜像文件。此时，可是用 hexdump 
 工具查看 MBR 的内容，如下：
 
-![ROOTFS_MENU4](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000010.png)
+![ROOTFS_MENU4](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000010.png)
 
 接下来是制作一个 Swap 交换分区，使用 mkswap 制作，使用如下命令
 
@@ -518,27 +518,27 @@ make menuconfig
 
 输入上面的命令之后，开发者可以获得 Kbuild 提供的可视化配置界面，如下图：
 
-![ROOTFS_MENU5](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000006.png)
+![ROOTFS_MENU5](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000006.png)
 
 此时，选择 **Rootfs: file system --->** 选项 ,如下图：
 
-![ROOTFS_MENU6](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000007.png)
+![ROOTFS_MENU6](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000007.png)
 
 此时，选择 **Swap Partition Size (MB)** 选项，如下图
 
-![ROOTFS_MENU7](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000011.png)
+![ROOTFS_MENU7](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000011.png)
 
 此时，开发者根据自己的需求输入 Swap 的大小，设置完之后，按下回车，
 最后连续按下 ESC 按键保存配置文件，如下图
 
-![ROOTFS_MENU8](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000009.png)
+![ROOTFS_MENU8](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000009.png)
 
 至此，开发者已经设置好了 swap 也就是交换分区的大小。制作完 swap 镜像文件
 之后，使用 mkswap 工具进行格式化
 
 准备好三个部分的镜像文件之后，按下图方式进行磁盘文件拼接：
 
-![ROOTFS_MENU8](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000012.png)
+![ROOTFS_MENU8](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000012.png)
 
 开发者可以使用 dd 命令进行镜像文件的拼接，可以使用如下命令：
 
@@ -561,15 +561,15 @@ fdisk ${IMAGE_DIR}/mbr.img
 以本例进行 fdisk 参数讲解，其中 MBR 的大小为 1MB，rootfs 也就是 minix-fs 
 的大小为 40 MB，Swap 分区的大小为 80MB。使用上面命令之后，fdisk 运行如下图
 
-![ROOTFS_MENU9](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000015.JPG)
+![ROOTFS_MENU9](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000015.JPG)
 
 首先，创建一个新分区，输入 **n**
 
-![ROOTFS_MENU10](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000016.png)
+![ROOTFS_MENU10](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000016.png)
 
 设置第一个分区为主分区，并且分区号设置为 1，输入 **p**，然后再输入 **1**
 
-![ROOTFS_MENU11](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000017.png)
+![ROOTFS_MENU11](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000017.png)
 
 然后设置第一个分区的起始扇区为 2048，由于 MBR 的大小为 1MB，所以 MBR 占用
 了从 0 到 2047 的扇区，第一个分区紧紧跟着 MBR，所以第一个分区的起始扇区数
@@ -589,12 +589,12 @@ MINIX 结束扇区数 = 81920 + 2048 - 1 = 83967
 
 因此 fdisk 中 Firs sector 设置为 2048， Last sector 设置为 83967，如下图
 
-![ROOTFS_MENU12](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000018.png)
+![ROOTFS_MENU12](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000018.png)
 
 接着创建第二个分区，继续输入 n. 设置第二个分区也为主分区，并且分区号为 2， 
 输入 **p**，然后输入 1.如图
 
-![ROOTFS_MENU13](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000019.png)
+![ROOTFS_MENU13](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000019.png)
 
 然后设置第二个分区的起始扇区，由于第二个分区为 Swap，其紧跟 rootfs 也就是 
 minix-fs 分区，所以第二分区的起始扇区就是第一分区结束扇区增加 1. 所以计算
@@ -615,37 +615,37 @@ Swap 结束扇区 = 第二分区起始扇区 - 1 + 第二分区占有的扇区�
 根据上面的计算之后，设置 fdisk 中 Partition2 的 First sector 为 83968，
 Last Sector 设置为 204799. 如下图：
 
-![ROOTFS_MENU14](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000020.png)
+![ROOTFS_MENU14](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000020.png)
 
 接下来设置分区 1 和分区 2 的分区类型，在 fdisk 中输入 **t**， 然后先设置分区 1，
 在 fdisk 中输入 **1**，如下图：
 
-![ROOTFS_MENU15](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000021.png)
+![ROOTFS_MENU15](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000021.png)
 
 开发者如果不知道分区类型性，测试可以输入 L，该输入可以查看系统支持的分区类
 型，如下图：
 
-![ROOTFS_MENU16](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000022.png)
+![ROOTFS_MENU16](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000022.png)
 
 根据上表可知，第一分区是一个 minix-fs 文件系统，而且是使用 mkfs.minix 
 制作的 V1 版本的 minix-fs，所以分区类型为 **81 Minix / old Lin**. 因此 
 fdisk 输入 **81**，如下图：
 
-![ROOTFS_MENU17](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000023.png)
+![ROOTFS_MENU17](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000023.png)
 
 接下来设置第二个分区的分区类型，第二个分区是 Swap，所以分区类型为 
 **82 Linux swap / So**， 如下图
 
-![ROOTFS_MENU18](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000024.png)
+![ROOTFS_MENU18](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000024.png)
 
 至此，磁盘分区表已经设置好，最后在 fdisk 中输入 **w**，以此向磁盘中写入分
 区表，写入成功后，一个 BiscuitOS 磁盘就制作完成。
 
-![ROOTFS_MENU19](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000025.png)
+![ROOTFS_MENU19](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000025.png)
 
 此时可以使用 hexdump 查看磁盘镜像的第一个扇区内容，如下图：
 
-![ROOTFS_MENU20](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000026.png)
+![ROOTFS_MENU20](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000026.png)
 
 以上制作 BiscuitOS 磁盘的过程也可以制作成自动化脚本，如下：
 
@@ -712,7 +712,7 @@ sudo mount ${LOOPDEV} rootfs
 sudo cp -rf BiscuitOS/output/rootfs/linux_1.0.1.1/ rootfs
 {% endhighlight %}
 
-![ROOTFS_MENU21](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/VFS000027.png)
+![ROOTFS_MENU21](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/VFS000027.png)
 
 最后，拷贝完 minix-fs 里面的数据之后，开发者将卸载 minix-fs，可以使用如
 下命令：
@@ -743,28 +743,28 @@ make menuconfig
 
 该选项用于启用内核调试机制，如下图，选择 **kernel hacking**
 
-![ROOTFS_MENU22](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIXFS_00.png)
+![ROOTFS_MENU22](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIXFS_00.png)
 
 ###### 启用 demo code 机制
 
 BiscuitOS 提供了 MINIX-FS 相关的 demo code，选择 
 **Demo Code for variable subsystem mechanism** 来加入 MINIX-FS demo code 功能
 
-![ROOTFS_MENU23](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIXFS_01.png)
+![ROOTFS_MENU23](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIXFS_01.png)
 
 ###### 启用 VFS 在线调试功能
 
 MINIX-FS 启动之前需要启用 VFS 调试选项，选择 
 **VFS Mechanism on X86 Architecture**.
 
-![ROOTFS_MENU24](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIXFS_02.png)
+![ROOTFS_MENU24](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIXFS_02.png)
 
 
 ###### 启用 MINIX-FS 文件系统级调试
 
 BiscuitOS 支持多种文件系统调试，此处选择 **MINIX Filesystem**
 
-![ROOTFS_MENU25](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIXFS_03.png)
+![ROOTFS_MENU25](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIXFS_03.png)
 
 
 ###### MINIX-FS 调试选择
@@ -810,11 +810,11 @@ make
 make start
 {% endhighlight %}
 
-![ROOTFS_MENU26](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIX-FS_97.png)
+![ROOTFS_MENU26](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIX-FS_97.png)
 
 源码如下图：
 
-![ROOTFS_MENU27](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIX_FS-06.jpg)
+![ROOTFS_MENU27](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIX_FS-06.jpg)
 
 从上图可以获得 MINIX-FS demo code 和运行之后的结果，开发者可以根据这个方
 法，开始一步步调试 MINIX-FS。
@@ -836,7 +836,7 @@ fd 为当前文件的句柄，然后将 fd 传给 demo_minixfs() 系统调用，
 开发者可以根据 fd 句柄获得 inode，从而通过分析 inode 的行为来了解 MINIX-FS 
 的运作机制。
 
-![ROOTFS_MENU28](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/demo_minixfs.png)
+![ROOTFS_MENU28](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/demo_minixfs.png)
 
 ###### 用户空间入口
 
@@ -931,7 +931,7 @@ user1_debugcall_sync(debug_minixfs);
 
 添加完之后，在终端中输入命令运行系统，如下：
 
-![ROOTFS_MENU29](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIX-FS_09.png)
+![ROOTFS_MENU29](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIX-FS_09.png)
 
 ###### 内核空间程序入口
 
@@ -990,14 +990,14 @@ asmlinkage int sys_demo_minixfs(int fd)
     }
 {% endhighlight %}
 
-![ROOTFS_MENU30](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/filestruct01.png)
+![ROOTFS_MENU30](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/filestruct01.png)
 
 每个文件描述符用户描述一个打开的文件。文件描述符使用 struct file 数据结
 构进行维护，在文件系统中，每个文件或目录都使用唯一的 inode 进行管理，每
 一个打开的文件使用 struct file 进行管理，而且一个文件能被打开多次，所以 
 struct file 和 struct file 之间的关系如下：
 
-![ROOTFS_MENU31](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/struct_file.png)
+![ROOTFS_MENU31](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/struct_file.png)
 
 
 通过上图的关系，可以知道 struct file 中包含了 inode 相关的信息，struct file 
@@ -1075,11 +1075,11 @@ make menuconfig
 
 > "minix_dir_entry: a directory on minix-fs": 用于调试 MINIX-FS 的 minix_dir_entry
 
-![ROOTFS_MENU32](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIXFS_04.png)
+![ROOTFS_MENU32](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIXFS_04.png)
 
 选择其中一个配置，minix_layout() 函数将对其中一个功能进行调试，其源码如下：
 
-![ROOTFS_MENU33](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/minix_layout.jpg)
+![ROOTFS_MENU33](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/minix_layout.jpg)
 
 当调试选项打开后，sys_demo_minixfs()  函数会调用 minix_layout() 函数，
 该函数首先做的就是判断 inode 对应的 super block 是否存在，如果不存在，
@@ -1158,17 +1158,17 @@ MINIX-FS 的 Boot 块为 MINIX-FS 的第一块，其大小为 1 KByte。Boot 块
 调试之前，开发者请参照 **MINIX-FS Super Block 入口** 和 **MINIX-FS 调试准备** 
 两节，以此了解 BiscuitOS 如何调试 MINIX-FS。内核进行配置如下：
 
-![ROOTFS_MENU34](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIXFS_04.png)
+![ROOTFS_MENU34](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIXFS_04.png)
 
 选择 **Layout: boot block(boot code, partition table)**,
 此时系统会调用 minixfs_boot_block() 函数，该函数包含了对 boot block 
 的操作和分析代码。源代码如下：
 
-![ROOTFS_MENU35](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIX-FS11.jpg)
+![ROOTFS_MENU35](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIX-FS11.jpg)
 
 运行之后的如下图：
 
-![ROOTFS_MENU36](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIX-FS_BOOT.png)
+![ROOTFS_MENU36](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIX-FS_BOOT.png)
 
 通过上面的实践，可知，Boot block 可以包含 bootload 代码也可以不包含 
 bootloader 代码。minixfs_boot_block() 函数用于加载 MINIX-FS 的第一块到内存，
@@ -1205,7 +1205,7 @@ bread() 函数用于从磁盘第 BOOT_BLOCK 块读取 BLOCK_SIZE 大小的数据
 BiscuitOS 使用的 rootfs 为 BiscuitOS-1.0.1.img, 其分区结构如图，前 1 M 
 空间为 MBR，后续空间为 MINIXFS 文件系统的空间，为第一个硬盘分区。
 
-![ROOTFS_MENU37](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIX-FS_MBR.png)
+![ROOTFS_MENU37](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIX-FS_MBR.png)
 
 使用 hexdump 工具查看器内容，使用如下命令：
 
@@ -1213,11 +1213,11 @@ BiscuitOS 使用的 rootfs 为 BiscuitOS-1.0.1.img, 其分区结构如图，前 
 hexdump BiscuitOS-1.0.1.img
 {% endhighlight %}
 
-![ROOTFS_MENU38](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIX-FX_HEXP.png)
+![ROOTFS_MENU38](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIX-FX_HEXP.png)
 
 由 boot block 块知道，Boot block 块也包含分区的基本信息，其分区图如下描述：
 
-![ROOTFS_MENU39](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/buildroot/MINIX-FS_Comment.png)
+![ROOTFS_MENU39](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/buildroot/MINIX-FS_Comment.png)
 
 其数据如下：
 

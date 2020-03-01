@@ -8,7 +8,7 @@ tags:
   - Application
 ---
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -40,7 +40,7 @@ tags:
 
 <span id="A00"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000G.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000G.jpg)
 
 ## autoconf 简介
 
@@ -53,7 +53,7 @@ GNU autoconf 是一个用于生成 shell 脚本的工具，可以自动配置软
 
 <span id="B00"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Y.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
 
 ## 实践准备
 
@@ -65,7 +65,7 @@ GNU autoconf 是一个用于生成 shell 脚本的工具，可以自动配置软
 
 <span id="B000"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000R.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
 
 ## 硬件准备
 
@@ -87,7 +87,7 @@ TTL 转 USB 串口一个。
 
 > - [RaspberryPi 官网](https://www.raspberrypi.org/)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000016.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000016.png)
 
 ------------------------------------------
 
@@ -97,15 +97,15 @@ TTL 转 USB 串口一个。
 大量数据采样等。逻辑分析仪不是必须的，这里推荐使用 DreamSourceLab
 开发的 DSLogic:
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000012.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000012.jpg)
 
 DSLogic 逻辑分析仪数据工具：
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000062.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000062.png)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000063.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000063.png)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000066.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000066.png)
 
 > - [DreamSourceLab: DSLogic 官网](https://dreamsourcelab.cn/product/dslogic-plus/)
 
@@ -117,15 +117,15 @@ DSLogic 逻辑分析仪数据工具：
 的数据具有可靠性高，精度高的特定，是分析 I2C 问题不可或缺的
 工具。示波器建议准备，这里推荐使用 DreamSourceLab 开发的 DsCope:
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000013.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000013.jpg)
 
 DSCope 示波器采用样图:
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000006.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000006.png)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000057.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000057.png)
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000069.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000069.png)
 
 > - [DreamSourceLab: DSLogic 官网](https://dreamsourcelab.cn/product/dscope-u2p20/)
 
@@ -133,7 +133,7 @@ DSCope 示波器采用样图:
 
 <span id="B001"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
 
 ## 软件准备
 
@@ -148,7 +148,7 @@ DSCope 示波器采用样图:
 
 <span id="C00"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000L.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
 
 ## autoconf 部署
 
@@ -163,7 +163,7 @@ autoconf 可以在 BiscuitOS 上实践，也可以在实际的工程实践
 
 <span id="C0000"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000Q.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
 ## BiscuitOS 部署
 
@@ -190,11 +190,11 @@ make RaspberryPi_4B_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000038.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000038.png)
 
 选择 "Package --->" 并进入下一级菜单
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPIALL.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPIALL.png)
 
 设置 "autoconf --->" 为 "Y"。设置完毕之后，
 保存并退出.
@@ -247,7 +247,7 @@ make pack
 
 <span id="C0001"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000U.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000U.jpg)
 
 ## 工程实践部署
 
@@ -273,19 +273,19 @@ make download
 
 <span id="D00"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000D.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
 
 ## autoconf 使用
 
 安装完毕之后，启动 BiscuitOS，如下图:
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/RPI/RPI000105.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000105.png)
 
 ------------------------------------------
 
 <span id="E00"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000E.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
 
 ## autoconf 测试
 
@@ -295,7 +295,7 @@ make download
 
 <span id="F00"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000F.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
 
 ## autoconf 进阶研究
 
@@ -305,7 +305,7 @@ make download
 
 <span id="Donate"></span>
 
-![](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/IND00000K.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
 
 ## 附录
 
@@ -321,4 +321,4 @@ make download
 
 ## 捐赠一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/PictureSet/master/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
