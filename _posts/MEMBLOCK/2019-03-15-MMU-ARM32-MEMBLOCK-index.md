@@ -8,7 +8,7 @@ tags:
   - MMU
 ---
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/GIF000201.gif)
+![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000201.gif)
 
 > [MEMBLOCK Allocator GitHub Main Page](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/)
 >
@@ -47,7 +47,7 @@ tags:
 --------------------------------------------------------------
 <span id="MEMBLOCK 原理"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000T.jpg)
+![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000T.jpg)
 
 # MEMBLOCK 内存分配器原理
 
@@ -105,7 +105,7 @@ MEMBLOCK
 --------------------------------------------------------------
 <span id="MEMBLOCK 内存分配器最小实践"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000G.jpg)
+![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000G.jpg)
 
 # MEMBLOCK 内存分配器最小实践
 
@@ -121,7 +121,7 @@ MEMBLOCK
 ---------------------------------------------------------------
 <span id="MEMBLOCK 内存分配器的使用"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000R.jpg)
+![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000R.jpg)
 
 # MEMBLOCK 内存分配器的使用
 
@@ -238,7 +238,7 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 --------------------------------------------------------------
 <span id="MEMBLOCK 源码分析"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000X.jpg)
+![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000X.jpg)
 
 # MEMBLOCK 源码分析
 
@@ -940,7 +940,7 @@ void __init bootmem_init(void)
 -----------------------------------------------------
 # <span id="MEMBLOCK 调试"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000D.jpg)
+![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000D.jpg)
 
 # MEMBLOCK 调试
 
@@ -1121,7 +1121,7 @@ cat /proc/iomem
 -----------------------------------------------------
 # <span id="内存分配器进阶实践"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000S.jpg)
+![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000S.jpg)
 
 # 内存分配器进阶实践
 
@@ -1241,7 +1241,7 @@ MEMBLOCK 分配器的拆分问题。
 -----------------------------------------------------
 # <span id="MEMBLOCK_API-LIST"></span>
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/IND00000J.jpg)
+![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000J.jpg)
 
 # MEMBLOCK API List
 
@@ -1339,4 +1339,5 @@ MEMBLOCK 分配器的拆分问题。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/HAB000036.jpg)
+![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+

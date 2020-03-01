@@ -8,7 +8,7 @@ tags:
   - Userland
 ---
 
-![](https://raw.githubusercontent.com/EmulateSpace/GIFBaseX/master/RPI/GIF000210.gif)
+![](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000210.gif)
 
 > - [应用程序移植](#A00)
 >
