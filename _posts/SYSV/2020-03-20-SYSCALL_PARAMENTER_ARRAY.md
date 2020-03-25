@@ -94,19 +94,19 @@ SYSCALL_DEFINE3(hello_BiscuitOS,
 功能。从上述也看到不论是整形数组，还是数据结构数组都需要指针方式传递。
 对于系统调用传递多个整形参数的方法，开发者可以参考如下文档:
 
-> - [添加零个参数的系统调用]()
+> - [添加零个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_ZERO/)
 >
-> - [添加一个参数的系统调用]()
+> - [添加一个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_ONE/)
 >
-> - [添加两个参数的系统调用]()
+> - [添加两个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_TWO/)
 >
-> - [添加三个参数的系统调用]()
+> - [添加三个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_THREE/)
 >
-> - [添加四个参数的系统调用]()
+> - [添加四个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_FOUR/)
 >
-> - [添加五个参数的系统调用]()
+> - [添加五个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_FIVE/)
 >
-> - [添加六个参数的系统调用]()
+> - [添加六个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_SIX/)
 
 对于系统调用的返回值，内核会返回一个整形值，至于整形值的含义，开发者
 可以根据需求进行返回.

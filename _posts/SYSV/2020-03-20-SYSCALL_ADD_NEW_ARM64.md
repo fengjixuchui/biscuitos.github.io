@@ -491,6 +491,30 @@ int main(void)
 }
 {% endhighlight %}
 
+对于传入多个参数的系统调用以及参数类型，开发者可以参考如下文档:
+
+> - [添加零个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_ZERO/)
+>
+> - [添加一个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_ONE/)
+>
+> - [添加两个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_TWO/)
+>
+> - [添加三个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_THREE/)
+>
+> - [添加四个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_FOUR/)
+>
+> - [添加五个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_FIVE/)
+>
+> - [添加六个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_SIX/)
+>
+> - [传递整形参数](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_INTEGER/)
+>
+> - [传递字符/字符串参数](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_STRINGS/)
+>
+> - [传递数组参数](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_ARRAY/)
+>
+> - [传递指针参数](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_Pointer/)
+
 对于一个或多个参数系统调用的返回值，返回的数据类型与传入参数无关，
 因此开发者可以根据需求自行定义返回的数据.
 

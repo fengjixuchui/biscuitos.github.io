@@ -61,6 +61,16 @@ int main(void)
 }
 {% endhighlight %}
 
+对于传入参数的类型，开发者可以参考如下文档:
+
+> - [传递整形参数](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_INTEGER/)
+>
+> - [传递字符/字符串参数](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_STRINGS/)
+>
+> - [传递数组参数](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_ARRAY/)
+>
+> - [传递指针参数](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_Pointer/)
+
 对于五个参数系统调用的返回值，返回的数据类型与传入参数无关，因此开发者
 可以根据需求自行定义返回的数据。
 
