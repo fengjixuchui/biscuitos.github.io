@@ -254,7 +254,7 @@ int main(void)
 平台，开发者可以在 BiscuitOS 进行实践，如果还没有搭建 BiscuitOS
 i386 实践环境的开发者，可以参考如下文档进行搭建:
 
-> - [BiscuitOS 上搭建 i386 实践环境](https://biscuitos.github.io/blog/Linux-5.0-arm64-Usermanual/)
+> - [BiscuitOS 上搭建 i386 实践环境](https://biscuitos.github.io/blog/Linux-5.0-i386-Usermanual/)
 
 开发环境搭建完毕之后，可以继续下面的内容，如果开发者不想采用
 BiscuitOS 提供的开发环境，可以继续参考下面的内容在开发者使用
