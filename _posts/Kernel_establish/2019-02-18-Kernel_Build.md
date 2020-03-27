@@ -90,6 +90,14 @@ tags:
 >
 > - [Build Linux 5.0 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.0-arm64-Usermanual/)
 >
+> - [Build Linux 5.0 Running on i386](https://biscuitos.github.io/blog/Linux-5.0-i386-Usermanual/)
+>
+> - [Build Linux 5.0 Running on X86_64](https://biscuitos.github.io/blog/Linux-5.0-x86_64-Usermanual/)
+>
+> - [Build Linux 5.0 Running on RISCV32](https://biscuitos.github.io/blog/Linux-5.0-riscv32-Usermanual/)
+>
+> - [Build Linux 5.0 Running on RISCV64](https://biscuitos.github.io/blog/Linux-5.0-riscv64-Usermanual/)
+>
 > - [Build Linux 5.1 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.1-arm32-Usermanual/)
 >
 > - [Build Linux 5.1 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.1-arm64-Usermanual/)
