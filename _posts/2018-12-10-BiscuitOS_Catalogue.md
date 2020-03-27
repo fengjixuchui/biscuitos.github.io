@@ -102,8 +102,20 @@ tags:
 >   - [KMAP Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#N)
 >
 >   - [Fixmap Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#P)
->   <span id="MEMBLOCK"></span>
-> - [系统调用](https://biscuitos.github.io/blog/syscall/)
+>
+> - [系统调用](https://biscuitos.github.io/blog/SYSCALL)
+>
+>   - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+>
+>   - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+>
+>   - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+>
+>   - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+>
+>   - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+>
+>   - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
 
 ## Linux Paper/Article
 
