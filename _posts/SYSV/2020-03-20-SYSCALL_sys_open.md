@@ -56,9 +56,23 @@ tags:
 >
 >   - [快速实践 open 系统调用](#B2)
 >
->   - [实践建议](https://biscuitos.github.io/blog/SYSCALL_DEBUG/)
+>   - [实践建议](#B3)
+>
+> - 工具合集
+>
+>   - [open 系统调用调试工具](#C0)
+>
+>   - [任意长度文件名工具](#C1)
+>
+>   - [打开任意个文件工具](#C2)
+>
+>   - [strace](#C3)
 >
 > - 进阶研究
+>
+>   - [系统支持的文件名最大长度问题研究]()
+>
+>   - [系统进程支持的最大文件打开数问题研究]()
 >
 > - [附录/捐赠](#Z0)
 
@@ -172,7 +186,7 @@ O_NONBLOCK、O_SYNC。
 >
 > - [O_NOCTTY](#A00019)
 >
-> - [O_TMPFILE](#A0001A)
+> - [\_\_O_TMPFILE](#A0001A)
 >
 > - [O_TRUNC](#A0001B)
 >
@@ -279,7 +293,7 @@ EEXIST), 之所以如此规定，是要求有特权的应用程序在已知目�
 
 ----------------------------------------
 
-###### <span id="A0001A">O_TMPFILE</span>
+###### <span id="A0001A">\_\_O_TMPFILE</span>
 
 创建一个无名的临时文件，文件系统中会创建一个无名的 inode，当
 最后一个文件描述符被关闭的时候，所有写入这个文件的内容都会丢
@@ -1277,8 +1291,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 {% highlight c %}
 ~ #
-~ # strace open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IR
-GRP
+~ # strace open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000510.png)
@@ -1347,14 +1360,903 @@ make build
 
 通过上面的运行结果可以看出，采用这样的办法可以快速高效的调试系统调用。
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
+----------------------------------
+
+<span id="C0"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+
+#### open 系统调用调试工具
+
+> - [工具简介](#C00)
+>
+> - [工具参数介绍](#C01)
+>
+> - [工具部署](#C02)
+>
+> - [工具使用](#C03)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
----------------------------------------
+------------------------------------------
 
+#### <span id="C00">工具简介</span>
 
+open 系统调用调试工具是 BiscuitOS 开发的一款用于方便开发者调试 open
+系统调用的工具。工具将 open() 库函数的参数灵活的传入设置，以达到一个
+工具实现创造多种 open 情况。该工具直接绕过 C 库，将参数传递到 sys_open,
+这样有效隔离了 Glibc 或者 libc 对影响，确保了调试的准确性。open 系统
+调用调试工具使用方式如下:
 
+{% highlight bash %}
+open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+从上面的使用情况可以看出，开发者可以自定义打开的文件名，同理可以自定义
+打开的标志以及自定义打开的模式，工具支持多个打开标志同时使用。详细工具
+的使用参考下面章节。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+---------------------------------------------
+
+#### <span id="C01">工具参数介绍</span>
+
+在使用 open 系统调用调试工具之前，开发者可以使用如下命令查看其使用
+说明:
+
+{% highlight bash %}
+open_common-0.0.1 -h
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000604.png)
+
+从 open 系统调用调试工具的使用情况可以看出，open_common 必须提供一个文件
+路径名、打开文件标志以及文件模式，这样才能正常使用这个工具。
+
+###### <-p pathname>
+
+"-p" 参数提示用户这个参数之后需要使用一个文件路径名，这个路径名可以
+一个文件的名字，或者是一个绝对路径等，例如:
+
+{% highlight bash %}
+open_common-0.0.1 -p /ect/fstab -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+open_common-0.0.1 -p README.md -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+open_common-0.0.1 -p ../dev/name -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+该参数是工具必须的参数，通过这个参数 open 系统调用会传递一个用户空间
+的路径名到内核空间的 sys_open 里。
+
+###### <-f flags>
+
+"-f" 参数后面跟一个打开标志，用于文件的打开标志。当前工具支持的文件
+打开标志已经完整罗列在上图中，开发者可以根据实际情况传递这些标志到内核
+的 sys_open 系统调用里. 使用方法如下:
+
+{% highlight bash %}
+open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+open_common-0.0.1 -p BiscuitOS_file -f O_RDONLY -m S_IRUSR,S_IRGRP
+open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_NONBLOCK -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+更多文件打开标志可以参考如下:
+
+> - [文件打开标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A10)
+
+###### <-m mode>
+
+"-m" 参数后面跟一个模式标志，用于文件的打开模式。当前工具支持的文件打开
+模式已经完整罗列在上图中，开发者可以根据实践情况传递这些标志到内核的
+sys_open 系统调用里，使用方法如下:
+
+{% highlight bash %}
+open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
+{% endhighlight %}
+
+更多文件打开模式标志可以参考如下:
+
+> - [文件打开模式标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------------
+
+# <span id="C02"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+
+#### 工具部署
+
+open 系统调用调试工具支持多个平台，本实践以 ARM32 为例子进行讲解，其他
+平台部署以此相似。本实践基于 ARM32 架构，因此在实践之前需要准备一个 ARM32 
+架构的运行平台，开发者可以在 BiscuitOS 进行实践，如果还没有搭建 BiscuitOS
+ARM32 实践环境的开发者，可以参考如下文档进行搭建:
+
+> - [BiscuitOS 上搭建 ARM32 实践环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+
+开发环境搭建完毕之后，可以继续下面的内容，如果开发者不想采用
+BiscuitOS 提供的开发环境，可以继续参考下面的内容在开发者使用
+的环境中进行实践。(推荐使用 BiscuitOS 开发环境)。搭建完毕之后，
+使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/
+make linux-5.0-arm32_defconfig
+make
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+
+上图显示了 ARM32 实践环境的位置，以及相关的 README.md 文档，开发者
+可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM32 Linux 开发
+环境:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000340.png)
+
+如果需要在其他架构上部署该工具，可以参考下面文档:
+
+> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+>
+> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+>
+> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+>
+> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+>
+> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+>
+> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+BiscuitOS 提供了一套完整的系统调用编译系统，开发者可以使用下面步骤快速简单
+的部署该工具，BiscuitOS 并可以对该工具从源码进行交叉编译，安装，
+打包和目标系统上运行的功能，节省了很多开发时间。如果开发者不想使用这套
+编译机制，可以参考下面的内容进行移植。开发者首先获得工具的基础源码，如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make linux-5.0-arm32_defconfig
+make menuconfig
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+
+选择并进入 "[\*] Package  --->"
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+
+选择 "[\*]   strace" 和 "[\*]   System Call" 并进入 "[\*]   System Call  --->"
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000605.png)
+
+选择并进入 "[\*]   sys_open  --->"
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000606.png)
+
+选择 "[\*]   open() in C  --->" 保存配置并退出. 接下来执行下面的命令部署
+用户空间系统调用程序部署:
+
+{% highlight bash %}
+cd BiscuitOS
+make
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+
+执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/open_common-0.0.1
+{% endhighlight %}
+
+这个目录就是用于部署用户空间系统调用程序，开发者继续使用命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/open_common-0.0.1
+make prepare
+make download
+{% endhighlight %}
+
+执行上面的命令之后，BiscuitOS 自动部署了程序所需的所有文件，如下:
+
+{% highlight bash %}
+tree
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000506.png)
+
+上图中，main.c 与用户空间系统调用相关的源码,
+"open_common-0.0.1/Makefile" 是 main.c 交叉编译的逻辑。因此开发者只
+需关注 main.c, 内容如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000607.png)
+
+在该函数中，main 函数首先接收来自命令行的参数，并将其转换为 sys_open 系统
+调用所需的参数。由于 sys_open 支持两个参数和三个参数的类型，因此调用
+syscall() 函数的时候，可以做两种情况的处理，\_\_NR_open 是 sys_open 对应的
+系统调用号，如果系统调用成功，那么 sys_open 将返回打开文件的句柄，至此
+一次 sys_open 系统调用完成。为了确保应用程序的正确执行，开发者在程序结束
+的时候也要显示关闭文件，这里同样调用 sys_close 系统调用进行关闭。
+源码准备好之后，接下来是交叉编译源码并打包到 rootfs 里, 使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/open_common-0.0.1
+make
+make install
+make pack
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+#### <span id="C03">工具使用</span>
+
+在一切准备好之后，下一步就是在 ARM32 上运行系统调用，参考下面
+命令进行运行:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/
+./RunBiscuitOS.sh
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000508.png)
+
+开发者可以使用如下命令查看 open 系统调用工具的使用方法:
+
+{% highlight c %}
+~ # open_common-0.0.1 -h
+{% endhighlight %}
+
+可以看出工具的完整使用方法，接下来使用建议的命令:
+
+{% highlight c %}
+~ # open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+这个命令的行的作用就是以 O_RDWR 和 O_CREAT 的方式打开文件，如果文件不存在，
+那么直接创建它，并且文件只给文件拥有者读权限以及文件拥有组读权限。命令
+行执行之后，在当前目录下创建了名为 BiscuitOS_file, 查看其权限如下:
+
+{% highlight c %}
+~ # ls -l BiscuitOS_file
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000509.png)
+
+从运行结果可以看出，系统创建了指定的文件 BiscuitOS_file, 并且文件的拥有
+者和组权限都设置成指定的读权限。接着可以使用 strace 工具查看具体的系统调
+用过程，如下:
+
+{% highlight c %}
+~ #
+~ # strace open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000510.png)
+
+从 strace 打印的消息可以看出:
+
+{% highlight c %}
+open("BiscuitOS_file", O_RDWR|O_CREAT, 0440) = 3
+close(3)
+{% endhighlight %}
+
+从上面的运行结果可以看出，该工具已经将指定的参数精确的传递，sys_open
+系统调用已经成功触发，接下开发者可以使用这个工具为 sys_open() 源码创造
+指定的情况.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="C1"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+
+#### 任意长度文件名工具
+
+> - [工具简介](#C10)
+>
+> - [工具参数介绍](#C11)
+>
+> - [工具部署](#C12)
+>
+> - [工具使用](#C13)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+#### <span id="C10">工具简介</span>
+
+在有些应用场景需要提供不同长度的文件名，因此任意长度文件名工具就是一款
+用于产生任意长度文件名的工具。工具基于 open 系统调用调试工具进行改进，
+实现可以根据使用者的需求，产生任意长度的文件名，并将该文件名和其他参数
+传递给 sys_open 系统调用。该工具直接绕过 C 库，将参数传递到 sys_open,
+这样有效隔离了 Glibc 或者 libc 对影响，确保了调试的准确性。任意长度文件名
+工具使用方式如下:
+
+{% highlight bash %}
+getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+从上面的使用情况可以看出，开发者可以自定义文件名的长度，同理可以自定义
+打开的标志以及自定义打开的模式，工具支持多个打开标志同时使用。详细工具
+的使用参考下面章节。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+---------------------------------------------
+
+#### <span id="C11">工具参数介绍</span>
+
+在使用任意长度文件名工具之前，开发者可以使用如下命令查看其使用
+说明:
+
+{% highlight bash %}
+getname_common-0.0.1 -h
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000608.png)
+
+从任意长度文件名工具的使用情况可以看出，getname_common 必须提供文件
+名长度、打开文件标志以及文件模式，这样才能正常使用这个工具。
+
+###### <-l length>
+
+"-l" 参数用于指明文件名的长度，文件名的长度可以为 0，也可以为任意正数，
+例如:
+
+{% highlight bash %}
+getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+getname_common-0.0.1 -l 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+该参数是工具必须的参数，通过这个参数 open 系统调用会传递一个用户空间
+的路径名到内核空间的 sys_open 里。
+
+###### <-f flags>
+
+"-f" 参数后面跟一个打开标志，用于文件的打开标志。当前工具支持的文件
+打开标志已经完整罗列在上图中，开发者可以根据实际情况传递这些标志到内核
+的 sys_open 系统调用里. 使用方法如下:
+
+{% highlight bash %}
+getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+getname_common-0.0.1 -l 128 -f O_RDONLY -m S_IRUSR,S_IRGRP
+getname_common-0.0.1 -l 128 -f O_RDWR,O_NONBLOCK -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+更多文件打开标志可以参考如下:
+
+> - [文件打开标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A10)
+
+###### <-m mode>
+
+"-m" 参数后面跟一个模式标志，用于文件的打开模式。当前工具支持的文件打开
+模式已经完整罗列在上图中，开发者可以根据实践情况传递这些标志到内核的
+sys_open 系统调用里，使用方法如下:
+
+{% highlight bash %}
+getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
+{% endhighlight %}
+
+更多文件打开模式标志可以参考如下:
+
+> - [文件打开模式标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------------
+
+# <span id="C12"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+
+#### 工具部署
+
+任意长度文件名工具支持多个平台，本实践以 ARM32 为例子进行讲解，其他
+平台部署以此相似。本实践基于 ARM32 架构，因此在实践之前需要准备一个 ARM32 
+架构的运行平台，开发者可以在 BiscuitOS 进行实践，如果还没有搭建 BiscuitOS
+ARM32 实践环境的开发者，可以参考如下文档进行搭建:
+
+> - [BiscuitOS 上搭建 ARM32 实践环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+
+开发环境搭建完毕之后，可以继续下面的内容，如果开发者不想采用
+BiscuitOS 提供的开发环境，可以继续参考下面的内容在开发者使用
+的环境中进行实践。(推荐使用 BiscuitOS 开发环境)。搭建完毕之后，
+使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/
+make linux-5.0-arm32_defconfig
+make
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+
+上图显示了 ARM32 实践环境的位置，以及相关的 README.md 文档，开发者
+可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM32 Linux 开发
+环境:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000340.png)
+
+如果需要在其他架构上部署该工具，可以参考下面文档:
+
+> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+>
+> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+>
+> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+>
+> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+>
+> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+>
+> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+BiscuitOS 提供了一套完整的系统调用编译系统，开发者可以使用下面步骤快速简单
+的部署该工具，BiscuitOS 并可以对该工具从源码进行交叉编译，安装，
+打包和目标系统上运行的功能，节省了很多开发时间。如果开发者不想使用这套
+编译机制，可以参考下面的内容进行移植。开发者首先获得工具的基础源码，如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make linux-5.0-arm32_defconfig
+make menuconfig
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+
+选择并进入 "[\*] Package  --->"
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+
+选择 "[\*]   strace" 和 "[\*]   System Call" 并进入 "[\*]   System Call  --->"
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000605.png)
+
+选择并进入 "[\*]   sys_open  --->"
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000609.png)
+
+选择 "[\*]   getname(): Max open file name  --->" 保存配置并退出. 接下来执
+行下面的命令部署用户空间系统调用程序部署:
+
+{% highlight bash %}
+cd BiscuitOS
+make
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+
+执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/getname_common-0.0.1
+{% endhighlight %}
+
+这个目录就是用于部署用户空间系统调用程序，开发者继续使用命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/getname_common-0.0.1
+make prepare
+make download
+{% endhighlight %}
+
+执行上面的命令之后，BiscuitOS 自动部署了程序所需的所有文件，如下:
+
+{% highlight bash %}
+tree
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000610.png)
+
+上图中，main.c 与用户空间系统调用相关的源码,
+"getname_common-0.0.1/Makefile" 是 main.c 交叉编译的逻辑。因此开发者只
+需关注 main.c, 内容如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000611.png)
+
+在该函数中，main 函数首先接收来自命令行的参数，函数获得文件名的长度之后，
+将 path 字符数组的全部字节设置为 'B' 字符，并在字符数组的指定长度末尾设置
+为 '\0'，然后再将新的文件名和其他参数通过 syscall() 函数传递到内核中对应的
+sys_open() 函数。由于 sys_open 支持两个参数和三个参数的类型，因此调用
+syscall() 函数的时候，可以做两种情况的处理，\_\_NR_open 是 sys_open 对应的
+系统调用号，如果系统调用成功，那么 sys_open 将返回打开文件的句柄，至此
+一次 sys_open 系统调用完成。为了确保应用程序的正确执行，开发者在程序结束
+的时候也要显示关闭文件，这里同样调用 sys_close 系统调用进行关闭。
+源码准备好之后，接下来是交叉编译源码并打包到 rootfs 里, 使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/getname_common-0.0.1
+make
+make install
+make pack
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+#### <span id="C13">工具使用</span>
+
+在一切准备好之后，下一步就是在 ARM32 上运行系统调用，参考下面
+命令进行运行:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/
+./RunBiscuitOS.sh
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000612.png)
+
+开发者可以使用如下命令查看 open 系统调用工具的使用方法:
+
+{% highlight c %}
+~ # getname_common-0.0.1 -h
+{% endhighlight %}
+
+可以看出工具的完整使用方法，接下来使用建议的命令:
+
+{% highlight c %}
+~ # getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+这个命令的行的作用就是以 O_RDWR 和 O_CREAT 的方式打开文件名长度为 128 的
+文件，如果文件不存在，那么直接创建它，并且文件只给文件拥有者读权限以及文
+件拥有组读权限。命令行执行之后，在当前目录下创建了名为 BBB....BB, 查
+看其权限如下:
+
+{% highlight c %}
+~ # ls -l BB*
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000613.png)
+
+从运行结果可以看出，系统创建了文件名长度为 128 的文件, 并且文件的拥有
+者和组权限都设置成指定的读权限。接着可以使用 strace 工具查看具体的系统调
+用过程，如下:
+
+{% highlight c %}
+~ #
+~ # strace getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000614.png)
+
+从 strace 打印的消息可以看出:
+
+{% highlight c %}
+open("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB", O_RDWR|O_CREAT, 0440) = 3
+close(3)
+{% endhighlight %}
+
+从上面的运行结果可以看出，该工具已经将指定的参数精确的传递，sys_open
+系统调用已经成功触发，接下开发者可以使用这个工具为 sys_open() 源码创造
+指定的情况.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="C2"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+
+#### 打开任意个文件工具
+
+> - [工具简介](#C20)
+>
+> - [工具参数介绍](#C21)
+>
+> - [工具部署](#C22)
+>
+> - [工具使用](#C23)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+#### <span id="C20">工具简介</span>
+
+在有些应用场景需要在一个进程中同时打开多个文件，因此打开任意个文件工具就
+是一款用于在一个进程中打开多个文件的工具。工具基于 open 系统调用调试工具
+进行改进， 实现可以根据使用者的需求，在同一个进程中打开任意个文件，并将
+指定文件名和其他参数传递给 sys_open 系统调用。该工具直接绕过 C 库，将参
+数传递到 sys_open, 这样有效隔离了 Glibc 或者 libc 对影响，确保了调试的准
+确性。打开任意个文件工具使用方式如下:
+
+{% highlight bash %}
+number_open_common-0.0.1 -n 2 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+从上面的使用情况可以看出，开发者可以自定义在一个进程中打开文件的个数，
+同理可以自定义打开的标志以及自定义打开的模式，工具支持多个打开标志同时
+使用。详细工具的使用参考下面章节。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+---------------------------------------------
+
+#### <span id="C21">工具参数介绍</span>
+
+在使用打开任意个文件工具之前，开发者可以使用如下命令查看其使用说明:
+
+{% highlight bash %}
+number_open_common-0.0.1 -h
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000615.png)
+
+从打开任意个文件工具的使用情况可以看出，open_common 必须提供一个文件
+路径名、打开文件标志以及文件模式，这样才能正常使用这个工具。
+
+###### <-n num>
+
+"-n" 参数用于指明在当前进程中，打开文件的数量，例如:
+
+{% highlight bash %}
+number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+number_open_common-0.0.1 -n 122 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+number_open_common-0.0.1 -n 512 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+该参数是工具必须的参数，通过这个参数工具会在同一个进程中打开指定个数的
+文件。
+
+###### <-d debug>
+
+"-d" 参数用于跟踪某一次打开操作。在调试对应的内核源码时，需要对某一次
+打开操作进行特定的调试，因此该功能正好满足需求，使用如下:
+
+{% highlight bash %}
+number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+number_open_common-0.0.1 -n 512 -d 511 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+###### <-f flags>
+
+"-f" 参数后面跟一个打开标志，用于文件的打开标志。当前工具支持的文件
+打开标志已经完整罗列在上图中，开发者可以根据实际情况传递这些标志到内核
+的 sys_open 系统调用里. 使用方法如下:
+
+{% highlight bash %}
+number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+number_open_common-0.0.1 -n 2 -d 0 -f O_RDONLY -m S_IRUSR,S_IRGRP
+number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_NONBLOCK -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+更多文件打开标志可以参考如下:
+
+> - [文件打开标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A10)
+
+###### <-m mode>
+
+"-m" 参数后面跟一个模式标志，用于文件的打开模式。当前工具支持的文件打开
+模式已经完整罗列在上图中，开发者可以根据实践情况传递这些标志到内核的
+sys_open 系统调用里，使用方法如下:
+
+{% highlight bash %}
+number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
+{% endhighlight %}
+
+更多文件打开模式标志可以参考如下:
+
+> - [文件打开模式标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------------
+
+# <span id="C22"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+
+#### 工具部署
+
+打开任意个文件工具支持多个平台，本实践以 ARM32 为例子进行讲解，其他
+平台部署以此相似。本实践基于 ARM32 架构，因此在实践之前需要准备一个 ARM32 
+架构的运行平台，开发者可以在 BiscuitOS 进行实践，如果还没有搭建 BiscuitOS
+ARM32 实践环境的开发者，可以参考如下文档进行搭建:
+
+> - [BiscuitOS 上搭建 ARM32 实践环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+
+开发环境搭建完毕之后，可以继续下面的内容，如果开发者不想采用
+BiscuitOS 提供的开发环境，可以继续参考下面的内容在开发者使用
+的环境中进行实践。(推荐使用 BiscuitOS 开发环境)。搭建完毕之后，
+使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/
+make linux-5.0-arm32_defconfig
+make
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+
+上图显示了 ARM32 实践环境的位置，以及相关的 README.md 文档，开发者
+可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM32 Linux 开发
+环境:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000340.png)
+
+如果需要在其他架构上部署该工具，可以参考下面文档:
+
+> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+>
+> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+>
+> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+>
+> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+>
+> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+>
+> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+BiscuitOS 提供了一套完整的系统调用编译系统，开发者可以使用下面步骤快速简单
+的部署该工具，BiscuitOS 并可以对该工具从源码进行交叉编译，安装，
+打包和目标系统上运行的功能，节省了很多开发时间。如果开发者不想使用这套
+编译机制，可以参考下面的内容进行移植。开发者首先获得工具的基础源码，如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make linux-5.0-arm32_defconfig
+make menuconfig
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+
+选择并进入 "[\*] Package  --->"
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+
+选择 "[\*]   strace" 和 "[\*]   System Call" 并进入 "[\*]   System Call  --->"
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000605.png)
+
+选择并进入 "[\*]   sys_open  --->"
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000616.png)
+
+选择 "[\*]   open number files  --->" 保存配置并退出. 接下来执行下面的命令
+部署用户空间系统调用程序部署:
+
+{% highlight bash %}
+cd BiscuitOS
+make
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+
+执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/number_open_common-0.0.1
+{% endhighlight %}
+
+这个目录就是用于部署用户空间系统调用程序，开发者继续使用命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/number_open_common-0.0.1
+make prepare
+make download
+{% endhighlight %}
+
+执行上面的命令之后，BiscuitOS 自动部署了程序所需的所有文件，如下:
+
+{% highlight bash %}
+tree
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000617.png)
+
+上图中，main.c 与用户空间系统调用相关的源码,
+"number_open_common-0.0.1/Makefile" 是 main.c 交叉编译的逻辑。因此开发者只
+需关注 main.c, 内容如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000618.png)
+
+在该函数中，main 函数首先接收来自命令行的参数，解析出需要打开的文件数量，
+为文件描述符指针数组分配指定长度的内存，然后使用 for 循环分配打开一个文件，
+文件的名字使用 sprintf() 函数构造，open 调用返回成功的文件描述符存储在文件
+描述符数组里。如果某次文件打开失败，则跳转到 out 处关闭之前所有打开的文件;
+若文件都正确打开，那么打印文件名字和文件描述符相关的信息，最后关闭所有
+打开的文件。在打开每一个文件的过程中，将解析的参数转换为 sys_open 系统
+调用所需的参数。由于 sys_open 支持两个参数和三个参数的类型，因此调用
+syscall() 函数的时候，可以做两种情况的处理，\_\_NR_open 是 sys_open 对应的
+系统调用号，如果系统调用成功，那么 sys_open 将返回打开文件的句柄，至此
+一次 sys_open 系统调用完成。为了确保应用程序的正确执行，开发者在程序结束
+的时候也要显示关闭文件，这里同样调用 sys_close 系统调用进行关闭。
+源码准备好之后，接下来是交叉编译源码并打包到 rootfs 里, 使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/number_open_common-0.0.1
+make
+make install
+make pack
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+#### <span id="C23">工具使用</span>
+
+在一切准备好之后，下一步就是在 ARM32 上运行系统调用，参考下面
+命令进行运行:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/
+./RunBiscuitOS.sh
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000619.png)
+
+开发者可以使用如下命令查看工具的使用方法:
+
+{% highlight c %}
+~ # number_open_common-0.0.1 -h
+{% endhighlight %}
+
+可以看出工具的完整使用方法，接下来使用建议的命令:
+
+{% highlight c %}
+~ # number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+这个命令的行的作用就是以 O_RDWR 和 O_CREAT 的方式打开 2 个文件，如果文件不存在，
+那么直接创建它，并且文件只给文件拥有者读权限以及文件拥有组读权限。命令
+行执行之后，在当前目录下创建了名为 BiscuitOS_file, 查看其权限如下:
+
+{% highlight c %}
+~ # ls -l BiscuitOS*
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000620.png)
+
+从运行结果可以看出，系统创建了指定的文件 BiscuitOS-*, 并且文件的拥有
+者和组权限都设置成指定的读权限。接着可以使用 strace 工具查看具体的系统调
+用过程，如下:
+
+{% highlight c %}
+~ #
+~ # strace number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000621.png)
+
+从 strace 打印的消息可以看出:
+
+{% highlight c %}
+open("BiscuitOS-0", O_RDWR|O_CREAT, 0440) = 3
+write(1, "BiscuitOS-0 Open-fd: 3\n", 23BiscuitOS-0 Open-fd: 3
+open("BiscuitOS-1", O_RDWR|O_CREAT, 0440) = 4
+write(1, "BiscuitOS-1 Open-fd: 4\n", 23BiscuitOS-1 Open-fd: 4
+close(4)                                = 0
+close(3) 
+{% endhighlight %}
+
+从上面的运行结果可以看出，该工具已经将指定的参数精确的传递，sys_open
+系统调用已经成功触发，接下开发者可以使用这个工具为 sys_open() 源码创造
+指定的情况.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
 
 #### <span id="Z0">附录</span>
 
