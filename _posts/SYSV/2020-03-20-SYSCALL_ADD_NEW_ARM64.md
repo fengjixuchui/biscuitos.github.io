@@ -84,7 +84,7 @@ tags:
 实现。例如在源码 "fs" 目录下，创建一个名为 BiscuitOS_syscall.c 
 的文件，文件内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000395.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000725.png)
 
 接着修改内核源码 "fs/Kconfig" 文件，添加如下内容:
 
@@ -343,7 +343,7 @@ cd BiscuitOS/output/linux-5.0-aarch/linux/linux/fs
 vi BiscuitOS_syscall.c
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000725.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000395.png)
 
 接着修改内核源码 "fs/Kconfig" 文件，添加如下内容:
 
