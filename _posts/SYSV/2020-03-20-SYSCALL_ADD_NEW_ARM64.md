@@ -343,7 +343,7 @@ cd BiscuitOS/output/linux-5.0-aarch/linux/linux/fs
 vi BiscuitOS_syscall.c
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000395.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000725.png)
 
 接着修改内核源码 "fs/Kconfig" 文件，添加如下内容:
 
