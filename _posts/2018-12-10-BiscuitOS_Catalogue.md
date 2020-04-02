@@ -111,21 +111,25 @@ tags:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
-## [系统调用](https://biscuitos.github.io/blog/SYSCALL)
+## [系统调用]()
 
-> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+> - [系统调用](https://biscuitos.github.io/blog/SYSCALL)
 >
-> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+> - [ARM32 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
 >
-> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+> - [ARM64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
 >
-> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+> - [i386 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
 >
-> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+> - [X86_64 架构中添新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
 >
-> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+> - [RISCV32 架构中添新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+>
+> - [RISCV64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
 >
 > - [sys_open](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 ## [Linux Paper/Article]()
 
@@ -137,6 +141,8 @@ tags:
 >
 > - [.pushsection/.popsection 有趣的汇编指令](https://biscuitos.github.io/blog/ASM_pushsection/)
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 ## [Linux Source Code list]()
 
 > - [Linux 5.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
@@ -146,6 +152,8 @@ tags:
 > - [Linux 6.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
 >
 > - [Linux 7.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 ## <span id="Uboot">Bootloader</span>
 
@@ -161,6 +169,8 @@ tags:
 >
 > - [Build SeaBIOS](https://biscuitos.github.io/blog/BIOS_SeaBIOS/)
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 ## <span id="Architecture">Architecture</span>
 
 > - [ARM](https://biscuitos.github.io/blog/ARM-Catalogue-Image/)
@@ -172,6 +182,8 @@ tags:
 > - [RISCV-32]()
 >
 > - [RISCV-64]()
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 ## <span id="Enginerring">Enginerring Practice</span>
 
@@ -228,6 +240,8 @@ tags:
 >
 > - PWM
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 ## <span id="Userland">Userland Develop</span>
 
 > - [应用程序移植](https://biscuitos.github.io/blog/APP-Usermanual/)
@@ -248,6 +262,8 @@ tags:
 >
 >   - [tetris 俄罗斯方块](https://biscuitos.github.io/blog/USER_tetris/)
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 ## <span id="Debug">Debug Tools and Usermanual </span>
 
 > - [Linux 5.x ARM32 Debug Usermanual](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/)
@@ -264,9 +280,13 @@ tags:
 >
 > - [系统调用调试建议](https://biscuitos.github.io/blog/SYSCALL_DEBUG/)
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 ## <span id="OpenProject">Open Project</span>
 
 > - [Open VnetCard](https://biscuitos.github.io/blog/VnetCard/)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 ## My Hobbies
 
