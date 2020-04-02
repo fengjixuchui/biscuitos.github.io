@@ -37,7 +37,9 @@ tags:
 >
 > - [Architecture Computer English](https://biscuitos.github.io/blog/Architecture_English_note/)
 
-## Basic Research
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+## [Basic Research]()
 
 > - [Bit: bitmap/bitops/bitmask/bit find](https://biscuitos.github.io/blog/BITMAP/)
 >
@@ -73,7 +75,7 @@ tags:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
-## 内存管理
+## [内存管理]()
 
 > - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
 >
@@ -125,7 +127,7 @@ tags:
 >
 > - [sys_open](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
 
-## Linux Paper/Article
+## [Linux Paper/Article]()
 
 > - [thread_info 与内核堆栈的关系](https://biscuitos.github.io/blog/TASK-thread_info_stack/)
 >
@@ -135,7 +137,7 @@ tags:
 >
 > - [.pushsection/.popsection 有趣的汇编指令](https://biscuitos.github.io/blog/ASM_pushsection/)
 
-## Linux Source Code list
+## [Linux Source Code list]()
 
 > - [Linux 5.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
 >
@@ -259,6 +261,8 @@ tags:
 > - [blktrace： Block IO 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-blktrace/)
 >
 > - [Linux 内核源码静态分析工具 sparse](https://biscuitos.github.io/blog/SPARSE/#header)
+>
+> - [系统调用调试建议](https://biscuitos.github.io/blog/SYSCALL_DEBUG/)
 
 ## <span id="OpenProject">Open Project</span>
 
