@@ -70,7 +70,11 @@ tags:
 > - 锁/同步
 >
 >   - [atomic 原子操作](https://biscuitos.github.io/blog/ATOMIC/)
->
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+## 内存管理
+
 > - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
 >
 > - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
@@ -102,20 +106,24 @@ tags:
 >   - [KMAP Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#N)
 >
 >   - [Fixmap Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#P)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
+
+## [系统调用](https://biscuitos.github.io/blog/SYSCALL)
+
+> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
 >
-> - [系统调用](https://biscuitos.github.io/blog/SYSCALL)
+> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
 >
->   - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
 >
->   - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
 >
->   - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
 >
->   - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
 >
->   - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
->
->   - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+> - [sys_open](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
 
 ## Linux Paper/Article
 

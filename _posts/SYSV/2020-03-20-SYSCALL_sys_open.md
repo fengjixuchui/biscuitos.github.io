@@ -71,12 +71,20 @@ tags:
 >   - [/proc/sys/fs 参数合集](#C4)
 >
 >   - [ulimit](#C5)
->
+> <span id="HHH"></span>
 > - 进阶研究
 >
->   - [系统支持的文件名最大长度问题研究]()
+>   - [文件名太长导致文件打开失败](https://biscuitos.github.io/blog/OPEN_MAX_LEN/#B250)
 >
->   - [系统进程支持的最大文件打开数问题研究]()
+>   - [文件名为空导致文件打开失败](https://biscuitos.github.io/blog/OPEN_MAX_LEN/#B251)
+>
+>   - [进程打开文件数太多导致失败问题](https://biscuitos.github.io/blog/OPEN_NR/#B250)
+>
+>   - [进程文件描述符超过 sysctl_nr_open 导致打开失败问题](https://biscuitos.github.io/blog/OPEN_NR/#B251)
+>
+>   - [sysctl_nr_open 不能够准确控制打开文件的数量问题](https://biscuitos.github.io/blog/OPEN_NR/#B252)
+>
+>   - [不同文件系统支持进程最大文件打开数问题](https://biscuitos.github.io/blog/OPEN_NR/#B253)
 >
 > - [附录/捐赠](#Z0)
 
@@ -2709,7 +2717,7 @@ ulimit -n
 有了上面的实践基础之后，开发者可以进行更深入问题的研究讨论，可以查看本文的
 进阶研究部分，以此对 open 系统调用进行更深入的研究。
 
-> - [open 系统调用进阶研究](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
+> - [open 系统调用进阶研究](#HHH)
 
 写在最后，开发者也可以在 BiscuitOS 社区进行 open 系统调用的讨论。
 
