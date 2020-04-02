@@ -41,6 +41,10 @@ tags:
 > - [\_\_clear_close_on_exec](#A0000013)
 >
 > - [get_unused_fd_flags](#A0000014)
+>
+> - [rlimit](#A0000015)
+>
+> - [task_rlimit](#A0000016)
 
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
@@ -1504,14 +1508,87 @@ get_unused_fd_flags() 函数的作用是从当前进程分配一个未使用的�
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000671.png)
 
 参数 flags 是文件打开标志。与打开文件有关的信息全部存储在进程的 files 成员里，
-"rlimit(RLIMIT_NOFILE)" 和 0 用于限制查找一个可用文件描述符的范围。函数将
-这些参数传递给 "\_\_alloc_fd()" 函数，该函数会从进程的文件描述符表中查看
+"rlimit(RLIMIT_NOFILE)" 和 0 用于限制查找一个可用文件描述符的范围,
+"rlimit(RLIMIT_NOFILE)" 用于限制一个进程最大文件打开数，其定义如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000691.png)
+
+> - [rlimit() 函数解析](#A0000015)
+
+开发者可以在 BiscuitOS 使用 ulimit 工具读取进程的限制信息，如下:
+
+{% highlight c %}
+ulimit -a
+ulimit -n
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000698.png)
+
+使用 "ulimit -n" 之后可以看出当前进程支持的最大文件打开数是 1024.
+函数将这些参数传递给 "\_\_alloc_fd()" 函数，该函数会从进程的文件描述符表中查看
 可用的文件描述符，并将查找的结果返回。
 
-> - [__alloc_fd() 函数解析](#A0000003)
+> - [\_\_alloc_fd() 函数解析](#A0000003)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
+-----------------------------------------
+
+#### <span id="A0000015">rlimit</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000694.png)
+
+rlimit() 函数用于读取当前进程的某个资源限制。参数 limit 就是需要读取的限制
+项。目前支持的限制项目如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000695.png)
+
+函数通过调用 task_rlimit() 函数可以获得当前进程资源的限制信息。其实现如下:
+
+> - [task_rlimit() 函数解析](#A0000016)
+
+开发者可以在 BiscuitOS 使用 ulimit 工具读取进程的限制信息，如下:
+
+{% highlight c %}
+ulimit -a
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000698.png)
+
+开发者也可以动态修改某个限制，例如:
+
+{% highlight c %}
+ulimit -n
+ulimit -n 4096
+ulimit -n
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000699.png)
+
+从运行结果可以看出进程最大文件打开数已经被动态修改了。更多 ulimit 信息
+可以查看:
+
+> - [ulimit 工具详解]()
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+#### <span id="A0000016">task_rlimit</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000696.png)
+
+task_rlimit() 函数用于读取进程某个限定的资源信息。资源信息通过 struct rlimit
+结构定义，如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000697.png)
+
+从上面的定义可以知道，rlimit 的限制信息包含了当前限制和最大限制两个数据。
+当前进程支持的资源信息如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000695.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
@@ -1519,6 +1596,35 @@ get_unused_fd_flags() 函数的作用是从当前进程分配一个未使用的�
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
+-----------------------------------------
+
+#### <span id="A0000000"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+#### <span id="A0000000"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+#### <span id="A0000000"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+#### <span id="A0000000"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+#### <span id="A0000000"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 

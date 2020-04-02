@@ -50,7 +50,7 @@ tags:
 >
 >     - [struct open_flags](#A00017D)
 >
->   - [源码解析](#A)
+>   - [源码解析](https://biscuitos.github.io/blog/OPEN_SOURCE_CODE/)
 >
 > - 实践部署
 >
@@ -67,6 +67,10 @@ tags:
 >   - [打开任意个文件工具](#C2)
 >
 >   - [strace](#C3)
+>
+>   - [/proc/sys/fs 参数合集](#C4)
+>
+>   - [ulimit](#C5)
 >
 > - 进阶研究
 >
@@ -991,6 +995,35 @@ PATH_MAX 的情况，这种情况下，内核首先从 names_cachep 中分配
 
 #### struct files_struct
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000717.png)
+
+struct files_struct 结构用于管理进程打开文件的信息。
+
+###### fdt/fdtab
+
+fdt 成员 fdtab 成员都是 struct fdtable 结构，是进程的文件描述符表。每个
+打开的文件都从这个成员里分配可用的文件描述符。其用于分配和回收文件描述符。
+
+> - [struct fdtable 结构详解](#A00012D)
+
+###### resize_wait/resize_in_progress
+
+resize_wait 成员和 resize_in_progress 成员用于当进程扩充文件描述符表或者
+其他信息的时候，会将 resize_in_progress 设置为 true，当修改完毕之后将其
+设置为 false。如果进程想要修改 struct files_struct 某些数据的时候，发现
+resize_in_progress 已经设置为 true，那么进程进入 resize_wait queue，等待
+resize_in_progress 为 false 时候唤醒。
+
+###### next_fd
+
+next_fd 成员是用于下一个进程可用的文件描述符。
+
+###### fd_array
+
+fd_array 成员是进程所有打开的文件数组。在 Linux 中，每个打开的文件都使用
+struct file 结构进行维护，进程将自己所有打开的文件的 struct file 维护在
+fd_array 中，并使用文件描述符进行索引.
+
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
@@ -1003,34 +1036,79 @@ PATH_MAX 的情况，这种情况下，内核首先从 names_cachep 中分配
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000023.png)
 
-struct fdtable 数据结构用于管理和维护当前进程的文件描述符。在 Linux 内核
-中，使用一个整数表示文件描述符，对于同一个进程，进程可以使用唯一的
-文件描述符管理一个打开的文件; 而对于不同的两个或多个进程，虽然文件
-描述符相同，但不一定指向同一个打开的文件。因此文件描述符再进程内讨论
-才有意义。struct fdtbale 结构的 max_fds 用于表示当前进程支持的最大
-文件描述符数; close_on_exec 成员是一个 bitmap，每个 bitmap 对应一个
-文件描述符，每个 bit 的代表一个打开的文件描述符，用于确定在调用系统调
-用 execve() 时需要关闭的文件句柄。当一个程序使用 fork() 函数创建了一
-个子进程时，通常会在该子进程中调用 execve() 函数加载执行另一个新程序。
-此时子进程将完全被新程序替换掉，并在子进程中开始执行新程序。若一个文件
-描述符在 close_on_exec 中的对应比特位被设置，那么在执行 execve() 时
-该描述符将被关闭，否则该描述符将始终处于打开状态。当打开一个文件时，
-默认情况下文件句柄在子进程中也处于打开状态。因此 sys_open() 中要复位
-对应比特位。
+struct fdtable 数据结构用来管理进程的文件描述符。在进程中，每个打开
+的文件使用一个文件描述符进行管理，文件描述符是一个整形数值。struct
+fdtable 通过对文件描述符的管理实现了进程对文件打开和关闭是文件描述
+符的分配与回收。
 
-struct fdtable 结构中 full_fds_bits 和 open_fds 都是 bitmap，
-max_fds 代表该结构能够维护最大文件描述数，max_fds 的值决定
-了 open_fds 的 bits 数。在 open_fds 指向的 bitmap 中，bit
-从低位开始编码，每个 bit 对应一个文件描述符，即 bit0 代表
-的文件描述符就是 0，bit1 代表的文件描述符就是 1. 在
-open_fds 的 bitmap 中，置位的 bit 对应的文件描述符已经分配，
-反之该 bit 清零则表示该文件描述符没有分配。同理 full_fds_bits
-也是一个 bitmap，并且从低位开始编码，但 full_fds_bits 的每个
-bit 指代 open_fds 中的 32 个 bit，即 full_fds_bits 的 bit0
-代表了 open_fds 的 0 到 31 bit, full_fds_bits 的 bit-1
-代表了 open_fds 的 32 到 63 bit, 如下图:
+###### max_fds
+
+max_fds 成员用于管理进程最大文件描述符，也可以表示为进程最大可打开文件数。
+默认情况下，进程创建时，将进程的最大文件描述符设置为 32. 每当进程打开
+数量超过 32 的时候，内核就会扩充进程的最大文件描述符。文件描述符的扩充
+根据一定逻辑进行扩充，基本扩充逻辑是:
+
+{% highlight bash %}
+32 --> 256 --> 512 --> 1024 --> ...
+{% endhighlight %}
+
+max_fds 虽然表示进程最大文件描述符，但进程不一定可以打开这么多的文件，其
+还有进程的 "rlimit(RLIMIT_NOFILE)" 和 sysctl_nr_open 进行限制，只有三者
+配合使用，进程才能获得正确的最大文件描述符。
+
+###### fd
+
+fd 成员又称为进程的 fdarray。在进程中每个打开的文件都会使用 struct file
+进行维护，每个打开的文件又有一个文件描述符，因此文件描述符通过 fdarray
+就可以找到对应的 struct file 结构。因此 fd 成员是文件描述符和 struct file
+之间的转换桥梁。
+
+###### open_fds
+
+open_fds 成员是一个 bitmap，其长度按 BITS_PER_LONG 对齐。open_fds 的每个
+bit 指向一个文件描述符，文件描述符在 open_fds 中按顺序表示，即文件描述符 0
+指向 open_fds 的第一个 bit。某个 bit 置位，那么表示对应的文件描述符已经
+分配，如果某个 bit 清零，那么对应的文件描述符未分配。通过这个 bitmap，
+struct fdtable 实现了简单的文件描述符分配回收逻辑。open_fds 中 bit 的个数
+与 max_fds 成员有密切的关系，它们的关系如下:
+
+{% highlight bash %}
+bits = ((max_fds + (BITS_PER_LONG - 1)) / BITS_PER_LONG) * BITS_PER_LONG
+{% endhighlight %}
+
+open_fds 成员与 close_on_exec 成员的关系是两者都是 bitmap，且长度一致，
+只是每个 bit 的含义不同。open_fds 成员与 full_fds_bits 成员存在一定的
+联系，full_fds_bits 也是一个 bitmap，每个 bit 用于表示 open_fds 中
+BITS_PER_LONG 个 bit 的使用情况。
+
+###### close_on_exec
+
+close_on_exec 成员是一个 bitmap，其长度按 BITS_PER_LONG 对齐。close_on_exec 
+的每个 bit 指向一个文件描述符，文件描述符在 close_on_exec 中按顺序表示，即
+文件描述符 0 指向 close_on_exec 的第一个 bit。某个 bit 置位，那么表示对应的
+文件描述符在调用系统调用 execve() 时需要关闭的文件句柄. 当一个程序使用 
+fork() 函数创建了一个子进程时，通常会在该子进程中调用 execve() 函数加载执
+行另一个新程序。 此时子进程将完全被新程序替换掉，并在子进程中开始执行新程序。
+若一个文件描述符在 close_on_exec 中的对应比特位被设置，那么在执行 execve() 
+时该描述符将被关闭，否则该描述符将始终处于打开状态。当打开一个文件时， 默
+认情况下文件句柄在子进程中也处于打开状态。因此 sys_open() 中要复位对应比
+特位。close_on_exec 中 bit 的个数与 max_fds 成员有密切的关系，它们的关系如下:
+
+{% highlight bash %}
+bits = ((max_fds + (BITS_PER_LONG - 1)) / BITS_PER_LONG) * BITS_PER_LONG
+{% endhighlight %}
+
+###### full_fds_bits
+
+full_fds_bits 成员也是一个 bitmap，bitmap 中每个 bit 按顺序表示 open_fds
+bitmap 中 BITS_PER_LONG 个 bit 的分配情况。例如 open_fds 中的第 n 个
+BITS_PER_LONG bit 全部置位，那么对应 full_fds_bits 的 bit 也置位，以此
+表示 open_fds 对应的文件描述符全部分配。其关系如下图:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000025.png)
+
+这样的设计就是利用了空间换时间，也为加速 struct fdtable 能够快速找到
+一个可用的文件描述符。
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -1081,14 +1159,44 @@ kmem_cache_create() 函数分配缓存，缓存的名字是 "filp", 大小为
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000038.png)
 
-struct open_flags 数据结构用于管理文件打开的标志，访问权限、路径查找以及
-意图等信息。open_flag 用于存储文件打开的标志，其包含了 VALID_OPEN_FLAGS
-所支持的标志，并经过内核的处理，无效的标志已被剔除。mode 成员用于维护
-文件打开的权限，该权限用于管理访问文件时候，文件拥有者、文件所属组、
-其他用户具有的权限。acc_mode 成员文件的访问权限，其从文件打开标志中，
-通过 ACC_MODE() 宏和相关处理，获得文件的访问模式。intent 用于存储文件
-打开的意图，包括文件路径对于的是文件还是路径等信息。lookup_flags 成员
-用于存储文件打开是对路径等查找过程使用的标志。
+struct open_flags 结构用于协助 open 系统调用管理相关的标志。open 系统调用
+将文件打开标志和文件访问标志传递到内核之后，内核调用 build_open_flags()
+函数将两个参数进行处理之后存储在 struct open_flags 结构中，以便后续函数
+使用。
+
+###### open_flag
+
+open_flag 成员用于存储合法有效的文件打开标志。更多有效文件打开标志如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000559.png)
+
+> - [文件打开标示详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A10)
+
+###### mode
+
+mode 成员由于存储文件的访问权限和文件类型信息。更多标志如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000035.png)
+
+> - [文件权限标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
+
+###### acc_mode
+
+acc_mode 成员是用于存储文件的 permission 信息。该信息主要用于检测文件系统，
+inode 等是否具有相应的 permission 信息. 更多 permission 信息如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000558.png)
+
+###### intent
+
+intent 成员用于辅助 open 系统调用在查找过程中使用的标志信息。
+
+###### lookup_flags
+
+lookup_flags 成员用于存储系统调用在文件系统中查找时候所使用的标志，更多
+查找标志可以查看:
+
+> - [文件查找标志](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A14)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -1951,7 +2059,7 @@ close(3)
 
 <span id="C2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
 
 #### 打开任意个文件工具
 
@@ -2253,6 +2361,357 @@ close(3)
 从上面的运行结果可以看出，该工具已经将指定的参数精确的传递，sys_open
 系统调用已经成功触发，接下开发者可以使用这个工具为 sys_open() 源码创造
 指定的情况.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="C3"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
+
+#### strace
+
+> - [工具简介](#C30)
+>
+> - [工具参数介绍](#C31)
+>
+> - [工具部署](#C32)
+>
+> - [工具使用](#C33)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+#### <span id="C30">工具简介</span>
+
+strace 常用来跟踪进程执行时的系统调用和所接收的信号。 在 Linux 世界，
+进程不能直接访问硬件设备，当进程需要访问硬件设备 (比如读取磁盘文件，接收
+网络数据等等) 时，必须由用户态模式切换至内核态模式，通过系统调用访问硬件
+设备。strace 可以跟踪到一个进程产生的系统调用, 包括参数，返回值，执行消耗
+的时间等。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+#### <span id="C31">工具参数</span>
+
+strace 参数如下:
+
+{% highlight base %}
+-c    统计每一系统调用的所执行的时间,次数和出错的次数等. 
+-d    输出 strace 关于标准错误的调试信息. 
+-f    跟踪由 fork 调用所产生的子进程. 
+-ff   如果提供 -o filename, 则所有进程的跟踪结果输出到相应的 filename.pid 
+      中, pid 是各进程的进程号. 
+-F    尝试跟踪 vfork 调用. 在 -f 时, vfork 不被跟踪. 
+-h    输出简要的帮助信息. 
+-i    输出系统调用的入口指针. 
+-q    禁止输出关于脱离的消息. 
+-r    打印出相对时间关于,,每一个系统调用. 
+-t    在输出中的每一行前加上时间信息. 
+-tt   在输出中的每一行前加上时间信息,微秒级. 
+-ttt  微秒级输出,以秒了表示时间. 
+-T    显示每一调用所耗的时间. 
+-v    输出所有的系统调用. 一些调用关于环境变量、状态、输入输出等调用由于使
+      用频繁, 默认不输出. 
+-V    输出 strace 的版本信息. 
+-x    以十六进制形式输出非标准字符串 
+-xx   所有字符串以十六进制形式输出. 
+-a column    设置返回值的输出位置.默认 为40. 
+-e expr      指定一个表达式,用来控制如何跟踪. 格式如下: 
+
+             [qualifier=][!]value1[,value2]... 
+
+             qualifier 只能是 trace,abbrev,verbose,raw,signal,read,write 其
+             中之一. value 是用来限定的符号或数字. 默认的 qualifier 是 trace.
+             感叹号是否定符号.例如: 
+             -eopen 等价于 -e trace=open, 表示只跟踪 open 调用. 而
+             -etrace!=open 表示跟踪除了 open 以外的其他调用.有两个特殊的符号
+             all 和 none. 
+             注意有些 shell 使用 ! 来执行历史记录里的命令, 所以要使用 \\. 
+-e trace=set           只跟踪指定的系统 调用.例如: -e trace=open,close,rean,
+                       write 表示只跟踪这四个系统调用. 默认的为 set=all. 
+-e trace=file          只跟踪有关文件操作的系统调用. 
+-e trace=process       只跟踪有关进程控制的系统调用. 
+-e trace=network       跟踪与网络有关的所有系统调用. 
+-e strace=signal       跟踪所有与系统信号有关的 系统调用 
+-e trace=ipc           跟踪所有与进程通讯有关的系统调用 
+-e abbrev=set          设定 strace 输出的系统调用的结果集. -v 等与 abbrev=none.
+                       默认为 abbrev=all. 
+-e raw=set             将指定的系统调用的参数以十六进制显示. 
+-e signal=set          指定跟踪的系统信号.默认为all.如 signal=!SIGIO (或者
+                       signal=!io), 表示不跟踪 SIGIO 信号. 
+-e read=set            输出从指定文件中读出的数据. 例如: -e read=3,5 
+-e write=set           输出写入到指定文件中的数据. 
+-o filename            将 strace 的输出写入文件 filename 
+-p pid                 跟踪指定的进程 pid. 
+-s strsize             指定输出的字符串的最大长度. 默认为 32.文件名一直全部输出.
+-u username            以 username 的 UID 和 GID 执行被跟踪的命令.
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------------
+
+# <span id="C32"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+
+#### 工具部署
+
+strace 工具支持多个平台，本实践以 ARM32 为例子进行讲解，其他
+平台部署以此相似。本实践基于 ARM32 架构，因此在实践之前需要准备一个 ARM32 
+架构的运行平台，开发者可以在 BiscuitOS 进行实践，如果还没有搭建 BiscuitOS
+ARM32 实践环境的开发者，可以参考如下文档进行搭建:
+
+> - [BiscuitOS 上搭建 ARM32 实践环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+
+开发环境搭建完毕之后，可以继续下面的内容，如果开发者不想采用
+BiscuitOS 提供的开发环境，可以继续参考下面的内容在开发者使用
+的环境中进行实践。(推荐使用 BiscuitOS 开发环境)。搭建完毕之后，
+使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/
+make linux-5.0-arm32_defconfig
+make
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+
+上图显示了 ARM32 实践环境的位置，以及相关的 README.md 文档，开发者
+可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM32 Linux 开发
+环境:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000340.png)
+
+如果需要在其他架构上部署该工具，可以参考下面文档:
+
+> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+>
+> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+>
+> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+>
+> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+>
+> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+>
+> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+BiscuitOS 提供了一套完整的系统调用编译系统，开发者可以使用下面步骤快速简单
+的部署该工具，BiscuitOS 并可以对该工具从源码进行交叉编译，安装，
+打包和目标系统上运行的功能，节省了很多开发时间。如果开发者不想使用这套
+编译机制，可以参考下面的内容进行移植。开发者首先获得工具的基础源码，如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make linux-5.0-arm32_defconfig
+make menuconfig
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+
+选择并进入 "[\*] Package  --->"
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+
+选择 "[\*]   strace  --->" 保存配置并退出. 接下来执行下面的命令
+部署用户空间系统调用程序部署:
+
+{% highlight bash %}
+cd BiscuitOS
+make
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+
+执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/strace-5.0
+{% endhighlight %}
+
+这个目录就是用于部署用户空间系统调用程序，开发者继续使用命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/strace-5.0
+make prepare
+make download
+make tar
+make configure
+make
+{% endhighlight %}
+
+执行完上面的命令之后，strace 已经制作好，接下来就是安装到 BiscuitOS 上，
+使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/package/strace-5.0
+make install
+make pack
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+#### <span id="C33">工具使用</span>
+
+在一切准备好之后，下一步就是在 ARM32 上运行 strace 了，参考下面
+命令进行运行:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-arm32/
+./RunBiscuitOS.sh
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000718.png)
+
+开发者可以使用如下命令查看工具:
+
+{% highlight c %}
+~ # strace mkdir BiscuitOS
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000719.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="C4"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+
+#### /prco/sys/fs 参数合集
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000722.png)
+
+Linux 在 /proc/sys/fs 节点下提供了很多参数供开发者动态修改或获得特定的系统
+参数，其中关于 open 系统调用相关的参数如下:
+
+> - [nr_open](#C40)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+---------------------------------
+
+#### <span id="C40">nr_open</span>
+
+nr_open 参数用于控制进程最大可打开文件的数量，可以使用如下命令查看当前进程
+最大文件打开数:
+
+{% highlight c %}
+cat /proc/sys/fs/nr_open
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000720.png)
+
+也可以动态修改进程最大文件打开数, 使用如下命令:
+
+{% highlight c %}
+echo 544 > /proc/sys/fs/nr_open
+cat /proc/sys/fs/nr_open
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000721.png)
+
+值得注意的是 nr_open 不一定能够控制进程最大文件打开数，需要和 "ulimit -n"
+参数，以及特定的文件系统结合才有效果，但一般情况下，只要 nr_open 小于
+"ulimit -m" 的时候，设置 nr_open 是可以起到效果的。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="C5"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+
+#### ulimit
+
+ulimit 是一种 Linux 系统的内键功能，它具有一套参数集，用于为由它生成的 
+shell 进程及其子进程的资源使用设置限制。使用格式如下:
+
+{% highlight c %}
+ulimit -a
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000723.png)
+
+###### 参数说明
+
+{% highlight bash %}
+-a                     显示目前资源限制的设定。
+-c <core文件上限>      设定 core 文件的最大值，单位为区块。
+-d <数据节区大小>      程序数据节区的最大值，单位为 KB。
+-f <文件大小>          shell 所能建立的最大文件，单位为区块。
+-H                     设定资源的硬性限制，也就是管理员所设下的限制。
+-m <内存大小>          指定可使用内存的上限，单位为 KB。
+-n <文件数目>          指定同一时间最多可开启的文件数。
+-p <缓冲区大小>        指定管道缓冲区的大小，单位 512 字节。
+-s <堆叠大小>          指定堆叠的上限，单位为 KB。
+-S                     设定资源的弹性限制。
+-t <CPU时间>           指定CPU使用时间的上限，单位为秒。
+-u <程序数目>          用户最多可开启的程序数目。
+-v <虚拟内存大小>      指定可使用的虚拟内存上限，单位为 KB.
+{% endhighlight %}
+
+###### 工具使用
+
+ulimit 工具可以查看某个资源或动态设置某个资源，例如查看并设置当前进程最大
+打开文件数，使用如下命令:
+
+{% highlight c %}
+ulimit -n
+ulimit -n 4096
+ulimit -n
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000724.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="B3"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+
+#### 实践建议
+
+开发者如果想对 open 系统调用进行实践的话，这里有一个可行的建议，开发者
+可以参考这个建议进行实践. 首先开发者应该准备一个实践平台，可以参考下面
+的文档进行部署:
+
+> - [open 系统调用实践环境部署](#B2)
+
+实践环境搭建好之后，建议开发者了解一些调试技巧，这些调试技巧会让你的调试
+变得简单搞笑，请参考下面文章:
+
+> - [系统调用调试建议](https://biscuitos.github.io/blog/SYSCALL_DEBUG/)
+
+准备好上面的内容之后，接下来就是进入源码级实践调试，如下图:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000670.png)
+
+上图是 open 系统调用相关的某个函数调用过程，开发者可以根据上图的调用
+关系，在下面的文档中找到合适的入口进行源码调试:
+
+> - [open 系统调用源码实践分析](https://biscuitos.github.io/blog/OPEN_SOURCE_CODE/)
+
+有了上面的实践基础之后，开发者可以进行更深入问题的研究讨论，可以查看本文的
+进阶研究部分，以此对 open 系统调用进行更深入的研究。
+
+> - [open 系统调用进阶研究](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
+
+写在最后，开发者也可以在 BiscuitOS 社区进行 open 系统调用的讨论。
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
