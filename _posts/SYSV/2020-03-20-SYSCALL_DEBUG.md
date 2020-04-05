@@ -375,7 +375,14 @@ System.map
 80008144 t __d_ramfs_init
 {% endhighlight %}
 
-于是 "dentry->d_op->d_init()" 对应的函数就是 "__d_ramfs_init".
+于是 "dentry->d_op->d_init()" 对应的函数就是 "__d_ramfs_init". 另外根据
+BiscuitOS 社区宋大提供的建议，在上面的问题中，还可以这么解决问题:
+
+{% highlight bash %}
+printk("Dentry Function %sP\n", dentry->d_op->d_init);
+{% endhighlight %}
+
+这个办法也是非常有效果的，推荐开发者使用。
 
 -----------------------------------------------
 
