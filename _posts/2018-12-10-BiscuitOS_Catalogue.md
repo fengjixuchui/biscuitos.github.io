@@ -279,6 +279,8 @@ tags:
 > - [Linux 内核源码静态分析工具 sparse](https://biscuitos.github.io/blog/SPARSE/#header)
 >
 > - [系统调用调试建议](https://biscuitos.github.io/blog/SYSCALL_DEBUG/)
+>
+> - [通过 Kernel 历史树实践内核建议](https://biscuitos.github.io/blog/Kernel_History/#header)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
