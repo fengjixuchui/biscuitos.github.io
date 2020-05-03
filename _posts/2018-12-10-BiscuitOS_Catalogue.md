@@ -77,9 +77,53 @@ tags:
 
 ## [内存管理]()
 
-> - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
+> - [MMU: Memory Manager Unit]()
+>
+>   - [MMU on linux 2.6.12]()
+>
+>   - [MMU on linux 2.6.13]()
+>
+>   - [MMU on linux 2.6.14]()
+>
+> - [Bootmem Allocator]()
 >
 > - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+>
+> - [PERCPU Memory Allocator]()
+>
+> - [Buddy Memory Allocator]()
+>
+> - [PCP Memory Allocator]()
+>
+> - [SLAB Memory Allocator]()
+>
+> - [VMALLOC Memory Allocator]()
+>
+> - [KMAP Memory Allocator]()
+>
+> - [Fixmap Memory Allcator]()
+>
+> - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
+>
+> - [Mempool/Emergency pool]()
+>
+> - [Zone (DMA/Normal/Highmem)]()
+>
+> - [Kswap]()
+>
+> - [Swap]()
+>
+> - [Page Table]()
+>
+> - [TLB]()
+>
+> - [Page Fault]()
+>
+> - [CACHE]()
+>
+> - [VMstat]()
+>
+> - [Shmem: tmpfs filesystem]()
 >
 > - [Memory Allocator on Userspace](https://biscuitos.github.io/blog/Memory-Userspace/)
 >
@@ -108,6 +152,8 @@ tags:
 >   - [KMAP Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#N)
 >
 >   - [Fixmap Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#P)
+>
+> - [Debug/Performance analysic Tools for MMU/VM/PM]()
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
