@@ -97,6 +97,10 @@ tags:
 >
 > - [SLAB Memory Allocator]()
 >
+> - [SLUB Memory Allocator]()
+>
+> - [SLOB Memory Allocator]()
+>
 > - [VMALLOC Memory Allocator]()
 >
 > - [KMAP Memory Allocator]()
