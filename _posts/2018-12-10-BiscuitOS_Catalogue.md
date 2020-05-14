@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "X"
+title:  ""
 date:   2018-12-10 09:13:33 +0800
 categories: [Top]
 excerpt: Catalogue.
