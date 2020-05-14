@@ -34,31 +34,39 @@ tags:
 >
 > - [项目实践](#C)
 >
+> - [MMU 进阶研究](#D)
+>
 > - [MMU 时间轴](#R)
 >
 > - [MMU 历史版本](#T)
 >
->   - [Linux 2.6.12](#T-2.6.12)
+> - 内存分配器
 >
->   - [Linux 2.6.12.1](#T.2.6.12.1)
->
->   - [Linux 2.6.12.2](#T.2.6.12.1)
->
->   - [Linux 2.6.12.3](#T.2.6.12.1)
->
->   - [Linux 2.6.12.4](#T.2.6.12.1)
->
->   - [Linux 2.6.12.5](#T.2.6.12.1)
->
->   - [Linux 2.6.12.6](#T.2.6.12.1)
->
->   - [Linux 2.6.13](#T.2.6.13)
->
->   - [Linux 2.6.13.1](#T.2.6.13.1)
->
->   - [Linux 2.6.14](#T.2.6.14)
->
->   - [Linux 2.6.15](#T.2.6.15)
+>   - [Bootmem 分配器](https://biscuitos.github.io/blog/HISTORY-bootmem/)
+>  
+>   - [MEMBLOCK 分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index)
+>  
+>   - [PERCPU 分配器](https://biscuitos.github.io/blog/HISTORY-PERCPU)
+>  
+>   - [Buddy 分配器](https://biscuitos.github.io/blog/HISTORY-BUDDY)
+>  
+>   - [PCP 分配器](https://biscuitos.github.io/blog/HISTORY-PCP)
+>  
+>   - [SLAB 分配器](https://biscuitos.github.io/blog/HISTORY-SLAB/)
+>  
+>   - [SLUB 分配器](https://biscuitos.github.io/blog/HISTORY-SLUB)
+>  
+>   - [SLOB 分配器](https://biscuitos.github.io/blog/HISTORY-SLOB)
+>  
+>   - [VMALLOC 分配器](https://biscuitos.github.io/blog/HISTORY-VMALLOC)
+>  
+>   - [KMAP 分配器](https://biscuitos.github.io/blog/HISTORY-KMAP)
+>  
+>   - [FIXMAP 分配器](https://biscuitos.github.io/blog/HISTORY-FIXMAP)
+>  
+>   - [DMA 内存分配器](https://biscuitos.github.io/blog/HISTORY-DMA)
+>  
+>   - [CMA 内存分配器](https://biscuitos.github.io/blog/CMA)
 >
 > - [附录/捐赠](#Z0)
 
@@ -106,7 +114,8 @@ BiscuitOS Memory Manager Unit History 项目的目的是使用模块的方式构
 10. Mempool 
 {% endhighlight %}
 
-通过以上功能建立一个独立真实可用的内存管理子系统。
+通过以上功能建立一个独立真实可用的内存管理子系统。基于该模块构建不同历史版本
+的内存管理子系统，并通过模块进行实现以及实践.
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -165,25 +174,7 @@ Linux 早期的内存管理子系统版本，开发者可以选择相对简单�
 内部实现原理变化历史，也是对深入理解内存管理一种不错的方法。目前支持的内
 存管理器历史支持的内存管理器件如下表:
 
-> - [bootmem]()
->
-> - [MEMBLOCK]()
->
-> - [PERCPU]()
->
-> - [Buddy]()
->
-> - [Slab]()
->
-> - [Slub]()
->
-> - [Slob]()
->
-> - [VMALLOC]()
->
-> - [KMAP]()
->
-> - [FIXMAP]()
+> - [Linux 分配器历史](#T)
 
 ----------------------------------
 
@@ -871,7 +862,57 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 
 > - [Initcall 机制调试说明](#C00032)
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="T"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+
+#### MMU 历史版本
+
+> - [Bootmem 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-bootmem/#H)
+>
+> - [MEMBLOCK 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-MEMBLOCK/#H)
+>
+> - [PERCPU 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-PERCPU/#H)
+>
+> - [Buddy 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-BUDDY/#H)
+>
+> - [PCP 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-PCP/#H)
+>
+> - [SLAB 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-SLAB/#H)
+>
+> - [SLUB 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-SLUB/#H)
+>
+> - [SLOB 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-SLOB/#H)
+>
+> - [VMALLOC 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-VMALLOC/#H)
+>
+> - [KMAP 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-KMAP/#H)
+>
+> - [FIXMAP 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-FIXMAP/#H)
+>
+> - [DMA 内存分配器历史版本](https://biscuitos.github.io/blog/HISTORY-DMA/#H)
+>
+> - [CMA 内存分配器历史版本](https://biscuitos.github.io/blog/HISTORY-CMA/#H)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 -----------------------------------------------
+
+<span id="R"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### MMU 时间轴
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000999.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------
 
 #### <span id="Z0">附录</span>
 
