@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  ""
+title:  "X"
 date:   2018-12-10 09:13:33 +0800
 categories: [Top]
 excerpt: Catalogue.
@@ -77,55 +77,35 @@ tags:
 
 ## [内存管理]()
 
-> - [MMU: Memory Manager Unit]()
+> - [MMU History Project](https://biscuitos.github.io/blog/HISTORY-MMU/)
 >
->   - [MMU on linux 2.6.12]()
->
->   - [MMU on linux 2.6.13]()
->
->   - [MMU on linux 2.6.14]()
->
-> - [Bootmem Allocator]()
+> - [Bootmem Allocator](https://biscuitos.github.io/blog/HISTORY-bootmem/)
 >
 > - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
 >
-> - [PERCPU Memory Allocator]()
+> - [PERCPU Memory Allocator](https://biscuitos.github.io/blog/HISTORY-PERCPU/)
 >
-> - [Buddy Memory Allocator]()
+> - [Buddy Memory Allocator](https://biscuitos.github.io/blog/HISTORY-buddy/)
 >
-> - [PCP Memory Allocator]()
+> - [PCP Memory Allocator](https://biscuitos.github.io/blog/HISTORY-PCP/)
 >
-> - [SLAB Memory Allocator]()
+> - [SLAB Memory Allocator](https://biscuitos.github.io/blog/HISTORY-SLAB/)
 >
 > - [SLUB Memory Allocator]()
 >
 > - [SLOB Memory Allocator]()
 >
-> - [VMALLOC Memory Allocator]()
+> - [VMALLOC Memory Allocator](https://biscuitos.github.io/blog/HISTORY-VMALLOC/)
 >
-> - [KMAP Memory Allocator]()
+> - [KMAP Memory Allocator](https://biscuitos.github.io/blog/HISTORY-KMAP/)
 >
-> - [Fixmap Memory Allcator]()
+> - [Fixmap Memory Allcator](https://biscuitos.github.io/blog/HISTORY-FIXMAP/)
 >
 > - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
 >
 > - [Mempool/Emergency pool]()
 >
 > - [Zone (DMA/Normal/Highmem)]()
->
-> - [Kswap]()
->
-> - [Swap]()
->
-> - [Page Table]()
->
-> - [TLB]()
->
-> - [Page Fault]()
->
-> - [CACHE]()
->
-> - [VMstat]()
 >
 > - [Shmem: tmpfs filesystem]()
 >
@@ -161,23 +141,23 @@ tags:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
-## [系统调用]()
+## [虚拟文件系统]()
 
 > - [系统调用](https://biscuitos.github.io/blog/SYSCALL)
 >
-> - [ARM32 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+>   - [ARM32 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
 >
-> - [ARM64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+>   - [ARM64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
 >
-> - [i386 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+>   - [i386 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
 >
-> - [X86_64 架构中添新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+>   - [X86_64 架构中添新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
 >
-> - [RISCV32 架构中添新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+>   - [RISCV32 架构中添新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
 >
-> - [RISCV64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+>   - [RISCV64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
 >
-> - [sys_open](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
+>   - [sys_open](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
