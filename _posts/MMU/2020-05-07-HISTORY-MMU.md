@@ -11,6 +11,8 @@ tags:
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
+>
+> Wechat: Zhang514981221
 
 #### 目录
 
@@ -80,8 +82,11 @@ tags:
 
 #### 项目介绍
 
-BiscuitOS Memory Manager Unit History 项目的目的是使用模块的方式构建多个
-非常早期的可运行可调式的 Linux 内存管理子系统，该系统包含了基础的内存管理器: 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001042.png)
+
+BiscuitOS Memory Manager Unit History 项目是使用内核模块的方式，从系统预留的
+物理内存上构建一个早期的 Linux 内核管理子系统，并在上面实现多个内存管理器
+和内存行为. 该系统包含了基础的内存管理器: 
 
 {% highlight c %}
 # Memory Allocator
@@ -114,8 +119,24 @@ BiscuitOS Memory Manager Unit History 项目的目的是使用模块的方式构
 10. Mempool 
 {% endhighlight %}
 
-通过以上功能建立一个独立真实可用的内存管理子系统。基于该模块构建不同历史版本
-的内存管理子系统，并通过模块进行实现以及实践.
+通过以上功能建立一个独立真实可用的内存管理子系统。项目基于该模块构建不同历
+史版本的内存管理子系统，以便给开发者提供一个分析运行多个历史版本的 Linux
+内存管理子系统. 目前该项目支持的 Linux 版本如下:
+
+{% highlight bash %}
+# Kernel Version
+Linux 2.6.12
+Linux 2.6.12.1
+Linux 2.6.12.2
+Linux 2.6.12.3
+Linux 2.6.12.4
+Linux 2.6.12.5
+Linux 2.6.12.6
+Linux 2.6.13
+Linux 2.6.13.1
+Linux 2.6.14
+Linux 2.6.15
+{% endhighlight %}
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -181,9 +202,11 @@ Linux 早期的内存管理子系统版本，开发者可以选择相对简单�
 ###### <span id="A10000004">动手写内存管理</span>
 
 该项目一个比较有趣的用途就是参照这个项目，开发者独立建立一个模块，然后从
-第一行代码开始实现一个最简单版本的内存分配器。这也是这个项目比较推荐的
+第一行代码开始实现一个最简单版本的内存管理子系统，这也是这个项目比较推荐的
 用途。不仅可以锻炼完整项目开发经验，并且可以通过解决开发过程中遇到的 bug
-来增加自己解决问题的能力。
+来增加自己解决问题的能力。具体过程可以参考:
+
+> - [动手构建一个内存管理子系统](https://biscuitos.github.io/blog/Design-MMU/)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -909,6 +932,18 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 #### MMU 时间轴
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000999.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="D"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+
+#### MMU 进阶研究
+
+> - [动手构建一个内存管理子系统](https://biscuitos.github.io/blog/Design-MMU/)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 

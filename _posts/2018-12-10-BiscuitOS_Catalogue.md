@@ -39,6 +39,86 @@ tags:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
+## [内存管理]()
+
+> - [Linux MMU History Project](https://biscuitos.github.io/blog/HISTORY-MMU/)
+>
+> - [自己动手设计一个内存管理子系统](https://biscuitos.github.io/blog/Design-MMU/)
+>
+> - [Bootmem Allocator](https://biscuitos.github.io/blog/HISTORY-bootmem/)
+>
+> - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+>
+> - [PERCPU Memory Allocator](https://biscuitos.github.io/blog/HISTORY-PERCPU/)
+>
+> - [Buddy Memory Allocator](https://biscuitos.github.io/blog/HISTORY-buddy/)
+>
+> - [PCP Memory Allocator](https://biscuitos.github.io/blog/HISTORY-PCP/)
+>
+> - [SLAB Memory Allocator](https://biscuitos.github.io/blog/HISTORY-SLAB/)
+>
+> - [SLUB Memory Allocator]()
+>
+> - [SLOB Memory Allocator]()
+>
+> - [VMALLOC Memory Allocator](https://biscuitos.github.io/blog/HISTORY-VMALLOC/)
+>
+> - [KMAP Memory Allocator](https://biscuitos.github.io/blog/HISTORY-KMAP/)
+>
+> - [Fixmap Memory Allcator](https://biscuitos.github.io/blog/HISTORY-FIXMAP/)
+>
+> - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
+>
+> - [Memory Allocator Establish/Running on Userspace](https://biscuitos.github.io/blog/Memory-Userspace/)
+>
+>   - [MEMBLOCAK Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#B)
+>
+>   - [PERCPU(UP) Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#C)
+>
+>   - [PERCPU(SMP) Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#D)
+>
+>   - [Buddy-Normal Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#E)
+>
+>   - [Buddy-HighMEM Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#F)
+>
+>   - [PCP Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#G)
+>
+>   - [Slub Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#H)
+>
+>   - [Kmem_cache Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#J)
+>
+>   - [Kmalloc Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#K)
+>
+>   - [NAME Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#L)
+>
+>   - [VMALLOC Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#M)
+>
+>   - [KMAP Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#N)
+>
+>   - [Fixmap Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#P)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
+
+## [虚拟文件系统]()
+
+> - [系统调用](https://biscuitos.github.io/blog/SYSCALL)
+>
+>   - [ARM32 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+>
+>   - [ARM64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+>
+>   - [i386 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+>
+>   - [X86_64 架构中添新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+>
+>   - [RISCV32 架构中添新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+>
+>   - [RISCV64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+>
+>   - [sys_open](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 ## [Basic Research]()
 
 > - [Bit: bitmap/bitops/bitmask/bit find](https://biscuitos.github.io/blog/BITMAP/)
@@ -72,92 +152,6 @@ tags:
 > - 锁/同步
 >
 >   - [atomic 原子操作](https://biscuitos.github.io/blog/ATOMIC/)
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
-
-## [内存管理]()
-
-> - [MMU History Project](https://biscuitos.github.io/blog/HISTORY-MMU/)
->
-> - [Bootmem Allocator](https://biscuitos.github.io/blog/HISTORY-bootmem/)
->
-> - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
->
-> - [PERCPU Memory Allocator](https://biscuitos.github.io/blog/HISTORY-PERCPU/)
->
-> - [Buddy Memory Allocator](https://biscuitos.github.io/blog/HISTORY-buddy/)
->
-> - [PCP Memory Allocator](https://biscuitos.github.io/blog/HISTORY-PCP/)
->
-> - [SLAB Memory Allocator](https://biscuitos.github.io/blog/HISTORY-SLAB/)
->
-> - [SLUB Memory Allocator]()
->
-> - [SLOB Memory Allocator]()
->
-> - [VMALLOC Memory Allocator](https://biscuitos.github.io/blog/HISTORY-VMALLOC/)
->
-> - [KMAP Memory Allocator](https://biscuitos.github.io/blog/HISTORY-KMAP/)
->
-> - [Fixmap Memory Allcator](https://biscuitos.github.io/blog/HISTORY-FIXMAP/)
->
-> - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
->
-> - [Mempool/Emergency pool]()
->
-> - [Zone (DMA/Normal/Highmem)]()
->
-> - [Shmem: tmpfs filesystem]()
->
-> - [Memory Allocator on Userspace](https://biscuitos.github.io/blog/Memory-Userspace/)
->
->   - [MEMBLOCAK Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#B)
->
->   - [PERCPU(UP) Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#C)
->
->   - [PERCPU(SMP) Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#D)
->
->   - [Buddy-Normal Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#E)
->
->   - [Buddy-HighMEM Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#F)
->
->   - [PCP Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#G)
->
->   - [Slub Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#H)
->
->   - [Kmem_cache Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#J)
->
->   - [Kmalloc Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#K)
->
->   - [NAME Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#L)
->
->   - [VMALLOC Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#M)
->
->   - [KMAP Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#N)
->
->   - [Fixmap Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#P)
->
-> - [Debug/Performance analysic Tools for MMU/VM/PM]()
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
-
-## [虚拟文件系统]()
-
-> - [系统调用](https://biscuitos.github.io/blog/SYSCALL)
->
->   - [ARM32 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
->
->   - [ARM64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
->
->   - [i386 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
->
->   - [X86_64 架构中添新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
->
->   - [RISCV32 架构中添新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
->
->   - [RISCV64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
->
->   - [sys_open](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
