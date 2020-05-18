@@ -10,7 +10,7 @@ tags:
 
 ![](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000210.gif)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001041.JPG)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
 
 #### 目录
 

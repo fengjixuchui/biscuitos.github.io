@@ -9,7 +9,7 @@ tags:
 
 ![](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000204.gif)
 
-> Blog State: In maintenance
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
 
 ## <span id="Kernel_Establish">Kernel Establish</span>
 
