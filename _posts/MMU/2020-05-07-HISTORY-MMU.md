@@ -50,7 +50,7 @@ tags:
 >  
 >   - [PERCPU 分配器](https://biscuitos.github.io/blog/HISTORY-PERCPU)
 >  
->   - [Buddy 分配器](https://biscuitos.github.io/blog/HISTORY-BUDDY)
+>   - [Buddy 分配器](https://biscuitos.github.io/blog/HISTORY-buddy)
 >  
 >   - [PCP 分配器](https://biscuitos.github.io/blog/HISTORY-PCP)
 >  
@@ -901,7 +901,7 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 >
 > - [PERCPU 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-PERCPU/#H)
 >
-> - [Buddy 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-BUDDY/#H)
+> - [Buddy 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-buddy/#H)
 >
 > - [PCP 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-PCP/#H)
 >
