@@ -69,7 +69,7 @@ tags:
 >
 > - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
 >
-> - [Memory Allocator Establish/Running on Userspace](https://biscuitos.github.io/blog/Memory-Userspace/)
+> - [用户空间实现 Linux 内核分配器](https://biscuitos.github.io/blog/Memory-Userspace/)
 >
 >   - [MEMBLOCAK Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#B)
 >
