@@ -125,7 +125,7 @@ tags:
 >
 > - [GNU 链接脚本](https://biscuitos.github.io/blog/LD/)
 >
-> - [Device-Tree](https://biscuitos.github.io/blog/DTS/)
+> - [Device Tree: DTS/DTB/FDT](https://biscuitos.github.io/blog/DTS/)
 >
 > - [ARM Assembly](https://biscuitos.github.io/blog/MMU-ARM32-ASM-index/)
 >   <span id="ARM_ASM"></span>
