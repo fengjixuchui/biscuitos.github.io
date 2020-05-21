@@ -8,11 +8,11 @@ tags:
   - MMU
 ---
 
-> [GitHub: MEMBLOCK memblock_alloc_base()](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_alloc_base)
->
-> Email: BuddyZhang1 <buddy.zhang@aliyun.com>
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
 
-# 目录
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+
+#### 目录
 
 > [原理](#原理)
 >
@@ -24,9 +24,9 @@ tags:
 
 ---------------------------------------------------
 
-# <span id="原理">原理</span>
+#### <span id="原理">原理</span>
 
-#### MEMBLOCK 内存分配器原理
+###### MEMBLOCK 内存分配器原理
 
 MEMBLOCK 内存分配器作为 arm32 早期的内存管理器，维护了两种内存。第一种内存是系统可用
 的物理内存，即系统实际含有的物理内存，其值从 DTS 中进行配置，并通过 uboot 实际探测之
@@ -192,19 +192,17 @@ static struct memblock_region memblock_memory_init_regions[INIT_MEMBLOCK_REGIONS
 static struct memblock_region memblock_reserved_init_regions[INIT_MEMBLOCK_RESERVED_REGIONS] __initdata_memblock
 {% endhighlight %}
 
-#### MEMBLOCK 内存分配器提供的逻辑
+###### MEMBLOCK 内存分配器提供的逻辑
 
 MEMBLOCK 通过上面的数据结构管理 arm32 早期的物理内存，使操作系统能够分配或回收可用的
 物理内存，也可以将指定的物理内存预留给操作系统。通过这样的逻辑操作，早期的物理的内存得
 到有效的管理，防止内存泄露和内存分配失败等问题。
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 --------------------------------------------------
 
-# <span id="源码分析">源码分析</span>
-
-> Arch： arm32
->
-> Version： Linux 5.x
+#### <span id="源码分析">源码分析</span>
 
 函数： memblock_alloc_base()
 
@@ -224,7 +222,9 @@ memblock_alloc_base
         |---memblock_reserve
 {% endhighlight %}
 
-##### memblock_alloc_base
+------------------------------------
+
+###### memblock_alloc_base
 
 {% highlight c %}
 phys_addr_t __init memblock_alloc_base(phys_addr_t size, phys_addr_t align, phys_addr_t max_addr)
@@ -247,7 +247,9 @@ phys_addr_t __init memblock_alloc_base(phys_addr_t size, phys_addr_t align, phys
 函数调用 __memblock_alloc_base() 函数获得一块可用物理内存区块，如果找到的
 物理内存区块的起始地址为 0，那么就 panic。反之返回找到的地址。
 
-##### __memblock_alloc_base
+----------------------------------
+
+###### \_\_memblock_alloc_base
 
 {% highlight c %}
 phys_addr_t __init __memblock_alloc_base(phys_addr_t size, phys_addr_t align, phys_addr_t max_addr)
@@ -262,7 +264,9 @@ phys_addr_t __init __memblock_alloc_base(phys_addr_t size, phys_addr_t align, ph
 
 函数直接调用 memblock_alloc_base_nid() 函数分配所需内存。
 
-##### memblock_alloc_base_nid
+---------------------------------------
+
+###### memblock_alloc_base_nid
 
 {% highlight c %}
 phys_addr_t __init memblock_alloc_base_nid(phys_addr_t size,
@@ -279,7 +283,9 @@ phys_addr_t __init memblock_alloc_base_nid(phys_addr_t size,
 函数直接调用 memblock_alloc_range_nid() 函数，分配一块可用的物理内存，并将
 这块内存区加入预留区内。
 
-##### memblock_alloc_range_nid
+------------------------------------------
+
+###### memblock_alloc_range_nid
 
 {% highlight c %}
 static phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
@@ -317,7 +323,9 @@ static phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
 memblock_find_in_range_node() 函数从可用内存区中找一块大小为 size 的物理内存区块，
 然后调用 memblock_reseve() 函数在找到的情况下，将这块物理内存区块加入到预留区内。
 
-##### memblock_find_in_range_node
+--------------------------------------
+
+###### memblock_find_in_range_node
 
 代码较长，分段解析
 
@@ -425,7 +433,9 @@ return __memblock_find_range_top_down(start, end, size, align, nid,
 分配，函数调用 __memblock_find_range_top_down() 函数，并直接返回查找到的
 值。
 
-##### __memblock_find_range_top_down
+------------------------------------
+
+###### \_\_memblock_find_range_top_down
 
 {% highlight c %}
 /**
@@ -478,9 +488,13 @@ flags 所查找内存区块的标志。
 参数到第三个参数之间，所以可以看到，所遍历到的内存区块的起始地址要位于所查找
 的范围之内。如果找到就调用 round_down() 函数从找到的顶部找一块 size 大小
 的内存，最后将符合条件的地址返回。for_each_free_mem_range_reverse() 函数
-源码分析请看： [for_each_free_mem_range_reverse() 源码](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/#源码分析)
+源码分析请看:
 
-##### __memblock_find_range_bottom_up
+> - [for_each_free_mem_range_reverse() 源码](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/#源码分析)
+
+-------------------------------------------
+
+###### \_\_memblock_find_range_bottom_up
 
 {% highlight c %}
 /**
@@ -529,15 +543,25 @@ flags 所查找内存区块的标志。
 函数，以确保要查找的范围在遍历到的内存区内。如果找到，那么调用 round_up()
 函数从找到的内存区底部到顶部，大小为 size 的内存区块。如果找到，那么就
 返回这个地址；如果没找到，那么继续遍历可用物理内存区块。最后找到符合要求的
-地址，for_each_free_mem_range() 函数源码分析请看：[for_each_free_mem_range() 源码分析](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/#源码分析)
+地址，for_each_free_mem_range() 函数源码分析请看:
 
-##### memblock_reserve
+> - [for_each_free_mem_range() 源码分析](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/#源码分析)
 
-memblock_reserve() 函数源码分析请看：[memblock_reserve() 源码](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/#源码分析)
+----------------------------------------
+
+###### memblock_reserve
+
+memblock_reserve() 函数源码分析请看:
+
+> - [memblock_reserve() 源码](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/#源码分析)
 
 ---------------------------------------------
 
-# <span id="实践">实践</span>
+<span id="实践"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+
+### 实践
 
 > [实践目的](#驱动实践目的)
 >
@@ -557,20 +581,28 @@ memblock_reserve() 函数源码分析请看：[memblock_reserve() 源码](https:
 >
 > [驱动分析](#驱动分析)
 
-#### <span id="驱动实践目的">实践目的</span>
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+###### <span id="驱动实践目的">实践目的</span>
 
 memblock_alloc_base() 函数用于从指定地址之前分配物理内存，所以本次实践的目的
 就是从指定地址之后分配一定长度的物理内存。
 
-#### <span id="驱动实践准备">实践准备</span>
+-----------------------------------
+
+###### <span id="驱动实践准备">实践准备</span>
 
 由于本次实践是基于 Linux 5.x 的 arm32 系统，所以请先参考 Linux 5.x arm32
 开发环境搭建方法以及重点关注驱动实践一节，请参考下例文章，选择一个 linux 5.x
-版本进行实践，后面内容均基于 linux 5.x 继续讲解，文章链接如下：
+版本进行实践，后面内容均基于 linux 5.x 继续讲解，文章链接如下:
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
-#### <span id="驱动源码">驱动源码</span>
+-----------------------------------------
+
+###### <span id="驱动源码">驱动源码</span>
 
 准备好开发环境之后，下一步就是准备实践所用的驱动源码，驱动的源码如下：
 
@@ -671,7 +703,9 @@ int __init debug_memblock_alloc_base(void)
 #endif
 {% endhighlight %}
 
-#### <span id="驱动安装">驱动安装</span>
+-------------------------------------------
+
+###### <span id="驱动安装">驱动安装</span>
 
 由于这部分驱动涉及到较早的内核启动接管，所以不能直接以模块的形式编入到内核，
 需要直接编译进内核，首先将驱动放到 drivers/BiscuitOS/ 目录下，命名为
@@ -711,7 +745,9 @@ index 82004c9a2..1e4052a4b 100644
 +obj-$(CONFIG_MEMBLOCK_ALLOCATOR) += memblock.o
 {% endhighlight %}
 
-#### <span id="驱动配置">驱动配置</span>
+-------------------------------
+
+###### <span id="驱动配置">驱动配置</span>
 
 驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选如下选项，如下：
 
@@ -724,9 +760,11 @@ Device Driver--->
 
 具体过程请参考：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
-#### <span id="驱动增加调试点">增加调试点</span>
+----------------------------------
+
+###### <span id="驱动增加调试点">增加调试点</span>
 
 驱动运行还需要在内核的指定位置添加调试点，由于该驱动需要在内核启动阶段就使
 用，请参考下面 patch 将源码指定位置添加调试代码：
@@ -760,19 +798,23 @@ ck_add
  	early_ioremap_init();
 {% endhighlight %}
 
-#### <span id="驱动编译">驱动编译</span>
+----------------------------------------
+
+###### <span id="驱动编译">驱动编译</span>
 
 驱动编译也请参考下面文章关于驱动编译一节：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
-#### <span id="驱动运行">驱动运行</span>
+---------------------------------------
+
+###### <span id="驱动运行">驱动运行</span>
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
-驱动运行的结果如下：
+驱动运行的结果如下:
 
 {% highlight bash %}
 CPU: ARMv7 Processor [410fc090] revision 0 (ARMv7), cr=10c5387d
@@ -785,7 +827,9 @@ Malformed early option 'earlycon'
 Memory policy: Data cache writeback
 {% endhighlight %}
 
-#### <span id="驱动分析">驱动分析</span>
+-----------------------------------------
+
+###### <span id="驱动分析">驱动分析</span>
 
 在系统启动初期，可用物理内存的地址范围就是真实的物理内存范围，使用
 for_each_memblock() 函数遍历预留内存的各个内存区块，代码如下：
@@ -853,24 +897,22 @@ Region: 0x9ff00000 - 0xa0000000
 0x9ff00000, 长度为 0x100000 的内存区，再者，预留区内多了一块内存区块：
 [0x9ff00000, 0xa0000000], 因此分配成功。更多原理请看源码分析。
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 -----------------------------------------------
 
-# <span id="附录">附录</span>
+#### <span id="附录">附录</span>
 
 > [MEMBLOCK 内存分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
->
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Blog](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
->
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
 
-## 赞赏一下吧 🙂
+#### 赞赏一下吧 🙂
 
 ![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)

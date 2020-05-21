@@ -8,11 +8,11 @@ tags:
   - MMU
 ---
 
-> [GitHub: MEMBLOCK __memblock_alloc_base()](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/__memblock_alloc_base)
->
-> Email: BuddyZhang1 <buddy.zhang@aliyun.com>
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
 
-# 目录
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+
+#### 目录
 
 > [原理](#原理)
 >
@@ -24,9 +24,9 @@ tags:
 
 ---------------------------------------------------
 
-# <span id="原理">原理</span>
+#### <span id="原理">原理</span>
 
-#### MEMBLOCK 内存分配器原理
+###### MEMBLOCK 内存分配器原理
 
 MEMBLOCK 内存分配器作为 arm32 早期的内存管理器，维护了两种内存。第一种内存是系统可用
 的物理内存，即系统实际含有的物理内存，其值从 DTS 中进行配置，并通过 uboot 实际探测之
@@ -192,19 +192,17 @@ static struct memblock_region memblock_memory_init_regions[INIT_MEMBLOCK_REGIONS
 static struct memblock_region memblock_reserved_init_regions[INIT_MEMBLOCK_RESERVED_REGIONS] __initdata_memblock
 {% endhighlight %}
 
-#### MEMBLOCK 内存分配器提供的逻辑
+###### MEMBLOCK 内存分配器提供的逻辑
 
 MEMBLOCK 通过上面的数据结构管理 arm32 早期的物理内存，使操作系统能够分配或回收可用的
 物理内存，也可以将指定的物理内存预留给操作系统。通过这样的逻辑操作，早期的物理的内存得
 到有效的管理，防止内存泄露和内存分配失败等问题。
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 --------------------------------------------------
 
-# <span id="源码分析">源码分析</span>
-
-> Arch： arm32
->
-> Version： Linux 5.x
+#### <span id="源码分析">源码分析</span>
 
 函数： __memblock_alloc_base()
 
@@ -222,7 +220,9 @@ __memblock_alloc_base
     |---memblock_reserve
 {% endhighlight %}
 
-##### __memblock_alloc_base
+--------------------------------
+
+###### \_\_memblock_alloc_base
 
 {% highlight c %}
 phys_addr_t __init __memblock_alloc_base(phys_addr_t size, phys_addr_t align, phys_addr_t max_addr)
@@ -237,7 +237,9 @@ phys_addr_t __init __memblock_alloc_base(phys_addr_t size, phys_addr_t align, ph
 
 函数直接调用 memblock_alloc_base_nid() 函数分配所需内存。
 
-##### memblock_alloc_base_nid
+----------------------------------
+
+###### memblock_alloc_base_nid
 
 {% highlight c %}
 phys_addr_t __init memblock_alloc_base_nid(phys_addr_t size,
@@ -254,7 +256,9 @@ phys_addr_t __init memblock_alloc_base_nid(phys_addr_t size,
 函数直接调用 memblock_alloc_range_nid() 函数，分配一块可用的物理内存，并将
 这块内存区加入预留区内。
 
-##### memblock_alloc_range_nid
+----------------------------------
+
+###### memblock_alloc_range_nid
 
 {% highlight c %}
 static phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
@@ -292,7 +296,9 @@ static phys_addr_t __init memblock_alloc_range_nid(phys_addr_t size,
 memblock_find_in_range_node() 函数从可用内存区中找一块大小为 size 的物理内存区块，
 然后调用 memblock_reseve() 函数在找到的情况下，将这块物理内存区块加入到预留区内。
 
-##### memblock_find_in_range_node
+-------------------------------------------
+
+###### memblock_find_in_range_node
 
 代码较长，分段解析
 
@@ -400,7 +406,9 @@ return __memblock_find_range_top_down(start, end, size, align, nid,
 分配，函数调用 __memblock_find_range_top_down() 函数，并直接返回查找到的
 值。
 
-##### __memblock_find_range_top_down
+----------------------------------------------
+
+###### \_\_memblock_find_range_top_down
 
 {% highlight c %}
 /**
@@ -455,7 +463,9 @@ flags 所查找内存区块的标志。
 的内存，最后将符合条件的地址返回。for_each_free_mem_range_reverse() 函数
 源码分析请看： [for_each_free_mem_range_reverse() 源码](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/#源码分析)
 
-##### __memblock_find_range_bottom_up
+-----------------------------------------
+
+###### \_\_memblock_find_range_bottom_up
 
 {% highlight c %}
 /**
@@ -504,9 +514,13 @@ flags 所查找内存区块的标志。
 函数，以确保要查找的范围在遍历到的内存区内。如果找到，那么调用 round_up()
 函数从找到的内存区底部到顶部，大小为 size 的内存区块。如果找到，那么就
 返回这个地址；如果没找到，那么继续遍历可用物理内存区块。最后找到符合要求的
-地址，for_each_free_mem_range() 函数源码分析请看：[for_each_free_mem_range() 源码分析](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/#源码分析)
+地址，for_each_free_mem_range() 函数源码分析请看:
 
-##### memblock_reserve
+> - [for_each_free_mem_range() 源码分析](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/#源码分析)
+
+----------------------------------
+
+###### memblock_reserve
 
 memblock_reserve() 函数源码分析请看：[memblock_reserve() 源码](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/#源码分析)
 

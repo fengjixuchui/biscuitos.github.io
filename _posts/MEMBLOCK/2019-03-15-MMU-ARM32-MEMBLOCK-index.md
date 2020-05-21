@@ -8,23 +8,15 @@ tags:
   - MMU
 ---
 
-![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000201.gif)
+![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000202.gif)
 
-> [MEMBLOCK Allocator GitHub Main Page](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/)
->
-> Email: BuddyZhang1 <buddy.zhang@aliyun.com>
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
 
-# 目录
+#### 目录
 
 > - [MEMBLOCK 内存分配器原理](#MEMBLOCK 原理)
 >
 > - [MEMBLOCK 内存分配器最小实践](#MEMBLOCK 内存分配器最小实践)
->
->   - [MEMBLOCK 分配可用物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_range/)
->
->   - [MEMBLOCK 加入预留区](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
->
->   - [MEMBLOCK 释放物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_free/)
 >
 > - [MEMBLOCK 内存分配器的使用](#MEMBLOCK 内存分配器的使用)
 >
@@ -32,13 +24,11 @@ tags:
 >
 > - [MEMBLOCK 内存分配器调试](#MEMBLOCK 调试)
 >
-> - [MEMBLOCK 内存分配器进阶实践](#内存分配器进阶实践)
+> - [MEMBLOCK 分配器时间轴](#A)
 >
->   - [MEMBLOCK 内存块合并的分析与实践](#MEMBLOCK 内存块合并的分析与实践)
+> - [MEMBLOCK 分配器历史补丁](#B)
 >
->   - [MEMBLOCK 内存块拆分的分析与实践](#MEMBLOCK 内存块拆分的分析与实践)
->
->   - [MEMBLOCK 更多实践](#内存分配器进阶实践)
+> - [MEMBLOCK 内存分配器进阶研究](#内存分配器进阶实践)
 >
 > - [MEMBLOCK API List](#MEMBLOCK_API-LIST)
 >
@@ -47,9 +37,9 @@ tags:
 --------------------------------------------------------------
 <span id="MEMBLOCK 原理"></span>
 
-![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000T.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
 
-# MEMBLOCK 内存分配器原理
+#### MEMBLOCK 内存分配器原理
 
 MEMBLOCK 内存分配器作为 arm32 早期的内存管理器，用于维护系统可用的物理内存。
 系统启动过程中，可以使用 MEMBLOCK 内存分配器获得所需的物理内存，也可以将特定
@@ -103,14 +93,15 @@ MEMBLOCK
 更多 MEMBLOCK 内存分配器原理，请看源码分析部分。
 
 --------------------------------------------------------------
+
 <span id="MEMBLOCK 内存分配器最小实践"></span>
 
-![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000G.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
 
-# MEMBLOCK 内存分配器最小实践
+#### MEMBLOCK 内存分配器最小实践
 
 为了让开发者对 MEMBLOCK 内存分配器有更多的认识，开发者可以选择下面任何一个
-实践主题进行实践，推荐多实践：
+实践主题进行实践，推荐多实践:
 
 > - [MEMBLOCK 分配器 -- 从 MEMBLOCK 分配器中获得一块可用物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_alloc_range/)
 >
@@ -121,9 +112,9 @@ MEMBLOCK
 ---------------------------------------------------------------
 <span id="MEMBLOCK 内存分配器的使用"></span>
 
-![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000R.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
 
-# MEMBLOCK 内存分配器的使用
+#### MEMBLOCK 内存分配器的使用
 
 MEMBLOCK 分配器提供了很多接口供其他模块使用，开发者可以参考本节内容来
 了解 MEMBLOCK 分配器的使用方法。
@@ -140,7 +131,7 @@ MEMBLOCK 分配器提供了很多接口供其他模块使用，开发者可以�
 >
 > - [MEMBLOCK 分配器信息](#MEMBLOCK 分配器信息)
 
-##### <span id="分配物理内存">分配物理内存</span>
+###### <span id="分配物理内存">分配物理内存</span>
 
 MEMBLOCK 分配器所管理的是系统可用的物理内存，在系统启动初期，即
 start_kernel->setup_arch->setup_machine_fdt() 函数之后就可以使用 MEMBLOCK
@@ -152,7 +143,7 @@ start_kernel->setup_arch->setup_machine_fdt() 函数之后就可以使用 MEMBLO
 >
 > - [__memblock_alloc_base: 从指定地址之前开始分配物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__memblock_alloc_base/)
 
-##### <span id="释放物理内存">释放物理内存</span>
+###### <span id="释放物理内存">释放物理内存</span>
 
 当使用完从 MEMBLOCK 分配器中申请的内存时，可以调用函数将这些物理内存归还给
 MEMBLOCK 分配器，分配器就将这些物理内存从预留区中移除，然后放入到可用物理
@@ -162,7 +153,7 @@ MEMBLOCK 分配器，分配器就将这些物理内存从预留区中移除，�
 >
 > - [memblock_remove: 从可用物理内存区内移除一段物理内存](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
 
-##### <span id="添加可用物理内存">添加可用物理内存</span>
+###### <span id="添加可用物理内存">添加可用物理内存</span>
 
 MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加新的可用物理内存，
 即往 MEMBLOCK 分配器的可用物理内存区添加新的物理块，其提供的 API 以及 API 的
@@ -172,7 +163,7 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 >
 > - [memblock_add_range: 往 MEMBLOCK 的可用内存区添加一块物理内存区块](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range/)
 
-##### <span id="添加预留区">添加预留区</span>
+###### <span id="添加预留区">添加预留区</span>
 
 内核启动过程中，需要将某些物理内存预留给特定功能使用，这时可以使用 MEMBLOCK
 分配器将这些物理内存区块加入到预留区维护起来，其提供的 API 以及 API 的具体实践如下：
@@ -181,7 +172,7 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 >
 > - [memblock_add_range: 往 MEMBLOCK 的预留区添加一块物理内存区块](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range/)
 
-##### <span id="遍历内存区">遍历内存区</span>
+###### <span id="遍历内存区">遍历内存区</span>
 
 在内核中，有的时候需要遍历某个内存区内的所有内存区块，以此对各内存区进行安全合理
 的操作，MEMBLOCK 分配器也提供了很多 API 以及 API 实践，如下：
@@ -196,7 +187,7 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 >
 > - [for_each_reserved_mem_region: 遍历预留区内的所有内存区块](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_reserved_mem_region/)
 
-##### <span id="MEMBLOCK 分配器信息">MEMBLOCK 分配器信息</span>
+###### <span id="MEMBLOCK 分配器信息">MEMBLOCK 分配器信息</span>
 
 有时需要通过 MEMBLOCK 分配器获得关于物理内存等消息，MEMBLOCK 分配器也提供
 了很多 API 供使用，如下：
@@ -238,9 +229,9 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 --------------------------------------------------------------
 <span id="MEMBLOCK 源码分析"></span>
 
-![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000X.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
 
-# MEMBLOCK 源码分析
+#### MEMBLOCK 源码分析
 
 > - [MEMBLOCK 内存分配器构建](#MEMBLOCK 内存分配器构建)
 >
@@ -260,7 +251,7 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 >
 >   - [bootmem_init](#bootmem_init)
 
-#### <span id="MEMBLOCK 内存分配器构建">MEMBLOCK 内存分配器构建</span>
+###### <span id="MEMBLOCK 内存分配器构建">MEMBLOCK 内存分配器构建</span>
 
 MEMBLOCK 内存分配器的创建为 /mm/memblock.c 文件中，在内核镜像加载到内存
 之后，CPU 的执行权交给 Linux 之后，Linux 就根据这个文件，构建最原始的
@@ -302,7 +293,11 @@ MEMBLOCK
 每层逻辑单元采用不同的数据结构进行维护，每种数据结构的相互配合，共同作为
 MEMBLOCK 内存分配器的基础框架。
 
-##### <span id="第一层数据结构">第一层数据结构</span>
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------------------
+
+###### <span id="第一层数据结构">第一层数据结构</span>
 
 第一层逻辑单元用于维护系统的物理内存，采用数据结构 struct memblock 进行维护，
 其定义如下：
@@ -357,12 +352,12 @@ physmem 成员是一个 struct memblock_type 结构，这个成员用于指向�
 内核就开始构建内核的代码段，数据段等多种段，毕竟内核也是一个体积巨大的程序。
 在这个阶段，与 MEMBLOCK 有关的操作如下：
 
-###### <span id="创建section">创建 __init_memblock，__initdata_memblock section</span>
+###### <span id="创建section">创建 \_\_init_memblock，\_\_initdata_memblock section</span>
 
 内核为 MEMBLOCK 内存分配器创建了一些私有的 section，这些 section 用于存放于
-MEMBLOCK 分配器有关的函数和数据，这些 section 就是 __init_memblock 和
-__initdata_memblock。__init_memblock section 用于存储与 MEMBLOCK 分配器
-相关的函数，__initdata_memblock section 用于存储与 MEMBLOCK 分配器相关的
+MEMBLOCK 分配器有关的函数和数据，这些 section 就是 \_\_init_memblock 和
+\_\_initdata_memblock。\_\_init_memblock section 用于存储与 MEMBLOCK 分配器
+相关的函数，\_\_initdata_memblock section 用于存储与 MEMBLOCK 分配器相关的
 数据，定义如下：
 
 {% highlight c %}
@@ -381,14 +376,14 @@ void memblock_discard(void);
 {% endhighlight %}
 
 从上面的定义可知，如果启动 CONFIG_ARCH_DISCARD_MEMBLOCK 宏之后，内核启动到
-后期，会将 __init_memblock 和 __initdata_memblock 这两个 section 里面的内容
+后期，会将 \_\_init_memblock 和 __initdata_memblock 这两个 section 里面的内容
 都丢弃，也就是系统正常运行之后不能再使用 MEMBLOCK 内存分配器。如果没有启用
 CONFIG_ARCH_DISCARD_MEMBLOCK 宏，那么与 MEMBLOCK 内存分配器有关的函数都会
 被加入到内核的代码段，与 MEMBLOCK 内存分配器相关的数据会被加入到内核的数据段。
 
 ###### 创建 struct memblock 实例
 
-在创建完 __init_memblock section 和 __initdata_memblock section 之后，
+在创建完 \_\_init_memblock section 和 \_\_initdata_memblock section 之后，
 MEMBLOCK 分配器开始创建 struct memblock 实例，这个实例此时作为最原始的 MEMBLOCK
 分配器，描述了系统的物理内存的初始值，其代码如下
 
@@ -417,7 +412,7 @@ struct memblock memblock __initdata_memblock = {
 {% endhighlight %}
 
 内核定义了一个名为 memblock 的 struct memblock 实例做为 MEMBLOCK 分配器
-的第一层逻辑实例。从定义可知，memblock 实例被放在 __initdata_memblock section
+的第一层逻辑实例。从定义可知，memblock 实例被放在 \_\_initdata_memblock section
 内。定义之初，memblock 就指明了 memory，reserved，physeme 三个内存区的基础布局。
 具体 memory, reserved, physeme 描述情况第二层数据结构。memblock 中还定义了
 bottom_up 成员的值为 false，那么 MEMBLOCK 分配器默认采用 top-down 的方式，即
@@ -427,7 +422,11 @@ bottom_up 成员的值为 false，那么 MEMBLOCK 分配器默认采用 top-down
 初始化完第一层逻辑之后，MEMBLOCK 分配器对内核初期的物理内存的维护就通过 memblock
 实例展开。
 
-##### <span id="第二层数据结构">第二层数据结构</span>
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------------------
+
+###### <span id="第二层数据结构">第二层数据结构</span>
 
 第二层数据结构用于维护不同类型的内存区，采用数据结构 struct memblock_type 维护，
 其源码如下：
@@ -529,7 +528,12 @@ INIT_MEMBLOCK_RESERVED_REGIONS， total_size 设置为 0. 名字设置为 "reser
 >
 > - 内存区块的合并，插入和移除
 
-##### <span id="第三层数据结构">第三层数据结构</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------------------
+
+###### <span id="第三层数据结构">第三层数据结构</span>
 
 第二层数据结构用于维护一块独立的内存区块，独立内存区块就是一定大小的物理内存区块，
 采用数据结构 struct memblock_region 维护，其源码如下：
@@ -597,7 +601,7 @@ enum memblock_flags {
 >
 > - 内存区块状态管理
 
-#### <span id="MEMBLOCK 内存分配器使用">MEMBLOCK 内存分配器使用</span>
+###### <span id="MEMBLOCK 内存分配器使用">MEMBLOCK 内存分配器使用</span>
 
 MEMBLOCK 内存分配器的使用概述为：内核在启动初期，通过 MEMBLOCK 分配器获得
 所需的物理内存，将某些物理内存添加到预留区，然后将使用完的物理内存退还给 MEMBLOCK
@@ -940,9 +944,9 @@ void __init bootmem_init(void)
 -----------------------------------------------------
 # <span id="MEMBLOCK 调试"></span>
 
-![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000D.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
 
-# MEMBLOCK 调试
+#### MEMBLOCK 调试
 
 MEMBLOCK 的调试分为启动阶段的调试和运行阶段的调试，对于启动阶段的调试，
 MEMBLOCK 分配器默认提供了 debug 功能，debug 功能主要让开发者能够更便捷的获得 MEMBLOCK
@@ -950,7 +954,7 @@ MEMBLOCK 分配器默认提供了 debug 功能，debug 功能主要让开发者�
 使用 CMDLINE 的方式传递给 kernel 参数 “memblock=debug”。在本实践平台上，开发者
 可以通过两种方法开启这个功能，如下：
 
-##### 通过 DTS 方式
+###### 通过 DTS 方式
 
 DTS 的 chosen 节点就是用来传递 CMDLINE 参数给内核，所以可以子啊 chosen 根节点的
 bootargs 属性中加入这个参数。由于实践是基于 ARM32 Vexpress V2P-CA9 平台，所以开发
@@ -962,7 +966,7 @@ chosen {
 };
 {% endhighlight %}
 
-##### 通过 uboot 传入方式
+###### 通过 uboot 传入方式
 
 Uboot 加载 kernel 完毕之后，会向 Uboot 传入启动参数，所以开发者可以在 uboot 传入
 的参数列表中加入这个参数。对于本实践平台，开发者只需修改
@@ -1032,7 +1036,11 @@ memblock_reserve: [0x9e7f2000-0x9eff1fff] memblock_alloc_internal+0x120/0x1a8
 memblock_alloc_try_nid_nopanic: 128 bytes align=0x40 nid=0 from=0x00000000 max_addr=0x00000000 setup_usemap.constprop.14+0x5c/0x68
 {% endhighlight %}
 
-### MEMBLOCK 用户空间调试
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+#### MEMBLOCK 用户空间调试
 
 Linux 也将 MEMBLOCK 的调试信息添加到 debugfs 子系统里，所以在系统正常运行之后，
 开发者也可以通过下面的办法读取 MEMBLOCK 分配器的信息：
@@ -1116,20 +1124,24 @@ cat /proc/iomem
 {% endhighlight %}
 
 
-
-
 -----------------------------------------------------
 # <span id="内存分配器进阶实践"></span>
 
-![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000S.jpg)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
 
-# 内存分配器进阶实践
+#### MEMBLOCK 进阶研究
 
 > - [MEMBLOCK 内存块合并的分析与实践](#MEMBLOCK 内存块合并的分析与实践)
 >
 > - [MEMBLOCK 内存块拆分的分析与实践](#MEMBLOCK 内存块拆分的分析与实践)
 
-#### <span id="MEMBLOCK 内存块合并的分析与实践">MEMBLOCK 内存块合并的分析与实践</span>
+--------------------------------------
+
+<span id="MEMBLOCK 内存块合并的分析与实践"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+
+#### MEMBLOCK 内存块合并的分析与实践
 
 MEMBLOCK 内存分配器将物理内存分作的可用物理内存和预留内存，不同物理内存维护在 MEMBLOCK
 分配器的不同链表上。每当往特定内存区中加入内存块的时候，就会出现新加入的内存块和原先存在
@@ -1220,9 +1232,15 @@ enum memblock_flags {
 基于上面的分析，开发者可以通过一个实际的例子来认知这个问题，以及 MEMBLOCK 如何
 处理这个问题，具体实践请看:
 
-> [MEMBLOCK 内存块合并的分析与实践之 memblock_reserve](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
+> - [MEMBLOCK 内存块合并的分析与实践之 memblock_reserve](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/)
 
-#### <span id="MEMBLOCK 内存块拆分的分析与实践">MEMBLOCK 内存块拆分的分析与实践</span>
+--------------------------------------
+
+<span id="MEMBLOCK 内存块拆分的分析与实践"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+
+#### MEMBLOCK 内存块拆分的分析与实践
 
 MEMBLOCK 内存分配器将物理内存分作的可用物理内存和预留内存，不同物理内存维护在 MEMBLOCK
 分配器的不同链表上。当 MEMBLOCK 分配器执行释放，移除操作的时候，实际上从不同的内存区链表
@@ -1235,15 +1253,17 @@ MEMBLOCK 分配器的拆分问题。
 基于上面的介绍，开发者可以通过一个实际的例子来认知这个问题，以及 MEMBLOCK 如何
 处理这个问题，具体实践请看：
 
-> [MEMBLOCK 内存块拆分的分析与实践之 memblock_remove](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
+> - [MEMBLOCK 内存块拆分的分析与实践之 memblock_remove](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------------
-# <span id="MEMBLOCK_API-LIST"></span>
 
-![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/IND00000J.jpg)
+<span id="MEMBLOCK_API-LIST"></span>
 
-# MEMBLOCK API List
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### MEMBLOCK API List
 
 > [for_each_free_mem_range](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/)
 >

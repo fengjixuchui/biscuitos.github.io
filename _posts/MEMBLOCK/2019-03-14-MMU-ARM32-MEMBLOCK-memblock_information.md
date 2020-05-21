@@ -8,11 +8,11 @@ tags:
   - MMU
 ---
 
-> [GitHub:          MEMBLOCK information helper()](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/)
->
-> Email:            BuddyZhang1 <buddy.zhang@aliyun.com>
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
 
-# 目录
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+
+#### 目录
 
 > [原理](#原理)
 >
@@ -26,9 +26,9 @@ tags:
 
 ---------------------------------------------------
 
-# <span id="原理">原理</span>
+#### <span id="原理">原理</span>
 
-#### MEMBLOCK 内存分配器原理
+###### MEMBLOCK 内存分配器原理
 
 MEMBLOCK 内存分配器作为 arm32 早期的内存管理器，维护了两种内存。第一种内存是系统可用
 的物理内存，即系统实际含有的物理内存，其值从 DTS 中进行配置，并通过 uboot 实际探测之
@@ -194,15 +194,17 @@ static struct memblock_region memblock_memory_init_regions[INIT_MEMBLOCK_REGIONS
 static struct memblock_region memblock_reserved_init_regions[INIT_MEMBLOCK_RESERVED_REGIONS] __initdata_memblock
 {% endhighlight %}
 
-#### MEMBLOCK 内存分配器提供的逻辑
+###### MEMBLOCK 内存分配器提供的逻辑
 
 MEMBLOCK 通过上面的数据结构管理 arm32 早期的物理内存，使操作系统能够分配或回收可用的
 物理内存，也可以将指定的物理内存预留给操作系统。通过这样的逻辑操作，早期的物理的内存得
 到有效的管理，防止内存泄露和内存分配失败等问题。
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 --------------------------------------------------
 
-# <span id="信息接口">信息接口</span>
+#### <span id="信息接口">信息接口</span>
 
 MEMBLOCK 提供了很多 API 以此获得 MEMBLOCK 的信息，这些信息包括多种多样，具体 API
 如下：
@@ -241,16 +243,15 @@ MEMBLOCK 提供了很多 API 以此获得 MEMBLOCK 的信息，这些信息包�
 >
 > - [memblock_set_bottom_up: 设置 MEMBLOCK 分配的方向](#memblock_set_bottom_up)
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------------
 
-# <span id="源码分析">源码分析</span>
+#### <span id="源码分析">源码分析</span>
 
-> Arch： arm32
->
-> Version： Linux 5.x
+-------------------------------------------------
 
-##### <span id="memblock_phys_mem_size">memblock_phys_mem_size</span>
+###### <span id="memblock_phys_mem_size">memblock_phys_mem_size</span>
 
 {% highlight c %}
 phys_addr_t __init_memblock memblock_phys_mem_size(void)
@@ -262,9 +263,11 @@ phys_addr_t __init_memblock memblock_phys_mem_size(void)
 函数的作用是获得可用物理内存的总体积。函数直接返回 memblock.memory 的
 total_size， total_size 成员存储该内存区的体积大小。
 
-[GitHub: memblock_phys_mem_size](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_phys_mem_size)
+> - [GitHub: memblock_phys_mem_size](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_phys_mem_size)
 
-##### <span id="memblock_reserved_size">memblock_reserved_size</span>
+---------------------------------------
+
+###### <span id="memblock_reserved_size">memblock_reserved_size</span>
 
 {% highlight c %}
 phys_addr_t __init_memblock memblock_reserved_size(void)
@@ -276,9 +279,11 @@ phys_addr_t __init_memblock memblock_reserved_size(void)
 函数的作用是获得预留区内存的总体积。函数直接返回 memblock.reserved 的
 total_size， total_size 成员存储该内存区的体积大小。
 
-[GitHub: memblock_reserved_size](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_reserved_size)
+> - [GitHub: memblock_reserved_size](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_reserved_size)
 
-##### <span id="memblock_start_of_DRAM">memblock_start_of_DRAM</span>
+---------------------------------------
+
+###### <span id="memblock_start_of_DRAM">memblock_start_of_DRAM</span>
 
 {% highlight c %}
 /* lowest address */
@@ -292,7 +297,9 @@ phys_addr_t __init_memblock memblock_start_of_DRAM(void)
 第一个内存区块的起始物理地址。函数直接返回 memblock.memory 的
 regions[0].base， regions[0].base 成员存储 DRAM 的起始物理地址。
 
-[GitHub: memblock_start_of_DRAM](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_start_of_DRAM)
+> - [GitHub: memblock_start_of_DRAM](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_start_of_DRAM)
+
+-----------------------------------
 
 ##### <span id="memblock_end_of_DRAM">memblock_end_of_DRAM</span>
 
@@ -309,7 +316,9 @@ phys_addr_t __init_memblock memblock_end_of_DRAM(void)
 最后一个内存区块的终止物理地址。最后一个内存区的索引是 memblock.memory.cnt - 1，
 所以这个索引对应的内存区的终止地址就是 DRAM 的结束地址。
 
-[GitHub: memblock_end_of_DRAM](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_end_of_DRAM)
+> - [GitHub: memblock_end_of_DRAM](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_end_of_DRAM)
+
+---------------------------------------
 
 ##### <span id="memblock_is_reserved">memblock_is_reserved</span>
 
@@ -323,9 +332,11 @@ bool __init_memblock memblock_is_reserved(phys_addr_t addr)
 函数的作用是检查某个物理地址是否属于预留区。参数 addr 指向要检查的地址。
 函数调用 memblock_search() 函数进行地址检查。
 
-[GitHub: memblock_is_reserved](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_reserved)
+> - [GitHub: memblock_is_reserved](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_reserved)
 
-##### <span id="memblock_is_memory">memblock_is_memory</span>
+------------------------------------------
+
+###### <span id="memblock_is_memory">memblock_is_memory</span>
 
 {% highlight c %}
 bool __init_memblock memblock_is_memory(phys_addr_t addr)
@@ -337,9 +348,11 @@ bool __init_memblock memblock_is_memory(phys_addr_t addr)
 函数的作用是检查某个物理地址是否属于可用内存区。参数 addr 指向要检查的地址。
 函数调用 memblock_search() 函数进行地址检查。
 
-[GitHub: memblock_is_memory](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_memory)
+> - [GitHub: memblock_is_memory](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_memory)
 
-##### <span id="memblock_is_region_memory">memblock_is_region_memory</span>
+--------------------------------------------
+
+###### <span id="memblock_is_region_memory">memblock_is_region_memory</span>
 
 {% highlight c %}
 /**
@@ -371,9 +384,11 @@ bool __init_memblock memblock_is_region_memory(phys_addr_t base, phys_addr_t siz
 在表示这段内存区块在可用物理内存区内；如果不在，则表示这段内存区块不属于可用物理
 内存区段。
 
-[GitHub: memblock_is_region_memory](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_region_memory)
+> - [GitHub: memblock_is_region_memory](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_region_memory)
 
-##### <span id="memblock_is_region_reserved">memblock_is_region_reserved</span>
+--------------------------------------
+
+###### <span id="memblock_is_region_reserved">memblock_is_region_reserved</span>
 
 {% highlight c %}
 /**
@@ -399,9 +414,11 @@ bool __init_memblock memblock_is_region_reserved(phys_addr_t base, phys_addr_t s
 参数进行处理之后，传递给 memblock_overlaps_region() 函数检查 base 和 size
 对应的内存区是否属于预留区。
 
-[GitHub: memblock_is_region_reserved](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_region_reserved)
+> - [GitHub: memblock_is_region_reserved](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_region_reserved)
 
-##### <span id="memblock_get_current_limit">memblock_get_current_limit</span>
+--------------------------------------
+
+###### <span id="memblock_get_current_limit">memblock_get_current_limit</span>
 
 {% highlight c %}
 phys_addr_t __init_memblock memblock_get_current_limit(void)
@@ -412,9 +429,11 @@ phys_addr_t __init_memblock memblock_get_current_limit(void)
 
 函数的作用就是返回 MEMBLOCK 的当前 limit。
 
-[GitHub: memblock_get_current_limit](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_get_current_limit)
+> - [GitHub: memblock_get_current_limit](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_get_current_limit)
 
-##### <span id="memblock_set_current_limit">memblock_set_current_limit</span>
+------------------------------------------
+
+###### <span id="memblock_set_current_limit">memblock_set_current_limit</span>
 
 {% highlight c %}
 void __init_memblock memblock_set_current_limit(phys_addr_t limit)
@@ -425,9 +444,11 @@ void __init_memblock memblock_set_current_limit(phys_addr_t limit)
 
 函数的作用就是设置 MEMBLOCK 的当前 limit。
 
-[GitHub: memblock_set_current_limit](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_set_current_limit)
+> - [GitHub: memblock_set_current_limit](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_set_current_limit)
 
-##### <span id="memblock_is_hotpluggable">memblock_is_hotpluggable</span>
+---------------------------------------
+
+###### <span id="memblock_is_hotpluggable">memblock_is_hotpluggable</span>
 
 {% highlight c %}
 static inline bool memblock_is_hotpluggable(struct memblock_region *m)
@@ -439,9 +460,11 @@ static inline bool memblock_is_hotpluggable(struct memblock_region *m)
 函数的作用就是检查特定的内存区块是否支持热插拔。函数之间检查内存区块的 flags
 是否支持 MEMBLOCK_HOTPLUG。
 
-[GitHub: memblock_is_hotpluggable](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_hotpluggable)
+> - [GitHub: memblock_is_hotpluggable](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_hotpluggable)
 
-##### <span id="memblock_is_mirror">memblock_is_mirror</span>
+----------------------------------------
+
+###### <span id="memblock_is_mirror">memblock_is_mirror</span>
 
 {% highlight c %}
 static inline bool memblock_is_mirror(struct memblock_region *m)
@@ -453,9 +476,11 @@ static inline bool memblock_is_mirror(struct memblock_region *m)
 函数的作用就是检查特定的内存区块是否支持 mirror。函数之间检查内存区块的 flags
 是否支持 MEMBLOCK_MIRROR。
 
-[GitHub: memblock_is_mirror](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_mirror)
+> - [GitHub: memblock_is_mirror](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_mirror)
 
-##### <span id="memblock_is_nomap">memblock_is_nomap</span>
+-----------------------------------------
+
+###### <span id="memblock_is_nomap">memblock_is_nomap</span>
 
 {% highlight c %}
 static inline bool memblock_is_nomap(struct memblock_region *m)
@@ -467,9 +492,11 @@ static inline bool memblock_is_nomap(struct memblock_region *m)
 函数的作用就是检查特定的内存区块是否支持 mirror。函数之间检查内存区块的 flags
 是否支持 MEMBLOCK_MIRROR。
 
-[GitHub: memblock_is_nomap](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_nomap)
+> - [GitHub: memblock_is_nomap](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_is_nomap)
 
-##### <span id="memblock_get_region_node">memblock_get_region_node</span>
+--------------------------------------------
+
+###### <span id="memblock_get_region_node">memblock_get_region_node</span>
 
 {% highlight c %}
 static inline int memblock_get_region_node(const struct memblock_region *r)
@@ -481,9 +508,11 @@ static inline int memblock_get_region_node(const struct memblock_region *r)
 函数的作用就是获得特定内存区块的 NUMA 号。参数 r 指向特定的内存区块。内存
 区块的 NUMA 号存储在 nid 成员里，所以函数直接返回 nid 的值。
 
-[GitHub: memblock_get_region_node](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_get_region_node)
+> - [GitHub: memblock_get_region_node](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_get_region_node)
 
-##### <span id="memblock_set_region_node">memblock_set_region_node</span>
+---------------------------------------
+
+###### <span id="memblock_set_region_node">memblock_set_region_node</span>
 
 {% highlight c %}
 static inline void memblock_set_region_node(struct memblock_region *r, int nid)
@@ -495,9 +524,11 @@ static inline void memblock_set_region_node(struct memblock_region *r, int nid)
 函数的作用就是设置特定内存区块的 NUMA 号。参数 r 指向特定的内存区块。内存
 区块的 NUMA 号存储在 nid 成员里，所以函数直接设置 nid 的值。
 
-[GitHub: memblock_set_region_node](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_set_region_node)
+> - [GitHub: memblock_set_region_node](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_set_region_node)
 
-##### <span id="memblock_bottom_up">memblock_bottom_up</span>
+-----------------------------------------
+
+###### <span id="memblock_bottom_up">memblock_bottom_up</span>
 
 {% highlight c %}
 /*
@@ -516,9 +547,11 @@ static inline bool memblock_bottom_up(void)
 顶部分配内存，也就是 bottom-up; 当 memblock_bottom_up() 函数返回 false 表示从
 顶部往底部分配内存，就是 top-down 方式。
 
-[GitHub: memblock_bottom_up](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_bottom_up)
+> - [GitHub: memblock_bottom_up](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_bottom_up)
 
-##### <span id="memblock_set_bottom_up">memblock_set_bottom_up</span>
+-------------------------------------------------
+
+###### <span id="memblock_set_bottom_up">memblock_set_bottom_up</span>
 
 {% highlight c %}
 /*
@@ -535,11 +568,15 @@ static inline void __init memblock_set_bottom_up(bool enable)
 也就是 bottom-up; 当 enable 参数为 false 表示从顶部往底部分配内存，就是
 top-down 方式。
 
-[GitHub: memblock_set_bottom_up](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_set_bottom_up)
+> - [GitHub: memblock_set_bottom_up](https://github.com/BiscuitOS/HardStack/tree/master/Memory-Allocator/Memblock-allocator/API/memblock_set_bottom_up)
 
 ---------------------------------------------
 
-# <span id="实践">实践</span>
+<span id="实践"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+
+#### 实践
 
 > [实践目的](#驱动实践目的)
 >
@@ -559,20 +596,28 @@ top-down 方式。
 >
 > [驱动分析](#驱动分析)
 
-#### <span id="驱动实践目的">实践目的</span>
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+###### <span id="驱动实践目的">实践目的</span>
 
 MEMBLOCK 提供了很多接口函数用于设置 MEMBLOCK 分配器的属性，以及读取 MEMBLOCK
 分配器的相关信息，本次实践的目的就是使用这些接口函数。
 
-#### <span id="驱动实践准备">实践准备</span>
+------------------------------------------
+
+###### <span id="驱动实践准备">实践准备</span>
 
 由于本次实践是基于 Linux 5.x 的 arm32 系统，所以请先参考 Linux 5.x arm32
 开发环境搭建方法以及重点关注驱动实践一节，请参考下例文章，选择一个 linux 5.x
 版本进行实践，后面内容均基于 linux 5.x 继续讲解，文章链接如下：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
-#### <span id="驱动源码">驱动源码</span>
+-------------------------------------------
+
+###### <span id="驱动源码">驱动源码</span>
 
 准备好开发环境之后，下一步就是准备实践所用的驱动源码，驱动的源码如下：
 
@@ -747,7 +792,9 @@ int __init debug_memblock_helper(void)
 #endif
 {% endhighlight %}
 
-#### <span id="驱动安装">驱动安装</span>
+-------------------------------
+
+###### <span id="驱动安装">驱动安装</span>
 
 由于这部分驱动涉及到较早的内核启动接管，所以不能直接以模块的形式编入到内核，
 需要直接编译进内核，首先将驱动放到 drivers/BiscuitOS/ 目录下，命名为
@@ -787,7 +834,9 @@ index 82004c9a2..1e4052a4b 100644
 +obj-$(CONFIG_MEMBLOCK_ALLOCATOR) += memblock.o
 {% endhighlight %}
 
-#### <span id="驱动配置">驱动配置</span>
+-----------------------------------------
+
+###### <span id="驱动配置">驱动配置</span>
 
 驱动配置请参考下面文章中关于驱动配置一节。在配置中，勾选如下选项，如下：
 
@@ -800,9 +849,11 @@ Device Driver--->
 
 具体过程请参考：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
-#### <span id="驱动增加调试点">增加调试点</span>
+---------------------------------------------
+
+###### <span id="驱动增加调试点">增加调试点</span>
 
 驱动运行还需要在内核的指定位置添加调试点，由于该驱动需要在内核启动阶段就使
 用，请参考下面 patch 将源码指定位置添加调试代码：
@@ -836,19 +887,23 @@ ck_add
  	early_ioremap_init();
 {% endhighlight %}
 
-#### <span id="驱动编译">驱动编译</span>
+----------------------------------------------
+
+###### <span id="驱动编译">驱动编译</span>
 
 驱动编译也请参考下面文章关于驱动编译一节：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+
+------------------------------------------
 
 #### <span id="驱动运行">驱动运行</span>
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
 
-驱动运行的结果如下：
+驱动运行的结果如下:
 
 {% highlight bash %}
 CPU: ARMv7 Processor [410fc090] revision 0 (ARMv7), cr=10c5387d
@@ -877,7 +932,9 @@ Malformed early option 'earlycon'
 Memory policy: Data cache writeback
 {% endhighlight %}
 
-#### <span id="驱动分析">驱动分析</span>
+-----------------------------------------------
+
+###### <span id="驱动分析">驱动分析</span>
 
 为了能让实践更具有说明性，在实践代码中添加了两块预留区，分别是：
 [0x80000000, 0x8d000000] 和 [0x90000000, 0x92000000], 并调用
@@ -1030,7 +1087,8 @@ Address: 0x81000000 in reserved.
 		pr_info("Address: %#x in memory.\n", addr);
 {% endhighlight %}
 
-运行结果如下：
+运行结果如下:
+
 {% highlight bash %}
 Memory Regions:
 Region: 0x60000000 - 0xa0000000
@@ -1053,7 +1111,8 @@ Address: 0x62000000 in memory.
 				addr, addr + size);
 {% endhighlight %}
 
-运行结果如下：
+运行结果如下:
+
 {% highlight bash %}
 Memory Regions:
 Region: 0x60000000 - 0xa0000000
@@ -1076,7 +1135,8 @@ Region: [0x80000000 - 0x80100000] in memblock.reserved.
 				addr, addr + size);
 {% endhighlight %}
 
-运行结果如下：
+运行结果如下:
+
 {% highlight bash %}
 Memory Regions:
 Region: 0x60000000 - 0xa0000000
@@ -1099,7 +1159,8 @@ Region: [0x62000000 - 0x62100000] in memblock.memory.
 	memblock_set_current_limit(limit);
 {% endhighlight %}
 
-运行结果如下：
+运行结果如下:
+
 {% highlight bash %}
 Memory Regions:
 Region: 0x60000000 - 0xa0000000
@@ -1121,7 +1182,8 @@ MEMBLOCK current_limit: 0xffffffff
 		pr_info("MEMBLOCK memory.regions[0] is not hotpluggable.\n");
 {% endhighlight %}
 
-运行结果如下：
+运行结果如下:
+
 {% highlight bash %}
 Memory Regions:
 Region: 0x60000000 - 0xa0000000
@@ -1143,7 +1205,8 @@ MEMBLOCK memory.regions[0] is not hotpluggable.
 		pr_info("MEMBLOCK memory.regions[0] is not mirror.\n");
 {% endhighlight %}
 
-运行结果如下：
+运行结果如下:
+
 {% highlight bash %}
 Memory Regions:
 Region: 0x60000000 - 0xa0000000
@@ -1165,7 +1228,7 @@ MEMBLOCK memory.regions[0] is not mirror.
 		pr_info("MEMBLOCK memory.regions[0] is not nomap.\n");
 {% endhighlight %}
 
-运行结果如下：
+运行结果如下:
 {% highlight bash %}
 Memory Regions:
 Region: 0x60000000 - 0xa0000000
@@ -1187,7 +1250,8 @@ MEMBLOCK memory.regions[0] is not nomap.
 	memblock_set_region_node(&memblock.memory.regions[0], nid);
 {% endhighlight %}
 
-运行结果如下：
+运行结果如下:
+
 {% highlight bash %}
 Memory Regions:
 Region: 0x60000000 - 0xa0000000
@@ -1209,7 +1273,7 @@ MEMBLOCK memory.regions[0] nid: 0x0
 	memblock_set_bottom_up(state);
 {% endhighlight %}
 
-运行结果如下：
+运行结果如下:
 {% highlight bash %}
 Memory Regions:
 Region: 0x60000000 - 0xa0000000
@@ -1219,24 +1283,22 @@ Region: 0x90000000 - 0x92000000
 MEMBLOCK direction: top-down
 {% endhighlight %}
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 -----------------------------------------------
 
-# <span id="附录">附录</span>
+#### <span id="附录">附录</span>
 
 > [MEMBLOCK 内存分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
->
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Blog](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
->
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
 
-## 赞赏一下吧 🙂
+#### 赞赏一下吧 🙂
 
 ![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
