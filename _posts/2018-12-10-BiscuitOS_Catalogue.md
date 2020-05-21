@@ -123,7 +123,7 @@ tags:
 
 > - [Bit: bitmap/bitops/bitmask/bit find](https://biscuitos.github.io/blog/BITMAP/)
 >
-> - [GNU LD scripts](https://biscuitos.github.io/blog/LD/)
+> - [GNU 链接脚本](https://biscuitos.github.io/blog/LD/)
 >
 > - [Device-Tree](https://biscuitos.github.io/blog/DTS/)
 >
