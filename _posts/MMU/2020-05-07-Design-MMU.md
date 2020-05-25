@@ -285,7 +285,7 @@ PAGE_SIZE，这样方便映射，如下图:
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001018.png)
 
 从上图可以知道，一般情况下，虚拟内存和物理内存是不相等的，为了充分使用
-物理内核和虚拟内存，那么就要使用随机映射将虚拟内存与物理内存进行映射，
+物理内存和虚拟内存，那么就要使用随机映射将虚拟内存与物理内存进行映射，
 这里称这个虚拟内存为非线性区.
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001019.png)
