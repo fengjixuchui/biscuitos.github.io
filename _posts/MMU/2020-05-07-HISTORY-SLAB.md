@@ -46,40 +46,364 @@ tags:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000226.png)
 
-在 Linux 初始化过程中，将除了 ZONE_HIGHMEM 分区之外所有分区的物理页都与
-Linux 内核虚拟地址进行了线性映射，所谓线性映射就是将大块虚拟内存与大块
-物理内存进行映射，以形成连续的虚拟地址映射到连续的物理地址上，因此称这个
-虚拟内存区域为线性映射区。Linux 系统初始化阶段便建立好了线性区的映射关系后，
-映射关系不再改变，因此不需要在建立和撤销页表查找。于是只需简单的线性转换
-就可以在虚拟地址和物理地址之间转换，这个开发者一个错觉，觉得线性区的虚拟
-地址是不需要建立页表的，这样的结论是不正确的。
+在 Linux 内核虚拟地址空间，存在一段将虚拟地址直接与物理地址映射的区域，在这段
+区域内物理地址是整块连续的，虚拟地址也是整块连续的，Linux 称这块区域为线性
+映射区。Linux 在初始化阶段为这块区域创建相应的页表，由于物理地址和虚拟地址的
+连续性，只要知道其中某段虚拟地址与物理地址的映射关系，系统就可以通过简单的线性
+计算, 然后就可以推断出该区域内其他虚拟地址与物理地址之间的映射关系. 例如在上图
+中 PAGE_OFFSET 到 highmem 之间的虚拟内存区域就是线性区，在通常的体系架构里，
+线性区与之对应的物理区域为 ZONE_DMA/ZONE_DMA32 与 ZONE_NORMAL.
 
-Buddy 内存管理器用于管理物理内存的分配，其以 PAGE_SIZE 为单位进行分配。
-对于建立线性映射的物理内存来说，申请者只需从 Buddy 内存分配器分配物理
-内存之后，通过一个简单的线性转换就可以获得物理内存对应的虚拟内存，调用
-者就可以直接使用该虚拟内存，但这样的操作逻辑不代表 Buddy 内存管理器能够
-管理线性区虚拟内存的分配和释放，开发者应该明确区分这个概念。
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000735.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000998.png)
+由于架构的差异，系统可能只存在 ZONE_NORMAL 的物理分区，有的可能也包含了
+ZONE_DMA 分区，但不论物理地址如何划分，线性区一般都是将第一块内存起始地址物理
+地址与内核起始虚拟地址处开始映射整个 ZONE_DMA/ZONE_DMA32 和 ZONE_NORMAL 分区.
+在 SLAB 分配器未出现之前，系统只存在 Buddy 分配器，如果系统想要从线性区分配
+内存 (虚拟内核+物理内存)，那么 Buddy 分配器只能提供按物理页为单位进行分配，
+因此内核只需要几十个字节的内存，那么 Buddy 分配器只能提供一个物理页大小的内存，
+分配这个物理页之后，只有几十个字节供给请求者使用，剩余的内存其他进程是不可以
+使用的，也就是剩余的内存完全浪费了，只有请求者使用完几十个字节之后，将这段内存
+归还给 Buddy 分配器，那么这个物理页对应的内存才能供系统其他地方使用。设想一下，
+如果系统很多地方需要申请几十个字节的内存，那么系统内存资源一会就会被浪费完，
+因此系统需要一个能够分配小粒度内存的分配器，以此满足系统的需求。
 
-Buddy 内存管理器只能按 PAGE_SIZE 分配物理内存，这样导致获得的虚拟内存大小
-总是按 PAGE_SIZE 的倍数。如果请求者正好需要 PAGE_SIZE 为倍数的虚拟内存，
-那么不存在什么问题，但内核经常分配长度很小的虚拟内存，例如几个字节到几百个
-字节，如果分配几个字节，系统就传递一个 PAGE_SIZE 的虚拟内存给申请者，那么
-申请者就会浪费很多内存，此时其他进程或线程也不能使用这些浪费的内存。因此
-SLAB 内存分配器就产生了。
+基于上面的需求，内核提供了一些或好或坏的解决方案，在一般的操作系统文献中都有
+讲解，例如 Tan07. 此类提议之一，所谓 slab 分配器，证明对许多类工作负荷都是
+高效。SLAB 分配器由 Sun 公司的一个雇员 Jeff Bonwick 在 Solaris 2.4 中设计并
+实现的。由于他公开了其方法 Bon94, 因此也可以为 Linux 实现一个版本.
 
-SLAB 内存分配器用于管理、分配和释放小块虚拟内存
+SLAB 分配器的出现不仅解决了小粒度内存分配的问题，而且还提供了面向对象的分配
+机制。Linux 内核经常高频率分配和使用一些数据结构，由于分配太频繁，如果此时分配
+速率太慢的话会影响系统的性能，因此 SLAB 面向这些数据结构设计了高速缓存，内核
+可以从这些高速缓存上快速获得需要的内存，当内核使用完毕之后可以将这些内存再归
+还给高速缓存，以便其他申请者使用。这样的设计很大程度上提高了分配速率和系统速度，
+也从一定程度上减少了系统内存的浪费。由于系统 CACHE 的存在，高速缓存中的内存
+很容易命中，这也在一定程度上加速了系统运行的速率.
 
----------------------------------
+------------------------------------
+
+#### SLAB 分配器实现
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000001.png)
+
+> - [SLAB 分配器术语](#A0001)
+
+SLAB 分配器的实现相对于其他分配器有一些复杂，但由于其严密的组织架构，逻辑上
+SLAB 分配器是很明朗的。SLAB 分配器为高速缓存对象构建了本地高速缓存、共享高速
+缓存、slab 链表等结构，以满足快速内存分配, 更提供了 slab 着色策略，以便缓存
+对象能够在 CACHE 中进行命中.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000008.png)
+
+SLAB 分配器从 Buddy 分配器中分配一定数量的物理内存，这些物理内存对应的虚拟
+地址位于线性映射区，因此物理地址和虚拟地址的页表已经建立好了。SLAB 分配器
+将获得内存 (这里指物理内存和对应的虚拟内存) 分作两部分，其一部分用于管理
+这段内存，另外一部分内存划分为分配对象大小的内存块。SLAB 分配器将这样的组织
+结构称为 slab，管理数据部分称为 slab 管理数据，另一部分的每一个内存块称为
+缓存对象，slab 是 SLAB 分配器管理的基本单位，而缓存对象是 SLAB 分配器分配
+的基本单位. 在 slab 中，slab 使用 kmem_bufctl 数组将所有可用缓存维护成一个
+单向链表.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000005.png)
+
+SLAB 分配器使用 struct kmem_cache 维护一个高速缓存，并且为每个 CPU 构建了一个
+本地高速缓存，通过 array 成员进行指定，本地高速缓存使用缓存栈维护一定数量的
+可用缓存对象，每个 CPU 可用从本地高速缓存上快速获得一个可用的缓存对象，并且
+缓存栈使用 FILO 的模式，可以让刚刚释放的缓存对象再次被使用，这大大增加了缓存
+对象在 CACHE 中的命中率。
+
+高速缓存创建了一个共享高速缓存，用户维护来自各个 CPU 的本地高速缓存释放的缓存
+对象，当某个本地高速缓存的缓存栈上没有可用缓存对象时，那么该本地高速缓存就会
+去共享高速缓存上获一定数量的高速缓存，当本地高速缓存上维护缓存对象数量超过了
+上限，那么本地高速缓存把缓存对象释放为共享高速缓存进行维护。共享缓存的存在解决
+了本地共享高速缓存之间不能共享缓存对象的问题，其次共享缓存对象的存在在一定
+程度上加速缓存的分配，因此本地高速缓存没有可用缓存对象的时候，不用去 slab 链表
+上直接查找缓存对象。
+
+高速缓存从 Buddy 分配器获得内存之后，将其组织成 slab 进行管理，slab 中维护
+一定数量的缓存对象。高速缓存在每个 NODE 上创建一个 slab 链表用于维护高速缓存
+的 slab，slab 链表一共包含三种链表，slabs_partial 链表上维护的 slab 中包含
+部分可用缓存对象; slabs_full 链表上维护的 slab 中包含的缓存对象已经全部分配;
+slabs_free 链表上维护的 slab 中的缓存对象全部可用。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000109.png)
+
+因此 SLAB 分配缓存对象的优先级如上图，首先从 CPU 对应的本地高速缓存上分配，
+如果没有那么从当前 NODE 的共享缓存上进行分配，如果没有那么从当前 NODE 的
+slab 链表中分配，如果没有那么从 Buddy 分配器中分配。高速缓存通过层层加速，
+最终利于分配的速率.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000010.png)
+
+SLAB 分配器将所有的高速缓存维护在 cache_chain 链表中，以便统一管理.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
 
 ###### SLAB 的优点
 
-虚拟地址是固定的，对应永久映射的部分只要建立映射，就可以永久使用.
+SLAB 分配器能够满足小粒度的内存分配。提供了通用高速缓存，满足了通用内存的分配。
+通过 SLAB 着色能够很好的增加缓存对象在 CACHE 中的命中，以此提高了系统速度.
 
 ###### SLAB 的缺点
 
-空间有限.
+SLAB 分配器对每个高速缓存都带来了巨大的管理数据开销，以及日常维护分配器的巨大
+开销.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+---------------------------------
+
+<span id="A0001"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+
+#### SLAB 分配器术语
+
+> - [高速缓存](#A0001)
+>
+> - [slab](#A0002)
+>
+> - [缓存对象](#A0003)
+>
+> - [本地高速缓存](#A0004)
+>
+> - [共享高速缓存](#A0005)
+>
+> - [通用/专用高速缓存](#A0010)
+>
+> - [slab 链表](#A0006)
+>
+> - [本地缓存栈](#A0007)
+>
+> - [kmem_bufctl 数组](#A0008)
+>
+> - [slab 着色](#A0009)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+###### <span id="A0010">通用/专用高速缓存</span>
+
+内核中经常分配不规则长度的小粒度的内存，SLAB 为了加速这类型内存的分配，专门
+创建了一系列的高速缓存，这些高速缓存包含了基础的长度，能够满足大部分的分配需求。
+
+{% highlight c %}
+# .name  .name_dma
+size-32                 size-32(DMA)
+size-64                 size-64(DMA)
+size-96                 size-96(DMA)
+size-128                size-128(DMA)
+size-192                size-192(DMA)
+size-256                size-256(DMA)
+size-512                size-512(DMA)
+size-1024               size-1024(DMA)
+size-2048               size-2048(DMA)
+size-4096               size-4096(DMA)
+size-8192               size-8192(DMA)
+size-16384              size-16384(DMA)
+size-32768              size-32768(DMA)
+size-65536              size-65536(DMA)
+size-131072             size-131072(DMA)
+size-262144             size-262144(DMA)
+size-524288             size-524288(DMA)
+size-1048576            size-1048576(DMA)
+size-2097152            size-2097152(DMA)
+size-4194304            size-4194304(DMA)
+{% endhighlight %}
+
+内核可以直接使用 kmalloc() 相关的函数进行分配.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+###### <span id="A0001">高速缓存</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000001.png)
+
+SLAB 分配器不仅可以为通用长度的小粒度内存分配内存，也可以提供面向对象的小粒度
+内存分配. 系统经常高频率分配和使用某些数据结构，SLAB 分配器为这些数据结构创建
+了一个类似与缓存池的东西，系统可以从这个缓存池中快速获得指定大小的内存，也可以
+将使用完毕的内存再放到这个缓存池里，以供其他申请者使用。SLAB 将这个缓存池称为
+高速缓存。
+
+SLAB 分配器使用 struct kmem_cache 维护一个高速缓存，高速缓存管理一定的内存，
+并将这些内存划分为指定对象大小的内存块，高速缓存为系统提供了一套快速获得指定
+大小内存块的机制，同时也包含了一套回收指定内存块的机制，以此让高速缓存为系统
+所需的功能.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+###### <span id="A0002">slab</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000001.png)
+
+SLAB 分配器使用高速缓存管理一定数量的内存，并向系统提供了申请和释放指定大小
+内存块的服务。SLAB 分配器所需要的内存首先从 Buddy 分配器中分配一定数量的物理
+内存，然后获得这些物理内存对应的虚拟内存，再将这些虚拟内存组织成带有一定管理
+功能的数据块，SLAB 分配器称这些数据块为 slab. slab 的组成如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000008.png)
+
+slab 分配两个部分，第一个部分就是 slab 管理数据区域，该区域包含了管理 slab 和
+缓存对象的数据结构。第二个部分就是缓存对象区域，包含了多个缓存对象. slab 是 SLAB
+分配器管理的基本单位. 高速缓存就是从 slab 上获得可用的缓存对象，然后将这些缓存
+对象分配给申请者，当申请者使用完毕之后，再将缓存对象返回给 slab。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000021.png)
+
+slab 的管理数据可以位于 slab 内部，也可以位于 slab 外部, 如上面两张图. 无论
+slab 管理数据位于 slab 内部还是 slab 外部，其由一个 struct slab 数据结构和
+一个 kmem_bufctl 数组进行维护。struct slab 数据结构中维护了 slab 基础信息，
+包括 slab 中可用缓存对象的数量、第一个可用缓存对象的位置等信息。kmem_bufct 数
+组则是一个 kmem_bufctl_t 数组，数组一共包含了与 slab 中缓存对象数量相等的
+成员，并且 kmem_bufctl 数组中的每个成员都与 slab 中的缓存对象一一对应。
+kmem_bufctl 数组用于指向指定缓存对象的下一个可用缓存对象位置.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+###### <span id="A0003">缓存对象</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000008.png)
+
+在 SLAB 中，高速缓存通过 slab 管理可用内存，SLAB 分配器将 slab 管理可用内存
+划分为指定对象大小的内存块，称这些内存块为缓存对象。缓存对象是 SLAB 分配的基础
+单位. 每个缓存对象是与高速缓存指向的对象同样大小，因此高速缓存通过维护多个可用
+的缓存对象，以便供系统分配调用。缓存对象可以维护在 slab 中，也可以维护在本地高
+速缓存或者共享缓存里.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+###### <span id="A0004">本地高速缓存</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000001.png)
+
+高速缓存的初衷不仅是为了分配小粒度的内存，而且是为了加快内存的分配，因此
+SLAB 分配器觉得每次去遍历 slab 链表已获得可用的缓存对象，这样的分配速度存在
+颠簸 (有时能从 slab 链表中快速找到，有时找的很慢，有时找不到还要从 Buddy 分配
+器中分配内存后，重新制作 slab), 并且在 SMP 系统中，多个 CPU 同时遍历 slab 链表，
+以此获得想要的缓存对象，这回导致 CPU 等待，这样的结果已经背离了初衷，于是
+SLAB 分配器为了防止分配时的颠簸，以及多个 CPU 同时从高速缓存中分配内存，那么
+SLAB 分配器提出了为每个 CPU 创建本地高速缓存，并在本地高速缓存上使用缓存栈
+提前维护一定数量的可用缓存对象，当缓存栈上的缓存不够时，可用从 slab 链表上一
+次性获得多个缓存对象。这样就解决了上面遇到的问题.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000005.png)
+
+本地高速函数通过 struct kmem_cache 的 array 数组进行指定，使用 struct 
+cache_array 结构进行维护.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+###### <span id="A0005">共享高速缓存</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000001.png)
+
+在 SMP 架构中，SLAB 分配器为每个 CPU 提供了一个本地高速缓存，本地高速缓存使用
+一个缓存栈维护一定数量的可用缓存对象。但每个本地缓存都会占用多个可用缓存对象，
+如果其中一个本地缓存上没有可用缓存对象而其他本地高速缓存上还有很多缓存对象，
+那么该本地缓存只好去 slab 链表中查找可用缓存，这在一定程度上造成了颠簸。为了
+让本地高速缓存可以使用其他本地高速缓存，但又不打破本地这个特性，SLAB 分配器
+为高速缓存创建了一个共享高速缓存。共享高速缓存的组织方式与本地高速缓存一样，
+使用 struct cache_array 数据结构进行维护，其也通过一个缓存栈维护来自所有本地
+高速缓存释放的可用缓存对象. 因此当本地高速缓存没有可用缓存对象的时候，不是直接
+去 slab 链表中查找，而是去共享高速缓存中进行查找。指定注意的是，如果高速缓存
+对象的缓存对象长度大于 PAGE_SIZE, 或者在 UP 架构上不存在共享高速缓存.
+
+高速缓存使用 struct Kmem_cache 进行管理，其成员 nodelists 里通过 shared 成员
+进行指定.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+###### <span id="A0006">slab 链表</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000001.png)
+
+高速缓存从 Buddy 分配器中分配一定数量的物理内存，然后将这些物理内存对应的内存
+通过 slab 管理起来，然后高速缓存将 slab 维护在 slab 链表上，slab 链表使用
+struct kmem_list3 数据结构进行维护，slab 链表一共存在三种链表，分别是 slabs_full
+链表，该链表上的 slab 里全部缓存对象已经分配; slabs_partial 链表，该链表上的
+slab 里包含部分可用的缓存对象; slabs_free 链表，该链表上的 slab 里的缓存对象
+全部可用.
+
+当高速缓存的本地高速缓存和共享高速缓存上没有可用的缓存对象时，高速缓存就会
+在 slab 链表的 slabs_partial 和 slabs_free 上进行查找，查找之后再将其放回到
+本地高速缓存。如果本地高速缓存上维护缓存对象的数量超过了上限，那么本地高速
+缓存将缓存对象释放回共享高速缓存，如果此时共享高速缓存维护缓存对象数量超过
+上限，那么缓存对象会被释放会 slab 链表里。
+
+如果从 slabs_free 的 slab 上分配缓存，那么该 slab 可能会从 slabs_free 中移除
+并插入到 slabs_partial 或者 slabs_full 链表上。当释放一定数据的缓存对象回
+slabs_partial 中的 slab，那么该 slab 可能会从 slabs_partial 链表中移除插入到
+slabs_free 链表里.
+
+高速缓存通过 struct kmem_cache 进行维护，其成员 nodelists 指向每个 NODE 的
+slab 链表，因此高速缓存为每个 NODE 准备了一套 slab 链表.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+###### <span id="A0007">本地缓存栈</span>
+
+高速缓存为每个 CPU 创建了本地高速缓存，以加快 CPU 快速分配缓存对象. 本地高速
+缓存使用缓存栈维护一定数量的可用缓存对象。本地高速缓存使用 struct cache_array
+数据结构进行维护，其 avail 成员指明缓存栈上可用缓存对象的数量，以及指向了缓存
+栈的栈顶. limit 成员用于指定缓存栈上最大维护可用缓存对象的数量，batchcount 
+成员用于指定一次性从共享缓存或 slab 中获得可用缓存的数量，或者一次性释放到
+共享缓存或者 slab 缓存对象的数量. entry 成员是一个零数组，用于指向多个可用
+缓存对象。
+
+缓存栈采用 FILO 的模式，即 SLAB 分配器刚释放的缓存会被一下次分配使用，这样
+很大程度上保持了缓存对象能够保持在 CACHE 中. 其二是当释放一定数量的可用缓存
+对象回共享高速函数或者 slab 时，总是将缓存栈栈底的多个缓存对象释放，尽量保持
+缓存对象在 CACHE 中命中.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+###### <span id="A0008">kmem_bufctl 数组</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
+
+在 slab 中，使用 slab 管理数据管理这 slab 上可用缓存对象的分配和回收。slab 管理
+数据包含了 struct slab 和 kmem_bufctl 数组。kmem_bufctl 数组是由 kmem_bufctl_t
+类型的成员构成，kmem_bufctl 数组一共包含了 slab 中维护缓存对象的数量.
+
+kmem_bufctl 中的成员与 slab 中的缓存对象一一对应，成员用于描述对应缓存对象
+的下一个可用缓存对象，这样就会在 slab 中构成一个单项的可用缓存链表，最后
+一个对象使用 BUFCTL_END 结尾.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------
+
+###### <span id="A0009">slab 着色</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
+
+SLAB 分配器为了提供缓存对象在 CACHE 中的命中效率提出一种解决方案，这里的着色
+和颜色没有一点关系。slab 着色的意思是让 slab 的缓存对象能够加载到 CACHE 中的
+不同 cache line 中. 这样能最大程度让 cache 命中。SLAB 着色首先计算出 slab 从
+Buddy 内存分配的内存中，减去管理数据和缓存对象之后剩余的内存空间，再将剩余的
+内存空间除以一定的对齐模式，那么就可以算出高速缓存能够着色的范围。当计算出
+高速缓存的着色范围之后，每次从 Buddy 中分配内存之后，在组织 slab 的过程中，
+都会从内存开始处预留一定的空间，这部分空间就称为 slab 着色.
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -93,9 +417,9 @@ SLAB 内存分配器用于管理、分配和释放小块虚拟内存
 
 > - [基础用法介绍](#B0000)
 >
-> - [SLAB 永久映射使用](#B0001)
+> - [高速缓存使用](#B0001)
 >
-> - [SLAB 临时映射使用](#B0002)
+> - [通用高速缓存使用](#B0002)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -105,103 +429,162 @@ SLAB 内存分配器用于管理、分配和释放小块虚拟内存
 
 SLAB 分配器提供了用于分配和释放虚拟内存的相关函数接口:
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------------
 
-#### <span id="B0001">SLAB 永久映射使用</span>
+#### <span id="B0001">高速缓存使用</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000001.png)
 
-从 SLAB 区域内存分配、使用和释放虚拟内存，开发者可以参考如下代码:
+高速缓存的使用包括了高速缓存的创建与销毁，以及从高速缓存中分配和释放缓存
+对象.
 
 {% highlight c %}
 #include <linux/mm.h>
-#include <linux/highmem.h>
-#include <asm/fixmap.h>
+#include <linux/slab.h>
 
-/* FIX Phys Addr */
-#define FIX_APIC_ADDR 0xffe00000
+struct node_default {
+        unsigned long index;
+        unsigned long offset;
+        char *name;
+};
 
-static int TestCase_kmap(void)
+static int TestCase_kmem_cache_func(void)
 {
-	unsigned long apic_virt = fix_to_virt(FIX_APIC_BASE);
-	unsigned long val;
+        struct kmem_cache *BiscuitOS_cache;
+        struct node_default *np;
 
-	/* SLAB */
-	set_fixmap_nocache(apic_virt, FIX_APIC_ADDR);
+        /* kmem cache create */
+        BiscuitOS_cache = kmem_cache_create("BiscuitOS-cache",
+                                sizeof(struct node_default),
+                                0,
+                                SLAB_HWCACHE_ALIGN,
+                                NULL,
+                                NULL);
+        if (!BiscuitOS_cache) {
+                printk("%s kmem_cache_create failed.\n", __func__);
+                return -ENOMEM;
+        }
 
-	/* Read/Write */
-	val = *apic_virt;
+        /* alloc from cache */
+        np = kmem_cache_alloc(BiscuitOS_cache, SLAB_ATOMIC);
+        if (!np) {
+                printk("%s kmem_cache_alloc failed.\n", __func__);
+                goto out_alloc;
+        }
 
+        np->index = 0x98;
+        printk("%s INDEX: %#lx\n", __func__, np->index);
+
+        /* free to cache */
+        kmem_cache_free(BiscuitOS_cache, np);
+
+out_alloc:
+        /* kmem cache destroy */
+        kmem_cache_destroy(BiscuitOS_cache);
         return 0;
 }
+
 {% endhighlight %}
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------------
 
-#### <span id="B0002">SLAB 临时映射使用</span>
+#### <span id="B0002">通用高速缓存使用</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000985.png)
+{% highlight c %}
+# .name  .name_dma
+size-32                 size-32(DMA)
+size-64                 size-64(DMA)
+size-96                 size-96(DMA)
+size-128                size-128(DMA)
+size-192                size-192(DMA)
+size-256                size-256(DMA)
+size-512                size-512(DMA)
+size-1024               size-1024(DMA)
+size-2048               size-2048(DMA)
+size-4096               size-4096(DMA)
+size-8192               size-8192(DMA)
+size-16384              size-16384(DMA)
+size-32768              size-32768(DMA)
+size-65536              size-65536(DMA)
+size-131072             size-131072(DMA)
+size-262144             size-262144(DMA)
+size-524288             size-524288(DMA)
+size-1048576            size-1048576(DMA)
+size-2097152            size-2097152(DMA)
+size-4194304            size-4194304(DMA)
+{% endhighlight %}
 
-从 SLAB 区域内存分配、使用和释放虚拟内存，开发者可以参考如下代码:
+SLAB 分配器为内核提供了上表的通用高速缓存，以满足特定内存分配需求. SLAB
+提供了通用高速缓存的分配和释放函数, 如下:
 
 {% highlight c %}
 #include <linux/mm.h>
-#include <linux/highmem.h>
-#include <asm/fixmap.h>
+#include <linux/slab.h>
 
-static int TestCase_fixmap(void)
+struct node_default {
+        unsigned long index;
+        unsigned long offset;
+        char *name;
+};
+
+static int TestCase_kmalloc(void)
 {
-        struct page *page;
-        void *addr;
+        struct node_default *np;
 
-        /* alloc */
-        page = alloc_page(__GFP_HIGHMEM);
-        if (!page || !PageHighMem(page)) {
-                printk("%s alloc_page() failed.\n", __func__);
+        /* allocate */
+        np = (struct node_default *)kmalloc(sizeof(struct node_default),
+                                                               GFP_KERNEL);
+        if (!np) {
+                printk("%s kmalloc failed.\n", __func__);
                 return -ENOMEM;
         }
 
-        /* Fixmap */
-	addr = kmap_atomic(page, KM_USER0);
+        np->index = 0x50;
+        np->offset = 0x60;
+        printk("%s INDEX: %#lx\n", __func__, np->index);
 
-        sprintf((char *)addr, "BiscuitOS-%s", __func__);
-        printk("[%#lx] %s\n", (unsigned long)addr, (char *)addr);
+        /* Free */
+        kfree(np);
 
-	/* Unmap */
-	kunmap_atomic(addr, KM_USER0);
-        __free_page(page);
         return 0;
 }
 {% endhighlight %}
@@ -260,11 +643,11 @@ make menuconfig
 
 选择并进入 "[\*]   Memory Development History  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000986.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000110.png)
 
 选择并进入 "[\*]   SLAB Allocator  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000987.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000111.png)
 
 选择 "[\*]   SLAB on linux 2.6.12  --->" 目录，保存并退出。接着执行如下命令:
 
@@ -281,11 +664,11 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_SLAB-2.6.12
 make download
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000988.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000112.png)
 
 至此源码已经下载完成，开发者可以使用 tree 等工具查看源码:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000989.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000113.png)
 
 arch 目录下包含内存初始化早期，与体系结构相关的处理部分。mm 目录下面包含
 了与各个内存分配器和内存管理行为相关的代码。init 目录下是整个模块的初始化
@@ -313,7 +696,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_SLAB-2.6.12
 make kernel
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000990.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000114.png)
 
 --------------------------------------------
 
@@ -327,7 +710,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_SLAB-2.6.12
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000991.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000115.png)
 
 以上就是模块成功编译，接下来将 ko 模块安装到 BiscuitOS 中，使用如下命令:
 
@@ -344,7 +727,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_SLAB-2.6.12
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000992.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000116.png)
 
 在 BiscuitOS 中插入了模块 "BiscuitOS_SLAB-2.6.12.ko"，打印如上信息，那么
 BiscuitOS Memory Manager Unit History 项目的内存管理子系统已经可以使用。
@@ -466,6 +849,8 @@ $(MODULE_NAME)-m                += modules/fixmap/main.o
 > - [SLAB Linux 2.6.14](#H-linux-2.6.14)
 >
 > - [SLAB Linux 2.6.15](#H-linux-2.6.15)
+>
+> - [SLAB Linux 2.6.16](#H-linux-2.6.16)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -477,54 +862,79 @@ $(MODULE_NAME)-m                += modules/fixmap/main.o
 
 #### SLAB Linux 2.6.12
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
 
-Linux 2.6.12 采用 SLAB 分配器管理 SLAB 虚拟内存区域。
+Linux 2.6.12 采用 SLAB 分配器分配小粒度内存。
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ###### 与项目相关
-
-SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序如下:
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000993.png)
 
 项目中虚拟内存布局如下:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
 
-在项目中，SLAB 虚拟内存的管理的范围是: 0x96395000 到 0x963FF000. 
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
 
 ###### 补丁
 
-对于 Linux 2.6.12 的补丁，Linus 将 Linux 内核源码树加入到 git 中来，因此
-这个版本的代码均不产生补丁。更多补丁的使用请参考:
+对于 Linux 2.6.12 的补丁，Linus 将 Linux 内核源码树加入到 git 中来. 并
+产生了 2 个补丁:
+
+{% highlight bash %}
+tig mm/slab.h include/linux/slab.h
+
+2005-05-01 08:58 Manfred Spraul   o [PATCH] add kmalloc_node, inline cleanup
+                                    [main] 97e2bde47f886a317909c8a8f9bd2fcd8ce2f0b0
+2005-05-01 08:59 Paul E. McKenney o [PATCH] Change synchronize_kernel to _rcu and _sched
+                                    [main] fbd568a3e61a7decb8a754ad952aaa5b5c82e9e5
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000117.png)
+
+{% highlight bash %}
+git format-patch -1 97e2bde47f886a317909c8a8f9bd2fcd8ce2f0b0
+vi 0001-PATCH-add-kmalloc_node-inline-cleanup.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000118.png)
+
+该补丁的作用是增加了 kmem_cache_alloc_node() 和 kmalloc_node() 函数，使其
+在 NUMA 架构中能从指定的 NODE 上分配内存。并增加了 \_\_find_general_cachep()
+函数，然后将 kmem_find_general_cachep() 函数导出. 更多补丁的使用请参考:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
@@ -538,49 +948,52 @@ SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序
 
 #### SLAB Linux 2.6.12.1
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
 
-Linux 2.6.12.1 采用 SLAB 分配器管理 SLAB 虚拟内存区域。
+Linux 2.6.12 采用 SLAB 分配器分配小粒度内存。
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ###### 与项目相关
-
-SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序如下:
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000993.png)
 
 项目中虚拟内存布局如下:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
 
-在项目中，SLAB 虚拟内存的管理的范围是: 0x96395000 到 0x963FF000.
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
 
 ###### 补丁
 
@@ -598,49 +1011,52 @@ SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序
 
 #### SLAB Linux 2.6.12.2
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
 
-Linux 2.6.12.2 采用 SLAB 分配器管理 SLAB 虚拟内存区域。
+Linux 2.6.12 采用 SLAB 分配器分配小粒度内存。
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ###### 与项目相关
-
-SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序如下:
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000993.png)
 
 项目中虚拟内存布局如下:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
 
-在项目中，SLAB 虚拟内存的管理的范围是: 0x96395000 到 0x963FF000.
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
 
 ###### 补丁
 
@@ -658,49 +1074,52 @@ SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序
 
 #### SLAB Linux 2.6.12.3
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
 
-Linux 2.6.12.3 采用 SLAB 分配器管理 SLAB 虚拟内存区域。
+Linux 2.6.12 采用 SLAB 分配器分配小粒度内存。
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ###### 与项目相关
-
-SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序如下:
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000993.png)
 
 项目中虚拟内存布局如下:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
 
-在项目中，SLAB 虚拟内存的管理的范围是: 0x96395000 到 0x963FF000.
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
 
 ###### 补丁
 
@@ -718,49 +1137,52 @@ SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序
 
 #### SLAB Linux 2.6.12.4
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
 
-Linux 2.6.12.4 采用 SLAB 分配器管理 SLAB 虚拟内存区域。
+Linux 2.6.12 采用 SLAB 分配器分配小粒度内存。
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ###### 与项目相关
-
-SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序如下:
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000993.png)
 
 项目中虚拟内存布局如下:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
 
-在项目中，SLAB 虚拟内存的管理的范围是: 0x96395000 到 0x963FF000.
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
 
 ###### 补丁
 
@@ -778,49 +1200,52 @@ SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序
 
 #### SLAB Linux 2.6.12.5
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
 
-Linux 2.6.12.5 采用 SLAB 分配器管理 SLAB 虚拟内存区域。
+Linux 2.6.12 采用 SLAB 分配器分配小粒度内存。
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ###### 与项目相关
-
-SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序如下:
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000993.png)
 
 项目中虚拟内存布局如下:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
 
-在项目中，SLAB 虚拟内存的管理的范围是: 0x96395000 到 0x963FF000.
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
 
 ###### 补丁
 
@@ -838,49 +1263,52 @@ SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序
 
 #### SLAB Linux 2.6.12.6
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
 
-Linux 2.6.12.6 采用 SLAB 分配器管理 SLAB 虚拟内存区域。
+Linux 2.6.12 采用 SLAB 分配器分配小粒度内存。
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ###### 与项目相关
-
-SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序如下:
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000993.png)
 
 项目中虚拟内存布局如下:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
 
-在项目中，SLAB 虚拟内存的管理的范围是: 0x96395000 到 0x963FF000.
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
 
 ###### 补丁
 
@@ -898,82 +1326,104 @@ SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序
 
 #### SLAB Linux 2.6.13
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
 
-Linux 2.6.13 采用 SLAB 分配器管理 SLAB 虚拟内存区域。
+Linux 2.6.12 采用 SLAB 分配器分配小粒度内存。
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ###### 与项目相关
-
-SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序如下:
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000993.png)
 
 项目中虚拟内存布局如下:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
 
-在项目中，SLAB 虚拟内存的管理的范围是: 0x96395000 到 0x963FF000.
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
 
 ###### 补丁
 
-相对于前一个版本 linux 2.6.12.6, 该版本并产生一个补丁。
+相对于前一个版本 linux 2.6.12.6, 该版本并产生了多个补丁。
 
 {% highlight bash %}
-tig mm/highmem.c include/linux/highmem.h include/asm-i386/highmem.h arch/i386/mm/highmem.c
+tig mm/slab.c include/linux/slab.h
 
-2005-06-23 00:08 Alexey Dobriyan   o [PATCH] Remove i386_ksyms.c, almost.
-                                     [main] 129f69465b411592247c408f93d7106939223be1
-2005-06-25 14:58 Vivek Goyal       o [PATCH] kdump: Routines for copying dump pages
-                                     [main] 60e64d46a58236e3c718074372cab6a5b56a3b15
+2005-06-18 22:46 Arnaldo Carvalho de Melo o [SLAB] Introduce kmem_cache_name
+                                            [main] 1944972d3bb651474a5021c9da8d0166ae19f1eb
+2005-06-21 17:14 Christoph Lameter        o [PATCH] Periodically drain non local pagesets
+                                            [main] 4ae7c03943fca73f23bc0cdb938070f41b98101f
+2005-06-23 00:09 Paulo Marques            o [PATCH] create a kstrdup library function
+                                            [main] 543537bd922692bc978e2e356fcd8bfc9c2ee7d5
+2005-07-06 10:47 Christoph Lameter        o [PATCH] Fix broken kmalloc_node in rc1/rc2
+                                            [main] 83b78bd2d31f12d7d9317d9802a1996a7bd8a6f2
+2005-07-07 17:56 Alexey Dobriyan          o [PATCH] propagate __nocast annotations
+                                            [main] 0db925af1db5f3dfe1691c35b39496e2baaff9c9
+2005-07-27 11:43 Alexey Dobriyan          o [PATCH] Really __nocast-annotate kmalloc_node()
+                                            [main] c10b873695c6a1de0d8ebab40b525575ca576683
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000994.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000119.png)
 
 {% highlight bash %}
-git format-patch -1 129f69465b411592247c408f93d7106939223be1
-vi 0001-PATCH-Remove-i386_ksyms.c-almost.patch
+git format-patch -1 1944972d3bb651474a5021c9da8d0166ae19f1eb
+vi 0001-SLAB-Introduce-kmem_cache_name.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000995.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000120.png)
 
-该补丁用于导出 kmap_atomic/kunmap_atomic 函数.
+该补丁用户获得高速缓存的名字.
 
 {% highlight bash %}
-git format-patch -1 60e64d46a58236e3c718074372cab6a5b56a3b15
-vi 0001-PATCH-kdump-Routines-for-copying-dump-pages.patch
+git format-patch -1 543537bd922692bc978e2e356fcd8bfc9c2ee7d5
+vi 0001-PATCH-create-a-kstrdup-library-function.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000996.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000121.png)
 
-该补丁增加了 kmap_atomic_pfn() 函数实现. 更多补丁的使用请参考:
+该补丁提供了 kstrdup() 接口，该接口用于为指定字符串分配内存空间，并将原始数据
+拷贝到新的内存里.
+
+{% highlight bash %}
+git format-patch -1 83b78bd2d31f12d7d9317d9802a1996a7bd8a6f2
+vi 0001-PATCH-Fix-broken-kmalloc_node-in-rc1-rc2.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000122.png)
+
+该补丁用于当使用 kmem_cache_alloc_node() 分配缓存对象时，如果 nodeid 设置为
+-1，那么高速缓存从当前节点进行分配缓存对象. 更多补丁的使用请参考:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
@@ -987,49 +1437,52 @@ vi 0001-PATCH-kdump-Routines-for-copying-dump-pages.patch
 
 #### SLAB Linux 2.6.13.1
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
 
-Linux 2.6.13.1 采用 SLAB 分配器管理 SLAB 虚拟内存区域。
+Linux 2.6.12 采用 SLAB 分配器分配小粒度内存。
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ###### 与项目相关
-
-SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序如下:
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000993.png)
 
 项目中虚拟内存布局如下:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
 
-在项目中，SLAB 虚拟内存的管理的范围是: 0x96395000 到 0x963FF000.
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
 
 ###### 补丁
 
@@ -1047,53 +1500,195 @@ SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序
 
 #### SLAB Linux 2.6.14
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
 
-Linux 2.6.14 采用 SLAB 分配器管理 SLAB 虚拟内存区域。
+Linux 2.6.12 采用 SLAB 分配器分配小粒度内存。
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ###### 与项目相关
-
-SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序如下:
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000993.png)
 
 项目中虚拟内存布局如下:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
 
-在项目中，SLAB 虚拟内存的管理的范围是: 0x96395000 到 0x963FF000.
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
 
 ###### 补丁
 
-相对于前一个版本 linux 2.6.13.1, 该版本并未产生补丁。更多补丁的使用请参考:
+相对于前一个版本 linux 2.6.13.1, 该版本并产生了多个补丁。
+
+{% highlight bash %}
+tig mm/slab.c include/linux/slab.h
+
+2005-09-03 15:54 Martin Hicks             o [PATCH] vm: slab.c spelling correction
+                                            [main] 0abf40c1ac3f25d264c019e1cfe155d590defb87
+2005-09-03 15:55 Kyle Moffett             o [PATCH] sab: consolidate kmem_bufctl_t
+                                            [main] fa5b08d5f818063d18433194f20359ef2ae50254
+2005-09-03 15:55 Eric Dumazet             o [PATCH] mm/slab.c: prefetchw the start of new allocated objects
+                                            [main] 34342e863c3143640c031760140d640a06c6a5f8
+2005-09-03 15:55 Manfred Spraul           o [PATCH] slab: removes local_irq_save()/local_irq_restore() pair
+                                            [main] 00e145b6d59a16dd7740197a18f7abdb3af004a9
+2005-09-06 15:18 Pekka J Enberg           o [PATCH] introduce and use kzalloc
+                                            [main] dd3927105b6f65afb7dac17682172cdfb86d3f00
+2005-09-09 13:03 Christoph Lameter        o [PATCH] Numa-aware slab allocator V5
+                                            [main] e498be7dafd72fd68848c1eef1575aa7c5d658df
+2005-09-09 13:10 Pekka Enberg             o [PATCH] update kfree, vfree, and vunmap kerneldoc
+                                            [main] 80e93effce55044c5a7fa96e8b313640a80bd4e9
+2005-09-10 00:26 Victor Fusco             o [PATCH] mm/slab: fix sparse warnings
+                                            [main] b2d550736f8b2186b8ef7e206d0bfbfec2238ae8
+2005-09-14 12:17 Alok Kataria             o [PATCH] Fix slab BUG_ON() triggered by change in array cache size
+                                            [main] c7e43c78ae4d8630c418ce3495787b995e61a580
+2005-09-22 21:43 Ivan Kokshaysky          o [PATCH] slab: alpha inlining fix
+                                            [main] 7243cc05bafdda4c4de77cba00cf87666bd237f7
+2005-09-22 21:44 Christoph Lameter        o [PATCH] slab: fix handling of pages from foreign NUMA nodes
+                                            [main] ff69416e6323fe9d38c42a06ebdefeb58bbe9336
+2005-09-22 21:44 Christoph Lameter        o [PATCH] __kmalloc: Generate BUG if size requested is too large.
+                                            [main] eafb42707b21beb42bba4eae7b742f837ee9d2e0
+2005-09-23 13:24 Andrew Morton            o [PATCH] revert oversized kmalloc check
+                                            [main] dbdb90450059e17e8e005ebd3ce0a1fd6008a0c8
+2005-09-27 21:45 Alok N Kataria           o [PATCH] kmalloc_node IRQ safety fix
+                                            [main] 5c382300876f2337f7b945c159ffcaf285f296ea
+2005-10-07 07:46 Al Viro                  o [PATCH] gfp flags annotations - part 1
+                                            [main] dd0fc66fb33cd610bc1a5db8a5e232d34879b4d7
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000123.png)
+
+{% highlight bash %}
+git format-patch -1 0abf40c1ac3f25d264c019e1cfe155d590defb87
+vi 0001-PATCH-vm-slab.c-spelling-correction.patch 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000124.png)
+
+该补丁修改了拼写错误.
+
+{% highlight bash %}
+git format-patch -1 fa5b08d5f818063d18433194f20359ef2ae50254
+vi 0001-PATCH-sab-consolidate-kmem_bufctl_t.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000125.png)
+
+该补丁用于将 kmem_bufctl_t 的定义迁移到 slab.c 中定义.
+
+{% highlight bash %}
+git format-patch -1 34342e863c3143640c031760140d640a06c6a5f8
+vi 0001-PATCH-mm-slab.c-prefetchw-the-start-of-new-allocated.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000126.png)
+
+该补丁用于从高速缓存中分配一个缓存对象时调用 prefetchw() 预取该对象.
+
+{% highlight bash %}
+git format-patch -1 00e145b6d59a16dd7740197a18f7abdb3af004a9
+vi 0001-PATCH-slab-removes-local_irq_save-local_irq_restore-.patch 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000127.png)
+
+该补丁用于在获得高速缓存的缓存对象大小时，移除了 local_irq_save() 和 
+local_irq_restore().
+
+{% highlight bash %}
+git format-patch -1 dd3927105b6f65afb7dac17682172cdfb86d3f00
+vi 0001-PATCH-introduce-and-use-kzalloc.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000128.png)
+
+该补丁将 kcalloc() 函数替换成 kzalloc() 函数.
+
+{% highlight bash %}
+git format-patch -1 e498be7dafd72fd68848c1eef1575aa7c5d658df
+vi 0001-PATCH-Numa-aware-slab-allocator-V5.patch
+{% endhighlight %}
+
+该补丁用于支持本地高速缓存的缓存栈，以及支持 NUMA 架构共享高速缓存，并且多个
+NODE 之间共享缓存对象.
+
+{% highlight bash %}
+git format-patch -1 c7e43c78ae4d8630c418ce3495787b995e61a580
+vi 0001-PATCH-Fix-slab-BUG_ON-triggered-by-change-in-array-c.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000129.png)
+
+该补丁修复了当查找 struct cache_array 对应的通用高速缓存，如果高速缓存
+不存在，函数应该调用 BUG_ON() 报错.
+
+{% highlight bash %}
+git format-patch -1 ff69416e6323fe9d38c42a06ebdefeb58bbe9336
+vi 0001-PATCH-slab-fix-handling-of-pages-from-foreign-NUMA-n.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000130.png)
+
+该补丁用于当释放缓存对象回 slab 时，增加了对 NODE 的标识.
+
+{% highlight bash %}
+git format-patch -1 eafb42707b21beb42bba4eae7b742f837ee9d2e0
+vi 0001-PATCH-__kmalloc-Generate-BUG-if-size-requested-is-to.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000131.png)
+
+该补丁用于当使用 \_\_kmalloc() 分配超级大内存的时候，如果找不到对于的高速
+缓存，那么函数调用 BUG_ON() 进行报错.
+
+{% highlight bash %}
+git format-patch -1 dbdb90450059e17e8e005ebd3ce0a1fd6008a0c8
+vi 0001-PATCH-revert-oversized-kmalloc-check.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000132.png)
+
+该补丁将 BUG_ON() 修改为原先的处理逻辑.
+
+{% highlight bash %}
+git format-patch -1 5c382300876f2337f7b945c159ffcaf285f296ea
+vi 0001-PATCH-kmalloc_node-IRQ-safety-fix.patch 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000133.png)
+
+该补丁用于 kmem_cache_alloc_node() 函数在不同 NODE 上使用 \_\_cache_alloc()
+函数分配. 更多补丁使用请参考下文:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
@@ -1107,57 +1702,389 @@ SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序
 
 #### SLAB Linux 2.6.15
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
 
-Linux 2.6.15 采用 SLAB 分配器管理 SLAB 虚拟内存区域。
+Linux 2.6.12 采用 SLAB 分配器分配小粒度内存。
 
-###### SLAB 分配
+###### 高速缓存 
 
 {% highlight bash %}
-set_fixmap_nocache
-set_fixmap
-kmap_atomic
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
 {% endhighlight %}
 
-###### SLAB 释放
+###### 通用高速缓存
 
 {% highlight bash %}
-clear_fixmap
-kunmap_atomic
+kzalloc
+kmalloc
+kmalloc_node
+kfree
 {% endhighlight %}
 
 ###### 转换函数
 
 {% highlight bash %}
-__fix_to_virt
-__virt_to_fix
-fix_to_virt
-virt_to_fix
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
 {% endhighlight %}
 
 具体函数解析说明，请查看:
 
-> - [SLAB API](#K)
+> - [SLAB Allocator API](#K)
 
 ###### 与项目相关
-
-SLAB 内存分配器与本项目相关的 kmap_atomic/kunmap_atomic 调用顺序如下:
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000993.png)
 
 项目中虚拟内存布局如下:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
 
-在项目中，SLAB 虚拟内存的管理的范围是: 0x96395000 到 0x963FF000.
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
 
 ###### 补丁
 
-相对于前一个版本 linux 2.6.14, 该版本并未产生补丁。更多补丁的使用请参考:
+相对于前一个版本 linux 2.6.14, 该版本并产生了多个补丁。
+
+{% highlight bash %}
+tig mm/slab.c include/linux/slab.h
+
+2005-10-21 03:18 Al Viro                  o [PATCH] gfp_t: mm/* (easy parts)
+                                            [main] 6daa0e28627abf362138244a620a821a9027d816
+2005-10-29 18:15 Christoph Lameter        o [PATCH] slab: add additional debugging to detect slabs from the wrong node
+                                            [main] 09ad4bbc3a5c93316d7f4ffc0c310d9cbb28c2f0
+2005-11-07 00:58 Andrew Morton            o [PATCH] slab: don't BUG on duplicated cache
+                                            [main] 4f12bb4f7715f418a9c80f89447948790f476958
+2005-11-07 00:58 Pekka J Enberg           o [PATCH] mm: rename kmem_cache_s to kmem_cache
+                                            [main] 2109a2d1b175dfcffbfdac693bdbe4c4ab62f11f
+2005-11-07 00:58 Manfred Spraul           o [PATCH] slab: Use same schedule timeout for all cpus in cache_reap
+                                            [main] cd61ef6268ac52d3dfa5626d1e0306a91b3b2608
+2005-11-07 01:01 Randy Dunlap             o [PATCH] more kernel-doc cleanups, additions
+                                            [main] 1e5d533142c1c178a31d4cc81837eb078f9269bc
+2005-11-08 16:44 Adrian Bunk              o mm/slab.c: fix a comment typo
+                                            [main] dc6f3f276e2b4cbc1563def8fb39373a45db84ac
+2005-11-13 16:06 Pekka Enberg             o [PATCH] slab: convert cache to page mapping macros
+                                            [main] 065d41cb269e9debb18c6d5052e4de1088ae3d8f
+2005-11-13 16:06 Christoph Lameter        o [PATCH] slab: remove alloc_pages() calls
+                                            [main] 50c85a19e7b3928b5b5188524c44ffcbacdd4e35
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000134.png)
+
+{% highlight bash %}
+git format-patch -1 4f12bb4f7715f418a9c80f89447948790f476958
+vi 0001-PATCH-slab-don-t-BUG-on-duplicated-cache.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000136.png)
+
+该补丁用于解决复杂高速缓存名字时候出现的 BUG.
+
+{% highlight bash %}
+git format-patch -1 2109a2d1b175dfcffbfdac693bdbe4c4ab62f11f
+vi 0001-PATCH-mm-rename-kmem_cache_s-to-kmem_cache.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000137.png)
+
+该补丁将 struct kmem_cache_s 修改为 struct kmem_cache.
+
+{% highlight bash %}
+git format-patch -1 065d41cb269e9debb18c6d5052e4de1088ae3d8f
+vi 0001-PATCH-slab-convert-cache-to-page-mapping-macros.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000138.png)
+
+该补丁提供了 page_set_cache()、page_set_slab() 函数等，用于 slab、page 与高速
+缓存之间绑定.
+
+{% highlight bash %}
+git format-patch -1 50c85a19e7b3928b5b5188524c44ffcbacdd4e35
+vi 0001-PATCH-slab-remove-alloc_pages-calls.patch
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000139.png)
+
+该补丁用于提供从 Buddy 分配器获得物理内存的统一接口. 更多补丁使用请参考:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------------
+
+<span id="H-linux-2.6.16"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000795.JPG)
+
+#### SLAB Linux 2.6.16
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000007.png)
+
+Linux 2.6.16 采用 SLAB 分配器分配小粒度内存。
+
+###### 高速缓存 
+
+{% highlight bash %}
+kmem_cache_create
+kmem_cache_alloc
+kmem_cache_alloc_notrace
+kmem_cache_destroy
+kmem_cache_free
+kmem_cache_name
+kmem_cache_zalloc
+{% endhighlight %}
+
+###### 通用高速缓存
+
+{% highlight bash %}
+kzalloc
+kmalloc
+kmalloc_node
+kfree
+{% endhighlight %}
+
+###### 转换函数
+
+{% highlight bash %}
+virt_to_slab
+page_get_slab
+page_get_cache
+page_set_cache
+page_set_slab
+{% endhighlight %}
+
+具体函数解析说明，请查看:
+
+> - [SLAB Allocator API](#K)
+
+###### 与项目相关
+
+项目中虚拟内存布局如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+
+在项目中，SLAB 虚拟内存的管理的范围是: 0x90000000 到 0x94400000.
+
+###### 补丁
+
+相对于前一个版本 linux 2.6.15, 该版本并产生了多个补丁。
+
+{% highlight bash %}
+tig mm/slab.c include/linux/slab.h
+
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000140.png)
+
+{% highlight bash %}
+git format-patch -1
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
+{% highlight bash %}
+git format-patch -1 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+
+该补丁.
+
 
 -----------------------------------------------
 
@@ -1329,6 +2256,8 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 >
 >   - [struct slab](#D0102)
 >
+>   - [struct slab_rcu](#D030063)
+>
 >   - [kmem_bufctl_t](#D0106)
 >
 >   - [struct arraycache_init](#D0107)
@@ -1357,11 +2286,11 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 >
 >   - [cache_init_objs](#D030015)
 >
+>   - [\_\_cache_shrink](#D030061)
+>
 >   - [calculate_slab_order](#D030023)
 >
 >   - [cpu_cache_get](#D030004)
->
->   - [drain_freelist](#D030056)
 >
 >   - [\_\_do_cache_alloc](#D030019)
 >
@@ -1374,6 +2303,10 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 >   - [do_tune_cpucache](#D030033)
 >
 >   - [drain_array](#D030059)
+>
+>   - [drain_cpu_caches](#D030060)
+>
+>   - [drain_freelist](#D030056)
 >
 >   - [enable_cpucache](#D030036)
 >
@@ -1401,11 +2334,19 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 >
 >   - [\_\_kmem_cache_destroy](#D030057)
 >
+>   - [kmem_cache_destroy](#D030062)
+>
 >   - [kmem_cache_free](#D030051)
 >
 >   - [kmem_cache_init](#D030040)
 >
 >   - [kmem_cache_init_late](#D030044)
+>
+>   - [kmem_cache_name](#D030067)
+>
+>   - [kmem_cache_shrink](#D030064)
+>
+>   - [kmem_cache_size](#D030066)
 >
 >   - [kmem_cache_zalloc](#D030022)
 >
@@ -1424,6 +2365,8 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 >   - [MAKE_ALL_LIST](#D030043)
 >
 >   - [MAKE_LIST](#D030042)
+>
+>   - [obj_size](#D030065)
 >
 >   - [obj_to_index](#D030048)
 >
@@ -1457,12 +2400,190 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
+----------------------------------------------
+
+<span id="D02"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### 逻辑解析
+
+在 Linux 2.6.x 内核中，SLAB 分配器的初始化位于 Buddy 分配器之后、PERCPU 分配
+器之前，因此 SLAB 分配器可以使用完整的 Buddy 分配器功能。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000108.png)
+
+内核初始化阶段，通过调用 kmem_cache_init() 函数进行 SLAB 分配器的初始化。在
+SLAB 初始化过程中，SLAB 需要使用从 SLAB 中分配的内存，因此 SLAB 的初始化就
+出现了 "是先有蛋还是先有鸡" 的问题，为了解决这个问题，SLAB 分配器将 SLAB 分配
+的初始化分作了五个阶段，如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000059.png)
+
+###### NONE 阶段
+
+SLAB 分配器初始化第一阶段，位于该阶段的 SLAB 分配器只包含了静态数据
+cache_cache、initkmem_list3 以及 initarray_cache。SLAB 分配器在这个阶段
+利用这些静态数据构建 SLAB 分配器的第一个高速缓存 cache_cache. cache_cache
+高速缓存是为其他高速缓存提供 struct kmem_cache 对象。因此其作为 SLAB 根基
+是不允许有任何失败的.
+
+###### PARTIAL_AC 阶段
+
+SLAB 分配器的第二个阶段，位于该阶段的 SLAB 分配器已经可以分配 struct kmem_cache
+对象了，此阶段 SLAB 分配器通过获得 struct cache_array 的长度，以此构建一个
+与该长度匹配的通用高速缓存，然后 SLAB 分配器可以使用这个高速缓存为 SLAB 分配器
+提供 struct cache_array 对象，struct cache_array 用于维护高速缓存的本地高速
+缓存，由于此阶段系统只使用一个 CPU 运行.
+
+###### PARTIAL_L3 阶段
+
+SLAB 分配器初始化第三阶段，位于该阶段的 SLAB 分配器已经具有 struct kmem_cache
+和 struct cache_array 高速缓存。该阶段 SLAB 分配器获得 struct kmem_list3 的
+长度之后，以此构建一个与该程度匹配的通用高速缓存，然后 SLAB 分配器就可以提供
+struct kmem_list3 对象。struct kmem_list3 用于维护高速缓存的 slab 链表.
+
+###### EARLY 阶段
+
+SLAB 分配器初始化第四阶段，这个阶段 SLAB 分配器构建了通用高速缓存，并能为
+系统提供大部分的 SLAB 分配器功能。只是该阶段系统只用 boot CPU 运行，并且
+SLAB CPU 热插拔等功能还为支持. 该阶段 SLAB 分配器将原先的静态数据完全
+替换成 SLAB 分配器分配器的内存，并将数据迁移到新的内存上.
+
+###### FULL 阶段
+
+SLAB 分配器初始化完毕。位于该阶段的 SLAB 分配器已经是一个完全体，并支持所有的
+SLAB 分配器功能.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 -----------------------------------------
 
-###### <span id="D030000"></span>
+###### <span id="D030067">kmem_cache_name</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000107.png)
 
+kmem_cache_name() 函数用于获得高速缓存的名字. 参数 cachep 指向高速缓存。SLAB
+分配器使用 struct kmem_cache 维护一个高速缓存，其中 name 成员用于指明高速缓存
+的名字.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+###### <span id="D030066">kmem_cache_size</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000106.png)
+
+kmem_cache_size() 函数用于获得缓存对象的长度。参数 cachep 指向高速缓存.
+函数通过 obj_size() 函数获得缓存对象长度.
+
+> [obj_size](#D030065)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+###### <span id="D030065">obj_size</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000105.png)
+
+obj_size() 宏用于获得高速缓存的缓存对象长度. SLAB 分配器使用 struct kmem_cache
+维护一个高速缓存，其中 buffer_size 用于指明缓存对象的大小.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+###### <span id="D030064">kmem_cache_shrink</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000104.png)
+
+kmem_cache_shrink() 函数用于收缩高速缓存，将高速缓存的缓存对象释放。参数
+cachep 指向高速缓存。函数首先进行基础检测，确保高速缓存存在，且不再中断中
+执行该函数. 然后函数上互斥锁，并调用 \_\_cache_shrink() 函数进行实际的收缩
+工作，完成收缩任务之后接触互斥锁.
+
+> [\_\_cache_shrink](#D030061)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+###### <span id="D030063">struct slab_rcu</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000103.png)
+
+struct slab_rcu 数据结构用于销毁一个 slab 时候，辅助 SLAB 分配器使用 RCU 方式
+将 slab 进行销毁. head 成员用于 RCU 相关的数据，cachep 指向 slab 对应的高速
+缓存，addr 指向 slab 对应的虚拟地址.
+
+> [slab_destroy](#D030052)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+###### <span id="D030062">kmem_cache_destroy</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000102.png)
+
+kmem_cache_destroy() 函数用于销毁一个高速缓存。参数 cachep 指向高速缓存.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000001.png)
+
+当 SLAB 分配器需要销毁一个高速缓存的时候，SLAB 分配器需要将其本地高速缓存、
+共享高速缓存，以及 slab 等占用的内存释放回 Buddy 分配器. 函数在 2546 行做了
+基础检测，确保高速缓存存在，且调用该函数时不能位于中断中. 接着函数给
+cache_chain 链表上互斥锁，然后将高速缓存从 cache_chain 链表中移除. 接着函数
+在 2555 行调用 \_\_cache_shrink() 函数将高速缓存对应的本地高速缓存和共享缓存
+以及 slab 占用的内存都释放回 Buddy 分配器，如果有缓存对象无法释放，那么函数
+此时报错，并将高速缓存插入 cache_chain 链表，解除互斥锁，最后直接返回; 反之
+如果 \_\_cache_shrink() 函数已经将所有缓存对象占用的内存释放回 Buddy 分配器，
+那么函数调用 \_\_kmem_cache_destroy() 函数将自身释放回 cache_cache 高速缓存.
+
+> [\_\_cache_shrink](#D030061)
+>
+> [\_\_kmem_cache_destroy](#D030057)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+###### <span id="D030061">\_\_cache_shrink</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000101.png)
+
+\_\_cache_shrink() 函数用于收缩高速缓存. cachep 参数指向高速缓存. SLAB 分配
+器提供了该函数用于缩减高速缓存占用的内存数量. 函数 2491 行调用 
+drain_cpu_caches() 函数将高速缓存对应的本地缓存和共享高速缓存中的可用缓存释放
+回 slab，然后函数在 2494 行遍历所有的 NODE，以便在每次遍历过程中获得对应的 slab
+链表，如果检测 slab 链表存在，那么函数调用 drain_freelist() 函数将其 slab 占用
+的内存释放回 Buddy 分配器. 如果 slab 链表中，slabs_full 或者 slabs_partial 不为
+空，那么 ret 变量加一，最后如果 ret 不为零，那么返回 1，如果 ret 为零，代表
+高速缓存还维护一定数量的 slab.
+
+> [drain_cpu_caches](#D030060)
+>
+> [drain_freelist](#D030056)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+###### <span id="D030060">drain_cpu_caches</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000100.png)
+
+drain_cpu_caches() 函数的作用是将本地高速缓存和共享高速缓存上的可用缓存对象
+归还给 slab。参数 cachep 指向高速缓存.
+
+函数 2429 行通过调用 do_drain() 函数将本地高速缓存释放会 slab。函数 2437 行
+到 2441 行，行数遍历所有的 NODE，并将对应的共享高速缓存的缓存对象归还给 slab.
+
+> [do_drain](#D030058)
+>
+> [drain_array](#D030059)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -3209,7 +4330,7 @@ size-4194304
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000009.png)
 
-SLAB 分配器使用 struct kmem_cache 结构管理一个缓存对象. SLAB 分配器从 Buddy
+SLAB 分配器使用 struct kmem_cache 结构管理一个高速缓存. SLAB 分配器从 Buddy
 分配器中分配器内存之后，使用 struct slab 管理这些内存，并称为 slab，SLAB 分配器
 将 slab 维护在对应的 slabs_partial、slabs_free 或 slabs_full 链表中。slab
 中存在可用的对象，但 SLAB 分配器为了加速每个 CPU 获得对象的速率，为对象针对
@@ -3222,7 +4343,7 @@ slab 进行着色，这回让每个对象缓存到不同的 CACHE LINE 上，其
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000001.png)
 
-array 成员用于为每个 CPU 指向各自的缓存栈 struct cache_array, CPU 分配对象
+array 成员用于为每个 CPU 指向各自的本地高速缓存 struct cache_array, CPU 分配对象
 的时候通过该成员找到指定的缓存栈进行对象的分配和释放动作. buffer_size 用于
 指明对象对齐之后的长度, 由于是对齐之后的结果，因此和对象原始长度可能存在差异;
 flags 用于指明对象在 SLAB 分配器中的标志; num 成员用于指明每个 slab 上对象
@@ -3252,9 +4373,9 @@ slabs_free 链表用于维护全部对象可用的 slab，slabs_full 链表用�
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000006.png)
 
-在 SLAB 分配器中，SLAB 分配器使用 struct kmem_cache 管理一个缓存对象，SLAB
+在 SLAB 分配器中，SLAB 分配器使用 struct kmem_cache 管理一个高速缓存，SLAB
 分配器从 Buddy 分配器中为对象分配内存之后，使用 struct slab 管理这些内存，
-将内存分作两部分，第一部分是管理部分，第二部分就是可用对象. 如下图:
+将内存分作两部分，第一部分是管理部分，第二部分就是可用缓存对象. 如下图:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000008.png)
 
@@ -3301,8 +4422,10 @@ slab 管理数据也可以位于 slab 外部，如下图:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000004.png)
 
-SLAB 分配器为对象创建了每个 CPU 缓存栈，通过使用 struct array_cache 结构
-进行维护。每个 CPU 都可以从各自的 array_cache 中获得可用的对象, 如下图:
+SLAB 分配器为了加速从高速缓存中分配缓存对象，高速缓存为每个 CPU 创建了本地高
+速缓存，通过使用 struct array_cache 结构进行维护。本地高速缓存通过一个缓存栈
+维护一定数量的可用缓存对象。每个 CPU 都可以从各自的缓存栈上快速获得可用的缓存
+对象, 如下图:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000001.png)
 
@@ -3325,9 +4448,9 @@ struct kmem_cache array 成员中找到指定的 struct array_cache 结构，在
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000002.png)
 
-SLAB 分配器使用 struct kmem_cache 维护一个缓存对象, 其中包含了成员
-nodelist_list3, 其就是一个 struct kmem_list3 结构。SLAB 分配器为缓存
-对象在每个 NODE 上都分配一个 struct kmem_list3 结构，struct kmem_list3 结构
+SLAB 分配器使用 struct kmem_cache 维护一个高速缓存, 其中包含了成员
+nodelist_list3, 其就是一个 struct kmem_list3 结构。SLAB 分配器为高速缓存
+在每个 NODE 上都分配一个 struct kmem_list3 结构，struct kmem_list3 结构
 在每个 NODE 上维护三个链表，每个链表上都维护一定数量的 slab. 如下图:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000001.png)
@@ -3343,7 +4466,8 @@ slabs_free 链表上查找一个 slab，并从该 slab 中查找一个可用的�
 free_objects 成员用于指定该 NODE 上所有可用对象的数量. free_limit 成员
 用于指定该 NODE 上，三个链表维护最大可用对象的数量，当可用对象数量超过
 free_limit 之后，SLAB 分配器将 slabs_free 上的 slab 释放给 Buddy 分配器.
-colour_next 成员用于为每个 slab 进行着色，如下图:
+colour_next 成员用于为每个 slab 进行着色. shared 成员维护一个共享高速
+缓存，用于与多个本地高速缓存交换可用的缓存对象。如下图:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000003.png)
 
