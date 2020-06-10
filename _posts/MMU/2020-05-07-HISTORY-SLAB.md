@@ -24,7 +24,7 @@ tags:
 >
 > - [SLAB 分配器调试](#E)
 >
-> - [SLAB 分配进阶研究](#F)
+> - [SLAB 分配器进阶研究](#F)
 >
 > - [SLAB 时间轴](#G)
 >
@@ -1823,7 +1823,7 @@ vi 0001-PATCH-slab-remove-alloc_pages-calls.patch
 
 <span id="H-linux-2.6.16"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000795.JPG)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000156.JPG)
 
 #### SLAB Linux 2.6.16
 
@@ -1881,210 +1881,231 @@ page_set_slab
 {% highlight bash %}
 tig mm/slab.c include/linux/slab.h
 
+2006-01-08 01:00 Pekka Enberg             o [PATCH] slab: remove unused align parameter from alloc_percpu
+                                            [main] f9f7500521b25dbf1aba476b81230489ad8e2c4b
+2006-01-08 01:00 Pekka Enberg             o [PATCH] slab: extract slabinfo header printing to separate function
+                                            [main] 85289f98ddc13f6cea82c59d6ff78f9d205dfccc
+2006-01-08 01:00 Pekka Enberg             o [PATCH] slab: extract slab order calculation to separate function
+                                            [main] 4d268eba1187ef66844a6a33b9431e5d0dadd4ad
+2006-01-08 01:00 Pekka Enberg             o [PATCH] slab: fix code formatting
+                                            [main] b28a02de8c70d41d6b6ba8911e83ed3ccf2e13f8
+2006-01-08 01:00 Tobias Klauser           o [PATCH] mm: clean up local variables
+                                            [main] cd105df4590c89837a1c300843238148cfef9b5f
+2006-01-08 01:01 Matt Mackall             o [PATCH] slob: introduce mm/util.c for shared functions
+                                            [main] 30992c97ae9d01b17374fbfab76a869fb4bba500
+2006-01-08 01:01 Matt Mackall             o [PATCH] slob: introduce the SLOB allocator
+                                            [main] 10cef6029502915bdb3cf0821d425cf9dc30c817
+2006-01-09 15:59 Ingo Molnar              o [PATCH] mutex subsystem, more debugging code
+                                            [main] de5097c2e73f826302cd8957c225b3725e0c7553
+2006-01-11 14:41 David Woodhouse          o [PATCH] fix/simplify mutex debugging code
+                                            [main] a4fc7ab1d065a9dd89ed0e74439ef87d4a16e980
+2006-01-18 17:42 Ingo Molnar              o [PATCH] sem2mutex: mm/slab.c
+                                            [main] fc0abb1451c64c79ac80665d5ba74450ce274e4d
+2006-01-18 17:42 Christoph Lameter        o [PATCH] NUMA policies in the slab allocator V2
+                                            [main] dc85da15d42b0efc792b0f5eab774dc5dbc1ceec
+2006-01-18 17:42 Christoph Lameter        o [PATCH] mm: optimize numa policy handling in slab allocator
+                                            [main] 86c562a9d6683063e071692fe14e0a18e64ee1be
+2006-02-01 03:05 Benjamin LaHaise         o [PATCH] Use 32 bit division in slab_put_obj()
+                                            [main] 9884fd8df195fe48d4e1be2279b419be96127cae
+2006-02-01 03:05 Manfred Spraul           o [PATCH] slab: distinguish between object and buffer size
+                                            [main] 3dafccf22751429e69b6266636cf3acf45b48075
+2006-02-01 03:05 Christoph Lameter        o [PATCH] slab: minor cleanup to kmem_cache_alloc_node
+                                            [main] 18f820f655ce93b1e4d9b48fc6fcafc64157c6bc
+2006-02-01 03:05 Steven Rostedt           o [PATCH] slab: have index_of bug at compile time
+                                            [main] 5ec8a847bb8ae2ba6395cfb7cb4bfdc78ada82ed
+2006-02-01 03:05 Steven Rostedt           o [PATCH] slab: cache_estimate cleanup
+                                            [main] fbaccacff1f17c65ae0972085368a7ec75be6062
+2006-02-01 03:05 Matthew Dobson           o [PATCH] slab: extract slab_destroy_objs()
+                                            [main] 12dd36faec5d3bd96da84fa8f76efecc632930ab
+2006-02-01 03:05 Matthew Dobson           o [PATCH] slab: extract slab_{put|get}_obj
+                                            [main] 78d382d77c84229d031431931bf6490d5da6ab86
+2006-02-01 03:05 Pekka Enberg             o [PATCH] slab: reduce inlining
+                                            [main] 5295a74cc0bcf1291686eb734ccb06baa3d55c1a
+2006-02-01 03:05 Pekka Enberg             o [PATCH] slab: extract virt_to_{cache|slab}
+                                            [main] 6ed5eb2211204224799b2821656bbbfde26ef200
+2006-02-01 03:05 Pekka Enberg             o [PATCH] slab: rename ac_data to cpu_cache_get
+                                            [main] 9a2dba4b4912b493070cbc170629fdbf440b01d7
+2006-02-01 03:05 Pekka Enberg             o [PATCH] slab: replace kmem_cache_t with struct kmem_cache
+                                            [main] 343e0d7a93951e35065fdb5e3dd61aece0ec6b3c
+2006-02-01 03:05 Pekka Enberg             o [PATCH] slab: fix kzalloc and kstrdup caller report for CONFIG_DEBUG_SLAB
+                                            [main] 7fd6b1413082c303613fc137aca9a004740cacf0
+2006-02-01 03:05 Randy.Dunlap             o [PATCH] mm/slab: add kernel-doc for one function
+                                            [main] a70773ddb96b74c7afe5a5bc859ba45e3d02899e
+2006-02-01 03:05 Randy Dunlap             o [PATCH] slab: fix sparse warning
+                                            [main] ee13d785eac1fbe7e79ecca77bf7e902734a0b30
+2006-02-04 23:27 Ravikiran G Thirumalai   o [PATCH] NUMA slab locking fixes: move color_next to l3
+                                            [main] 2e1217cf96b54d3b2d0162930608159e73507fbf
+2006-02-04 23:27 Ravikiran G Thirumalai   o [PATCH] NUMA slab locking fixes: irq disabling from cahep->spinlock to l3 lock
+                                            [main] ca3b9b91735316f0ec7f01976f85842e0bfe5c6e
+2006-02-04 23:27 Ravikiran G Thirumalai   o [PATCH] NUMA slab locking fixes: fix cpu down and up locking
+                                            [main] 4484ebf12bdb0ebcdc6e8951243cbab3d7f6f4c1
+2006-02-05 11:26 Linus Torvalds           o mm/slab.c (non-NUMA): Fix compile warning and clean up code
+                                            [main] 7a21ef6fe902ac0ad53b45af6851ae5ec3a64299
+2006-02-10 01:51 Ravikiran G Thirumalai   o [PATCH] slab: Avoid deadlock at kmem_cache_create/kmem_cache_destroy
+                                            [main] f0188f47482efdbd2e005103bb4f0224a835dfad
+2006-03-06 12:10 Linus Torvalds           o Fix "check_slabp" printout size calculation
+                                            [main] 264132bc62fe071d0ff378c1103bae9d33212f10
+2006-03-06 17:44 Linus Torvalds           o slab: clarify and fix calculate_slab_order()
+                                            [main] 9888e6fa7b68d9c8cc2c162a90979825ab45150a
+2006-03-08 10:33 Linus Torvalds           o slab: fix calculate_slab_order() for SLAB_RECLAIM_ACCOUNT
+                                            [main] f78bb8ad482267b92c122f0e37a7dce69c880247
+2006-03-07 21:55 Jack Steiner             o [PATCH] slab: allocate larger cache_cache if order 0 fails
+                                            [main] 07ed76b2a085a31f427c2a912a562627947dc7de
+2006-03-09 17:33 Christoph Lameter        o [PATCH] slab: Node rotor for freeing alien caches and remote per cpu pages.
+                                            [main] 8fce4d8e3b9e3cf47cc8afeb6077e22ab795d989
 {% endhighlight %}
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000140.png)
 
 {% highlight bash %}
-git format-patch -1
+git format-patch -1 85289f98ddc13f6cea82c59d6ff78f9d205dfccc
+vi 0001-PATCH-slab-extract-slabinfo-header-printing-to-separ.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000141.png)
 
-该补丁.
+该补丁修改了 print_slabinfo_header() 函数的显示方法.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 4d268eba1187ef66844a6a33b9431e5d0dadd4ad
+vi 0001-PATCH-slab-extract-slab-order-calculation-to-separat.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000142.png)
 
-该补丁.
+该补丁添加了 calculate_slab_order() 函数用于计算 slab 占用物理页的数量.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 b28a02de8c70d41d6b6ba8911e83ed3ccf2e13f8
+vi 0001-PATCH-slab-fix-code-formatting.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
+该补丁修改了 mm/slab.c 的代码风格.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 30992c97ae9d01b17374fbfab76a869fb4bba500
+vi 0001-PATCH-slob-introduce-mm-util.c-for-shared-functions.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000143.png)
 
-该补丁.
+该补丁将 kzalloc() 函数和 kstrdup() 函数移动到 mm/util.c.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 10cef6029502915bdb3cf0821d425cf9dc30c817
+vi 0001-PATCH-slob-introduce-the-SLOB-allocator.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
+该补丁增加了对 SLOB 分配器的支持.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 fc0abb1451c64c79ac80665d5ba74450ce274e4d
+vi 0001-PATCH-sem2mutex-mm-slab.c.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000144.png)
 
-该补丁.
+该补丁用于将 up/down 换成了互斥锁.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 9884fd8df195fe48d4e1be2279b419be96127cae
+vi 0001-PATCH-Use-32-bit-division-in-slab_put_obj.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000145.png)
 
-该补丁.
+该补丁限定了 slab 中包含的缓存对象数用 32 位表示.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 3dafccf22751429e69b6266636cf3acf45b48075
+vi 0001-PATCH-slab-distinguish-between-object-and-buffer-siz.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
+该补丁采用了 buffer_size 维护高速缓存对象的长度.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 5ec8a847bb8ae2ba6395cfb7cb4bfdc78ada82ed
+vi 0001-PATCH-slab-have-index_of-bug-at-compile-time.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000146.png)
 
-该补丁.
+该补丁在 index_of() 函数中添加了 \_\_bad_size().
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 fbaccacff1f17c65ae0972085368a7ec75be6062
+vi 0001-PATCH-slab-cache_estimate-cleanup.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000147.png)
 
-该补丁.
+该补丁用于在 cache_estimate() 函数中支持外部 slab 管理数据的计算.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 12dd36faec5d3bd96da84fa8f76efecc632930ab
+vi 0001-PATCH-slab-extract-slab_destroy_objs.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000148.png)
 
-该补丁.
+该补丁用于增加函数 slab_destroy_objs().
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 78d382d77c84229d031431931bf6490d5da6ab86
+vi 0001-PATCH-slab-extract-slab_-put-get-_obj.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000149.png)
 
-该补丁.
+该补丁用于提供 slab_get_obj() 函数和 slab_put_obj() 函数.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 6ed5eb2211204224799b2821656bbbfde26ef200
+vi 0001-PATCH-slab-extract-virt_to_-cache-slab.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000150.png)
 
-该补丁.
+该补丁提供了 virt_to_cache() 函数和 virt_to_slab() 函数.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 9a2dba4b4912b493070cbc170629fdbf440b01d7
+vi 0001-PATCH-slab-rename-ac_data-to-cpu_cache_get.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000151.png)
 
-该补丁.
+该补丁提供了 cpu_get_cache() 函数用于获得本地高速缓存..
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 343e0d7a93951e35065fdb5e3dd61aece0ec6b3c
+vi 0001-PATCH-slab-replace-kmem_cache_t-with-struct-kmem_cac.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
+该补丁用于将 kmem_cache_t 替换成 struct kmem_cache..
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 2e1217cf96b54d3b2d0162930608159e73507fbf
+vi 0001-PATCH-NUMA-slab-locking-fixes-move-color_next-to-l3.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000152.png)
 
-该补丁.
+该补丁修正了着色的起始地址，从 0 开始着色.
 
 {% highlight bash %}
-git format-patch -1 
+git format-patch -1 9888e6fa7b68d9c8cc2c162a90979825ab45150a
+vi 0001-slab-clarify-and-fix-calculate_slab_order.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000153.png)
 
-该补丁.
+该补丁修改 calculate_slab_order() 函数，是其支持从 order 0 开始计算从 Buddy
+分配器中获得物理页. 更多补丁使用请参考:
 
-{% highlight bash %}
-git format-patch -1 
-{% endhighlight %}
+> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
-
-{% highlight bash %}
-git format-patch -1 
-{% endhighlight %}
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
-
-{% highlight bash %}
-git format-patch -1 
-{% endhighlight %}
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
-
-{% highlight bash %}
-git format-patch -1 
-{% endhighlight %}
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
-
-{% highlight bash %}
-git format-patch -1 
-{% endhighlight %}
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
-
-{% highlight bash %}
-git format-patch -1 
-{% endhighlight %}
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
-
-{% highlight bash %}
-git format-patch -1 
-{% endhighlight %}
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
-
-{% highlight bash %}
-git format-patch -1 
-{% endhighlight %}
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000.png)
-
-该补丁.
-
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -2094,7 +2115,7 @@ git format-patch -1
 
 #### SLAB 历史时间轴
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000997.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000154.png)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -2106,85 +2127,629 @@ git format-patch -1
 
 #### SLAB API
 
-###### clear_fixmap
+###### 数据结构
 
-{% highlight bash %}
-#define clear_fixmap(idx) \
-                __set_fixmap(idx, 0, __pgprot(0))
-  作用: 清除 SLAB 内存区上的一个固定映射.
-{% endhighlight %}
+> - [struct array_cache](#K0002000)
+>
+> - [struct cache_names](#K0002001)
+>
+> - [struct cache_sizes](#K0002002)
+>
+> - [struct ccupdate_struct](#K0002003)
+>
+> - [struct kmem_cache](#K0002004)
+>
+> - [struct kmem_list3](#K0002005)
+>
+> - [struct slab](#K0002006)
+>
+> - [struct slab_rcu](#K0002007)
+>
+> - [kmem_bufctl_t](#K0002008)
+>
+> - [struct arraycache_init](#K0002009)
 
-###### \_\_fix_to_virt
+##### Function API
 
-{% highlight bash %}
-#define __fix_to_virt(x)        (FIXADDR_TOP - ((x) << PAGE_SHIFT))
-  作用: 将 SLAB 索引转换为虚拟地址.
-{% endhighlight %}
+> - [alloc_arraycache](#K0001000)
+>
+> - [alloc_kmemlist](#K0001001)
+>
+> - [alloc_slabmgmt](#K0001002)
+>
+> - [\_\_\_\_cache_alloc](#K0001003)
+>
+> - [\_\_cache_alloc](#K0001004)
+>
+> - [cache_alloc_refill](#K0001005)
+>
+> - [cache_estimate](#K0001006)
+>
+> - [cache_flusharray](#K0001007)
+>
+> - [\_\_cache_free](#K0001008)
+>
+> - [cache_grow](#K0001009)
+>
+> - [cache_init_objs](#K0001010)
+>
+> - [\_\_cache_shrink](#K0001011)
+>
+> - [calculate_slab_order](#K0001012)
+>
+> - [cpu_cache_get](#K0001013)
+>
+> - [\_\_do_cache_alloc](#K0001014)
+>
+> - [do_ccupdate_local](#K0001015)
+>
+> - [do_drain](#K0001016)
+>
+> - [\_\_do_kmalloc](#K0001017)
+>
+> - [do_tune_cpucache](#K0001018)
+>
+> - [drain_array](#K0001019)
+>
+> - [drain_cpu_caches](#K0001020)
+>
+> - [drain_freelist](#K0001021)
+>
+> - [enable_cpucache](#K0001022)
+>
+> - [\_\_find_general_cachep](#K0001023)
+>
+> - [free_block](#K0001024)
+>
+> - [index_to_obj](#K0001025)
+>
+> - [init_list](#K0001026)
+>
+> - [kfree](#K0001027)
+>
+> - [\_\_kmalloc](#K0001028)
+>
+> - [kmalloc](#K0001029)
+>
+> - [kmalloc_node](#K0001030)
+>
+> - [kmem_cache_alloc](#K0001031)
+>
+> - [kmem_cache_alloc_notrace](#K0001032)
+>
+> - [kmem_cache_create](#K0001033)
+>
+> - [\_\_kmem_cache_destroy](#K0001034)
+>
+> - [kmem_cache_destroy](#K0001035)
+>
+> - [kmem_cache_free](#K0001036)
+>
+> - [kmem_cache_init](#K0001037)
+>
+> - [kmem_cache_init_late](#K0001038)
+>
+> - [kmem_cache_name](#K0001039)
+>
+> - [kmem_cache_shrink](#K0001040)
+>
+> - [kmem_cache_size](#K0001041)
+>
+> - [kmem_cache_zalloc](#K0001042)
+>
+> - [kmem_find_general_cachep](#K0001043)
+>
+> - [kmem_freepages](#K0001044)
+>
+> - [kmem_getpages](#K0001045)
+>
+> - [kmem_list3_init](#K0001046)
+>
+> - [kmem_rcu_free](#K0001047)
+>
+> - [kzalloc](#K0001048)
+>
+> - [MAKE_ALL_LISTS](#K0001049)
+>
+> - [MAKE_LIST](#K0001050)
+>
+> - [obj_size](#K0001051)
+>
+> - [obj_to_index](#K0001052)
+>
+> - [page_get_cache](#K0001053)
+>
+> - [page_get_slab](#K0001054)
+>
+> - [page_set_cache](#K0001055)
+>
+> - [page_set_slab](#K0001056)
+>
+> - [set_up_list3s](#K0001057)
+>
+> - [setup_cpu_cache](#K0001058)
+>
+> - [slab_bufctl](#K0001059)
+>
+> - [slab_destroy](#K0001060)
+>
+> - [slab_get_obj](#K0001061)
+>
+> - [slab_is_available](#K0001062)
+>
+> - [slab_map_pages](#K0001063)
+>
+> - [slab_mgmt_size](#K0001064)
+>
+> - [slab_put_obj](#K0001065)
+>
+> - [virt_to_slab](#K0001066)
 
-###### fix_to_virt
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
-{% highlight bash %}
-static __always_inline unsigned long fix_to_virt(const unsigned int idx)
-  作用: 将 SLAB 索引转换为虚拟地址.
-{% endhighlight %}
+---------------------------------------------
 
-###### kmap_atomic
+###### <span id="K0002009">struct arraycache_init</span>
 
-{% highlight bash %}
-void *kmap_atomic(struct page *page, enum km_type type)
-  作用: 将物理页映射到 SLAB 的临时映射区.
-{% endhighlight %}
+> - [struct arraycache_init Linux 2.6.34 版本源码解析](#D0107)
 
-###### kmap_atomic_to_page
+---------------------------------------------
 
-{% highlight bash %}
-struct page *kmap_atomic_to_page(void *ptr)
-  作用: 获得 SLAB 虚拟内存对应的物理页.
-{% endhighlight %}
+###### <span id="K0002008">kmem_bufctl_t</span>
 
-###### kmap_atomic_pfn
+> - [kmem_bufctl_t Linux 2.6.34 版本源码解析](#D0106)
 
-{% highlight bash %}
-void *kmap_atomic_pfn(unsigned long pfn, enum km_type type)
-  作用: 将 PFN 对应的物理页映射到 KMAP 的临时虚拟内存上.
-{% endhighlight %}
+---------------------------------------------
 
-###### kunmap_atomic
+###### <span id="K0002007">struct slab_rcu</span>
 
-{% highlight bash %}
-void kunmap_atomic(void *kvaddr, enum km_type type)
-  作用: 解除 SLAB 临时虚拟内存与物理页之间的映射关系.
-{% endhighlight %}
+> - [struct slab_rcu Linux 2.6.34 版本源码解析](#D030063)
 
-###### set_fixmap
+---------------------------------------------
 
-{% highlight bash %}
-#define set_fixmap(idx, phys) \
-                __set_fixmap(idx, phys, PAGE_KERNEL)
-  作用: 建立 SLAB 虚拟内存区的一个固定映射.
-{% endhighlight %}
+###### <span id="K0002006">struct slab</span>
 
-###### set_fixmap_nocache
+> - [struct slab Linux 2.6.34 版本源码解析](#D0102)
 
-{% highlight bash %}
-#define set_fixmap_nocache(idx, phys) \
-                __set_fixmap(idx, phys, PAGE_KERNEL_NOCACHE)
-  作用: 建立 SLAB 虚拟内存区一个不带 cache 的固定映射.
-{% endhighlight %}
+---------------------------------------------
 
-###### \_\_virt_to_fix
+###### <span id="K0002005">struct kmem_list3</span>
 
-{% highlight bash %}
-#define __virt_to_fix(x)        ((FIXADDR_TOP - ((x)&PAGE_MASK)) >> PAGE_SHIFT)
-  作用: 将虚拟地址转换为 SLAB 索引.
-{% endhighlight %}
+> - [struct kmem_list3 Linux 2.6.34 版本源码解析](#D0100)
 
-###### virt_to_fix
+---------------------------------------------
 
-{% highlight bash %}
-static inline unsigned long virt_to_fix(const unsigned long vaddr)
-  作用: 将虚拟地址转换为 SLAB 索引.
-{% endhighlight %}
+###### <span id="K0002004">struct kmem_cache</span>
+
+> - [struct kmem_cache Linux 2.6.34 版本源码解析](#D0103)
+
+---------------------------------------------
+
+###### <span id="K0002003">struct ccupdate_struct</span>
+
+> - [struct ccupdate_struct Linux 2.6.34 版本源码解析](#D0108)
+
+---------------------------------------------
+
+###### <span id="K0002002">struct cache_sizes</span>
+
+> - [struct cache_sizes Linux 2.6.34 版本源码解析](#D0104)
+
+---------------------------------------------
+
+###### <span id="K0002001">struct cache_names</span>
+
+> - [struct cache_names Linux 2.6.34 版本源码解析](#D0105)
+
+---------------------------------------------
+
+###### <span id="K0002000">struct array_cache</span>
+
+> - [struct array_cache Linux 2.6.34 版本源码解析](#D0101)
+
+---------------------------------------------
+
+###### <span id="K0001066">virt_to_slab</span>
+
+> - [virt_to_slab Linux 2.6.34 版本源码解析](#D030054)
+
+---------------------------------------------
+
+###### <span id="K0001065">slab_put_obj</span>
+
+> - [slab_put_obj Linux 2.6.34 版本源码解析](#D030047)
+
+---------------------------------------------
+
+###### <span id="K0001064">slab_mgmt_size</span>
+
+> - [slab_mgmt_size Linux 2.6.34 版本源码解析](#D030003)
+
+---------------------------------------------
+
+###### <span id="K0001063">slab_map_pages</span>
+
+> - [slab_map_pages Linux 2.6.34 版本源码解析](#D030014)
+
+---------------------------------------------
+
+###### <span id="K0001062">slab_is_available</span>
+
+> - [slab_is_available Linux 2.6.34 版本源码解析](#D030038)
+
+---------------------------------------------
+
+###### <span id="K0001061">slab_get_obj</span>
+
+> - [slab_get_obj Linux 2.6.34 版本源码解析](#D030005)
+
+---------------------------------------------
+
+###### <span id="K0001060">slab_destroy</span>
+
+> - [slab_destroy Linux 2.6.34 版本源码解析](#D030052)
+
+---------------------------------------------
+
+###### <span id="K0001059">slab_bufctl</span>
+
+> - [slab_bufctl Linux 2.6.34 版本源码解析](#D030007)
+
+---------------------------------------------
+
+###### <span id="K0001058">setup_cpu_cache</span>
+
+> - [setup_cpu_cache Linux 2.6.34 版本源码解析](#D030037)
+
+---------------------------------------------
+
+###### <span id="K0001057">set_up_list3s</span>
+
+> - [set_up_list3s Linux 2.6.34 版本源码解析](#D030001)
+
+---------------------------------------------
+
+###### <span id="K0001056">page_set_slab</span>
+
+> - [page_set_slab Linux 2.6.34 版本源码解析](#D030013)
+
+---------------------------------------------
+
+###### <span id="K0001055">page_set_cache</span>
+
+> - [page_set_cache Linux 2.6.34 版本源码解析](#D030010)
+
+---------------------------------------------
+
+###### <span id="K0001054">page_get_slab</span>
+
+> - [page_get_slab Linux 2.6.34 版本源码解析](#D030012)
+
+---------------------------------------------
+
+###### <span id="K0001053">page_get_cache</span>
+
+> - [page_get_cache Linux 2.6.34 版本源码解析](#D030011)
+
+---------------------------------------------
+
+###### <span id="K0001052">obj_to_index</span>
+
+> - [obj_to_index Linux 2.6.34 版本源码解析](#D030048)
+
+---------------------------------------------
+
+###### <span id="K0001051">obj_size</span>
+
+> - [obj_size Linux 2.6.34 版本源码解析](#D030065)
+
+---------------------------------------------
+
+###### <span id="K0001050">MAKE_LIST</span>
+
+> - [MAKE_LIST Linux 2.6.34 版本源码解析](#D030042)
+
+---------------------------------------------
+
+###### <span id="K0001049">MAKE_ALL_LISTS</span>
+
+> - [MAKE_ALL_LISTS Linux 2.6.34 版本源码解析](#D030043)
+
+---------------------------------------------
+
+###### <span id="K0001048">kzalloc</span>
+
+> - [kzalloc Linux 2.6.34 版本源码解析](#D030035)
+
+---------------------------------------------
+
+###### <span id="K0001047">kmem_rcu_free</span>
+
+> - [kmem_rcu_free Linux 2.6.34 版本源码解析](#D030050)
+
+---------------------------------------------
+
+###### <span id="K0001046">kmem_list3_init</span>
+
+> - [kmem_list3_init Linux 2.6.34 版本源码解析](#D030000)
+
+---------------------------------------------
+
+###### <span id="K0001045">kmem_getpages</span>
+
+> - [kmem_getpages Linux 2.6.34 版本源码解析](#D030008)
+
+---------------------------------------------
+
+###### <span id="K0001044">kmem_freepages</span>
+
+> - [kmem_freepages Linux 2.6.34 版本源码解析](#D030049)
+
+---------------------------------------------
+
+###### <span id="K0001043">kmem_find_general_cachep</span>
+
+> - [kmem_find_general_cachep Linux 2.6.34 版本源码解析](#D030025)
+
+---------------------------------------------
+
+###### <span id="K0001042">kmem_cache_zalloc</span>
+
+> - [kmem_cache_zalloc Linux 2.6.34 版本源码解析](#D030022)
+
+---------------------------------------------
+
+###### <span id="K0001041">kmem_cache_size</span>
+
+> - [kmem_cache_size Linux 2.6.34 版本源码解析](#D030066)
+
+---------------------------------------------
+
+###### <span id="K0001040">kmem_cache_shrink</span>
+
+> - [kmem_cache_shrink Linux 2.6.34 版本源码解析](#D030064)
+
+---------------------------------------------
+
+###### <span id="K0001039">kmem_cache_name</span>
+
+> - [kmem_cache_name Linux 2.6.34 版本源码解析](#D030067)
+
+---------------------------------------------
+
+###### <span id="K0001038">kmem_cache_init_late</span>
+
+> - [kmem_cache_init_late Linux 2.6.34 版本源码解析](#D030044)
+
+---------------------------------------------
+
+###### <span id="K0001037">kmem_cache_init</span>
+
+> - [kmem_cache_init Linux 2.6.34 版本源码解析](#D030040)
+
+---------------------------------------------
+
+###### <span id="K0001036">kmem_cache_free</span>
+
+> - [kmem_cache_free Linux 2.6.34 版本源码解析](#D030051)
+
+---------------------------------------------
+
+###### <span id="K0001035">kmem_cache_destroy</span>
+
+> - [kmem_cache_destroy Linux 2.6.34 版本源码解析](#D030062)
+
+---------------------------------------------
+
+###### <span id="K0001034">\_\_kmem_cache_destroy</span>
+
+> - [\_\_kmem_cache_destroy Linux 2.6.34 版本源码解析](#D030057)
+
+---------------------------------------------
+
+###### <span id="K0001033">kmem_cache_create</span>
+
+> - [kmem_cache_create Linux 2.6.34 版本源码解析](#D030039)
+
+---------------------------------------------
+
+###### <span id="K0001032">kmem_cache_alloc_notrace</span>
+
+> - [kmem_cache_alloc_notrace Linux 2.6.34 版本源码解析](#D030029)
+
+---------------------------------------------
+
+###### <span id="K0001031">kmem_cache_alloc</span>
+
+> - [kmem_cache_alloc Linux 2.6.34 版本源码解析](#D030021)
+
+---------------------------------------------
+
+###### <span id="K0001030">kmalloc_node</span>
+
+> - [kmalloc_node Linux 2.6.34 版本源码解析](#D030030)
+
+---------------------------------------------
+
+###### <span id="K0001029">kmalloc</span>
+
+> - [kmalloc Linux 2.6.34 版本源码解析](#D030028)
+
+---------------------------------------------
+
+###### <span id="K0001028">\_\_kmalloc</span>
+
+> - [\_\_kmalloc Linux 2.6.34 版本源码解析](#D030027)
+
+---------------------------------------------
+
+###### <span id="K0001027">kfree</span>
+
+> - [kfree Linux 2.6.34 版本源码解析](#D030055)
+
+---------------------------------------------
+
+###### <span id="K0001026">init_list</span>
+
+> - [init_list Linux 2.6.34 版本源码解析](#D030041)
+
+---------------------------------------------
+
+###### <span id="K0001025">index_to_obj</span>
+
+> - [index_to_obj Linux 2.6.34 版本源码解析](#D030006)
+
+---------------------------------------------
+
+###### <span id="K0001024">free_block</span>
+
+> - [free_block Linux 2.6.34 版本源码解析](#D030053)
+
+---------------------------------------------
+
+###### <span id="K0001023">\_\_find_general_cachep</span>
+
+> - [\_\_find_general_cachep Linux 2.6.34 版本源码解析](#D030024)
+
+---------------------------------------------
+
+###### <span id="K0001022">enable_cpucache</span>
+
+> - [enable_cpucache Linux 2.6.34 版本源码解析](#D030036)
+
+---------------------------------------------
+
+###### <span id="K0001021">drain_freelist</span>
+
+> - [drain_freelist Linux 2.6.34 版本源码解析](#D030056)
+
+---------------------------------------------
+
+###### <span id="K0001020">drain_cpu_caches</span>
+
+> - [drain_cpu_caches Linux 2.6.34 版本源码解析](#D030060)
+
+---------------------------------------------
+
+###### <span id="K0001019">drain_array</span>
+
+> - [drain_array Linux 2.6.34 版本源码解析](#D030059)
+
+---------------------------------------------
+
+###### <span id="K0001018">do_tune_cpucache</span>
+
+> - [do_tune_cpucache Linux 2.6.34 版本源码解析](#D030033)
+
+---------------------------------------------
+
+###### <span id="K0001017">\_\_do_kmalloc</span>
+
+> - [\_\_do_kmalloc Linux 2.6.34 版本源码解析](#D030026)
+
+---------------------------------------------
+
+###### <span id="K0001016">do_drain</span>
+
+> - [do_drain Linux 2.6.34 版本源码解析](#D030058)
+
+---------------------------------------------
+
+###### <span id="K0001015">do_ccupdate_local</span>
+
+> - [do_ccupdate_local Linux 2.6.34 版本源码解析](#D030034)
+
+---------------------------------------------
+
+###### <span id="K0001014">\_\_do_cache_alloc</span>
+
+> - [\_\_do_cache_alloc Linux 2.6.34 版本源码解析](#D030019)
+
+---------------------------------------------
+
+###### <span id="K0001013">cpu_cache_get</span>
+
+> - [cpu_cache_get Linux 2.6.34 版本源码解析](#D030004)
+
+---------------------------------------------
+
+###### <span id="K0001012">calculate_slab_order</span>
+
+> - [calculate_slab_order Linux 2.6.34 版本源码解析](#D030023)
+
+---------------------------------------------
+
+###### <span id="K0001011">\_\_cache_shrink</span>
+
+> - [\_\_cache_shrink Linux 2.6.34 版本源码解析](#D030061)
+
+---------------------------------------------
+
+###### <span id="K0001010">cache_init_objs</span>
+
+> - [cache_init_objs Linux 2.6.34 版本源码解析](#D030015)
+
+---------------------------------------------
+
+###### <span id="K0001009">cache_grow</span>
+
+> - [cache_grow Linux 2.6.34 版本源码解析](#D030016)
+
+---------------------------------------------
+
+###### <span id="K0001008">\_\_cache_free</span>
+
+> - [\_\_cache_free Linux 2.6.34 版本源码解析](#D030045)
+
+---------------------------------------------
+
+###### <span id="K0001007">cache_flusharray</span>
+
+> - [cache_flusharray Linux 2.6.34 版本源码解析](#D030046)
+
+---------------------------------------------
+
+###### <span id="K0001006">cache_estimate</span>
+
+> - [cache_estimate Linux 2.6.34 版本源码解析](#D030002)
+
+---------------------------------------------
+
+###### <span id="K0001005">cache_alloc_refill</span>
+
+> - [cache_alloc_refill Linux 2.6.34 版本源码解析](#D030017)
+
+---------------------------------------------
+
+###### <span id="K0001004">\_\_cache_alloc</span>
+
+> - [\_\_cache_alloc Linux 2.6.34 版本源码解析](#D030020)
+
+---------------------------------------------
+
+###### <span id="K0001003">\_\_\_\_cache_alloc</span>
+
+> - [ Linux 2.6.34 版本源码解析](\_\_\_\_cache_alloc)
+
+---------------------------------------------
+
+###### <span id="K0001002">alloc_slabmgmt</span>
+
+> - [alloc_slabmgmt Linux 2.6.34 版本源码解析](#D030009)
+
+---------------------------------------------
+
+###### <span id="K0001001">alloc_kmemlist</span>
+
+> - [alloc_kmemlist Linux 2.6.34 版本源码解析](#D030032)
+
+---------------------------------------------
+
+###### <span id="K0001000">alloc_arraycache</span>
+
+> - [alloc_arraycache Linux 2.6.34 版本源码解析](#D030031)
+
+---------------------------------------------
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -2196,7 +2761,6 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 
 #### SLAB 进阶研究
 
-> - [用户空间实现一个 SLAB 内存分配器](https://biscuitos.github.io/blog/Memory-Userspace/#N)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -2208,7 +2772,24 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 
 #### SLAB 内存分配器调试
 
+> - [/proc/slabinfo](#E0000)
+>
 > - [BiscuitOS SLAB 内存分配器调试](#C0004)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+#### <span id="E0000">/proc/slabinfo</span>
+
+Linux 内核向文件系统添加了 slabinfo 节点，用于获得 slab 的所有使用信息，开发
+者参考下列命令使用:
+
+{% highlight bash %}
+cat /proc/slabinfo
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000155.png)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -4215,7 +4796,7 @@ struct cache_array 缓存对象提供了初始化所需的 cache_array 缓存栈
 
 -----------------------------------------
 
-###### <span id="D0106">struct cache_names</span>
+###### <span id="D0106">kmem_bufctl_t</span>
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/TB000016.png)
 
