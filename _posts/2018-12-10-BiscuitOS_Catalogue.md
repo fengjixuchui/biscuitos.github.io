@@ -311,6 +311,8 @@ tags:
 ## <span id="OpenProject">Open Project</span>
 
 > - [Open VnetCard](https://biscuitos.github.io/blog/VnetCard/)
+>
+> - [BiscuitOS 社区互助计划](https://biscuitos.github.io/blog/BiscuitOS_JD/)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
