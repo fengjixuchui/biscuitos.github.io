@@ -19,6 +19,12 @@ BiscuitOS 互助计划用于 BiscuitOS 社区分享内推和招聘职位，致�
 > - [06-24: 字节跳动(内推) \[置顶/推荐\]](#A0000)
 >
 > - [06-24: 阿里云神龙团队(内推) \[置顶\]](#A0001)
+>
+> - [06-25: AMD CLOUD-GPU 显卡虚拟化团队(内推)](#A0002)
+>
+> - [06-26: 阿里云 IOT 事业部(内推)](#A0003)
+>
+> - [06-26: 海康威视(猎头)](#A0004)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -89,3 +95,107 @@ BiscuitOS 互助计划用于 BiscuitOS 社区分享内推和招聘职位，致�
 
 
 > [JD from 阿里巴巴](http://alibaba.tupu360.com/social/position?pCode=VxkUVhohZOMOkqZufDzdCg==&wxt=jyfhiikfcjhiy_a1)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="A0002"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
+
+#### 06-25: AMD CLOUD-GPU 显卡虚拟化团队(内推)
+
+> 联系人: Jack Zhang (WeChat: x617268825)
+
+###### JD (上海)
+
+{% highlight bash %}
+GPU Virtualization Driver Development Engineer
+ 
+THE ROLE:
+The teams is working directly with the world first-class internet giants on 
+various business like Cloud Gaming, Machine Learning and VDI. Be part of a 
+talented team that develops software for AMD’s GPU Virtualization solution 
+and delivers a premium GPU experience in the cloud.
+ 
+THE PERSON:
+A successful candidate is passionate about delivering great products. The 
+candidate will design and develop the latest Virtualization kernel software 
+with industry experts. We are looking for candidates who are excited to work
+in a fast-growing data center business.
+ 
+KEY RESPONSIBILITIES:
+- Deliver a premium GPU experience in the cloud 
+- Design, develop, and debug Hypervisor driver for KVM, Xen, VMWare, Hyper-V. 
+- Design, develop, and debug graphics driver for both Windows and Linux Guest OS. 
+- Work on bring up and support AMD next-generation GPU for cloud computing 
+- Support cloud gaming and cloud computing for the world first-class internet giants 
+- Maintain current driver and improve performance 
+ 
+PREFERRED EXPERIENCE:
+-Deep Knowledge of C/C++ programming 
+-Knowledge of PC architecture 
+-Fluent English in reading, writing, and speaking 
+-A self-motivated team player 
+-Able to work under high pressure and time limitation 
+-Good communication skill and able to work with stakeholders effectively 
+-Knowledge of Computer Graphics/Multimedia/Image Process is a plus 
+-Knowledge of device driver development under Microsoft Windows or Linux is a plus 
+-Knowledge of KVM/QEMU/XEN/VMWARE is a plus 
+ 
+ACADEMIC CREDENTIALS:
+BS/MS/Ph.D. degree in Electrical Engineering, Computer Science, Computer or
+Software Engineering, or an equivalent 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="A0003"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+
+#### 06-26: 阿里云 IOT 事业部(内推)
+
+> 联系人: jilie.luojilie@alibaba-inc.com
+
+###### JD (杭州)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000302.JPG)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="A0004"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+
+#### 06-26: 海康威视(猎头)
+
+> 联系人: Snow (WeChat: CHQ96110627)
+
+###### JD (杭州)
+
+{% highlight bash %}
+岗位职责:
+
+1. 负责移植、升级 Linux Kernel 到国产平台 (飞腾、龙芯、申威等) 完善系统的功能
+   驱动、性能优化
+2. 负责 UOS、银河麒麟、中标麒麟等国产操作系统在国产平台 (飞腾、龙芯、申威等)
+   文件系统适配、中间件优化、运维以及疑难缺陷解决
+3. 对接 Bootloader 面向客户需求提供系统化的解决方案
+4. 完成产品采购入围以及各种资质获取的技术支撑工作
+
+岗位要求:
+
+1. 本科及以上学历，计算机、电子信息、通信等相关专业，8年左右工作经验
+2. 熟悉使用C语言、具备良好的编程风格；
+3. 熟悉Gcc、Makefile、Shell、Python等脚本编程
+4. 具备Linux Kernel、发行版环境开发经验、有典型的发行版 (Ubuntu、CentOS、
+   Debian) 系统 (桌面或服务器) 运维经验
+5. 熟悉 ARM、MIPS、X86 架构、能进行架构相关的汇编、移植开发
+{% endhighlight %}
+
