@@ -22,13 +22,19 @@ BiscuitOS 互助计划用于 BiscuitOS 社区分享内推和招聘职位，致�
 >
 > - [06-24: 阿里云神龙团队(内推) \[置顶\]](#A0001)
 >
+> - [07-01: 腾讯云虚拟化团队(内推)](#A0008)
+>
 > - [06-25: AMD CLOUD-GPU 显卡虚拟化团队(内推)](#A0002)
 >
 > - [06-26: 阿里云 IOT 事业部(内推)](#A0003)
 >
+> - [06-28: 神秘手机厂商(内推)](#A0006)
+>
 > - [06-26: 海康威视(猎头)](#A0004)
 >
-> - [06-28: 神秘手机厂商(内推)](#A0006)
+> - [07-01: 某知名手机厂商(猎头)](#A0009)
+>
+> - [07-01: 海康研究院(猎头)](#A0010)
 >
 > - [06-28: 麒麟(猎头)](#A0007)
 
@@ -255,7 +261,7 @@ Software Engineering, or an equivalent
 
 > 联系人: forion (WeChat: forionj)
 
-#### JD (上海/北京/杭州)
+#### JD (上海/北京)
 
 > 多媒体软件工程师
 
@@ -415,6 +421,467 @@ Linux 系统开发构建工程师
 5. 积极主动、工作踏实、努力、善于沟通及团队合作，责任心强
 6. 有开源社区工作参与经验者优先
 7. 熟悉 Linux 内核者优先。
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="A0008"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+
+#### 07-01: 腾讯云虚拟化团队(内推)
+
+> 联系人: 赖老师 (WeChat: kingsdk)
+
+###### JD (上海/北京/北京/成都)
+
+{% highlight bash %}
+腾讯云虚拟化高级研发工程师
+
+负责 Linux 内核，虚拟化，容器方面的研发工作
+负责 Linux 内核、虚拟化定制化研发工作，提升产品竞争力
+
+1. 熟悉 Linux 内核，对内核网络、存储、文件系统、内存、调度器，Cgroup等模块之
+   一有过相关实践 
+2. 3 年以上 Linux 内核或 QEMU 开发经验; 对 KVM/Xen 等虚拟化技术有过实际的开发
+   和优化经验; 了解 KVM CPU，内存，IO 的处理流程和代码 
+3. 熟练使用 Linux 底层工具链，了解其原理，熟悉某一 CPU 体系结构，熟悉底层性能
+   调优，对网络/存储等协议栈以及协议非常精通； 有丰富内核故障调试经验者优先
+4. 了解硬件 RAS 相关经验者优先，对硬件可靠性和硬件监控方面与项目经验者优先
+5. 熟悉 Windows 内核和逆向调试，能熟练使用调试工具和逆向工具，熟悉常见 windows
+   问题定位，了解常见问题定位工具，有相关项目实践经验者优先
+6. 了解 virtio 规范，有 windows virtio 驱动或者 linux virtio 驱动项目经验者
+   优先。 
+7. 了解 SPDK，有 SPDK 相关项目经验者优先
+8. 在社区长期活跃贡献者，有内核补丁社区以及虚拟化社区提交经验者优先
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="A0009"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000O.jpg)
+
+#### 07-01: 某知名手机厂商(猎头)
+
+> 联系人: Anna (WeChat: 1316056348)
+
+###### JD (上海)
+
+{% highlight bash %}
+1. 嵌入式系统软件工程师(系统)
+2. 嵌入式系统软件工程师(功耗，充电)
+3. 嵌入式系统软件工程师(Bootloader)
+4. 嵌入式驱动软件工程师(周边)
+5. 嵌入式系统软件工程师(RTOS)
+6. 嵌入式系统软件工程师(TEEOS/Security)
+7. 嵌入式系统软件专家
+8. 手机功耗优化专家
+9. 嵌入式安全软件专家
+a. SCM配置管理工程师
+{% endhighlight %}
+
+> 嵌入式系统软件工程师(系统)
+
+{% highlight bash %}
+岗位职责:
+The candidate will be reponsible for the following tasks
+1. Port the Linux Kernel to SOC and bring up system
+2. Optimize the Linux Kernel for maximum system performance
+3. Develop Linux kernel device driver (CPU/DDR/Clock/UART/INT/Bus Controller)
+4. Develop Linux native software till Android HAL layer
+5. Port/maintain the DRAM calibration drivers of SoC
+6. Optimize DRAM performance, stability and power consumption
+7. Bring up the system and set up debug environment for follow up development
+8. Optimize the system performance and stability
+9. Work with ASIC team to define the HW/SW architecture
+10. Support for chip pre-silicon verification and post-silicon validation
+
+任职要求:
+
+1. Bachelor/Master degree or above with EE, CS or related background
+2. At least 5 years‘ experience in linux kernel, linux system programming
+   and Android HAL development
+3. Good knowledge of and experience in ARM SoC architecture, ARM system
+   Programming and simulator utilities
+4. At least 2 years' experience in SoC verification and validation
+5. Good programming skills in C/C++ language. Experience in Assembly is a plus
+6. Be experience and skilled in any one of the following tasks
+   a. Android system performance tuning and optimization
+   b. SoC EMI and DRAM development, verfication or validation
+   c. Good knowledge of and experience in linux kernel, linux user space init,
+      and proc/devtmpfs/sysfs/dev virtual file systems
+   d. Be exprienced and skilled in debugging system bring-up and stability
+      issues in both primitive and complex environment
+7. Be proactive, responsible, innovative, thoughtfully and communicative
+{% endhighlight %}
+
+> 嵌入式系统软件工程师 (功耗，充电)
+
+{% highlight bash %}
+岗位职责:
+
+Major responsibilities will be to
+1. Develop and maintain the linux power / charging / thermal drivers of SoC
+2. Optimize system power and thermal performance for all scenarios
+3. Track, follow and develop new power and charging technologies
+4. Work with ASIC team to define the HW/SW architecture
+5. Support for chip validation on power related domains
+
+任职要求:
+
+1. Bachelor/Master degree or above with EE, CS or related background
+2. At least 5 years‘ experience in linux power / thermal or charging development
+3. Good programming skills in at least one of C/C++, Java and Python languages
+4. Good knowledge of and experience in ARM SoC architecture, ARM system
+   Programming and simulator utilities
+5. Good knowledge of and experience in RTOS and Linux integration is a plus
+6. Experience in linux driver and Android framework development is a plus
+7. Experience in SoC verification and validation is a plus
+8. Experience in any one of the following domain is msut
+   a. experience in CPU DVFS, CPU hotplug, idle power measurement, and 
+      suspend/resume flow
+   b. experience in power, performance, and stability tuning in Android/Linux.
+   c. experience in PD and wireless charging development
+9. Be proactive, responsible, innovative, thoughtfully and communicative
+{% endhighlight %}
+
+> 嵌入式系统软件工程师 (Bootloader)
+
+{% highlight bash %}
+岗位职责:
+
+The candidate will be reponsible for the following tasks
+1. Port the Bootloader to SOC and bring up system
+2. Optimize the Bootloader for functionality, and performance
+3. Support for chip pre-silicon verification and post-silicon validation
+4. Bring up the kernel and set up debug environment for follow up development
+5. Work with ASIC team to define the HW/SW architecture
+6. Support for chip pre-silicon verification and post-silicon validation
+
+任职要求:
+
+1. Bachelor/Master degree or above with EE, CS or related background
+2. At least 5 years‘ experience in boot loader or linux kernel development
+3. Good knowledge of and experience in ARM SoC architecture, ARM system
+   Programming and simulator utilities
+4. Good programming skills in C/C++ and Assembly language
+5. Experience in SoC verification and validation is a plus
+6. Be experience and skilled in debugging system bring-up issues
+7. Be proactive, responsible, innovative, thoughtfully and communicative
+{% endhighlight %}
+
+> 嵌入式驱动软件工程师(周边)
+
+{% highlight bash %}
+岗位职责:
+
+The candidate will be reponsible for the following tasks
+1. Develop linux kernel drivers and Android HAL for peripheral devices
+2. Improve and optimize the stability, performance and low power of device
+   drivers
+3. Work with ASIC team to define the HW/SW architecture
+4. Support for chip pre-silicon verification and post-silicon validation
+
+任职要求:
+
+1. Bachelor/Master degree or above with EE, CS or related background
+2. At least 5 years' experience in linux driver, linux system programming
+   and Android HAL development
+3. Experience in SoC verification and validation is a plus
+4. Good programming skills in C/C++ language. Experience in Java language
+   is a plus
+5. Be experience and skilled in all of the following tasks
+   a. Be knowledgeable about the manipulation and specification of at least
+      one of the peripheral devices including gpio, i2c, spi, pwm, usb, touch,
+      fingerprint, SDIO, UART, and PCIE
+   b. Be knowledgeable about linux device model, proc/sysfs/devtmpfs/dev 
+      virtual file system, platform bus driver and device tree
+   c. Be experienced in one of linux device drivers and corresponding linux
+      subsystems and Anrdoid native services
+   d. Be experienced in at least one of Android services in either system or
+      multimedia group of services
+6. Be exprienced and skilled in debugging system performance and stability
+   issues in both primitive and complex environment
+7. Being able to abstract and design the software architecture from driver
+   through HAL to native services is a big plus
+8. Be proactive, responsible, innovative, thoughtfully and communicative
+{% endhighlight %}
+
+> 嵌入式系统软件工程师(RTOS)
+
+{% highlight bash %}
+岗位职责:
+
+The candidate will be reponsible for the following tasks
+1. Port the RTOS to MCU and bring up system
+2. Optimize the RTOS for maximum system performance and minimum footprint
+3. Optimize system stability and power consumption
+4. Develop peripheral device drivers including flash/i2c/spi/gpio/pwm/uart/
+   usb/pcie
+5. Bring up the system and set up debug environment for follow up development
+6. Work with ASIC team to define the HW/SW architecture
+7. Support for chip pre-silicon verification and post-silicon validation
+
+任职要求:
+
+1. Bachelor/Master degree or above with EE, CS or related background
+2. At least 5 years‘ experience in RTOS development
+3. Good knowledge of and experience in ARM/RISC-V MCU architecture, ARM/RISC-V
+   system Programming and simulator utilities
+4. At least 2 years' experience in MCU verification and validation
+5. Good programming skills in C/C++ and Assembly language
+6. Be knowledgeable about the manipulation and specification of the peripheral
+   devices including gpio, i2c, spi, usb, pwm, falsh, UART, and PCIE and
+   corresponding RTOS drivers
+7. Be exprienced and skilled in debugging system bring-up and stability issues
+   in both primitive and complex environment
+8. Be proactive, responsible, innovative, thoughtfully and communicative
+{% endhighlight %}
+
+> 嵌入式系统软件工程师 (TEEOS/Security)
+
+{% highlight bash %}
+岗位职责:
+
+The candidate will be reponsible for the following tasks
+1. Port and bring up the TEE OS
+2. Optimize the TEE OS for maximum system performance and minimum footprint
+3. Optimize system stability and power consumption
+4. Develop Trust Applictions (TA) under TEE OS and Client Application (CA)
+   under normal OS
+5. Bring up the system and set up debug environment for follow up development
+6. Develop various symmetric and asymmetric cryptographic algorithms
+7. Work with ASIC team to define the HW/SW architecture
+8. Support for chip pre-silicon verification and post-silicon validation
+
+任职要求:
+
+1. Bachelor/Master degree or above with EE, CS or related background
+2. At least 5 years‘ Experience in TEE or security development
+3. Good knowledge of and experience in ARM/TrustZone and RISC-V/Multizone
+   Environment
+4. At least 2 years' experience in SoC verification and validation
+5. Good programming skills in C/C++ and Assembly language
+6. Be knowledgeable about TEE OS including Trusty TEE and OP TEE.
+7. Experienc in developing symmetric and asymmetric cryptographic algorithms
+8. Be exprienced and skilled in debugging system bring-up and stability
+   issues in both primitive and complex environment
+9. Be proactive, responsible, innovative, thoughtfully and communicative
+{% endhighlight %}
+
+> 嵌入式系统软件专家
+
+{% highlight bash %}
+岗位职责:
+
+The candidate will be reponsible for the following tasks
+1. Evaluate the rationality of chip architecture design and IP selection based
+   on software, including CPU, GPU, DSP, DDR and other IP modules
+2. Work with the planning team to Clearly define the final software scenarios
+   of the chip and the corresponding chip technical specifications
+3. Evaluate the chip's performance, delay, bandwidth, memory, etc. in various
+   application scenarios to archive the design requirements, and output the
+   analysis report of competitive products in related fields
+4. Establish the evaluation models of SOC performance, delay, bandwidth and
+   continuously calibrate and optimize them
+5. Design the overall framework of the system software and define the related
+   software specifications, including hardware resource scheduling, memory
+   allocation, real-time communication and other related subsystem 
+   architectures
+6. Guide other system software engineers to do the chip validation, chip 
+   bringup and software function design and other related work
+7. Guide to optimize the performance of the final soc software and achieve the
+   mass production standards
+
+任职要求:
+
+1. Bachelor/Master degree or above with EE, CS or related background
+2. At least 8 years‘ experience in embeded software programming or linux
+   kernel/system programming
+3. Good knowledge of and experience in ARM SoC architecture, ARM system
+   Programming and simulator utilities
+4. At least 3 years' experience in SoC software evaluation or platform selection
+5. Good programming skills in C/C++ language. Experience in Assembly is a plus
+6. Be experience and skilled in at least one of the following tasks
+   a. Android system performance tuning and optimization
+   b. Phone SoC software architecture design and IP selection
+   c. Good knowledge of and experience in linux kernel and proc/devtmpfs/
+      sysfs/dev virtual file systems
+   d. Be exprienced and skilled in debugging chip bring-up and performace or
+      stability issues in both primitive and complex environment
+7. Be proactive, responsible, innovative, thoughtfully and communicative
+{% endhighlight %}
+
+> 手机功耗优化专家
+
+{% highlight bash %}
+岗位职责:
+
+The candidate will be reponsible for the following tasks
+
+1. Evaluate the rationality of chip architecture design and IP selection
+   based on power consumption and thermal, including CPU, GPU, DSP, DDR and
+   other IP modules
+2. Work with the chip designer, clearly define the technical specifications
+   such as power consumption and thermal of various software scenarios of the
+   chip
+3. Investigate and evaluate of the power consumption specifications of the
+   relevant competing products and the overall power software solution
+4. Evaluate the power consumption and thermal in the various application
+   scenarios and critical paths to achieve the overall design requirements
+   of the chip
+5. Establish the evaluation models of power consumption and thermal of
+   system-related IP and continuously calibrate and optimize them
+6. Design the overall framework of software power consumption and define the
+   relevant power consumption and thermal specifications, including the
+   relevant software architectures of sleep and low-power subsystems and
+   temperature rise subsystems
+7. Guide other system software engineers to do the chip validation, chip
+   bringup and software power consumption design and optimization
+8. Guide to optimize the power consumption and thermal of the final soc
+   software and achieve mass production standards
+
+任职要求:
+
+1. Bachelor/Master degree or above with EE, CS or related background
+2. At least 8 years‘ experience in linux power / thermal or SOC power
+   development
+3. At least 3 years' experience in SoC power evaluation or platform selection
+4. Good programming skills in at least one of C/C++, Java and Python languages
+5. Good knowledge of and experience in ARM SoC architecture, ARM system
+   Programming and simulator utilities
+6. Experience in linux power/thermal/charger driver and Android power framework 
+   development is needed
+7. Experience in SoC power verification and validation
+8. Be experience and skilled in at least one of the following tasks
+   a. experience in SoC power evaluation or designing the evaluation models of
+      power consumption and thermal
+   b. experience in CPU DVFS, CPU hotplug, idle power measurement, and 
+      suspend/resume flow desgining
+   c. experience in power or thermal architecture desgining and power tuning
+      in Android/Linux
+9. Be proactive, responsible, innovative, thoughtfully and communicative
+{% endhighlight %}
+
+> 嵌入式安全软件专家
+
+{% highlight bash %}
+岗位职责:
+
+The candidate will be reponsible for the following tasks
+1. Responsible for system analysis, specification analysis and IP selection
+   of chip security system
+2. Work with the chip designer to clearly define the chip's security technical
+   specifications, and break down into the security requirements and functional 
+   definitions of each subsystem
+3. Investigate and evaluate of the security specifications of the relevant
+   competing products and the overall security software solution
+4. Evaluate the security module and specifications of the chip in various
+   application scenarios and critical paths to achieve the overall design
+   requirements of the chip
+5. Design the software security architecture and define the relevant security
+   specifications, such as secure boot, encryption and decryption, key
+   management, SE module, etc 
+6. Guide other security software engineers to do the chip validation, chip
+   bringup and software security design and optimization
+7. Guide the optimization of the final system safety and achieve mass
+   production standards and pass the relevant safety certification
+
+任职要求:
+
+1. Bachelor/Master degree or above with EE, CS or related background
+2. At least 8 years‘ Experience in TEE or other security software development
+3. Good knowledge and experience in ARM/TrustZone and RISC-V/Multizone
+   Environment
+4. At least 3 years' experience in SoC security evaluation or platform selection
+5. Good programming skills in C/C++ and Assembly language
+6. Be knowledgeable about TEE OS including Trusty TEE and OP TEE
+7. Experienc in developing symmetric and asymmetric cryptographic algorithms
+8. Be exprienced and skilled in debugging system bring-up and stability issues
+   in both primitive and complex environment
+9. Be proactive, responsible, innovative, thoughtfully and communicative
+{% endhighlight %}
+
+> SCM 配置管理工程师
+
+{% highlight bash %}
+岗位职责:
+
+The candidate will be reponsible for the following tasks
+1. Support daily training of SCM flow and support of SCM tools
+2. Maintain the LADP server configration/user security information/project
+   information synchronization, etc:
+   a. Responsible for user information synchronization, various user/group/
+      project permissions management and version control
+   b. Responsible for software code compilation/code scanning configration
+      and other abnormal information grading notification (email/telephone,
+      etc.)
+   c. Responsible for project/branch and other software development side
+      information notification, exception management, etc 
+   d. Responsible for project / testing problem reports, exception tracking,
+      etc 
+3. Customized software project management strategy and continuous optimize
+   to assist R & D teams to improve development efficiency and delivery speed
+
+任职要求:
+
+1. Bachelor/Master degree or above with EE, CS or related background
+2. At least 2 years‘ experience in server Operation and maintenance related work
+3. Good knowledge and experience in mainstream source management tools such 
+   as SVN/GIT
+4. Be familiar with the build and maintenance of open source platforms such
+   as gitlab, gerrit, etc
+5. Be familiar with continuous integration tools and version release tools,
+   such as Jenkins and Artifactory
+6. Good programming skills in scripting languages such as shell/python/ruby/perl
+7. Be familiar with the development of software compilation environment and
+   compilation script under Linux
+8. Good knowledge and experience in embedded Linux, Android is a plus
+9. Be proactive, responsible, innovative, thoughtfull and communicative
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="A0010"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000N.jpg)
+
+#### 07-01: 海康研究院(猎头) 
+
+> 联系人: snow-Fiona (WeChat: CHQ96110627)
+
+###### JD (杭州)
+
+{% highlight bash %}
+嵌入式软件工程师
+
+工作职责
+
+1. 负责嵌入式软件开发和维护工作;
+2. 负责编写软件设计文档，参与需求分析和讨论:
+3. 负责嵌入式通用平台方案的构建，包括但不限于架构设计和指导开发:
+4. 负责评估分析各类嵌入式平台的特点，规划未来的平台方案路线。
+
+任职要求
+
+1. 具备电子或信息类相关专业，硕士及以上学历，5 年及以上工作经验。
+2. 具备扎实的计算机基础知识，熟悉计算机体系结构、操作系统、多线程等领域知识,
+   c 语言编程功底扎实。
+3. 熟悉片上系统 (SoC) ，熟悉多核异构体系下的平台开发。
+4. 具备复杂软件架构设计能力，能够设计低耦合高内聚的夏杂软件系统。
+5. 在 BSP、DSP、嵌入式应用软件三个领域中，至少有过一个领域的一线开发经验。
+6. 有海思等平台开发经验的优先。
+7. 自我驱动，具备较强的责任心、学习能力和沟通表达能力，能够独立自主地开展工作。
+
+目标公司: 华为，宇视等视频设备类厂商底层开发/驱动
+产品: 智能监控产品，智能监控相机，车载视频，智能手机，智能穿戴
 {% endhighlight %}
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
