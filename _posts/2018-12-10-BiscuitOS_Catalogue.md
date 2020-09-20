@@ -45,7 +45,7 @@ tags:
 >
 > - [自己动手设计一个内存管理子系统](https://biscuitos.github.io/blog/Design-MMU/)
 >
-> Detecting Memory
+> - Detecting Memory
 >
 >   - [Detecting Memory from CMOS\[X86\]]()
 >
