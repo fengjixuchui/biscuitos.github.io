@@ -17,7 +17,7 @@ tags:
 >
 > - [New!! Build BiscuitOS-Desktop](https://biscuitos.github.io/blog/BiscuitOS-Desktop-arm32-Usermanual/)
 >
-> - [Build Linux 5.7 - RISCV32/RISCV64/ARM32/ARM64/I386/X86_64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5.6x)
+> - [Build Linux 5.8 - RISCV32/RISCV64/ARM32/ARM64/I386/X86_64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5.6x)
 >
 > - [Build Linux 0.X](https://biscuitos.github.io/blog/Kernel_Build/#Linux_0X)
 >
@@ -44,6 +44,16 @@ tags:
 > - [Linux MMU History Project](https://biscuitos.github.io/blog/HISTORY-MMU/)
 >
 > - [自己动手设计一个内存管理子系统](https://biscuitos.github.io/blog/Design-MMU/)
+>
+> Detecting Memory
+>
+>   - [Detecting Memory from CMOS\[X86\]]()
+>
+>   - [Detecting Memory from BDA\[X86\]]()
+>
+>   - [Detecting Memory from BIOS IVT\[X86\]]()
+>
+>   - [E820 内存管理器\[X86\]]()
 >
 > - [Bootmem Allocator](https://biscuitos.github.io/blog/HISTORY-bootmem/)
 >
@@ -96,6 +106,10 @@ tags:
 >   - [KMAP Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#N)
 >
 >   - [Fixmap Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#P)
+>
+> - Memory Map
+>
+>   - [Real Mode Address Space (\< 1 MiB)]()
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
