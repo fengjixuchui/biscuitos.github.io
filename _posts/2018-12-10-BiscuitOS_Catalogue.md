@@ -47,13 +47,13 @@ tags:
 >
 > - Detecting Memory
 >
->   - [Detecting Memory from CMOS\[X86\]]()
+>   - [Detecting Memory from CMOS \[X86\]](https://biscuitos.github.io/blog/MMU-seaBIOS_E820/#E1)
 >
->   - [Detecting Memory from BDA\[X86\]]()
+>   - [Detecting Memory from BDA \[X86\]](https://biscuitos.github.io/blog/MMU-seaBIOS_E820/#E2)
 >
->   - [Detecting Memory from BIOS IVT\[X86\]]()
+>   - [Detecting Memory from BIOS IVT \[X86\]](https://biscuitos.github.io/blog/MMU-E820/#F1)
 >
->   - [E820 内存管理器\[X86\]]()
+>   - [E820 内存管理器 \[X86\]](https://biscuitos.github.io/blog/MMU-E820/)
 >
 > - [Bootmem Allocator](https://biscuitos.github.io/blog/HISTORY-bootmem/)
 >
@@ -109,7 +109,7 @@ tags:
 >
 > - Memory Map
 >
->   - [Real Mode Address Space (\< 1 MiB)]()
+>   - [Real Mode Address Space (\< 1 MiB)](https://biscuitos.github.io/blog/MMU-seaBIOS_E820/#B0003)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
