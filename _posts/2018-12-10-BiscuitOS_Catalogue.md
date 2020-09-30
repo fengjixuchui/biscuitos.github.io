@@ -141,8 +141,18 @@ tags:
 >
 > - [Device Tree: DTS/DTB/FDT](https://biscuitos.github.io/blog/DTS/)
 >
-> - [ARM Assembly](https://biscuitos.github.io/blog/MMU-ARM32-ASM-index/)
->   <span id="ARM_ASM"></span>
+> - [汇编]()
+>
+>   - [X86/i386/X64 汇编]()
+>
+>   - [ARM64 汇编]()
+>
+>    - [ARM Assembly](https://biscuitos.github.io/blog/MMU-ARM32-ASM-index/)
+>    <span id="ARM_ASM"></span>
+>   - [RISCV 汇编]()
+>
+>   - [内嵌汇编]()
+>
 > - 链表
 >
 >   - Single list
@@ -186,26 +196,14 @@ tags:
 > - [Linux 5.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
 >
 > - [Linux 5.x 函数列表](https://biscuitos.github.io/blog/SC-LIST-5.0/)
->
-> - [Linux 6.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
->
-> - [Linux 7.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 ## <span id="Uboot">Bootloader</span>
 
-> - [Build u-boot-2019.04](https://biscuitos.github.io/blog/u-boot-2019.04-Usermanual/)
+> - [Uboot]()
 >
-> - [Build u-boot-2019.01](https://biscuitos.github.io/blog/u-boot-2019.01-Usermanual/)
->
-> - [Build u-boot-2018.11](https://biscuitos.github.io/blog/u-boot-2018.11-Usermanual/)
->
-> - [Build u-boot-2017.09](https://biscuitos.github.io/blog/u-boot-2017.09-Usermanual/)
->
-> - [Build u-boot-2016.05](https://biscuitos.github.io/blog/u-boot-2016.05-Usermanual/)
->
-> - [Build SeaBIOS](https://biscuitos.github.io/blog/BIOS_SeaBIOS/)
+> - [BIOS/seaBIOS]()
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
