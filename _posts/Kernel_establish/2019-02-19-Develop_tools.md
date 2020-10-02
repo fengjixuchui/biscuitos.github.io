@@ -13,7 +13,7 @@ tags:
 
 {% highlight bash %}
 sudo apt-get install -y qemu gcc make gdb git figlet
-sudo apt-get install -y libncurses5-dev iasl
+sudo apt-get install -y libncurses5-dev iasl wget
 sudo apt-get install -y device-tree-compiler
 sudo apt-get install -y flex bison libssl-dev libglib2.0-dev
 sudo apt-get install -y libfdt-dev libpixman-1-dev
@@ -23,8 +23,10 @@ sudo apt-get install -y gobject-introspection
 sudo apt-get install -y python2.7-dev python-dev bridge-utils
 sudo apt-get install -y uml-utilities net-tools
 sudo apt-get install -y libattr1-dev libcap-dev
-sudo apt-get install -y kpartx
+sudo apt-get install -y kpartx libsdl2-dev libsdl1.2-dev
 sudo apt-get install -y debootstrap bsdtar
+sudo apt-get install -y libelf-dev gcc-multilib g++-multilib
+sudo apt-get install -y libcap-ng-dev
 {% endhighlight %}
 
 如果开发主机是 64 位系统，请继续安装如下开发工具：
