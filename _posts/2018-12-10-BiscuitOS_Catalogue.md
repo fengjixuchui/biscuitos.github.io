@@ -304,7 +304,7 @@ tags:
 
 > - [Linux 5.x ARM32 Debug Usermanual](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/)
 >
-> - [Linux 0.1x i386 Debug Usermanual](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/#linux%200.11%20%E5%86%85%E6%A0%B8%E8%B0%83%E8%AF%95)
+> - [Linux 0.1x i386 Debug Usermanual](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/#G)
 >
 > - [Linux 内核开发工具合集](https://biscuitos.github.io/blog/Linux-development-tools/)
 >
