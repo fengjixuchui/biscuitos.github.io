@@ -191,7 +191,9 @@ tags:
 
 > - [Uboot]()
 >
-> - [BIOS/seaBIOS]()
+> - BIOS/seaBIOS
+>
+>   - [Build BiscuitOS seaBIOS](https://biscuitos.github.io/blog/seaBIOS-Usermanual)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
