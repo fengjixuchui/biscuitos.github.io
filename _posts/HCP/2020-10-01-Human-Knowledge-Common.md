@@ -20,11 +20,23 @@ tags:
 >
 > - [HKC 计划实践](#C)
 >
-> - [HKC 生态共享](#H000001)
+> - [HKC 生态共享](#H000005)
 
+> - Assembly
+>
+>   - X86/X85_64 Assembly
+>
+>     - [RDMSR](#H000002)
+>
+>     - [WRMSR](#H000003)
+>
 > - MMU Shrinker
 >
 >   - [register_shrinker/unregister_shrinker](#H000001)
+>
+> - Notifier mechanism
+>
+>   - [kernel notifer Demo](#H000004)
 >
 > - [附录](#Z0)
 
@@ -806,6 +818,385 @@ Linux agpgart interface v0.103
 
 ----------------------------------
 
+<span id="H000002"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### RDMSR
+
+RDMSR 指令用于读取一个 64 bit 的 MSR 寄存器. RDMSR 指令通过向 ECX 寄存器写入指定 MSR 寄存器的地址，RDMSR 指令便会将指定 MSR 寄存器的 64 位值存储到 EDX:EAX, 其中 EDX 寄存器存储指定 MSR 寄存器的高 32 bit 的值，而 EAX 寄存器则存储指定 MSR 寄存器的低 32 bit 的值。
+
+###### BiscuitOS 配置
+
+本实例已经在 Linux 5.0 i386 架构上验证通过，在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Assembly  --->
+        [*] X86/i386/X64 Assembly  --->
+            [*] RDMSR  --->
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * RDMSR [X86/i386/X86_64] -- Read from MSR register.
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+/*
+ * Both i386 and x86_64 returns 64-bit value in edx:eax, but gcc's "A"
+ * constraint has different meanings. For i386, "A" means exactly
+ * edx:eax, while for x86_64 it doesn't mean rdx:rax or edx:eax. Instead
+ * it means rax *or* rdx.
+ */
+#ifdef CONFIG_X86_64
+#define DECLARE_ARGS(val, low, high)		unsigned low, high
+#define EAX_EDX_VAL(val, low, high)		((low) | ((u64)(high) << 32))
+#define EAX_EDX_ARGS(val, low, high)		"a" (low), "d" (high)
+#define EAX_EDX_RET(val, low, high)		"=a" (low), "=d" (high)
+#else
+#define DECLARE_ARGS(val, low, high)		unsigned long long val
+#define EAX_EDX_VAL(val, low, high)		(val)
+#define EAX_EDX_ARGS(val, low, high)		"A" (val)
+#define EAX_EDX_RET(val, low, high)		"=A" (val)
+#endif
+
+static inline unsigned long long native_read_msr_bs(unsigned int msr)
+{
+	DECLARE_ARGS(val, low, high);
+
+	asm volatile("rdmsr"
+		    : EAX_EDX_RET(val, low, high)
+		    : "c" (msr));
+	return EAX_EDX_VAL(val, low, high);
+}
+
+#define rdmsr_bs(msr, low, high)			\
+do {							\
+	u64 __val = native_read_msr_bs((msr));		\
+	(void)((low) = (u32)__val);			\
+	(void)((high) = (u32)(__val >> 32));		\
+} while (0)
+
+#define MSR_IA32_SYSENTER_CS		0x00000174
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+	unsigned int host_cs, junk;
+
+	/* RDMSR */
+	rdmsr_bs(MSR_IA32_SYSENTER_CS, host_cs, junk);
+	printk("MSR_IA32_SYSENTER_CS: %#lx-%lx\n", host_cs, junk);
+
+	return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Common Device driver on BiscuitOS");
+{% endhighlight %}
+
+上面的例子很简单，就是通过内嵌汇编的方式在内核模块中调用 RDMSR 指令。值得注意的是，在 X86_64 内嵌汇编中，GCC "A" 标志不代表 "EDX:EAX" 的组合，而在 X86 内嵌汇编中，GCC "A" 标志表示 "EDX:EAX" 的组合，因此使用时应该做区分. 程序运行时的结果如下:
+
+{% highlight bash %}
+cd /lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # ls
+rdmsr-x86-0.0.1.ko
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # insmod rdmsr-x86-0.0.1.ko 
+rdmsr_x86_0.0.1: loading out-of-tree module taints kernel.
+MSR_IA32_SYSENTER_CS: 0x60-0
+/lib/modules/5.0.0/extra #
+{% endhighlight %}
+
+更多 RDMSR 请参考 "Intel Development Manual", 更多 MSR 寄存器请参考手册 "Volume 4: Model-Specific Registers: Chapter 2 Model-Specific Registers (MSRs)"
+
+> [Intel Development Manual](https://gitee.com/BiscuitOS_team/Documentation/blob/master/Datasheet/Intel/Intel-IA32_DevelopmentManual.pdf)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000003"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### WRMSR
+
+WRMSR 指令用于将一个 64bit 的值写入指定的 MSR 寄存器中。WRMSR 指令通过将指定寄存器的地址写入 ECX 寄存器中，然后将写入值的高 32bit 写入 EDX 寄存器，然后将写入值的低 32bit 写入 EAX 寄存器中，最后调用 "WRMSR" 指令进行写入操作。
+
+###### BiscuitOS 配置
+
+本实例已经在 Linux 5.0 i386 架构上验证通过, 在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Assembly  --->
+        [*] X86/i386/X64 Assembly  --->
+            [*] WRMSR  --->
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight bash %}
+/*
+ * WRMSR [X86/X86_64] -- Write to Model Specific Register
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+#define IA32_PQR_ASSOC		0x0c8f
+
+static inline void wrmsr_bs(unsigned msr, unsigned low, unsigned high)
+{
+	asm volatile ("wrmsr"
+		      :
+		      : "c" (msr), "a" (low), "d" (high)
+		      : "memory");
+}
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+	printk("Hello modules on BiscuitOS\n");
+
+	/* WRMSR */
+	wrmsr_bs(IA32_PQR_ASSOC, 0, 0);
+
+	return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Common Device driver on BiscuitOS");
+{% endhighlight %}
+
+上面的例子很简单，就是通过内嵌汇编的方式将 MSR 寄存器的值通过 "c" 写入到 ECX 寄存器中，然后通过 "a" 将 64bit 值的低 32bit 写入到 EAX 寄存器，通过 "d" 将 64bit 值写入到 EDX 寄存器。最终使用 "memory" 标记，以此告诉编译器不要将用到的变量缓存到寄存器，因为这段代码可能会用到内存变量，而这些内存变量会以不可预知的方式发生改变，因此 GCC 插入必要的代码先将缓存到寄存器的变量值写回内存，如果后面又访问这些变量，需要重新访问内存. 上面的实例在 BiscuitOS 运行的结果如下:
+
+{% highlight bash %}
+cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+wrmsr-x86-0.0.1.ko
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # insmod wrmsr-x86-0.0.1.ko 
+wrmsr_x86_0.0.1: loading out-of-tree module taints kernel.
+Hello modules on BiscuitOS
+general protection fault: 0000 [#1] SMP
+CPU: 1 PID: 1142 Comm: insmod Tainted: G           O      5.0.0 #61
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.0-0-ga698c8995f-p4
+EIP: BiscuitOS_init+0x1b/0x1000 [wrmsr_x86_0.0.1]
+Code: Bad RIP value.
+EAX: 00000000 EBX: e0a5c000 ECX: 00000c8f EDX: 00000000
+ESI: e0a5f000 EDI: cb59c0e0 EBP: cd3c9df8 ESP: cd3c9df4
+DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00010246
+CR0: 80050033 CR2: e0a5eff1 CR3: 0ef54000 CR4: 001406d0
+Call Trace:
+ do_one_initcall+0x42/0x191
+ ? call_usermodehelper_exec+0x87/0x170
+ ? free_pcp_prepare+0x4f/0xa0
+ ? _cond_resched+0x17/0x40
+ ? kmem_cache_alloc_trace+0x35/0x160
+ ? do_init_module+0x21/0x1e4
+ do_init_module+0x50/0x1e4
+ load_module+0x1d46/0x2280
+ ? map_vm_area+0x2c/0x40
+ sys_init_module+0x10d/0x150
+ do_fast_syscall_32+0x7a/0x1c0
+ entry_SYSENTER_32+0x6b/0xbe
+EIP: 0xb7f3b871
+Code: 8b 98 58 cd ff ff 85 d2 89 c8 74 02 89 0a 5b 5d c3 8b 04 24 c3 8b 14 24 c3 8b 1c6
+EAX: ffffffda EBX: 09ab6390 ECX: 00000aec EDX: 0820dbd6
+ESI: 00000003 EDI: 00000000 EBP: bf8b064c ESP: bf8b02e0
+DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 007b EFLAGS: 00000246
+Modules linked in: wrmsr_x86_0.0.1(O+)
+---[ end trace f75e95a374ac04ef ]---
+EIP: BiscuitOS_init+0x1b/0x1000 [wrmsr_x86_0.0.1]
+Code: Bad RIP value.
+EAX: 00000000 EBX: e0a5c000 ECX: 00000c8f EDX: 00000000
+ESI: e0a5f000 EDI: cb59c0e0 EBP: cd3c9df8 ESP: dd06049c
+DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00010246
+CR0: 80050033 CR2: e0a5eff1 CR3: 0ef54000 CR4: 001406d0
+insmod (1142) used greatest stack depth: 6600 bytes left
+Segmentation fault
+/lib/modules/5.0.0/extra # 
+{% endhighlight %}
+
+更多 WRMSR 请参考 "Intel Development Manual", 更多 MSR 寄存器请参考手册 "Volume 4: Model-Specific Registers: Chapter 2 Model-Specific Registers (MSRs)"
+
+> [Intel Development Manual](https://gitee.com/BiscuitOS_team/Documentation/blob/master/Datasheet/Intel/Intel-IA32_DevelopmentManual.pdf)
+
+----------------------------------
+
+<span id="H000004"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Kernel notifier Demo
+
+本节用于介绍一个在内核中使用通知链的例子, 内核内核通知机制可以在不同子系统之间进行通知，本例子给出一个最简单的例子实现。
+
+
+###### BiscuitOS 配置
+
+本实例已经在 Linux 5.0 i386 架构上验证通过, 在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Notifier mechanism on Kernel  --->
+        [*] Kernel notifier Base Demo  --->
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Kernel notifier
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+#define BISCUITOS_EVENT_A		0x01
+#define BISCUITOS_EVENT_B		0x02
+#define BISCUITOS_EVENT_C		0x03
+
+static RAW_NOTIFIER_HEAD(BiscuitOS_chain);
+
+int BiscuitOS_notifier_event(struct notifier_block *nb, 
+					unsigned long event, void *v)
+{
+	switch (event) {
+	case BISCUITOS_EVENT_A:
+		printk("BiscuitOS notifier event A [%s]\n", (char *)v);
+		break;
+	case BISCUITOS_EVENT_B:
+		printk("BiscuitOS notifier event B [%s]\n", (char *)v);
+		break;
+	default:
+		break;
+	}
+
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block BiscuitOS_notifier = {
+	.notifier_call = BiscuitOS_notifier_event,
+};
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+	printk("Hello modules on BiscuitOS\n");
+
+	/* Register notifier */
+	raw_notifier_chain_register(&BiscuitOS_chain, &BiscuitOS_notifier);
+
+	/* Notifier */
+	raw_notifier_call_chain(&BiscuitOS_chain, 
+					BISCUITOS_EVENT_B, "BiscuitOS");
+	raw_notifier_call_chain(&BiscuitOS_chain,
+					BISCUITOS_EVENT_A, "Buddy");
+	raw_notifier_call_chain(&BiscuitOS_chain,
+					BISCUITOS_EVENT_C, "Memory");
+
+	return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+	/* Unregister notifier */
+	raw_notifier_chain_unregister(&BiscuitOS_chain, &BiscuitOS_notifier);
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Common Device driver on BiscuitOS");
+{% endhighlight %}
+
+在例子中，函数通过调用 "raw_notifier_chain_register()" 函数注册了一条名为 "BiscuitOS_chain" 的通知链，当接收到通知之后对应的处理函数通过 BiscuitOS_notifier 对应的数据进行处理，其最终对应 "BiscuitOS_notifier_event()" 函数，当接收到通知之后，内核调用该函数，函数内核对不同的消息进行处理，这里定义了两个消息: "BISCUITOS_EVENT_A" 和 "BISCUITOS_EVENT_B", 当 BiscuitOS_chain 消息链接受到其中一条信息都会进行相应的处理，而对于没有定义的消息，那么则忽略。
+
+内核可以在其他子系统通过调用 "raw_notifier_call_chain()" 向指定消息链发消息，例如本例子中，通过调用该函数一共发送三个信息，并传入指定的内容. 通过上面的代码逻辑构建了一个内核最简单的消息通知机制. 本例子在 BiscuitOS 中运行的结果如下:
+
+{% highlight bash %}
+cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # ls
+kernel-notifier-base-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod kernel-notifier-base-0.0.1.ko 
+kernel_notifier_base_0.0.1: loading out-of-tree module taints kernel.
+Hello modules on BiscuitOS
+BiscuitOS notifier event B [BiscuitOS]
+BiscuitOS notifier event A [Buddy]
+/lib/modules/5.0.0/extra #
+{% endhighlight %}
+
+在 BiscuitOS 运行模块之后，可以看到 "BiscuitOS_chain" 消息链接受到了 "BISCUITOS_EVENT_A" 和 "BISCUITOS_EVENT_B" 消息，并打印伴随消息传递过来的内容，对于 "BISCUITOS_EVENT_C" 则选择忽略.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+
+----------------------------------
+
 <span id="H000000"></span>
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
@@ -836,6 +1227,9 @@ Linux agpgart interface v0.103
 {% endhighlight %}
 
 
+{% highlight bash %}
+
+{% endhighlight %}
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
