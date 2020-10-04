@@ -179,18 +179,6 @@ tags:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
-## [Linux Paper/Article]()
-
-> - [thread_info 与内核堆栈的关系](https://biscuitos.github.io/blog/TASK-thread_info_stack/)
->
-> - [快速添加一个系统调用 (arm)](https://biscuitos.github.io/blog/SYSCALL_hello/)
->
-> - [CMA 碎片问题研究](https://biscuitos.github.io/blog/CMA-hole/)
->
-> - [.pushsection/.popsection 有趣的汇编指令](https://biscuitos.github.io/blog/ASM_pushsection/)
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
-
 ## [Linux Source Code list]()
 
 > - [Linux 5.0 源码](https://biscuitos.github.io/blog/SC-5.0/)
@@ -310,7 +298,7 @@ tags:
 >
 > - [perf: Linux 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-perf/)
 >
-> - [blktrace： Block IO 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-blktrace/)
+> - [blktrace: Block IO 性能测试调试工具](https://biscuitos.github.io/blog/TOOLS-blktrace/)
 >
 > - [Linux 内核源码静态分析工具 sparse](https://biscuitos.github.io/blog/SPARSE/#header)
 >
