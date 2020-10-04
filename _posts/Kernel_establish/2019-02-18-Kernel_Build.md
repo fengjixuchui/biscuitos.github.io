@@ -138,7 +138,7 @@ tags:
 >
 > - [Build Linux 5.6 Running on X86_64](https://biscuitos.github.io/blog/Linux-5.6-x86_64-Usermanual/)
 
-## <span id="BiscuitOS_uboot">Linux 5.6</span>
+## <span id="BiscuitOS_uboot">uboot</span>
 
 > - [Build BiscuitOS uboot-2014.07](https://biscuitos.github.io/blog/uboot-2014.07-Usermanual)
 >
