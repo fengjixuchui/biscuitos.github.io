@@ -20,7 +20,11 @@ tags:
 >
 > - [HKC 计划实践](#C)
 >
-> - [HKC 生态共享](#H)
+> - [HKC 生态共享](#H000001)
+
+> - MMU Shrinker
+>
+>   - [register_shrinker/unregister_shrinker](#H000001)
 >
 > - [附录](#Z0)
 
@@ -691,6 +695,117 @@ BiscuitOS 启动之后，运行应用程序后看到打印相应的字符串, �
 
 ----------------------------------
 
+<span id="H000001"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### register_shrinker/unregister_shrinker
+
+register_shrinker()/unregister_shrinker() 函数用于向 SLAB 维护的 shrinker_list 链表上注册 "struct shrinker" 节点，当系统调用 drop_slab() 函数收缩 SLAB 内存的时候，系统就会遍历到 register_shrinker() 注册的函数进行数据的统计.
+
+###### BiscuitOS 配置
+
+本实例已经在 Linux 5.0 i386 架构上验证通过，在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] MMU Shrink  --->
+        [*] register_shrink/unregister_shrink  --->
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C1)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * BiscuitOS Kernel BiscuitOS Code
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+#include <linux/init.h>
+#include <linux/kernel.h>
+
+/* Shrink interface */
+#include <linux/mm.h>
+#include <linux/shrinker.h>
+
+extern void drop_slab(void);
+unsigned long BiscuitOS_free_pages = 0x1000;
+unsigned long BiscuitOS_used_pages = 0x200;
+
+static unsigned long
+mmu_shrink_count_bs(struct shrinker *shrink, struct shrink_control *sc)
+{
+        printk("BiscuitOS Count...\n\n\n");
+        return BiscuitOS_used_pages;
+}
+
+static unsigned long
+mmu_shrink_scan_bs(struct shrinker *shrink, struct shrink_control *sc)
+{
+        printk("BiscuitOS Scan... \n\n\n");
+        return BiscuitOS_free_pages;
+}
+
+static struct shrinker mmu_shrinker_bs = {
+        .count_objects = mmu_shrink_count_bs,
+        .scan_objects  = mmu_shrink_scan_bs,
+        .seeks = DEFAULT_SEEKS * 10,
+};
+
+/* Shrink */
+static int __init BiscuitOS_shrink_init(void)
+{
+        register_shrinker(&mmu_shrinker_bs);
+
+        return 0;
+}
+
+/* kernel entry on initcall */
+static int __init BiscuitOS_init(void)
+{
+        printk("Hello BiscuitOS on kernel.\n");
+
+        drop_slab();
+
+        /* unregister */
+        unregister_shrinker(&mmu_shrinker_bs);
+        return 0;
+}
+
+fs_initcall(BiscuitOS_shrink_init);
+device_initcall(BiscuitOS_init);
+{% endhighlight %}
+
+内核启动过程中打印如下:
+
+{% highlight bash %}
+Block layer SCSI generic (bsg) driver version 0.4 loaded (major 251)
+io scheduler mq-deadline registered
+io scheduler kyber registered
+Hello BiscuitOS on kernel.
+BiscuitOS Count...
+
+
+input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+ACPI: Power Button [PWRF]
+Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+00:05: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
+Non-volatile memory driver v1.3
+Linux agpgart interface v0.103
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
 <span id="H000000"></span>
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
@@ -701,7 +816,7 @@ BiscuitOS 启动之后，运行应用程序后看到打印相应的字符串, �
 
 功能介绍
 
-#### BiscuitOS 配置
+###### BiscuitOS 配置
 
 在 BiscuitOS 中使用配置如下:
 
@@ -714,7 +829,7 @@ BiscuitOS 启动之后，运行应用程序后看到打印相应的字符串, �
 
 > - [HKC 计划 BiscuitOS 实践框架介绍](#C)
 
-#### 通用例程
+###### 通用例程
 
 {% highlight bash %}
 
