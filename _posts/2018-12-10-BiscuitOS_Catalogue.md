@@ -193,6 +193,20 @@ tags:
 >
 >   - [Build BiscuitOS uboot-2020.04](https://biscuitos.github.io/blog/uboot-2020.04-Usermanual)
 >
+>   - [Build BiscuitOS uboot-2019.07](https://biscuitos.github.io/blog/uboot-2019.07-Usermanual)
+>
+>   - [Build BiscuitOS uboot-2018.03](https://biscuitos.github.io/blog/uboot-2018.03-Usermanual)
+>
+>   - [Build BiscuitOS uboot-2017.01](https://biscuitos.github.io/blog/uboot-2017.01-Usermanual)
+>
+>   - [Build BiscuitOS uboot-2016.09](https://biscuitos.github.io/blog/uboot-2016.09-Usermanual)
+>
+>   - [Build BiscuitOS uboot-2015.07](https://biscuitos.github.io/blog/uboot-2015.07-Usermanual)
+>
+>   - [Build BiscuitOS uboot-2014.07](https://biscuitos.github.io/blog/uboot-2014.07-Usermanual)
+>
+>   - [更多 BiscuitOS uboot 版本](https://biscuitos.github.io/blog/Kernel_Build/#BiscuitOS_uboot)
+>
 > - BIOS/seaBIOS
 >
 >   - [Build BiscuitOS seaBIOS](https://biscuitos.github.io/blog/seaBIOS-Usermanual)

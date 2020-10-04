@@ -138,6 +138,67 @@ tags:
 >
 > - [Build Linux 5.6 Running on X86_64](https://biscuitos.github.io/blog/Linux-5.6-x86_64-Usermanual/)
 
+## <span id="BiscuitOS_uboot">Linux 5.6</span>
+
+> - [Build BiscuitOS uboot-2014.07](https://biscuitos.github.io/blog/uboot-2014.07-Usermanual)
+>
+> - [Build BiscuitOS uboot-2014.10](https://biscuitos.github.io/blog/uboot-2014.10-Usermanual)
+>
+> - [Build BiscuitOS uboot-2015.01](https://biscuitos.github.io/blog/uboot-2015.01-Usermanual)
+>
+> - [Build BiscuitOS uboot-2015.04](https://biscuitos.github.io/blog/uboot-2015.04-Usermanual)
+>
+> - [Build BiscuitOS uboot-2015.07](https://biscuitos.github.io/blog/uboot-2015.07-Usermanual)
+>
+> - [Build BiscuitOS uboot-2015.10](https://biscuitos.github.io/blog/uboot-2015.10-Usermanual)
+>
+> - [Build BiscuitOS uboot-2016.01](https://biscuitos.github.io/blog/uboot-2016.01-Usermanual)
+>
+> - [Build BiscuitOS uboot-2016.03](https://biscuitos.github.io/blog/uboot-2016.03-Usermanual)
+>
+> - [Build BiscuitOS uboot-2016.05](https://biscuitos.github.io/blog/uboot-2016.05-Usermanual)
+>
+> - [Build BiscuitOS uboot-2016.07](https://biscuitos.github.io/blog/uboot-2016.07-Usermanual)
+>
+> - [Build BiscuitOS uboot-2016.09](https://biscuitos.github.io/blog/uboot-2016.09-Usermanual)
+>
+> - [Build BiscuitOS uboot-2016.11](https://biscuitos.github.io/blog/uboot-2016.11-Usermanual)
+>
+> - [Build BiscuitOS uboot-2017.01](https://biscuitos.github.io/blog/uboot-2017.01-Usermanual)
+>
+> - [Build BiscuitOS uboot-2017.03](https://biscuitos.github.io/blog/uboot-2017.03-Usermanual)
+>
+> - [Build BiscuitOS uboot-2017.05](https://biscuitos.github.io/blog/uboot-2017.05-Usermanual)
+>
+> - [Build BiscuitOS uboot-2017.07](https://biscuitos.github.io/blog/uboot-2017.07-Usermanual)
+>
+> - [Build BiscuitOS uboot-2017.09](https://biscuitos.github.io/blog/uboot-2017.09-Usermanual)
+>
+> - [Build BiscuitOS uboot-2017.11](https://biscuitos.github.io/blog/uboot-2017.11-Usermanual)
+>
+> - [Build BiscuitOS uboot-2018.01](https://biscuitos.github.io/blog/uboot-2018.01-Usermanual)
+>
+> - [Build BiscuitOS uboot-2018.03](https://biscuitos.github.io/blog/uboot-2018.03-Usermanual)
+>
+> - [Build BiscuitOS uboot-2018.05](https://biscuitos.github.io/blog/uboot-2018.05-Usermanual)
+>
+> - [Build BiscuitOS uboot-2018.07](https://biscuitos.github.io/blog/uboot-2018.07-Usermanual)
+>
+> - [Build BiscuitOS uboot-2018.09](https://biscuitos.github.io/blog/uboot-2018.09-Usermanual)
+>
+> - [Build BiscuitOS uboot-2018.11](https://biscuitos.github.io/blog/uboot-2018.11-Usermanual)
+>
+> - [Build BiscuitOS uboot-2019.01](https://biscuitos.github.io/blog/uboot-2019.01-Usermanual)
+>
+> - [Build BiscuitOS uboot-2019.04](https://biscuitos.github.io/blog/uboot-2019.04-Usermanual)
+>
+> - [Build BiscuitOS uboot-2019.07](https://biscuitos.github.io/blog/uboot-2019.07-Usermanual)
+>
+> - [Build BiscuitOS uboot-2019.10](https://biscuitos.github.io/blog/uboot-2019.10-Usermanual)
+>
+> - [Build BiscuitOS uboot-2020.01](https://biscuitos.github.io/blog/uboot-2020.01-Usermanual)
+>
+> - [Build BiscuitOS uboot-2020.04](https://biscuitos.github.io/blog/uboot-2020.04-Usermanual)
 
 ## <span id="Desktop">BiscuitOS-Desktop</span>
 
