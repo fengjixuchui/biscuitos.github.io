@@ -20,7 +20,7 @@ tags:
 >
 > - [HKC 计划实践](#C)
 >
-> - [HKC 生态共享](#H000005)
+> - [HKC 生态共享](#H000011)
 
 > - Assembly
 >
@@ -30,13 +30,31 @@ tags:
 >
 >     - [WRMSR](#H000003)
 >
+> - CPUMASK
+>
+>   - [kernel cpumask Demo](#H000005)
+>
 > - MMU Shrinker
 >
->   - [register_shrinker/unregister_shrinker](#H000001)
+>   - [kernel slab shrink Demo](#H000001)
 >
 > - Notifier mechanism
 >
->   - [kernel notifer Demo](#H000004)
+>   - [kernel notifier Demo](#H000004)
+>
+>   - [Reboot notifier](#H000008)
+>
+> - Power manager
+>
+>   - [Trigger resume Demo](#H000010)
+>
+>   - [Trigger suspend Demo](#H000009)
+>
+> - SMP
+>
+>   - [on_each_cpu](#H000007)
+>
+>   - [smp_call_function_single](#H000006)
 >
 > - [附录](#Z0)
 
@@ -722,7 +740,10 @@ register_shrinker()/unregister_shrinker() 函数用于向 SLAB 维护的 shrinke
 {% highlight bash %}
 [*] Package  --->
     [*] MMU Shrink  --->
-        [*] register_shrink/unregister_shrink  --->
+        [*] kernel slab shrink Demo  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/kernel-slab-shrink-base-0.0.1
 {% endhighlight %}
 
 具体实践办法请参考:
@@ -796,7 +817,9 @@ fs_initcall(BiscuitOS_shrink_init);
 device_initcall(BiscuitOS_init);
 {% endhighlight %}
 
-内核启动过程中打印如下:
+在例子中，BiscuitOS_shrink_init() 会在 "fs_initcall" 阶段调用，而 BiscuitOS_init() 函数则在 "device_initcall" 阶段才调用，因此 BiscuitOS_shrink_init() 函数先执行，而 BiscuitOS_init() 函数后执行。
+
+在 BiscuitOS_shrink_init() 函数中先调用 register_shrinker() 函数向 slab shrink 消息链上注册监听，只要系统 slab 发出 shrink 消息，那么就会调用到 mmu_shrinker_bs 注册的接口函数。在 BiscuitOS_init() 函数中，主动通过 drop_slab() 函数发出 slab shrink 的消息，那么内核启动过程中打印如下:
 
 {% highlight bash %}
 Block layer SCSI generic (bsg) driver version 0.4 loaded (major 251)
@@ -813,6 +836,8 @@ Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
 Non-volatile memory driver v1.3
 Linux agpgart interface v0.103
 {% endhighlight %}
+
+从内核启动的信息来看，当调用 drop_slab 的时候，mmu_shrinker_bs 接收到了消息，并调用 mmu_shrink_count_bs() 函数执行相关的操作.
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -835,6 +860,9 @@ RDMSR 指令用于读取一个 64 bit 的 MSR 寄存器. RDMSR 指令通过向 E
     [*] Assembly  --->
         [*] X86/i386/X64 Assembly  --->
             [*] RDMSR  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/rdmsr-x86-0.0.1/
 {% endhighlight %}
 
 具体实践办法请参考:
@@ -959,6 +987,9 @@ WRMSR 指令用于将一个 64bit 的值写入指定的 MSR 寄存器中。WRMSR
     [*] Assembly  --->
         [*] X86/i386/X64 Assembly  --->
             [*] WRMSR  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/wrmsr-x86-0.0.1/
 {% endhighlight %}
 
 具体实践办法请参考:
@@ -1089,6 +1120,9 @@ Segmentation fault
 [*] Package  --->
     [*] Notifier mechanism on Kernel  --->
         [*] Kernel notifier Base Demo  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/kernel-notifier-base-0.0.1
 {% endhighlight %}
 
 具体实践办法请参考:
@@ -1194,6 +1228,769 @@ BiscuitOS notifier event A [Buddy]
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
+----------------------------------
+
+<span id="H000005"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Kernel cpumask Demo
+
+CPUMASK 机制用于标记 CPU 的使用情况，在 SMP 系统中，系统在维护某个功能时需要统计指定 CPU 使用某个功能的记录，或者用于标记指定的 CPU 以便得到一个白名单或者黑名单，以此可以通过 MASK 隔离指定的 CPU。内核提供了一套 CPUMASK 机制来实现各种场景下的功能。
+
+###### BiscuitOS 配置
+
+本实例已经在 Linux 5.0 i386 架构上验证通过, 在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] CPUMASK mechanism on Kernel  --->
+        [*] Kernel cpumask Base Demo  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/kernel-cpumask-base-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * CPU mask mechanism
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/mm.h>
+
+/* CPUmask */
+#include <linux/cpumask.h>
+
+/* declear cpumask */
+static cpumask_var_t BiscuitOS_cpumask;
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+	int cpu = raw_smp_processor_id();
+
+	printk("BiscuitOS current cpu %d\n", cpu);
+	/* alloc cpumask */
+	zalloc_cpumask_var(&BiscuitOS_cpumask, GFP_KERNEL);
+
+	/* test and set */
+	if (!cpumask_test_cpu(cpu, BiscuitOS_cpumask)) {
+		printk("CPUMASK set cpu %d\n", cpu);
+		cpumask_set_cpu(cpu, BiscuitOS_cpumask);
+	}
+
+	/* test and clear */
+	if (cpumask_test_cpu(cpu, BiscuitOS_cpumask)) {
+		printk("CPUMASK clear cpu %d\n", cpu);
+		cpumask_clear_cpu(cpu, BiscuitOS_cpumask);
+	}
+
+	return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+	/* free cpumask */
+	free_cpumask_var(BiscuitOS_cpumask);
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Common Device driver on BiscuitOS");
+{% endhighlight %}
+
+在例子中，首先定义了一个 cpumask_var_t 的变量 BiscuitOS_cpumask, 然后调用 zalloc_cpumask_alloc() 函数为其分配相应的内存，分配完毕之后该 CPUMASK 就可以使用了。这里调用 raw_smp_processor_id() 函数获得当前 CPU ID，然后判断该 CPU 是否已经在 BiscuitOS_cpumask 中置位，如果没有那么调用 cpumask_set_cpu() 将该 CPU 在 BiscuitOS_cpumask 中置位，这样做的目的是以后可以检测针对特定 CPU 的白名单/黑名单. 例子中在检测到对应的 CPU 置位之后，调用 cpumask_clear_cpu() 函数将 CPU 从 BiscuitOS_cpumask 中移除，这样做的目的是以后可以将 CPU 从白名单/黑名单中除名. 该实例在 SMP 4 core 的情况下，BiscuitOS 中运行的情况如下:
+
+{% highlight bash %}
+cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+kernel-cpumask-base-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod kernel-cpumask-base-0.0.1.ko 
+kernel_cpumask_base_0.0.1: loading out-of-tree module taints kernel.
+BiscuitOS current cpu 0
+CPUMASK set cpu 0
+CPUMASK clear cpu 0
+/lib/modules/5.0.0/extra #
+{% endhighlight %}
+
+从运行的结果可以看出，当前 CPU ID 是 0，第一次检测的时候，CPU 没有在 BiscuitOS_cpumask 中置位，那么将其置位。第二次检测的时候，CPU 已经在 BiscuitOS_cpumask 中置位，那么将其清零.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000006"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### smp_call_function_single
+
+smp_call_function_single() 函数用于在指定的 CPU 上运行指定的函数，其函数原型如下:
+
+{% highlight c %}
+/*
+ * smp_call_function_single - Run a function on a specific CPU
+ * @func: The function to run. This must be fast and non-blocking.
+ * @info: An arbitrary pointer to pass to the function.
+ * @wait: If true, wait until function has completed on other CPUs.
+ *
+ * Returns 0 on success, else a negative status code.
+ */
+int smp_call_function_single(int cpu, smp_call_func_t func, void *info, int wait)
+{% endhighlight %}
+
+cpu 指定了需要运行的 CPU ID，func 参数则是指向需要执行的函数，info 指向需要向执行函数传入的数据，wait 用于指明是否等待原 CPU 执行完毕之后再去其他 CPU 执行。
+
+###### BiscuitOS 配置
+
+本实例已经在 Linux 5.0 i386 架构上验证通过, 在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] SMP  --->
+        [*] smp_call_function_single  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/smp_call_function_single-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Run a function on a specific CPU
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+void BiscuitOS_smp(void *rtn)
+{
+	int cpu = raw_smp_processor_id();
+
+	printk("SMP running on CPU%d - Default CPU%d\n", cpu, (int)rtn);
+}
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+	int cpu = 0;
+	int current_cpu = raw_smp_processor_id();
+
+	/* Call function on specific CPU */
+	smp_call_function_single(cpu, BiscuitOS_smp, (void *)current_cpu, 0);
+
+	printk("Hello modules on BiscuitOS\n");
+
+	return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Common Device driver on BiscuitOS");
+{% endhighlight %}
+
+在例子中，函数调用 smp_call_function_single() 函数在指定的 CPU 0 上运行 BiscuitOS_smp() 函数，并向 BiscuitOS_smp() 函数传递了原始 CPU ID。其在 BiscuitOS 上运行的结果如下:
+
+{% highlight bash %}
+cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+smp_call_function_single-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod smp_call_function_single-0.0.1.ko 
+smp_call_function_single_0.0.1: loading out-of-tree module taints kernel.
+SMP running on CPU0 - Default CPU1
+Hello modules on BiscuitOS
+/lib/modules/5.0.0/extra #
+{% endhighlight %}
+
+函数运行在 CPU 1 上，然后调用 smp_call_function_single() 函数让 BiscuitOS_smp() 函数运行在 CPU 0 上.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000007"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### on_each_cpu
+
+on_each_cpu() 函数用于将指定函数在没有 CPU 上运行，其函数原型如下:
+
+{% highlight c %}
+/*
+ * Call a function on all processors.  May be used during early boot while
+ * early_boot_irqs_disabled is set.  Use local_irq_save/restore() instead
+ * of local_irq_disable/enable().
+ */ 
+int on_each_cpu(void (*func) (void *info), void *info, int wait)
+{% endhighlight %}
+
+func 为指定在每个 CPU 上运行的函数，info 为传入调用函数的数据，wait 参数用于指定是否等待当前 CPU 任务执行完毕之后在执行.
+
+###### BiscuitOS 配置
+
+本实例已经在 Linux 5.0 i386 架构上验证通过, 在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] SMP  --->
+        [*] on_each_cpu  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/on_each_cpu-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Call a function on all processors
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+void BiscuitOS_smp(void *info)
+{
+        int cpu = raw_smp_processor_id();
+
+        printk("Current CPU%d Default CPU%d\n", cpu, (int)info);
+}
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+        int cpu = raw_smp_processor_id();
+
+        /* Call function on all processor */
+        on_each_cpu(BiscuitOS_smp, (void *)cpu, 0);
+
+        printk("Hello modules on BiscuitOS\n");
+
+        return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Common Device driver on BiscuitOS");
+{% endhighlight %}
+
+在本例子中，函数定义了一个函数 BiscuitOS_smp，并调用 on_each_cpu() 函数让 BiscuitOS_smp() 函数在所有的 CPU 上运行。其在 BiscuitOS 上运行的情况如下:
+
+{% highlight bash %}
+cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+on_each_cpu-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod on_each_cpu-0.0.1.ko 
+on_each_cpu_0.0.1: loading out-of-tree module taints kernel.
+Current CPU1 Default CPU1
+Current CPU0 Default CPU1
+Hello modules on BiscuitOS
+/lib/modules/5.0.0/extra #
+{% endhighlight %}
+
+从运行的结果可以看出 BiscuitOS_smp() 函数在所有的 CPU 上都运行了一次.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000008"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### reboot-notifier
+
+Reboot notifier 用于当系统 reboot 的时候为注册 register_reboot_notifier() 的函数发送 REBOOT 消息。当监听者收到 REBOOT 消息之后就执行对应的函数. Reboot notifier 机制提供了 register_reboot_notifier()/unregister_reboot_notifier() 函数用于注册和撤销 REBOOT 监听事件.
+
+###### BiscuitOS 配置
+
+本实例已经在 Linux 5.0 i386 架构上验证通过, 在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Notifier mechanism on Kernel  --->
+        [*] Reboot notifier  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/reboot-notifier-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Reboot notifier
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+/* reboot notifier */
+#include <linux/reboot.h>
+
+static int BiscuitOS_reboot_notifier(struct notifier_block *notifier,
+                                                unsigned long val, void *v)
+{
+        printk("Trigger reboot on BiscuitOS.\n");
+        return 0;
+}
+
+static struct notifier_block BiscuitOS_reboot = {
+        .notifier_call = BiscuitOS_reboot_notifier,
+        .priority = 0,
+};
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+        printk("Hello modules on BiscuitOS\n");
+
+        /* Register reboot notifier */
+        register_reboot_notifier(&BiscuitOS_reboot);
+
+        return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+        unregister_reboot_notifier(&BiscuitOS_reboot);
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Common Device driver on BiscuitOS");
+{% endhighlight %}
+
+在本例子中，调用 register_reboot_notifier() 函数注册了一个监听事件，当系统发生 REBOOT 事件之后，BiscuitOS_reboot_notifier() 函数就会被执行。当模块卸载的时候，调用 unregister_reboot_notifier() 函数撤销监听事件. 其在 BiscuitOS 上执行情况如下:
+
+{% highlight bash %}
+cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+reboot-notifier-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod reboot-notifier-0.0.1.ko 
+reboot_notifier_0.0.1: loading out-of-tree module taints kernel.
+Hello modules on BiscuitOS
+
+~ # 
+~ # reboot
+~ # umount: devtmpfs busy - remounted read-only
+EXT4-fs (ram0): re-mounted. Opts: (null)
+The system is going down NOW!
+Sent SIGTERM totelnetd (1129) used greatest stack depth: 6172 bytes left
+ all processes
+Sent SIGKILL to all processes
+Requesting system reboot
+sh (1131) used greatest stack depth: 6144 bytes left
+Unregister pv shared memory for cpu 1
+Unregister pv shared memory for cpu 0
+Trigger reboot on BiscuitOS.
+reboot: Restarting system
+reboot: machine restart
+{% endhighlight %}
+
+在 BiscuitOS 上安装上模块之后，执行 reboot 命令，系统在准备 reboot 过程中调用了 BiscuitOS_reboot_notifier() 函数，并打印了字符串 "Trigger reboot on BiscuitOS.".
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000009"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Trigger suspend Demo
+
+内核 syscore 子系统提供了 register_syscore_ops() 函数，用于向系统的 suspend 注册监听事件，当系统进行 SUSPEND 状态，那么调用指定的函数处理 suspend 消息.
+
+###### BiscuitOS 配置
+
+本实例已经在 Linux 5.0 i386 架构上验证通过, 在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Power Manager  --->
+        [*] Trigger Suspend Demo  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/suspend-base-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Syscore suspend/resume
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+#include <linux/syscore_ops.h>
+
+static int BiscuitOS_suspend(void)
+{
+        printk("Trigger suspend on BiscuitOS\n");
+        return 0;
+}
+
+static void BiscuitOS_resume(void)
+{
+        printk("Trigger resume on BiscuitOS.\n");
+}
+
+static struct syscore_ops BiscuitOS_syscore = {
+        .suspend = BiscuitOS_suspend,
+        .resume  = BiscuitOS_resume,
+};
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+        printk("Hello modules on BiscuitOS\n");
+
+        register_syscore_ops(&BiscuitOS_syscore);    
+
+        return 0;
+}
+
+/* Module exit entry */ 
+static void __exit BiscuitOS_exit(void)
+{
+        unregister_syscore_ops(&BiscuitOS_syscore);
+}   
+
+module_init(BiscuitOS_init); 
+module_exit(BiscuitOS_exit);
+    
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Common Device driver on BiscuitOS");
+{% endhighlight %}
+
+在本例子中，驱动通过调用 register_syscore_ops() 注册了 SUSPEND/RESUME 的监听事件 BiscuitOS_syscore, 并提供两个接口，当系统进行 SUSPEND 状态，那么 BiscuitOS_suspend() 函数则会被调用，如果系统从 SUSPEND 状态恢复为 RESUME 状态，那么 BiscuitOS_resume() 函数则会别调用. 当驱动卸载的时候，会调用 unregister_syscore_ops() 函数撤销监听事件. 本例子在 BiscuitOS 上运行的情况如下:
+
+{% highlight bash %}
+~ # 
+~ # cd /lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+reboot-notifier-0.0.1.ko  suspend-base-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod suspend-base-0.0.1.ko
+suspend_base_0.0.1: loading out-of-tree module taints kernel.
+Hello modules on BiscuitOS
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # cd /sys/power/
+/sys/power # echo disk > state
+PM: hibernation entry
+PM: Syncing filesystems ... 
+PM: done.
+Freezing user space processes ... (elapsed 0.001 seconds) done.
+OOM killer disabled.
+PM: Marking nosave pages: [mem 0x00000000-0x00000fff]
+PM: Marking nosave pages: [mem 0x0009f000-0x000fffff]
+PM: Basic memory bitmaps created
+PM: Preallocating image memory... done (allocated 47593 pages)
+PM: Allocated 190372 kbytes in 0.01 seconds (19037.20 MB/s)
+Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+printk: Suspending console(s) (use no_console_suspend to debug)
+ACPI: Preparing to enter system sleep state S4
+PM: Saving platform NVS memory
+Disabling non-boot CPUs ...
+Unregister pv shared memory for cpu 1
+smpboot: CPU 1 is now offline
+Trigger suspend on BiscuitOS
+PM: Creating hibernation image:
+PM: Need to copy 47276 pages
+PM: Normal pages needed: 47276 + 1024, available pages: 83650
+PM: Hibernation image created (47276 pages copied)
+kvm-clock: cpu 0, msr 1ba6b001, primary cpu clock, resume
+PM: Restoring platform NVS memory
+Trigger resume on BiscuitOS.
+Enabling non-boot CPUs ...
+x86: Booting SMP configuration:
+smpboot: Booting Node 0 Processor 1 APIC 0x1
+Initializing CPU#1
+kvm-clock: cpu 1, msr 1ba6b041, secondary cpu clock
+KVM setup async PF for cpu 1
+kvm-stealtime: cpu 1, msr 1f78fa40
+ cache: parent cpu1 should not be sleeping
+CPU1 is up
+ACPI: Waking up from system sleep state S4
+PM: Cannot find swap device, try swapon -a
+PM: Cannot get swap writer
+PM: Basic memory bitmaps freed
+OOM killer enabled.
+Restarting tasks ... done.
+PM: hibernation exit
+sh: write error: No such device
+/sys/power # ata2.01: NODEV after polling detection
+e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+{% endhighlight %}
+
+当向系统安装完驱动之后，在 /sys/power/ 目录下执行如下命令:
+
+{% highlight bash %}
+echo disk > /sys/power/state
+{% endhighlight %}
+
+执行上面的操作之后，将运行状态数据存到硬盘, 然后关机, 唤醒最慢。以上动作便会触发系统进入 SUSPEND 状态，此时触发驱动的 BiscuitOS_suspend() 函数。当有数据写入磁盘时候，系统又由 SUSPEND 状态进入 RESUME 状态，此时触发驱动的 BiscuitOS_resume() 函数。系统支持的 4 中休眠设置，如下:
+
+{% highlight bash %}
+1. freeze  冻结 I/O 设备, 将它们置于低功耗状态,使处理器进入空闲状态, 唤醒最快, 耗电比其它 standby、mem、disk 方式高
+2. standby 除了冻结 I/O 设备外,还会暂停系统,唤醒较快,耗电比其它 mem、disk 方式高
+3. mem     将运行状态数据存到内存, 并关闭外设, 进入等待模式, 唤醒较慢, 耗电比 disk 方式高
+4. disk    将运行状态数据存到硬盘, 然后关机, 唤醒最慢
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000010"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Trigger resume Demo
+
+内核 syscore 子系统提供了 register_syscore_ops() 函数，用于向系统的 suspend 注册监听事件，当系统进行 SUSPEND 状态，然后从 SUSPEND 中唤醒为 RESUME 状态，那么调用指定的函数处理 resume 消息.
+
+###### BiscuitOS 配置
+
+本实例已经在 Linux 5.0 i386 架构上验证通过, 在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Power Manager  --->
+        [*] Trigger Resume Demo  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/resume-base-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Syscore suspend/resume
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+#include <linux/syscore_ops.h>
+
+static int BiscuitOS_suspend(void)
+{
+        printk("Trigger suspend on BiscuitOS\n");
+        return 0;
+}
+
+static void BiscuitOS_resume(void)
+{
+        printk("Trigger resume on BiscuitOS.\n");
+}
+
+static struct syscore_ops BiscuitOS_syscore = {
+        .suspend = BiscuitOS_suspend,
+        .resume  = BiscuitOS_resume,
+};
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+        printk("Hello modules on BiscuitOS\n");
+
+        register_syscore_ops(&BiscuitOS_syscore);    
+
+        return 0;
+}
+
+/* Module exit entry */ 
+static void __exit BiscuitOS_exit(void)
+{
+        unregister_syscore_ops(&BiscuitOS_syscore);
+}   
+
+module_init(BiscuitOS_init); 
+module_exit(BiscuitOS_exit);
+    
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Common Device driver on BiscuitOS");
+{% endhighlight %}
+
+在本例子中，驱动通过调用 register_syscore_ops() 注册了 SUSPEND/RESUME 的监听事件 BiscuitOS_syscore, 并提供两个接口，当系统进行 SUSPEND 状态，那么 BiscuitOS_suspend() 函数则会被调用，如果系统从 SUSPEND 状态恢复为 RESUME 状态，那么 BiscuitOS_resume() 函数则会别调用. 当驱动卸载的时候，会调用 unregister_syscore_ops() 函数撤销监听事件. 本例子在 BiscuitOS 上运行的情况如下:
+
+{% highlight bash %}
+~ # 
+~ # cd /lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+reboot-notifier-0.0.1.ko  suspend-base-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod suspend-base-0.0.1.ko
+suspend_base_0.0.1: loading out-of-tree module taints kernel.
+Hello modules on BiscuitOS
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # cd /sys/power/
+/sys/power # echo disk > state
+PM: hibernation entry
+PM: Syncing filesystems ... 
+PM: done.
+Freezing user space processes ... (elapsed 0.001 seconds) done.
+OOM killer disabled.
+PM: Marking nosave pages: [mem 0x00000000-0x00000fff]
+PM: Marking nosave pages: [mem 0x0009f000-0x000fffff]
+PM: Basic memory bitmaps created
+PM: Preallocating image memory... done (allocated 47593 pages)
+PM: Allocated 190372 kbytes in 0.01 seconds (19037.20 MB/s)
+Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+printk: Suspending console(s) (use no_console_suspend to debug)
+ACPI: Preparing to enter system sleep state S4
+PM: Saving platform NVS memory
+Disabling non-boot CPUs ...
+Unregister pv shared memory for cpu 1
+smpboot: CPU 1 is now offline
+Trigger suspend on BiscuitOS
+PM: Creating hibernation image:
+PM: Need to copy 47276 pages
+PM: Normal pages needed: 47276 + 1024, available pages: 83650
+PM: Hibernation image created (47276 pages copied)
+kvm-clock: cpu 0, msr 1ba6b001, primary cpu clock, resume
+PM: Restoring platform NVS memory
+Trigger resume on BiscuitOS.
+Enabling non-boot CPUs ...
+x86: Booting SMP configuration:
+smpboot: Booting Node 0 Processor 1 APIC 0x1
+Initializing CPU#1
+kvm-clock: cpu 1, msr 1ba6b041, secondary cpu clock
+KVM setup async PF for cpu 1
+kvm-stealtime: cpu 1, msr 1f78fa40
+ cache: parent cpu1 should not be sleeping
+CPU1 is up
+ACPI: Waking up from system sleep state S4
+PM: Cannot find swap device, try swapon -a
+PM: Cannot get swap writer
+PM: Basic memory bitmaps freed
+OOM killer enabled.
+Restarting tasks ... done.
+PM: hibernation exit
+sh: write error: No such device
+/sys/power # ata2.01: NODEV after polling detection
+e1000: eth0 NIC Link is Up 1000 Mbps Full Duplex, Flow Control: RX
+{% endhighlight %}
+
+当向系统安装完驱动之后，在 /sys/power/ 目录下执行如下命令:
+
+{% highlight bash %}
+echo disk > /sys/power/state
+{% endhighlight %}
+
+执行上面的操作之后，将运行状态数据存到硬盘, 然后关机, 唤醒最慢。以上动作便会触发系统进入 SUSPEND 状态，此时触发驱动的 BiscuitOS_suspend() 函数。当有数据写入磁盘时候，系统又由 SUSPEND 状态进入 RESUME 状态，此时触发驱动的 BiscuitOS_resume() 函数。系统支持的 4 中休眠设置，如下:
+
+{% highlight bash %}
+1. freeze  冻结 I/O 设备, 将它们置于低功耗状态,使处理器进入空闲状态, 唤醒最快, 耗电比其它 standby、mem、disk 方式高
+2. standby 除了冻结 I/O 设备外,还会暂停系统,唤醒较快,耗电比其它 mem、disk 方式高
+3. mem     将运行状态数据存到内存, 并关闭外设, 进入等待模式, 唤醒较慢, 耗电比 disk 方式高
+4. disk    将运行状态数据存到硬盘, 然后关机, 唤醒最慢
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
@@ -1214,6 +2011,9 @@ BiscuitOS notifier event A [Buddy]
 {% highlight bash %}
 [*] Package  --->
     [*] Assembly  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/
 {% endhighlight %}
 
 具体实践办法请参考:
@@ -1222,7 +2022,7 @@ BiscuitOS notifier event A [Buddy]
 
 ###### 通用例程
 
-{% highlight bash %}
+{% highlight c %}
 
 {% endhighlight %}
 
