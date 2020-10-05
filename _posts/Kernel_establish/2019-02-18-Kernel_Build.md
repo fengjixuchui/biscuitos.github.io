@@ -48,9 +48,13 @@ tags:
 > - [Build Linux 2.6.33 Running on ARM32](https://biscuitos.github.io/blog/Linux-2.6.33-arm32-Usermanual/)
 >
 > - [Build Linux 2.6.x Running on ARM32](https://biscuitos.github.io/blog/Linux-2.6.x-arm32-Usermanual/)
+>
+> - [Build Linux 2.x Running on i386](https://biscuitos.github.io/blog/Linux-2.x-i386-Usermanual/)
 
 ## <span id="Linux_3X">Linux 3.X</span>
 
+> - [Build Linux 3.x Running on i386](https://biscuitos.github.io/blog/Linux-3.x-i386-Usermanual/)
+>
 > - [Build Linux 3.4.29 Running on ARM32](https://biscuitos.github.io/blog/Linux-3.4.29-arm32-Usermanual/)
 >
 > - [Build Linux 3.16.63 Running on ARM32](https://biscuitos.github.io/blog/Linux-3.16.63-arm32-Usermanual/)
@@ -64,6 +68,8 @@ tags:
 
 ## <span id="Linux_4X">Linux 4.X</span>
 
+> - [Build Linux 4.x Running on i386](https://biscuitos.github.io/blog/Linux-4.x-i386-Usermanual/)
+>
 > - [Build Linux 4.0.1 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.0.1-arm32-Usermanual/)
 >
 > - [Build Linux 4.0.1 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.0.1-arm64-Usermanual/)
@@ -97,6 +103,18 @@ tags:
 > - [Build Linux 5.0 Running on RISCV32](https://biscuitos.github.io/blog/Linux-5.0-riscv32-Usermanual/)
 >
 > - [Build Linux 5.0 Running on RISCV64](https://biscuitos.github.io/blog/Linux-5.0-riscv64-Usermanual/)
+> <span id=Linux_5Y></span>
+> - [Build Linux 5.x Running on ARM32](https://biscuitos.github.io/blog/Linux-5.x-arm32-Usermanual/)
+>
+> - [Build Linux 5.x Running on ARM64](https://biscuitos.github.io/blog/Linux-5.x-arm64-Usermanual/)
+>
+> - [Build Linux 5.x Running on i386](https://biscuitos.github.io/blog/Linux-5.x-i386-Usermanual/)
+>
+> - [Build Linux 5.x Running on X86_64](https://biscuitos.github.io/blog/Linux-5.x-x86_64-Usermanual/)
+>
+> - [Build Linux 5.x Running on RISCV32](https://biscuitos.github.io/blog/Linux-5.x-riscv32-Usermanual/)
+>
+> - [Build Linux 5.x Running on RISCV64](https://biscuitos.github.io/blog/Linux-5.x-riscv64-Usermanual/)
 >
 > - [Build Linux 5.1 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.1-arm32-Usermanual/)
 >
