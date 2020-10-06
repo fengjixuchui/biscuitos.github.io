@@ -16,79 +16,54 @@ tags:
 
 ## <span id="Linux_0X">Linux 0.X</span>
 
-> - [Build Linux 0.11](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/)
+> - [Build BiscuitOS Linux 0.11](https://biscuitos.github.io/blog/Linux-0.11-Usermanual/)
 >
-> - [Build Linux 0.12](https://biscuitos.github.io/blog/Linux-0.12-Usermanual/)
+> - [Build BiscuitOS Linux 0.12](https://biscuitos.github.io/blog/Linux-0.12-Usermanual/)
 >
-> - [Build Linux 0.95.3](https://biscuitos.github.io/blog/Linux-0.95.3-Usermanual/)
+> - [Build BiscuitOS Linux 0.95.3](https://biscuitos.github.io/blog/Linux-0.95.3-Usermanual/)
 >
-> - [Build Linux 0.95a](https://biscuitos.github.io/blog/Linux-0.95a-Usermanual/)
+> - [Build BiscuitOS Linux 0.95a](https://biscuitos.github.io/blog/Linux-0.95a-Usermanual/)
 >
-> - [Build Linux 0.96](https://biscuitos.github.io/blog/Linux-0.96-Usermanual/)
+> - [Build BiscuitOS Linux 0.96](https://biscuitos.github.io/blog/Linux-0.96-Usermanual/)
 >
-> - [Build Linux 0.97](https://biscuitos.github.io/blog/Linux-0.97-Usermanual/)
+> - [Build BiscuitOS Linux 0.97](https://biscuitos.github.io/blog/Linux-0.97-Usermanual/)
 >
-> - [Build Linux 0.98](https://biscuitos.github.io/blog/Linux-0.98-Usermanual/)
+> - [Build BiscuitOS Linux 0.98](https://biscuitos.github.io/blog/Linux-0.98-Usermanual/)
 >
-> - [Build Linux 0.99](https://biscuitos.github.io/blog/Linux-0.99-Usermanual/)
+> - [Build BiscuitOS Linux 0.99](https://biscuitos.github.io/blog/Linux-0.99-Usermanual/)
 >
 
 ## <span id="Linux_1X">Linux 1.X</span>
 
-> - [Build Linux 1.0.1](https://biscuitos.github.io/blog/Linux-1.0.1-Usermanual/)
+> - [Build BiscuitOS Linux 1.0.1](https://biscuitos.github.io/blog/Linux-1.0.1-Usermanual/)
 >
-> - [Build Linux 1.0.1.1 minix-fs](https://biscuitos.github.io/blog/Linux-1.0.1.1-minix-Usermanual/)
+> - [Build BiscuitOS Linux 1.0.1.1 minix-fs](https://biscuitos.github.io/blog/Linux-1.0.1.1-minix-Usermanual/)
 >
-> - [Build Linux 1.0.1.1 ext2-fs](https://biscuitos.github.io/blog/Linux-1.0.1.1-ext2-Usermanual/)
+> - [Build BiscuitOS Linux 1.0.1.1 ext2-fs](https://biscuitos.github.io/blog/Linux-1.0.1.1-ext2-Usermanual/)
 >
-> - [Build Linux 1.0.1.2](https://biscuitos.github.io/blog/Linux-1.0.1.2-Usermanual/)
+> - [Build BiscuitOS Linux 1.0.1.2](https://biscuitos.github.io/blog/Linux-1.0.1.2-Usermanual/)
 
 ## <span id="Linux_2X">Linux 2.X</span>
 
-> - [Build Linux 2.6.33 Running on ARM32](https://biscuitos.github.io/blog/Linux-2.6.33-arm32-Usermanual/)
->
-> - [Build Linux 2.6.x Running on ARM32](https://biscuitos.github.io/blog/Linux-2.6.x-arm32-Usermanual/)
->
 > - [Build Linux 2.x Running on i386](https://biscuitos.github.io/blog/Linux-2.x-i386-Usermanual/)
+>
+> - [Build Linux 2.6.10 - 2.6.11 Running on ARM32](https://biscuitos.github.io/blog/Linux-2.6.10-arm32-Usermanual/)
+>
+> - [Build Linux 2.6.12 - 2.6.33 Running on ARM32](https://biscuitos.github.io/blog/Linux-2.6.12-arm32-Usermanual/)
+>
+> - [Build Linux 2.6.34 - 2.6.39 Running on ARM32](https://biscuitos.github.io/blog/Linux-2.6.34-arm32-Usermanual/)
 
 ## <span id="Linux_3X">Linux 3.X</span>
 
 > - [Build Linux 3.x Running on i386](https://biscuitos.github.io/blog/Linux-3.x-i386-Usermanual/)
 >
-> - [Build Linux 3.4.29 Running on ARM32](https://biscuitos.github.io/blog/Linux-3.4.29-arm32-Usermanual/)
->
-> - [Build Linux 3.16.63 Running on ARM32](https://biscuitos.github.io/blog/Linux-3.16.63-arm32-Usermanual/)
->
-> - [Build Linux 3.16.63 Running on ARM64](https://biscuitos.github.io/blog/Linux-3.16.63-arm64-Usermanual/)
->
-> - [Build Linux 3.18.134 Running on ARM32](https://biscuitos.github.io/blog/Linux-3.18.134-arm32-Usermanual/)
->
-> - [Build Linux 3.18.134 Running on ARM64](https://biscuitos.github.io/blog/Linux-3.18.134-arm64-Usermanual/)
-
+> - [Build Linux 3.x Running on ARM32](https://biscuitos.github.io/blog/Linux-3.x-arm32-Usermanual/)
 
 ## <span id="Linux_4X">Linux 4.X</span>
 
 > - [Build Linux 4.x Running on i386](https://biscuitos.github.io/blog/Linux-4.x-i386-Usermanual/)
 >
-> - [Build Linux 4.0.1 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.0.1-arm32-Usermanual/)
->
-> - [Build Linux 4.0.1 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.0.1-arm64-Usermanual/)
->
-> - [Build Linux 4.4.174 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.4.174-arm32-Usermanual/)
->
-> - [Build Linux 4.4.174 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.4.174-arm64-Usermanual/)
->
-> - [Build Linux 4.8.1 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.8.1-arm32-Usermanual/)
->
-> - [Build Linux 4.8.1 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.8.1-arm64-Usermanual/)
->
-> - [Build Linux 4.19.1 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.19.1-arm32-Usermanual/)
->
-> - [Build Linux 4.19.1 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.19.1-arm64-Usermanual/)
->
-> - [Build Linux 4.20.8 Running on ARM32](https://biscuitos.github.io/blog/Linux-4.20.8-arm32-Usermanual/)
->
-> - [Build Linux 4.20.8 Running on ARM64](https://biscuitos.github.io/blog/Linux-4.20.8-arm64-Usermanual/)
+> - [Build Linux 4.x Running on ARM32](https://biscuitos.github.io/blog/Linux-4.x-arm32-Usermanual/)
 
 ## <span id="Linux_5X">Linux 5.X</span>
 
@@ -123,17 +98,7 @@ tags:
 > - [Build Linux 5.2 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.2-arm32-Usermanual/)
 >
 > - [Build Linux 5.2 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.2-arm64-Usermanual/) 
-
-## <span id="Linux_5.3x">Linux 5.3</span>
-
-> - [Build Linux 5.x Running on ARM32](https://biscuitos.github.io/blog/Linux-5.x-arm32-Usermanual/)
 >
-> - [Build Linux 5.x Running on ARM64](https://biscuitos.github.io/blog/Linux-5.x-arm64-Usermanual/)
->
-> - [Build Linux 5.x Running on RISCV32/RISCV64](https://biscuitos.github.io/blog/Linux-5.x-riscv-Usermanual/)
-
-## <span id="Linux_5.4x">Linux 5.4</span>
-
 > - [Build Linux 5.4 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.4-arm32-Usermanual/)
 >
 > - [Build Linux 5.4 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.4-arm64-Usermanual/)
@@ -141,9 +106,7 @@ tags:
 > - [Build Linux 5.4 Running on RISCV32](https://biscuitos.github.io/blog/Linux-5.4-riscv32-Usermanual/)
 >
 > - [Build Linux 5.4 Running on RISCV64](https://biscuitos.github.io/blog/Linux-5.4-riscv64-Usermanual/)
-
-## <span id="Linux_5.6x">Linux 5.6</span>
-
+>
 > - [Build Linux 5.6 Running on ARM32](https://biscuitos.github.io/blog/Linux-5.6-arm32-Usermanual/)
 >
 > - [Build Linux 5.6 Running on ARM64](https://biscuitos.github.io/blog/Linux-5.6-arm64-Usermanual/)
