@@ -17,6 +17,8 @@ tags:
 >
 > - [New!! Build BiscuitOS-Desktop](https://biscuitos.github.io/blog/BiscuitOS-Desktop-arm32-Usermanual/)
 >
+> - [Build Upstream Linux from Linus Torvalds](https://biscuitos.github.io/blog/Kernel_Build/#Linux_newest)
+>
 > - [Build Linux 5.8 - RISCV32/RISCV64/ARM32/ARM64/I386/X86_64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5Y)
 >
 > - [Build Linux 0.X](https://biscuitos.github.io/blog/Kernel_Build/#Linux_0X)
@@ -33,9 +35,15 @@ tags:
 >
 > - [Networking on BiscuitOS](https://biscuitos.github.io/blog/Networking-Usermanual/)
 >
-> - [Other Operation System](https://biscuitos.github.io/blog/Kernel_Build/#OTHOS)
+> - Other Operation System
 >
-> - [Architecture Computer English](https://biscuitos.github.io/blog/Architecture_English_note/)
+>   - [Build Debian-0.91 on BiscuitOS](https://biscuitos.github.io/blog/Debian-0.91-Usermanual)
+>   
+>   - [Build Apollo-11 on BiscuitOS](https://biscuitos.github.io/blog/Apollo-11-Usermanual)
+>
+>   - [Build MIT XV6 on BiscuitOS](https://biscuitos.github.io/blog/XV6-REV11-Usermanual)
+>
+> - [BiscuitOS on RaspberryPi](#RaspberryPi)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 

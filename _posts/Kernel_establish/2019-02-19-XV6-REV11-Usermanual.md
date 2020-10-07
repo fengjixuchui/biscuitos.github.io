@@ -8,11 +8,11 @@ tags:
   - xv6
 ---
 
-> [GitHub: BiscuitOS](https://github.com/BiscuitOS/BiscuitOS)
->
-> Email: BuddyZhang1 <Buddy.zhang@aliyun.com>
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
 
-# 目录
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+
+#### 目录
 
 > - [开发环境搭建](#开发环境搭建)
 >

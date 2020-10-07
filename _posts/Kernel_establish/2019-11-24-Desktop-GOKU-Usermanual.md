@@ -8,11 +8,9 @@ tags:
   - Linux
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000303.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
 
-> [GitHub: BiscuitOS](https://github.com/BiscuitOS/BiscuitOS)
->
-> Email: BuddyZhang1 <Buddy.zhang@aliyun.com>
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
 
 ## 目录
 

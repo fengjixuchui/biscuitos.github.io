@@ -10,9 +10,17 @@ tags:
 
 ## <span id="Linux_newest">Linux Newest</span>
 
-> - [Build Newest Linux Running on ARM32](https://biscuitos.github.io/blog/Linux-newest-arm32-Usermanual/)
+> - [Build Upstream Linux Running on ARM32](https://biscuitos.github.io/blog/Linux-newest-arm32-Usermanual/)
 >
-> - [Build Newest Linux Running on ARM64](https://biscuitos.github.io/blog/Linux-newest-arm64-Usermanual/)
+> - [Build Upstream Linux Running on ARM64](https://biscuitos.github.io/blog/Linux-newest-arm64-Usermanual/)
+>
+> - [Build Upstream Linux Running on i386](https://biscuitos.github.io/blog/Linux-newest-i386-Usermanual/)
+>
+> - [Build Upstream Linux Running on X86_64](https://biscuitos.github.io/blog/Linux-newest-x86_64-Usermanual/)
+>
+> - [Build Upstream Linux Running on RISCV32](https://biscuitos.github.io/blog/Linux-newest-riscv32-Usermanual/)
+>
+> - [Build Upstream Linux Running on RISCV64](https://biscuitos.github.io/blog/Linux-newest-riscv64-Usermanual/)
 
 ## <span id="Linux_0X">Linux 0.X</span>
 

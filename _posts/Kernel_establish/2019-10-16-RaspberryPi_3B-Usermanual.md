@@ -8,11 +8,11 @@ tags:
   - Linux
 ---
 
-> [GitHub: BiscuitOS](https://github.com/BiscuitOS/BiscuitOS)
->
-> Email: BuddyZhang1 <Buddy.zhang@aliyun.com>
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
 
-# 目录
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+
+#### 目录
 
 > - [开发环境搭建](#A000)
 >
@@ -68,13 +68,15 @@ tags:
 >
 > - [附录/捐赠](#附录)
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 ------------------------------------------
 
 <span id="A000"></span>
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
 
-## 开发环境搭建
+#### 开发环境搭建
 
 > - [项目简介](#A003)
 >
@@ -125,19 +127,21 @@ RaspberryPi 3B 成为了 BiscuitOS 首推荐的开源实践平台。BiscuitOS
 RaspberryPi 3B 上的 Linux 发行版，将各种有趣的想法带到了这块开源
 硬件平台上。
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 -----------------------------------------------
 
 <span id="A001"></span>
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
 
-## 硬件准备
+#### 硬件准备
 
 BiscuitOS 目前支持一个运行运 RaspberryPi 3B 开源平台上的 BiscuitOS，
 为了让开发者可以动手制作一个可以在 RaspberryPi 3B 上运行的 BiscuitOS，
 开发者应该准备如下资源：
 
-##### 树莓派 3B
+###### 树莓派 3B
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000170.jpg)
 
@@ -146,18 +150,19 @@ BiscuitOS 目前支持一个运行运 RaspberryPi 3B 开源平台上的 BiscuitO
 一张、电源线一根、TTL 转 USB 串口一根、杜邦线若干、
 网线一根、SD 读卡器一个。
 
-##### 开发主机
+###### 开发主机
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000046.JPG)
 
 由于项目构建基于 Ubuntu，因此需要准备一台运行 
 Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
 
-##### 路由器
+###### 路由器
 
 由于后期需要构建基础的开发网络环境，所以开发者需要准备一台
 路由器，家用路由器符合要求。
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -165,7 +170,7 @@ Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
 
-## 软件准备
+#### 软件准备
 
 运行在 RaspberryPi 3B 上的 BiscuitOS 是通过源码编译而来，这
 也给内核开发和学习带来了更多的选择性与可玩性。为了让 BiscuitOS
@@ -177,42 +182,14 @@ Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
 
 ---------------------------------------------
 
-#### <span id="A0020">基础软件安装</span>
+###### <span id="A0020">基础软件安装</span>
 
 开发者首先准备一台 Linux 发行版电脑，推荐 Ubuntu 16.04/Ubuntu 18.04, 
 Ubuntu 电脑的安装可以上网查找相应的教程。准备好相应的开发主机之后，
 接下来是安装运行 BiscuitOS 项目所需的基础开发工具。以 Ubuntu 为例
-安装基础的开发工具。开发者可以按如下命令进行安装：
+安装基础的开发工具。请参考下面文档，其他 Linux 发行版与之类似:
 
-{% highlight bash %}
-sudo apt-get install -y qemu gcc make gdb git figlet
-sudo apt-get install -y libncurses5-dev iasl
-sudo apt-get install -y device-tree-compiler
-sudo apt-get install -y flex bison libssl-dev libglib2.0-dev
-sudo apt-get install -y libfdt-dev libpixman-1-dev
-sudo apt-get install -y python pkg-config u-boot-tools intltool xsltproc
-sudo apt-get install -y gperf libglib2.0-dev libgirepository1.0-dev
-sudo apt-get install -y gobject-introspection
-sudo apt-get install -y python2.7-dev python-dev bridge-utils
-sudo apt-get install -y uml-utilities net-tools
-sudo apt-get install -y libattr1-dev libcap-dev
-sudo apt-get install -y kpartx
-sudo apt-get install -y debootstrap bsdtar
-{% endhighlight %}
-
-如果开发主机是 64 位系统，请继续安装如下开发工具：
-
-{% highlight bash %}
-sudo apt-get install lib32z1 lib32z1-dev
-{% endhighlight %}
-
-第一次安装 git 工具需要对 git 进行配置，配置包括用户名和 Email，请参照如下命令
-进行配置
-
-{% highlight bash %}
-git config --global user.name "Your Name"
-git config --global user.email "Your Email"
-{% endhighlight %}
+> - [BiscuitOS 基础开发工具安装指南](https://biscuitos.github.io/blog/Develop_tools)
 
 ----------------------------------------
 
@@ -231,13 +208,15 @@ BiscuitOS 项目是一个用于制作精简 Linux 发行版，开发者可以使
 以获得最新的 Linux 4.20, Linux 5.0 等等。只需要执行简单的命令，就能构建一个可
 运行可调式的 Linux 开发环境。
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 ------------------------------------------
 
 <span id="A010"></span>
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
 
-## 开发部署
+#### 开发部署
 
 BiscuitOS 项目用于基于 linux、busybox 和 qemu 源码构建一个基础的
 Linux 可运行系统，开发者参照下面章节一起实践系统制作的完整过程。
