@@ -63,9 +63,11 @@ tags:
 >
 >   - [E820 内存管理器 \[X86\]](https://biscuitos.github.io/blog/MMU-E820/)
 >
-> - [Bootmem Allocator](https://biscuitos.github.io/blog/HISTORY-bootmem/)
+> - Boot Stage Allocator
 >
-> - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+>   - [Bootmem Allocator](https://biscuitos.github.io/blog/HISTORY-bootmem/)
+>
+>   - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
 >
 > - [PERCPU Memory Allocator](https://biscuitos.github.io/blog/HISTORY-PERCPU/)
 >
@@ -73,11 +75,13 @@ tags:
 >
 > - [PCP Memory Allocator](https://biscuitos.github.io/blog/HISTORY-PCP/)
 >
-> - [SLAB Memory Allocator](https://biscuitos.github.io/blog/HISTORY-SLAB/)
+> - SLAB/KMEM Allocator
 >
-> - [SLUB Memory Allocator]()
+>   - [SLAB Memory Allocator](https://biscuitos.github.io/blog/HISTORY-SLAB/)
 >
-> - [SLOB Memory Allocator]()
+>   - [SLUB Memory Allocator]()
+>
+>   - [SLOB Memory Allocator]()
 >
 > - [VMALLOC Memory Allocator](https://biscuitos.github.io/blog/HISTORY-VMALLOC/)
 >
@@ -115,7 +119,7 @@ tags:
 >
 >   - [Fixmap Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#P)
 >
-> - Memory Map
+> - Memory Maps
 >
 >   - [Real Mode Address Space (\< 1 MiB)](https://biscuitos.github.io/blog/MMU-seaBIOS_E820/#B0003)
 
