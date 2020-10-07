@@ -47,6 +47,8 @@ tags:
 
 > - [Build Linux 2.x Running on i386](https://biscuitos.github.io/blog/Linux-2.x-i386-Usermanual/)
 >
+> - [Build Linux 2.x Running on X86_64](https://biscuitos.github.io/blog/Linux-2.x-x86_64-Usermanual/)
+>
 > - [Build Linux 2.6.10 - 2.6.11 Running on ARM32](https://biscuitos.github.io/blog/Linux-2.6.10-arm32-Usermanual/)
 >
 > - [Build Linux 2.6.12 - 2.6.33 Running on ARM32](https://biscuitos.github.io/blog/Linux-2.6.12-arm32-Usermanual/)

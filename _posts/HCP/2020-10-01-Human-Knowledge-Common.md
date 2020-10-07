@@ -20,13 +20,15 @@ tags:
 >
 > - [HKC 计划实践](#C)
 >
-> - [HKC 生态共享](#H000011)
+> - [HKC 生态共享](#H000013)
 
 > - Assembly
 >
 >   - X86/X85_64 Assembly
 >
 >     - [RDMSR](#H000002)
+>
+>     - [RDTSC](#H000011)
 >
 >     - [WRMSR](#H000003)
 >
@@ -44,11 +46,13 @@ tags:
 >
 >   - [Reboot notifier](#H000008)
 >
+>   - [MMU notifier](#H000012)
+>
 > - Power manager
 >
->   - [Trigger resume Demo](#H000010)
+>   - [Trigger resume notifier](#H000010)
 >
->   - [Trigger suspend Demo](#H000009)
+>   - [Trigger suspend notifier](#H000009)
 >
 > - SMP
 >
@@ -1672,7 +1676,7 @@ reboot: machine restart
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
 
-#### Trigger suspend Demo
+#### Trigger suspend notifier
 
 内核 syscore 子系统提供了 register_syscore_ops() 函数，用于向系统的 suspend 注册监听事件，当系统进行 SUSPEND 状态，那么调用指定的函数处理 suspend 消息.
 
@@ -1835,7 +1839,7 @@ echo disk > /sys/power/state
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
 
-#### Trigger resume Demo
+#### Trigger resume notifier
 
 内核 syscore 子系统提供了 register_syscore_ops() 函数，用于向系统的 suspend 注册监听事件，当系统进行 SUSPEND 状态，然后从 SUSPEND 中唤醒为 RESUME 状态，那么调用指定的函数处理 resume 消息.
 
@@ -1989,6 +1993,539 @@ echo disk > /sys/power/state
 3. mem     将运行状态数据存到内存, 并关闭外设, 进入等待模式, 唤醒较慢, 耗电比 disk 方式高
 4. disk    将运行状态数据存到硬盘, 然后关机, 唤醒最慢
 {% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000011"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### RDTSC
+
+RDTSC 指令是 Intel X86 提供的一个用于从 "Time-Stamp Counter" MSR 寄存器中读取当前系统的时间戳. 从 Pentium 开始，很多 80x86 微处理器引入了 TSC 寄存器，它的每个时钟信息 (CLK, CLK 是微处理器中一条用于接收外部振荡器的时钟信号输入线) 到来时加一. 操作系统可以使用 TSC 寄存器来计算 CPU 主频，比如微处理器的主频是 1MHz，那么 TSC 就会在 1s 内增加 1000000。除了计算 CPU 的主频外，还可以通过 TSC 来测试微处理器其他处理单元的运算能力，具体请参考:
+
+> - [Using the RDTSC Instruction for Performance Monitoring](https://www.ccsl.carleton.ca/~jamuir/rdtscpm1.pdf)
+
+RDTSC 指令执行读取寄存器时，处理器将 "Time-Stamp Counter" MSR 寄存器的高 32bit 的值存储在 EDX 寄存器，而低 32bit 值存储在 EAX 寄存器中。
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Assembly  --->
+        [*] X86/i386/X64 Assembly  --->
+            [*] RDTSC  --->
+            [*] RDTSC on Userspace  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/rdtsc-x86-0.0.1
+BiscuitOS/output/linux-XXX-YYY/package/rdtsc-app-x86-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [HKC 计划 BiscuitOS 实践框架介绍 (rdtsc-x86-0.0.1)](#C0)
+>
+> [HKC 计划 BiscuitOS 实践框架介绍 (rdtsc-app-x86-0.0.1)](#C2)
+
+###### 通用例程(内核篇)
+
+{% highlight c %}
+/*
+ * RDTSC - Read Time-Stamp Counter [x86]
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+/* mdelay */
+#include <linux/delay.h>
+
+/*
+ * both i386 and x86_64 returns 64-bit value in edx:eax, but gcc's "A"
+ * constraint has different meanings. For i386, "A" means exactly
+ * edx:eax, while for x86_64 it doesn't mean rdx:rax or edx:eax. Instead,
+ * it means rax *or* rdx.
+ */
+#ifdef CONFIG_X86_64
+#define DECLARE_ARGS(val, low, high)    unsigned low, high
+#define EAX_EDX_VAL(val, low, high)     ((low) | ((u64)(high) << 32))
+#define EAX_EDX_ARGS(val, low, high)    "a" (low), "d" (high)
+#define EAX_EDX_RET(val, low, high)     "=a" (low), "=d" (high)
+#else
+#define DECLARE_ARGS(val, low, high)    unsigned long long val
+#define EAX_EDX_VAL(val, low, high)     (val)
+#define EAX_EDX_ARGS(val, low, high)    "A" (val)
+#define EAX_EDX_RET(val, low, high)     "=A" (val)
+#endif
+
+static __always_inline unsigned long long __native_read_tsc(void)
+{
+        DECLARE_ARGS(val, low, high);
+
+        asm volatile("rdtsc" : EAX_EDX_RET(val, low, high));
+
+        return EAX_EDX_VAL(val, low, high);
+}
+
+#define rdtscl(low)     ((low) = (u32)__native_read_tsc())
+#define rdtscll(val)    ((val) = __native_read_tsc())
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+        u64 tsc_u64;
+        u32 tsc_low;
+        u64 tsc_a, tsc_b, result, mod;
+
+        /* Read TSC 64bit contents */
+        rdtscll(tsc_u64);
+        printk("TSC 64bit: %#llx\n", tsc_u64);
+        /* Read TSC low-order 32bit contents */
+        rdtscl(tsc_low);
+        printk("TSC low-order 32bit: %#x\n", tsc_low);
+
+        /* CPU frequency */
+        rdtscll(tsc_a);
+        mdelay(1000);
+        rdtscll(tsc_b);
+        result = tsc_b - tsc_a;
+        /* 64bit div */
+        mod = do_div(result, 1 * 1024 * 1024);
+
+        printk("CPU %d.%d MHz\n", result, mod);
+        printk("Hello modules on BiscuitOS\n");
+
+        return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Common Device driver on BiscuitOS");
+{% endhighlight %}
+
+在本例子中，使用内嵌汇编定义了 RDTSC 指令的两个接口函数 "rdtscll()" 和 "rdtscl()". "rdtscl()" 函数只读取 "Time-stamp Counter" 寄存器的低 32bit 值，而 "rdtscll()" 可以读取 64bit 的值。例子中还通过计算 1s 内 "Time-stamp Counter" 的变化，以此计算 CPU 的频率，但这里使用 do_div() 函数用于处理 64bit 的除法。本例子在 BiscuitOS 中运行的结果如下:
+
+{% highlight bash %}
+cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+rdtsc-x86-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod rdtsc-x86-0.0.1.ko 
+rdtsc_x86_0.0.1: loading out-of-tree module taints kernel.
+TSC 64bit: 0xbe7b729e4
+TSC low-order 32bit: 0xe7cb5b2d
+CPU 3141.0 MHz
+Hello modules on BiscuitOS
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # cat /proc/cpuinfo | grep model
+model		: 60
+model name	: Intel(R) Core(TM) i5-4590 CPU @ 3.30GHz
+model		: 60
+model name	: Intel(R) Core(TM) i5-4590 CPU @ 3.30GHz
+/lib/modules/5.0.0/extra #
+{% endhighlight %}
+
+加载模块之后，计算出 CPU 的频率是 3141 MHz, 与系统提供的 3.30GHz 有一点相差，但属于正常情况, 因此计算的数值有效.
+
+###### 通用例程(应用程序)
+
+{% highlight c %}
+/*
+ * RDTSC -- Read Time-Stamp Counter on userspace [x86]
+ *
+ * (C) 2020.02.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+/*
+ * both i386 and x86_64 returns 64-bit value in edx:eax, but gcc's "A"
+ * constraint has different meanings. For i386, "A" means exactly
+ * edx:eax, while for x86_64 it doesn't mean rdx:rax or edx:eax. Instead,
+ * it means rax *or* rdx.
+ */
+#ifdef CONFIG_X86_64
+#define DECLARE_ARGS(val, low, high)    unsigned low, high
+#define EAX_EDX_VAL(val, low, high)     ((low) | ((u64)(high) << 32))
+#define EAX_EDX_ARGS(val, low, high)    "a" (low), "d" (high)
+#define EAX_EDX_RET(val, low, high)     "=a" (low), "=d" (high)
+#else
+#define DECLARE_ARGS(val, low, high)    unsigned long long val
+#define EAX_EDX_VAL(val, low, high)     (val)
+#define EAX_EDX_ARGS(val, low, high)    "A" (val)
+#define EAX_EDX_RET(val, low, high)     "=A" (val)
+#endif
+
+static __always_inline unsigned long long __native_read_tsc(void)
+{
+        DECLARE_ARGS(val, low, high);
+
+        asm volatile("rdtsc" : EAX_EDX_RET(val, low, high));
+
+        return EAX_EDX_VAL(val, low, high);
+}
+
+#define rdtscl(low)     ((low) = (u32)__native_read_tsc())
+#define rdtscll(val)    ((val) = __native_read_tsc())
+
+typedef unsigned long long u64;
+typedef unsigned int u32;
+
+int main()
+{
+        u64 tsc_u64;
+        u32 tsc_low;
+        u64 tsc_a, tsc_b;
+
+        /* Read TSC 64bit contents */
+        rdtscll(tsc_u64);
+        printf("TSC 64bit: %#llx\n", tsc_u64);
+        /* Read TSC low-order 32bit contents */
+        rdtscl(tsc_low);
+        printf("TSC low-order 32bit: %#x\n", tsc_low);
+
+        /* CPU frequency */
+        rdtscll(tsc_a);
+        sleep(1);
+        rdtscll(tsc_b);
+
+        printf("CPU %lld MHz\n", (tsc_b - tsc_a) / 1000000);
+        printf("Hello Application Demo on BiscuitOS.\n");
+        return 0;
+}
+{% endhighlight %}
+
+在本例子中，在用户空间定义两个接口用于从 "Time-Stamp Counter" 寄存器中读取当前的时间戳，rdtscl() 函数用于读取 "Time-Stamp Counter" 寄存器的低 32bit 的值，而 rdtscll() 函数则可以读取 "Time-Stamp Counter" 寄存器的 64bit 值。在程序中还通过延时 1s 来计算 CPU 的频率。本例子在 BiscuitOS 的运行情况如下:
+
+{% highlight bash %}
+~ # 
+~ # rdtsc-app-x86-0.0.1 
+TSC 64bit: 0x670b3d3e8
+TSC low-order 32bit: 0x70c2ce2d
+CPU 3293 MHz
+Hello Application Demo on BiscuitOS.
+~ # cat /proc/cpuinfo | grep model
+model		: 60
+model name	: Intel(R) Core(TM) i5-4590 CPU @ 3.30GHz
+model		: 60
+model name	: Intel(R) Core(TM) i5-4590 CPU @ 3.30GHz
+~ # 
+{% endhighlight %}
+
+从计算的结果来看非常接近 CPUINFO 提供的主频，因此计算有效.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000012"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### MMU notifier
+
+MMU notifier 机制用于当进程修改页表、或者让页表无效时，用于通知进程的内部这些消息。该机制通过提供很多接口: 
+
+* mmu_notifier_register()/mmu_notifier_unregister() 函数注册事件。
+* mmu_notifier_invalidate_range_start()/mmu_notifier_invalidate_range_end() 当进程内某段虚拟地址的页表无效时候，可以调用这些函数进行通知
+* mmu_notifier_clear_flush_young()/mmu_notifier_clear_young()/mmu_notifier_test_young() 当某些页被修改，可以调用这些函数进行通知
+* mmu_notifier_change_pte()  当进程的 PTE 页表改变时，可以调用该函数进行通知。
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Notifier mechanism on Kernel  --->
+        -*-   MMU notifier (Kernel Portion)  --->
+        [*]   MMU notifier (Userspace Portion)  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/MMU-notifier-0.0.1
+BiscuitOS/output/linux-XXX-YYY/package/MMU-userspace-notifier-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [HKC 计划 BiscuitOS 实践框架介绍 (MMU-notifier-0.0.1)](#C0)
+>
+> [HKC 计划 BiscuitOS 实践框架介绍 (MMU-userspace-notifier-0.0.1)](#C2)
+
+###### 通用例程 (内核部分)
+
+{% highlight c %}
+/*
+ * MMU notifier on BiscuitOS
+ *
+ * (C) 2020.10.06 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/miscdevice.h>
+#include <linux/fs.h>
+#include <linux/sched/mm.h>
+#include <linux/slab.h>
+#include <linux/uaccess.h>
+
+/* MMU notifier */
+#include <linux/mmu_notifier.h>
+/* Current */
+#include <linux/sched.h>
+
+/* DD Platform Name */
+#define DEV_NAME                "BiscuitOS"
+
+static struct mmu_notifier BiscuitOS_notifier;
+static struct mmu_notifier_range BiscuitOS_range;
+
+static void BiscuitOS_mmu_release(struct mmu_notifier *mn,
+                                                struct mm_struct *mm)
+{
+        printk("BiscuitOS notifier: release\n");
+}
+
+static int BiscuitOS_mmu_clear_flush_young(struct mmu_notifier *mn,
+                struct mm_struct *mm, unsigned long start, unsigned long end)
+{
+        printk("BiscuitOS notifier: clear_flush_young\n");
+        return 0;
+}
+
+static int BiscuitOS_mmu_clear_young(struct mmu_notifier *mn,
+                struct mm_struct *mm, unsigned long start, unsigned long end)
+{
+        printk("BiscuitOS notifier: clear_young\n");
+        return 0;
+}
+
+static int BiscuitOS_mmu_test_young(struct mmu_notifier *mn,
+                        struct mm_struct *mm, unsigned long address)
+{   
+        printk("BiscuitOS notifier: test_young\n");
+        return 0;
+}
+
+static void BiscuitOS_mmu_change_pte(struct mmu_notifier *mn,
+                struct mm_struct *mm, unsigned long address, pte_t pte)
+{
+        printk("BiscuitOS notifier: change_pte\n");
+}
+
+static int BiscuitOS_mmu_invalidate_range_start(struct mmu_notifier *mn,
+                                const struct mmu_notifier_range *range)
+{
+        printk("BiscuitOS notifier: invalidate_range_start.\n");
+        return 0;
+}
+
+static void BiscuitOS_mmu_invalidate_range_end(struct mmu_notifier *mn,
+                                const struct mmu_notifier_range *range)
+{
+        printk("BiscuitOS notifier: invalidate_range_end.\n");
+}
+
+static void BiscuitOS_mmu_invalidate_range(struct mmu_notifier *mn,
+                struct mm_struct *mm, unsigned long start, unsigned long end)
+{
+        printk("BiscuitOS notifier: invalidate_range.\n");
+}
+
+static const struct mmu_notifier_ops BiscuitOS_mmu_notifer_ops = {
+        .release     = BiscuitOS_mmu_release,
+        .clear_young = BiscuitOS_mmu_clear_young,
+        .test_young  = BiscuitOS_mmu_test_young,
+        .change_pte  = BiscuitOS_mmu_change_pte,
+        .clear_flush_young = BiscuitOS_mmu_clear_flush_young,
+        .invalidate_range  = BiscuitOS_mmu_invalidate_range,
+        .invalidate_range_start = BiscuitOS_mmu_invalidate_range_start,
+        .invalidate_range_end   = BiscuitOS_mmu_invalidate_range_end,
+};
+
+static int BiscuitOS_mmap(struct file *filp, struct vm_area_struct *vma)
+{
+        struct mm_struct *mm = filp->private_data;
+        pte_t pte;
+
+        /* Trigger invalidate range [range, start, end] */
+        mmu_notifier_range_init(&BiscuitOS_range, mm,
+                vma->vm_start & PAGE_MASK, vma->vm_end & PAGE_MASK);
+        mmu_notifier_invalidate_range_start(&BiscuitOS_range);
+        mmu_notifier_invalidate_range_end(&BiscuitOS_range);
+
+        /* Trigger clear_flush_young */
+        mmu_notifier_clear_flush_young(mm, vma->vm_start, vma->vm_end);
+
+        /* Trigger clear_young */
+        mmu_notifier_clear_young(mm, vma->vm_start, vma->vm_end);
+
+        /* Trigger test_young */
+        mmu_notifier_test_young(mm, vma->vm_start);
+
+        /* Trigger change pte */
+        mmu_notifier_change_pte(mm, vma->vm_start, pte);
+
+        /* Trigger realease */
+        mmu_notifier_release(mm);
+
+        return 0;
+}
+
+static int BiscuitOS_open(struct inode *inode, struct file *file)
+{
+        struct mm_struct *mm = get_task_mm(current);
+
+        file->private_data = mm;
+        /* mmu notifier initialize */
+        BiscuitOS_notifier.ops = &BiscuitOS_mmu_notifer_ops;
+        /* mmu notifier register */
+        mmu_notifier_register(&BiscuitOS_notifier, mm);
+
+        return 0;
+}
+
+static int BiscuitOS_release(struct inode *inode, struct file *file)
+{
+        mmu_notifier_unregister(&BiscuitOS_notifier, current->mm);
+        return 0;
+}
+
+/* file operations */
+static struct file_operations BiscuitOS_fops = {
+        .owner          = THIS_MODULE,
+        .open           = BiscuitOS_open,
+        .mmap           = BiscuitOS_mmap,
+        .release        = BiscuitOS_release,
+};
+
+/* Misc device driver */
+static struct miscdevice BiscuitOS_drv = {
+        .minor  = MISC_DYNAMIC_MINOR,
+        .name   = DEV_NAME,
+        .fops   = &BiscuitOS_fops,
+};
+
+/* Module initialize entry */
+static void __init BiscuitOS_init(void)
+{
+        /* Register Misc device */
+        misc_register(&BiscuitOS_drv);
+
+        printk("Hello modules on BiscuitOS\n");
+}
+
+device_initcall(BiscuitOS_init);
+{% endhighlight %}
+
+在本例子中，例子通过 MISC 机制在用于空间创建了 "/dev/BiscuitOS" 节点供用户空间部分的程序使用。用户空间在调用 open() 函数时，例子就会调用 mmu_notifier_register() 注册通知事件，当用户空间调用 close() 函数时，例子就会调用 mmu_notifier_unregister() 释放事件。当用户空间调用 mmap() 的时候，传递了一段虚拟内存地址到该例子的 BiscuitOS_mmap() 函数，此时在该函数中主动触发了以下几个通知:
+
+* mmu_notifier_invalidate_range_start/mmu_notifier_invalidate_range_end 用于触发 BiscuitOS_mmu_invalidate_range_start/BiscuitOS_mmu_invalidate_range_end/BiscuitOS_mmu_invalidate_range 三个函数。
+* mmu_notifier_clear_flush_young 触发 BiscuitOS_mmu_clear_flush_young 函数.
+* mmu_notifier_clear_young 触发 BiscuitOS_mmu_clear_young 函数.
+* mmu_notifier_test_young 触发 BiscuitOS_mmu_test_young 函数.
+* mmu_notifier_change_pte 触发 BiscuitOS_mmu_change_pte 函数.
+* mmu_notifier_release 触发 BiscuitOS_mmu_release 函数.
+
+###### 通用例程 (用户空间部分)
+
+{% highlight c %}
+/*
+ * BiscuitOS MMU notifier on Userspace
+ *
+ * (C) 2020.10.06 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+
+/* PATH for device */
+#define DEV_PATH                "/dev/BiscuitOS"
+
+int main()
+{
+        char *memory;
+        int fd;
+
+        /* open device */
+        fd = open(DEV_PATH, O_RDWR);
+        if (fd < 0) {
+                printf("ERROR: Can't open %s\n", DEV_PATH);
+                return -1;
+        }
+
+        /* mmap */
+        memory = mmap(NULL, 0x100000, PROT_READ | PROT_WRITE,
+                                                MAP_SHARED, fd, 0);
+        if (!memory) {
+                printf("ERROR: mmap faied.\n");
+                goto out;
+        }
+
+        /* un-mmap */
+        munmap(memory, 0x100000);
+
+        /* Normal ending */
+        close(fd);
+        return 0;
+out:
+        close(fd);
+        return -1;
+}
+{% endhighlight %}
+
+在本例子用户空间部分的程序，首先通过 open() 函数打开了 "/dev/BiscuitOS" 节点，然后调用调用 mmap() 函数进行映射操作，映射完毕之后再通过 munmap() 函数接触映射。函数最后调用 close() 关闭节点。本例子纯粹是为内核部分的代码创造独立进程的条件. 两个部分在 BiscuitOS 中运行的情况如下:
+
+{% highlight bash %}
+~ # MMU-userspace-notifier-0.0.1 
+BiscuitOS notifier: invalidate_range_start.
+BiscuitOS notifier: invalidate_range.
+BiscuitOS notifier: invalidate_range_end.
+BiscuitOS notifier: clear_flush_young
+BiscuitOS notifier: clear_young
+BiscuitOS notifier: test_young
+BiscuitOS notifier: change_pte
+BiscuitOS notifier: release
+~ #
+{% endhighlight %}
+
+从运行的结果可以看出，指定的消息已经传递成功. 开发者可以利用该机制进行页表操作时候通知进程内的其他功能模块.
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
