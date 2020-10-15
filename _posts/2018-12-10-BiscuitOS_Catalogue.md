@@ -69,11 +69,27 @@ tags:
 >
 >   - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
 >
+>   - [NO-BOOT Memory Allocator]()
+>
+> - Physical Memory Manager
+>
+>   - [NUMA]()
+>
+>   - [UMA]()
+>
+>   - [ZONE]()
+>
+>   - [SPARSE Memory Model]()
+>
+>   - [FLAT Memory Model]()
+>
+>   - [Physical Page/Frame]()
+>
+>   - [Buddy Memory Allocator](https://biscuitos.github.io/blog/HISTORY-buddy/)
+>
+>   - [PCP Memory Allocator](https://biscuitos.github.io/blog/HISTORY-PCP/)
+>
 > - [PERCPU Memory Allocator](https://biscuitos.github.io/blog/HISTORY-PERCPU/)
->
-> - [Buddy Memory Allocator](https://biscuitos.github.io/blog/HISTORY-buddy/)
->
-> - [PCP Memory Allocator](https://biscuitos.github.io/blog/HISTORY-PCP/)
 >
 > - SLAB/KMEM Allocator
 >
