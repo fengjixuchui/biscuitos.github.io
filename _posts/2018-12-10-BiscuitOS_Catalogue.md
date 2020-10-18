@@ -359,6 +359,10 @@ tags:
 > - [Open VnetCard](https://biscuitos.github.io/blog/VnetCard/)
 >
 > - [BiscuitOS 社区互助计划](https://biscuitos.github.io/blog/BiscuitOS_JD/)
+>
+> - [BiscuitOS 社区 "一带一路" 计划](https://biscuitos.github.io/blog/Common2Feature/)
+>
+> - [BiscuitOS 社区 "人类知识共同体" 计划](https://biscuitos.github.io/blog/Human-Knowledge-Common/)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
