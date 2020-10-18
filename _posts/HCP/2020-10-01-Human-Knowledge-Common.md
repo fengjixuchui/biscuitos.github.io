@@ -20,7 +20,7 @@ tags:
 >
 > - [HKC 计划实践](#C)
 >
-> - [HKC 生态共享](#H000013)
+> - [HKC 生态共享](#H000014)
 
 > - Assembly
 >
@@ -47,6 +47,10 @@ tags:
 >   - [Reboot notifier](#H000008)
 >
 >   - [MMU notifier](#H000012)
+>
+> - Platform Device Driver
+>
+>   - [Platform Simple Device Driver](#H000013)
 >
 > - Power manager
 >
@@ -2526,6 +2530,140 @@ BiscuitOS notifier: release
 {% endhighlight %}
 
 从运行的结果可以看出，指定的消息已经传递成功. 开发者可以利用该机制进行页表操作时候通知进程内的其他功能模块.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000013"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Platform Simple Device Driver
+
+这是一个最简单的 Platform 驱动，驱动实现向系统注册一个 Platform 驱动.
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Platofrm: Device Driver and Application  --->
+        [*] Platform Simple Module  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/platform_simple_module-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Simple Platform Device Driver
+ *
+ * (C) 2019.10.01 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/platform_device.h>
+
+/* LDD Platform Name */
+#define DEV_NAME        "BiscuitOS"
+
+static struct platform_device *pdev;
+
+/* Probe: (LDD) Initialize Device */
+static int BiscuitOS_probe(struct platform_device *pdev)
+{
+        /* Device Probe Procedure */
+        printk("BiscuitOS Porbeing...\n");
+
+        return 0;
+}
+
+/* Remove: (LDD) Remove Device (Module) */
+static int BiscuitOS_remove(struct platform_device *pdev)
+{
+        /* Device Remove Procedure */
+        printk("BiscuitOS Removing...\n");
+
+        return 0;
+}
+
+/* Platform Driver Information */
+static struct platform_driver BiscuitOS_driver = {
+        .probe    = BiscuitOS_probe,
+        .remove   = BiscuitOS_remove,
+        .driver = {
+                .owner  = THIS_MODULE,
+                .name   = DEV_NAME,
+        },
+};
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+        int ret;
+
+        ret = platform_driver_register(&BiscuitOS_driver);
+        if (ret) {
+                printk("Error: Platform driver register.\n");
+                return -EBUSY;
+        }
+
+        pdev = platform_device_register_simple(DEV_NAME, 1, NULL, 0);
+        if (IS_ERR(pdev)) {
+                printk("Error: Platform device register\n");
+                return PTR_ERR(pdev);
+        }
+        return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+        platform_device_unregister(pdev);
+        platform_driver_unregister(&BiscuitOS_driver);
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Simple Platform Device Driver");
+{% endhighlight %}
+
+在本例子中，通过调用 platform_driver_register/platform_device_register_simple 注册了一个 platform 的设备和驱动，其中驱动通过 BiscuitOS_driver 数据进行描述，在驱动描述中提供了驱动的 probe 和 remove 两个方法。当驱动 KO 被加载的时候，系统 Platform 总线就会在查找并调用该驱动的 probe 函数，当驱动卸载的时候，Platform 总线就会调用该驱动的 remove 函数。本实例在 BiscuitOS 的运行情况如下:
+
+{% highlight bash %}
+cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+platform_simple_module-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod platform_simple_module-0.0.1.ko 
+platform_simple_module_0.0.1: loading out-of-tree module taints kernel.
+BiscuitOS Porbeing...
+/lib/modules/5.0.0/extra # 
+/sys/bus/platform # cd /sys/bus/platform/devices/BiscuitOS.1/
+/sys/devices/platform/BiscuitOS.1 # 
+/sys/devices/platform/BiscuitOS.1 # ls
+driver           modalias         subsystem
+driver_override  power            uevent
+/sys/devices/platform/BiscuitOS.1 #
+{% endhighlight %}
+
+当驱动加载的时候，驱动的 probe 函数就会被调用，并且在 /sys/bus/platform/devices 目录下创建了 BiscuitOS.1 的节点，该节点下还包含了与 BiscuitOS.1 设备相关的信息.
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
