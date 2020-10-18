@@ -14,14 +14,15 @@ tags:
 
 #### 目录
 
-> - [HKC 计划原理](#A)
+> - [HKC 计划介绍](#A)
 >
 > - [HKC 计划使用](#B)
 >
 > - [HKC 计划实践](#C)
 >
-> - [HKC 生态共享](#H000014)
+> - [HKC 贡献者名单](#D)
 
+<span id="H000016"></span>
 > - Assembly
 >
 >   - X86/X85_64 Assembly
@@ -31,6 +32,12 @@ tags:
 >     - [RDTSC](#H000011)
 >
 >     - [WRMSR](#H000003)
+>
+> - Bitmap
+>
+>   - [Emulate PID Allocating and Releasing](#H000014)
+>
+>   - [LC-trie Protocol](#H000015)
 >
 > - CPUMASK
 >
@@ -74,7 +81,7 @@ tags:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000V.jpg)
 
-#### HKC 计划使用
+#### HKC 计划介绍
 
 使用过 BiscuitOS 的开发者应该使用过 BiscuitOS 快速开发框架，开发者只需通过图形化的界面勾选所需的项目，那么 BiscuitOS 可以自动部署对应的项目，并可以在 BiscuitOS 上快速执行项目。设想一下，如果提供一个足够充足的 BiscuitOS 项目库，开发者在开发过程中需要进行某些功能模块的验证或使用，只需简单的配置一下 BiscuitOS，那么 BiscuitOS 就会快速搭建所需项目的开发环境，并支持快速跨平台验证，这样将大大提高一线工程师、学生研究学者、极客爱好者开发进度，因此这里提出了面向程序员的 "人类知识共同体" 计划。
 
@@ -86,7 +93,7 @@ tags:
 
 > - [HKC 计划使用](#B)
 
-项目捐赠，捐赠资金将用于维护 BiscuitOS 社区的发展 :)
+项目捐赠，捐赠资金将捐赠给我的一位患白血病的小学同学. (下图是微信支付和支付宝支付)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
 
@@ -2669,6 +2676,386 @@ driver_override  power            uevent
 
 ----------------------------------
 
+<span id="H000014"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Emulate PID Allocating and Releasing
+
+用 4096 位模拟进程的 pid (0~4095), 创建两个线程，一个线程用随机数，选择 0~4095 中的一位进行清零操作，以此模拟进程的退出; 另外一个线程查找 0~4094 位，发现 0 位置位 1，模拟 pid 的申请。
+
+> 代码共享者: Meijusan <20741602@qq.com>
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Bitmap  --->
+        [*] Emulate PID Allocating and Releasing  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/emulate-pid-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Bitmap: Emulate PID allocating and Releasing on BiscuitOS
+ *
+ * (C) 2020.10.11  Meijusan <20741602@qq.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/platform_device.h>
+#include<linux/slab.h>
+#include <linux/err.h>
+#include <linux/file.h>
+#include <linux/init.h>
+#include <linux/types.h>
+#include <linux/atomic.h>
+#include <linux/mm.h>
+#include <linux/export.h>
+#include <linux/slab.h>
+#include <linux/err.h>
+#include <linux/kthread.h>
+#include <linux/kernel.h>
+#include <linux/syscalls.h>
+#include <linux/spinlock.h>
+#include <linux/rcupdate.h>
+#include <linux/mutex.h>
+#include <linux/gfp.h>
+#include <linux/pid.h>
+#include <linux/delay.h>
+#include <linux/random.h>
+
+#define PID_BITMAP_MAX 4096
+
+/*
+ * pid range 0~4096,this is a example
+ */
+
+static DECLARE_BITMAP( pid_bitmap_mask, PID_BITMAP_MAX);
+static DEFINE_MUTEX(pid_bitmap_lock);
+
+int pid_produce_thread(void *arg)
+{
+        while (!kthread_should_stop())  {
+                int pid;
+
+                mutex_lock(&pid_bitmap_lock);
+                if( bitmap_full(pid_bitmap_mask, PID_BITMAP_MAX) ) {
+                        mutex_unlock(&pid_bitmap_lock);
+                        msleep(1000);
+                        continue;
+                }
+
+                pid = find_first_zero_bit(pid_bitmap_mask, PID_BITMAP_MAX);
+                if ( pid >= PID_BITMAP_MAX) {
+                        printk("bitmap is full\n");
+                        mutex_unlock(&pid_bitmap_lock);
+                        msleep(1000);
+                        continue;
+                }
+                printk("threadid %d create  pid: %d \n",current->pid,  pid);
+                set_bit(pid, pid_bitmap_mask);
+                mutex_unlock(&pid_bitmap_lock);
+        }
+        return 0;
+}
+
+static int pid_consume_thread(void *dummy)
+{
+        while (!kthread_should_stop()) {
+
+                /*range 0 ~PID_BITMAP_MAX*/
+                int pid = prandom_u32()%(PID_BITMAP_MAX + 1) ;
+
+                mutex_lock(&pid_bitmap_lock);
+                clear_bit(pid, pid_bitmap_mask);
+                mutex_unlock(&pid_bitmap_lock);
+                printk("threadid %d remove  pid: %d \n",current->pid,  pid);
+                msleep(1000);
+        }
+        return 0;
+}
+
+static struct task_struct *pid_produce_task = NULL;
+static struct task_struct *pid_consume_task = NULL;
+
+
+/* Module initialize entry */
+static int __init pid_bitmap_demo_init(void)
+{
+        /* default all pid already exist */
+        bitmap_fill(pid_bitmap_mask, PID_BITMAP_MAX);
+
+        pid_produce_task = kthread_run(pid_produce_thread, NULL, "pidconsujme");
+        if (IS_ERR(pid_produce_task)) {
+                int err = PTR_ERR(pid_produce_task);
+                printk("failed to start the kauditd thread (%d)\n", err);
+        }
+
+        pid_consume_task = kthread_run(pid_consume_thread, NULL, "testbitmap");
+        if (IS_ERR(pid_consume_task)) {
+                int err = PTR_ERR(pid_consume_task);
+                printk("failed to start the kauditd thread (%d)\n", err);
+        }
+
+        return 0;
+}
+
+/* Module exit entry */
+static void __exit pid_bitmap_demo_exit(void)
+{
+        if(pid_produce_task)
+                kthread_stop(pid_produce_task);
+        if(pid_consume_task)
+                kthread_stop(pid_consume_task);
+}
+
+module_init(pid_bitmap_demo_init);
+module_exit(pid_bitmap_demo_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Meijusan <20741602@qq.com>");
+MODULE_DESCRIPTION("Emulate PID allocating and Releasing on BiscuitOS");
+{% endhighlight %}
+
+独立代码在 BiscuitOS 中运行的结果如下:
+
+{% highlight bash %}
+~ # cd lrandom: fast init done
+~ # cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+emulate-pid-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod emulate-pid-0.0.1.ko 
+emulate_pid_0.0.1: loading out-of-tree module taints kernel.
+threadid 1140 remove  pid: 521 
+/lib/modules/5.0.0/extra # threadid 1138 create  pid: 521 
+threadid 1140 remove  pid: 4073 
+threadid 1140 remove  pid: 3235 
+threadid 1138 create  pid: 3235 
+threadid 1138 create  pid: 4073 
+threadid 1140 remove  pid: 960 
+threadid 1138 create  pid: 960 
+threadid 1140 remove  pid: 1575 
+threadid 1138 create  pid: 1575 
+threadid 1140 remove  pid: 286 
+threadid 1138 create  pid: 286 
+threadid 1140 remove  pid: 2280 
+threadid 1138 create  pid: 2280 
+threadid 1140 remove  pid: 4061 
+threadid 1140 remove  pid: 435 
+threadid 1138 create  pid: 435 
+threadid 1138 create  pid: 4061 
+threadid 1140 remove  pid: 2294
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000015"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### LC-trie Protocol
+
+###### 功能说明
+
+{% highlight bash %}
+1.1 为了方便实验和更好的理解 trie, 本模块从路由 LC-trie 协议, 去除了路由
+    规则, trie 的扩展/压缩等复杂模块简化而成
+1.2 主要完成一个 32bits 的字典树 (网络搜索参考字典树的逻辑及下文的 "实例图解")
+1.3 本模块功能包括: 插入节点, 移除节点和节点查找,节点可以附带具体业务对象数据
+1.4 本模块包含基础插入/移除和查找 api, 以及一个使用实例
+
+2. 调试环境信息: linux 5.0.0
+3. 运行输出信息: 为了便于理解, 本模块在 init 函数中执行实例程序,并输出人性化
+   的调试信息,如下 [运行输出信息]
+4. 代码说明
+
+   bits32_trie_new.c:    节点的创建, 内存分配, 本例分配内存统一使用
+                         kmalloc/kfree, 如需优化,自行修改
+   bits32_trie_debug.c:  调试信息输出, 针对trie结构体进行逐层打印
+   bits32_trie_insert.c: 节点插入代码
+   bits32_trie_lookup.c: 节点查找代码
+   bits32_trie_remove.c: 节点删除代码
+   bits32_trie.c:        模块初始化代码及测试实例
+{% endhighlight %}
+
+> 代码贡献者: Shaobin <shaobin.huang@kernelworker.net>
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Bitmap  --->
+        [*] LC-trie Protocol  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/LC-trie-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> - [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight bash %}
+.
+├── LC-trie-0.0.1
+│   ├── bits32_trie.c
+│   ├── bits32_trie_debug.c
+│   ├── bits32_trie_debug.h
+│   ├── bits32_trie.h
+│   ├── bits32_trie_insert.c
+│   ├── bits32_trie_insert.h
+│   ├── bits32_trie_lookup.c
+│   ├── bits32_trie_lookup.h
+│   ├── bits32_trie_new.c
+│   ├── bits32_trie_new.h
+│   ├── bits32_trie_remove.c
+│   ├── bits32_trie_remove.h
+│   ├── Kconfig
+│   ├── Makefile
+│   └── readme.txt
+├── Makefile
+└── README.md
+
+1 directory, 17 files
+{% endhighlight %}
+
+该代码在 BiscuitOS 上运行的情况如下:
+
+{% highlight bash %}
+~ # cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+C-trie-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod C-trie-0.0.1.ko 
+C_trie_0.0.1: loading out-of-tree module taints kernel.
+bits32_trie_init:[16 - 4]
+~~~~~~~~  start insert  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bits32_trie_init insert leaf[0x12345678] data[0x0]
+bits32_trie_init insert leaf[0x87654321] data[0x1]
+bits32_trie_init insert leaf[0x11111111] data[0x2]
+bits32_trie_init insert leaf[0x22222222] data[0x3]
+~~~~~~~~   end insert   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------------------------------
+~~~~~~~~   now let's look the trie view ~~~~~~~~~~~~~~~~~
+tnode[0x0]:pos[0x1f]bits[0x1]cindex[0x0]
+- tnode[0x0]:pos[0x1d]bits[0x1]cindex[0x0]
+- - tnode[0x10000000]:pos[0x19]bits[0x1]cindex[0x0]
+- - - leaf[0x11111111]:pos[0x0]bits[0x0]data[0x2]cindex[0x0]
+- - - leaf[0x12345678]:pos[0x0]bits[0x0]data[0x0]cindex[0x1]
+- - leaf[0x22222222]:pos[0x0]bits[0x0]data[0x3]cindex[0x1]
+- leaf[0x87654321]:pos[0x0]bits[0x0]data[0x1]cindex[0x1]
+~~~~~~~~   trie view end, it's as what you think??  ~~~~~
+--------------------------------------------------------------
+~~~~~~~~   test lookup  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bits32_trie_init lookup[0x11111111]index[0x2]
+bits32_trie_init it seems ok, found leaf->key[0x11111111]
+~~~~~~~~  test remove  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+bits32_trie_init remove[0x11111111]index[0x2]
+bits32_trie_init it seems ok, found no leaf->key[0x11111111] after del
+bits32_trie_init remove[12345678]index[0]
+bits32_trie_init it seems ok, found no leaf->key[0x12345678] after del
+~~~~~~~~  now let's check the trie if it same as what you think  ~~~~
+tnode[0x0]:pos[0x1f]bits[0x1]cindex[0x0]
+- tnode[0x0]:pos[0x1d]bits[0x1]cindex[0x0]
+- - leaf[0x22222222]:pos[0x0]bits[0x0]data[0x3]cindex[0x1]
+- leaf[0x87654321]:pos[0x0]bits[0x0]data[0x1]cindex[0x1]
+bits32_trie_init finish
+insmod (1137) used greatest stack depth: 6300 bytes left
+/lib/modules/5.0.0/extra # 
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000571.png)
+
+{% highlight bash %}
+             bit31  ->                      bit0
+0x12345678   00010010 00110100 01010110 01111000
+0x87654321   10000111 01100101 01000011 00100001
+0x11111111   00010001 00010001 00010001 00010001
+0x22222222   00100010 00100010 00100010 00100010
+
+
+                       tp
+                       |
+                       v
+              0x12345678
+(00010010 00110100 01010110 01111000)
+
+                                           tp
+                                           |
+                                           v
+                       ------------------ 0x0 --------------------
+                       |                                         |
+                       v                                         v
+              0x12345678                                0x87654321
+(00010010 00110100 01010110 01111000)    (10000111 01100101 01000011 00100001)
+
+
+                                                               tp
+                                                               |
+                                                               v
+                                           ------------------ 0x0 --------------------
+                                           |                                         |
+                                           v                                         v
+                                  0x10000000                                0x87654321
+                    (00010000 00000000 00000000 00000000)    (10000111 01100101 01000011 00100001)
+                                           |
+                                           v
+                       -------------------- ----------------------
+                       |                                         |
+                       v                                         v
+              0x12345678                                0x11111111
+(00010010 00110100 01010110 01111000)    (00010001 00010001 00010001 00010001)
+                                                                                    tp
+                                                                                    |
+                                                                                    v
+                                                                ------------------ 0x0 --------------------
+                                                                |                                         |
+                                                                v                                         v
+                                                               0x0                                   0x87654321
+                                                  (00000000 00000000 00000000 00000000)       (10000111 01100101 01000011 00100001)
+                                                                |
+                                                                v
+                                           --------------------  ---------------------
+                                           |                                         |
+                                           v                                         v
+                                     0x10000000                                 0x22222222
+                    (00000001 00000000 00000000 00000000)    (00100010 00100010 00100010 00100010)
+                                           |
+                                           v
+                       -------------------- ----------------------
+                       |                                         |
+                       v                                         v
+                   0x11111111                                0x12345678
+     (00010001 00010001 00010001 00010001)    (00010010 00110100 01010110 01111000)
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+
+----------------------------------
+
 <span id="H000000"></span>
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
@@ -2708,18 +3095,18 @@ BiscuitOS/output/linux-XXX-YYY/package/
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
------------------------------------------------
+----------------------------------
 
-#### <span id="Z0">附录</span>
+<span id="D"></span>
 
-> [BiscuitOS Home](https://biscuitos.github.io/)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+
+#### HKC 贡献者名单
+
+> BuddyZhang1 <buddy.zhang@aliyun.com>
 >
-> [BiscuitOS Blog 2.0](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> Meijusan <20741602@qq.com>
 >
-> [Linux Kernel](https://www.kernel.org/)
->
-> [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
->
-> [Linux Kernel Driver Data Base](https://cateee.net/lkddb/web-lkddb/)
+> Shaobin <shaobin.huang@kernelworker.net>
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
