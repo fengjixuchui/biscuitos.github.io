@@ -63,7 +63,7 @@ tags:
 >
 >   - [E820 内存管理器 \[X86\]](https://biscuitos.github.io/blog/MMU-E820/)
 >
-> - Boot Stage Allocator
+> - Boot-Time Allocator
 >
 >   - [Bootmem Allocator](https://biscuitos.github.io/blog/HISTORY-bootmem/)
 >
