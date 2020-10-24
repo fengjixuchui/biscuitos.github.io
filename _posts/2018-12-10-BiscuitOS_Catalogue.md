@@ -167,13 +167,15 @@ tags:
 
 ## [虚拟化]()
 
-> - [KVM on BiscuitOS](https://biscuitos.github.io/blog/KVM-on-BiscuitOS/)
+> - [KVM on BiscuitOS \[x86_64/i386\]](https://biscuitos.github.io/blog/KVM-on-BiscuitOS/)
 >
 > - KVM
 >
 > - 内存虚拟化
 >
 > - CPU 虚拟化
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 ## [Basic Research]()
 
