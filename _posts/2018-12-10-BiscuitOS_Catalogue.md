@@ -65,11 +65,15 @@ tags:
 >
 > - Boot-Time Allocator
 >
+>   - [.bss .data Allocator on Static Compile Stage]()
+>
+>   - [RESERVE_BRK Allocator \[x86\]]()
+>
+>   - [Early_res Allocator \[x86\]]()
+>
 >   - [Bootmem Allocator](https://biscuitos.github.io/blog/HISTORY-bootmem/)
 >
 >   - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
->
->   - [NO-BOOT Memory Allocator]()
 >
 > - Physical Memory Manager
 >
@@ -160,6 +164,16 @@ tags:
 >   - [sys_open](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+## [虚拟化]()
+
+> - [KVM on BiscuitOS](https://biscuitos.github.io/blog/KVM-on-BiscuitOS/)
+>
+> - KVM
+>
+> - 内存虚拟化
+>
+> - CPU 虚拟化
 
 ## [Basic Research]()
 
@@ -354,7 +368,7 @@ tags:
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
-## <span id="OpenProject">Open Project</span>
+## <span id="OpenProject">BiscuitOS 社区开源项目</span>
 
 > - [Open VnetCard](https://biscuitos.github.io/blog/VnetCard/)
 >
