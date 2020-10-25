@@ -66,16 +66,16 @@ tags:
 >   - [Reboot notifier](#H000008)
 >
 >   - [MMU notifier](#H000012)
+> 
+>   - Power manager
+>
+>     - [Trigger resume notifier](#H000010)
+>
+>     - [Trigger suspend notifier](#H000009)
 >
 > - Platform Device Driver
 >
 >   - [Platform Simple Device Driver](#H000013)
->
-> - Power manager
->
->   - [Trigger resume notifier](#H000010)
->
->   - [Trigger suspend notifier](#H000009)
 >
 > - SMP
 >
