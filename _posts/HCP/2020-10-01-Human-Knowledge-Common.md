@@ -22,10 +22,10 @@ tags:
 >
 > - [HKC 贡献者名单](#D)
 
-<span id="H000016"></span>
+<span id="H000023"></span>
 > - Assembly
 >
->   - X86/X85_64 Assembly
+>   - X86/X86_64 Assembly
 >
 >     - [RDMSR](#H000002)
 >
@@ -43,9 +43,21 @@ tags:
 >
 >   - [kernel cpumask Demo](#H000005)
 >
-> - MMU Shrinker
+> - MMAP
 >
->   - [kernel slab shrink Demo](#H000001)
+>   - [Anonymous mmap on userspace](#H000016)
+>
+>   - [Anonymous mmap on kernel](#H000017)
+>
+> - MMU
+>
+>   - MMU Shrinker
+>
+>     - [kernel slab shrink Demo](#H000001)
+>
+>   - [Memory Hotplug in Code](#H000021)
+>
+>   - [Memory Hotplug auto](#H000022)
 >
 > - Notifier mechanism
 >
@@ -70,6 +82,14 @@ tags:
 >   - [on_each_cpu](#H000007)
 >
 >   - [smp_call_function_single](#H000006)
+>
+> - VFS
+>
+>   - [Anonymouse File](#H000018)
+>
+>   - [Kernel Read from Userspace file](#H000019)
+>
+>   - [Kernel Write to Userspace file](#H000020)
 >
 > - [附录](#Z0)
 
@@ -3053,6 +3073,1014 @@ insmod (1137) used greatest stack depth: 6300 bytes left
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
+----------------------------------
+
+<span id="H000016"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Anonymous mmap on Userpsace
+
+代码核心功能是在用户空间通过匿名映射的方式映射一段虚拟机内存使用。
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] System Call  --->
+        [*] sys_mmap2  --->
+            [*] Anonymous mmap on Userspace  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-Anonymous-mmap-Userspace-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [HKC 计划 BiscuitOS 实践框架介绍](#C2)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Anonymous mmap from Userspace on BiscuitOS
+ *
+ * (C) 2020.10.24 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/mman.h>
+
+/* The size for anonymous mmap */
+#define MMAP_SIZE               4096
+
+int main()
+{
+        char *base;
+
+        /* Anonymous mmap */
+        base = mmap(NULL,
+                    MMAP_SIZE,
+                    PROT_READ | PROT_WRITE,
+                    MAP_SHARED | MAP_ANONYMOUS,
+                    -1,
+                    0);
+        if (!base) {
+                printf("ERROR: Mmap anonymous failed.\n");
+                return -1;
+        }
+
+        /* Use */
+        sprintf(base, "BiscuitOS");
+        printf("=> %s [%#lx]\n", base, (unsigned long)base);
+
+        /* Un-mmap */
+        munmap(base, MMAP_SIZE);
+
+        return 0;
+}
+{% endhighlight %}
+
+例子的实现很简单，通过 mmap() 函数映射一段内存，在传入参数的时候，传入 MAP_ANONYMOUS 标志就可以匿名映射一段内存使用。不使用的时候使用 munmap() 函数进行解除映射。例子在 BiscuitOS 中运行的情况如下:
+
+{% highlight bash %}
+~ # BiscuitOS-Anonymous-mmap-Userspace-0.0.1 
+=> BiscuitOS [0xb7d91000]
+~ #
+{% endhighlight %}
+
+BiscuitOS 运行之后，在用户空间直接运行 BiscuitOS-Anonymous-mmap-Userspace-0.0.1 应用程序，运行之后打印一段字符串并打印字符串的地址。结果符合预期.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000017"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Anonymous mmap on kernel
+
+本例子用于介绍在内核空间通过匿名映射方式，映射一段可用内存使用。
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] System Call  --->
+        [*] sys_mmap2  --->
+            [*] Anonymous mmap on Kernel  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-Anonymous-mmap-Kernel-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Anonymous mmap from kernel on BiscuitOS
+ *
+ * (C) 2020.10.24 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/mm.h>
+#include <linux/mman.h>
+
+/* The size for mmaping */
+#define MMAP_SIZE               PAGE_SIZE
+/* The address fro mamping */
+static char *mmap_base;
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+        /* Anonymous mmaping */
+        mmap_base = (char *)vm_mmap(
+                            NULL,
+                            0,
+                            MMAP_SIZE,
+                            PROT_READ | PROT_WRITE,
+                            MAP_SHARED | MAP_ANONYMOUS,
+                            0);
+        if (IS_ERR((void *)mmap_base)) {
+                printk("ERROR: Anonymous mmap failed.\n");
+                return -ENOMEM;
+        }
+
+        /* Use */
+        sprintf(mmap_base, "BiscuitOS");
+        printk("=> %s [%#lx]\n", mmap_base, (unsigned long)mmap_base);
+
+        return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+        /* Un-mmap */
+        vm_munmap((unsigned long)mmap_base, MMAP_SIZE);
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Anonymous kenrel mmap on BiscuitOS");
+{% endhighlight %}
+
+本例子在驱动初始化函数中，调用 vm_mmap() 函数并传入 MAP_ANONYMOUS 标志，以此在内核中匿名映射一段内存，并使用这段内存，使用完毕之后调用 vm_munmap() 函数解除这部分内存的映射. 该例子在 BiscuitOS 中运行的结果如下:
+
+{% highlight bash %}
+/lib/modules/5.0.0/extra # ls
+BiscuitOS-Anonymous-mmap-Kernel-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod BiscuitOS-Anonymous-mmap-Kernel-0.0.1.ko 
+BiscuitOS_Anonymous_mmap_Kernel_0.0.1: loading out-of-tree module taints kernel.
+=> BiscuitOS [0xb7f08000]
+/lib/modules/5.0.0/extra # 
+{% endhighlight %}
+
+加载模块之后，模块初始化是调用匿名映射相关的函数，然后在匿名映射的内存上写入一段字符串，并打印这段字符串和匿名映射内存的地址. 结果符合预期.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000018"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Anonymous File
+
+本例子用于介绍创建一个匿名文件的流程。例子包含了内核空间和用户空间的实现。
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] VFS (BiscuitOS+)  --->
+        -*- Anonymous File (Kernel Part+)  --->
+        [*] Anonymous file (Userspace Part+)  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-Anonymous-file-userspace-0.0.1
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-Anonymous-file-kernel-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [> HKC 计划 BiscuitOS 实践框架介绍](#C0)
+>
+> [> HKC 计划 BiscuitOS 实践框架介绍](#C2)
+
+###### 内核部分代码
+
+{% highlight c %}
+/*
+ * Anonymous file on BiscuitOS
+ *
+ * (C) 2020.10.06 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/miscdevice.h>
+#include <linux/fs.h>
+#include <linux/anon_inodes.h>
+#include <linux/errno.h>
+#include <linux/file.h>
+
+/* DD Platform Name */
+#define DEV_NAME                "BiscuitOS"
+/* IOCTL CMD */
+#define BISCUITOS_IO            0xAE
+#define BISCUITOS_SET           _IO(BISCUITOS_IO, 0x00)
+#define BISCUITOS_GET           _IO(BISCUITOS_IO, 0x01)
+
+/* File operation for anonymous file */
+static struct file_operations BiscuitOS_anonymous_fops;
+
+/* Create anonymous file */
+static int BiscuitOS_anonymous_file(void)
+{
+        struct file *file;
+        int fd;
+
+        /* Get an unused fd */
+        fd = get_unused_fd_flags(O_CLOEXEC);
+        if (fd < 0) {
+                printk("ERROR[%d]: Get unused fd failed.\n", fd);
+                return fd;
+        }
+
+        /* Create anonymous file */
+        file = anon_inode_getfile("BiscuitOS-anonymous",
+                                &BiscuitOS_anonymous_fops, NULL, O_RDWR);
+        if (IS_ERR(file)) {
+                printk("ERROR[%ld]: Create anonymous file failed.\n",
+                                                PTR_ERR(file));
+                put_unused_fd(fd);
+                return PTR_ERR(file);
+        }
+
+        /* Bind fd and file */
+        fd_install(fd, file);
+        return fd;
+}
+
+/* ioctl */
+static long BiscuitOS_ioctl(struct file *filp,
+                        unsigned int ioctl, unsigned long arg)
+{
+        switch (ioctl) {
+        case BISCUITOS_SET:
+                return BiscuitOS_anonymous_file();
+        case BISCUITOS_GET:
+                printk("IOCTL: BISCUITOS_GET.\n");
+                break;
+        default:
+                break;
+        }
+        return 0;
+}
+
+/* file operations */
+static struct file_operations BiscuitOS_fops = {
+        .owner          = THIS_MODULE,
+        .unlocked_ioctl = BiscuitOS_ioctl,
+};
+
+/* Misc device driver */
+static struct miscdevice BiscuitOS_drv = {
+        .minor  = MISC_DYNAMIC_MINOR,
+        .name   = DEV_NAME,
+        .fops   = &BiscuitOS_fops,
+};
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+        /* Register Misc device */
+        misc_register(&BiscuitOS_drv);
+        return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+        /* Un-Register Misc device */
+        misc_deregister(&BiscuitOS_drv);
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("BiscuitOS Anonymous file");
+{% endhighlight %}
+
+内核部分的代码首先通过调用 get_unused_fd_flags() 获得当前进程一个没有使用的文件句柄，然后再调用 anon_inode_getfile() 函数获得一个匿名的 inode，并将 BiscuitOS_anonymous_fops 文件操作绑定到这个 inode 上面，最后调用 fd_install() 函数将 fd 和 inode 绑定在一起，这样匿名文件就创建完毕. 
+
+###### 用户空间代码
+
+{% highlight bash %}
+/*
+ * Anonymous file on BiscuitOS (Userspace Part+)
+ *
+ * (C) 2020.10.24 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <fcntl.h>
+#include <linux/ioctl.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+
+/* PATH for devnode */
+#define BISCUITOS_NODE          "/dev/BiscuitOS"
+/* IOCTL CMD */
+#define BISCUITOS_IO            0xAE
+#define BISCUITOS_SET           _IO(BISCUITOS_IO, 0x00)
+#define BISCUITOS_GET           _IO(BISCUITOS_IO, 0x01)
+
+int main()
+{
+        int anonymous_fd;
+        int fd;
+
+        /* Open BiscuitOS node */
+        fd = open(BISCUITOS_NODE, O_RDWR);
+        if (fd < 0) {
+                printf("ERROR[%d]: open %s failed.\n", fd, BISCUITOS_NODE);
+                return fd;
+        }
+
+        /* Create Anonymous file by ioctl() */
+        anonymous_fd = ioctl(fd, BISCUITOS_SET, (unsigned long)0);
+        if (anonymous_fd < 0) {
+                printf("ERROR[%d]: Anonymous file failed.\n", anonymous_fd);
+                return anonymous_fd;
+        }
+
+        /* Anonymous fd */
+        printf("Anonymous file-FD: %d\n", anonymous_fd);
+
+        /* close */
+        close(fd);
+
+        return 0;
+}
+
+{% endhighlight %}
+
+用户空间部分的代码比较简单，通过 ioctl() 函数传递 "BISCUITOS_SET" 命令告诉内存创建一个匿名文件，并返回匿名文件的文件句柄. 该例子在 BiscuitOS 完整运行情况如下:
+
+{% highlight bash %}
+~ # 
+~ # cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+BiscuitOS-Anonymous-file-kernel-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod BiscuitOS-Anonymous-file-kernel-0.0.1.ko 
+BiscuitOS_Anonymous_file_kernel_0.0.1: loading out-of-tree module taints kernel.
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # BiscuitOS-Anonymous-file-userspace-0.0.1 
+Anonymous file-FD: 4
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra #
+{% endhighlight %}
+
+模块安装完毕之后，运行对应的应用程序，此时获得的匿名文件句柄为 4. 文件句柄 0,1,2 分别为标志输入/输出/错误, 句柄 3 为当前打开的文件，那么匿名文件句柄为 4 符合预期.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000019"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Kernel Read from Userspace file
+
+实例的作用是内核读取用户空间的文件。
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] VFS (BiscuitOS+)  --->
+        [*] Kernel read Userspace file  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-Kernel-read-Userspace-file-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Kernel read Userspace file on BiscuitOS
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+#include <linux/fs.h>
+#include <asm/uaccess.h>
+
+/* The path for Userspace file */
+#define BISCUITOS_FILE          "/proc/meminfo"
+/* Buffer length */
+#define MAX_BUFFER_SIZE         256
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+        char buffer[MAX_BUFFER_SIZE];
+        struct file *filp = NULL;
+        mm_segment_t fs;
+        loff_t pos = 0;
+
+        /* Open Userspace file */
+        filp = filp_open(BISCUITOS_FILE, O_RDWR, 0644);
+        if (IS_ERR(filp)) {
+                printk("ERROR[%ld]: Open %s failed.\n", PTR_ERR(filp),
+                                                        BISCUITOS_FILE);
+                return PTR_ERR(filp);
+        }
+
+        fs = get_fs();
+        set_fs(KERNEL_DS);
+
+        /* Read from Userspace file */
+        pos = 0;
+        kernel_read(filp, buffer, sizeof(buffer), &pos);
+        printk("BiscuitOS Read Contents:\n%s\n", buffer);
+
+        /* Close Userspace file */
+        filp_close(filp, NULL);
+        set_fs(fs);
+
+        return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Read Userspace file on BiscuitOS");
+{% endhighlight %}
+
+例子的实现很简单，与用户空间文件的操作类似，首先使用 filp_open() 函数打开指定文件，然后调用 get_fs()/set_fs() 设置正确的段权限，最后调用 kernel_read() 函数用户空间文件内存读取到 buffer 里，并使用 printk 将 buffer 里面的内容输出. 操作完毕之后调用 filp_close() 关闭文件并回复 FS 段. 该例子在 BiscuitOS 中运行的情况如下:
+
+{% highlight bash %}
+~ # cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # ls
+BiscuitOS-Kernel-read-Userspace-file-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod BiscuitOS-Kernel-read-Userspace-file-0.0.1.ko 
+BiscuitOS_Kernel_read_Userspace_file_0.0.1: loading out-of-tree module taints kernel.
+BiscuitOS Read Contents:
+MemTotal:         504144 kB
+MemFree:          334208 kB
+MemAvailable:     331916 kB
+Buffers:             112 kB
+Cached:             1936 kB
+SwapCached:            0 kB
+Active:             1864 kB
+Inactive:            312 kB
+Active(anon):        136 kB
+{% endhighlight %}
+
+BiscuitOS 运行之后，安装对应的模块，模块运行之后将从 "/proc/meminfo" 中读取指定长度的内容，并输出这些内容。运行的结果与预期一致.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000020"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Kernel write to Userspace file
+
+本示例的作用是内核向用户空间的文件写入指定的内容.
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] VFS (BiscuitOS+)  --->
+        [*] Kernel write Userspace file  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-Kernel-write-Userspace-file-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Kernel write to Userspace file on BiscuitOS
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+#include <linux/fs.h>
+#include <asm/uaccess.h>
+
+/* The path for Userspace file */
+#define BISCUITOS_FILE          "/tmp/BiscuitOS.info"
+/* Buffer length */
+#define MAX_BUFFER_SIZE         256
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+        char buffer[MAX_BUFFER_SIZE];
+        struct file *filp = NULL;
+        mm_segment_t fs;
+        loff_t pos = 0;
+
+        /* Open Userspace file */
+        filp = filp_open(BISCUITOS_FILE, O_RDWR | O_CREAT, 0644);
+        if (IS_ERR(filp)) {
+                printk("ERROR[%ld]: Open %s failed.\n", PTR_ERR(filp),
+                                                        BISCUITOS_FILE);
+                return PTR_ERR(filp);
+        }
+
+        fs = get_fs();
+        set_fs(KERNEL_DS);
+
+        /* Write data into Userspace file */
+        sprintf(buffer, "BiscuitOS");
+        buffer[strlen(buffer)] = '\n';
+        pos = 0;
+        kernel_write(filp, buffer, strlen(buffer) + 1, &pos);
+
+        /* Close Userspace file */
+        filp_close(filp, NULL);
+        set_fs(fs);
+
+        return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Write Userspace file on BiscuitOS");
+{% endhighlight %}
+
+例子的实现很简单，与用户空间文件的操作类似，首先使用 filp_open() 函数打开指定文件，然后调用 get_fs()/set_fs() 设置正确的段权限，最后调用 kernel_write() 函数将 buffer中的内容写入到用户空间文件，用户空间的文件位于 "/tmp/BiscuitOS.info". 操作完毕之后调用 filp_close() 关闭文件并回复 FS 段. 该例子在 BiscuitOS 中运行的情况如下:
+
+{% highlight bash %}
+~ # cd lib/modules/5.0.0/extra/
+/lib/modules/5.0.0/extra # ls
+BiscuitOS-Kernel-write-Userspace-file-0.0.1.ko
+/lib/modules/5.0.0/extra # insmod BiscuitOS-Kernel-write-Userspace-file-0.0.1.ko
+BiscuitOS_Kernel_write_Userspace_file_0.0.1: loading out-of-tree module taints kernel.
+insmod (1184) used greatest stack depth: 6500 bytes left
+/lib/modules/5.0.0/extra # 
+/lib/modules/5.0.0/extra # cat /tmp/BiscuitOS.info 
+BiscuitOS
+{% endhighlight %}
+
+BiscuitOS 运行之后，将模块进行安装，安装过程中实例将字符串 "BiscuitOS" 写入到用户空间 "/tmp/BiscuitOS.info" 文件中，模块安装完毕之后，查看 "/tmp/BiscuitOS.info" 文件的内容，内容为 "BiscuitOS", 结果与预期一致.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000021"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Memory Hotplug in Code
+
+本实例用于介绍如何在内核中使用代码进行内存的 "热插" 操作. 安装完模块之后会在 "/sys/device/system/memory/" 目录下生成指定的 memoryX 目录，该目录下存储新热插入内存的信息. 在进行热插拔之前，需要配置内核打开热插拔功能，配置如下:
+
+{% highlight bash %}
+  Memory Management options  --->
+        Memory model (Sparse Memory)  --->
+    [*] Allow for memory hot-add
+{% endhighlight %}
+
+配置完内核之后，再将内核宏 SECTION_SIZE_BITS 设置为 27, 以此表示每个 MEMORY Section 的长度为 128 MiB. 其次如果是 ARM64 架构，那么需要在 arm64_memblock_init() 函数中添加 "memblock_remove(0x50000000, 0x8000000)" 语句将对应的内存区从内核中移除; 如果是 x64 架构，那么需要在 CMDLINE 中添加字段 "memmap=128MiB@0x18000000". 修改完毕之后重新编译内核.
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] MMU (BiscuitOS+)  --->
+        [*] Memory Hotplug in C  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-Memory-Hotplug-in-C-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Memory Hotplug in Code on BiscuitOS
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+/*
+ * Memory region for Hotplugging.
+ * BTW, The default Block size as 0x8000000, not 2 Gig.
+ *
+ * On Aarch, we reserved a memory region from 0x50000000 to 0x58000000 on
+ * MEMBLOCK allocator that invoke "memblock_reserve(0x50000000, 0x8000000)"
+ * on "arm64_memblock_init()".
+ *
+ * On x86_64, we can use "memmap=" on CMDLINE to reserved a memory
+ * region. The range of memory region from 0x18000000 to 0x20000000, which 
+ * descrbe as "memmap=0x128M$0x5000000".
+ */
+
+/* NUMA NODE */
+static int nid = 0;
+
+#ifdef __aarch64__
+#define BISCUITOS_MEMORY_BASE           0x50000000
+#else // X64
+#define BISCUITOS_MEMORY_BASE           0x18000000
+#endif
+#define BISCUITOS_MEMORY_SIZE           0x8000000
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+#ifdef CONFIG_MEMORY_HOTPLUG
+        /* Add into /sys/device/system/memory/memoryX */
+        add_memory(nid, BISCUITOS_MEMORY_BASE, BISCUITOS_MEMORY_SIZE);
+#endif
+        printk("Hello BiscuitOS :)\n");
+        return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Memory Hotplug in Code on BiscuitOS");
+{% endhighlight %}
+
+例子很简单，通过调用 add_memory() 函数将 BISCUITOS_MEMORY_BASE 处长度为 BISCUITOS_MEMORY_SIZE 的物理内存插入到系统内部。如果插入成功，系统会在 "/sys/devices/system/memory/" 目录下创建热插入内存的信息。该例子在 BiscuitOS 中运行情况如下:
+
+{% highlight bash %}
+~ # cd /sys/devices/system/memory/
+/sys/devices/system/memory # ls
+auto_online_blocks  memory11            power
+block_size_bytes    memory8             soft_offline_page
+hard_offline_page   memory9             uevent
+/sys/devices/system/memory # cat /proc/iomem 
+40000000-4fffffff : System RAM
+  40080000-41a1ffff : Kernel code
+  41a20000-41baffff : reserved
+  41bb0000-41e3cfff : Kernel data
+  48000000-480fffff : reserved
+58000000-5fffffff : System RAM
+  5d600000-5d7fffff : reserved
+  5d926000-5ddfffff : reserved
+  5def7000-5def7fff : reserved
+  5def8000-5df25fff : reserved
+  5df28000-5df28fff : reserved
+  5df29000-5df3bfff : reserved
+  5df3c000-5df43fff : reserved
+  5df44000-5fffffff : reserved
+4010000000-401fffffff : PCI ECAM
+
+/sys/devices/system/memory # 
+/sys/devices/system/memory # insmod /lib/modules/5.0.0/extra/BiscuitOS-Memory-Ho
+tplug-in-C-0.0.1.ko 
+[   35.980429] BiscuitOS_Memory_Hotplug_in_C_0.0.1: loading out-of-tree module taints kernel.
+[   36.019905] Hello BiscuitOS :)
+/sys/devices/system/memory # 
+/sys/devices/system/memory # ls
+auto_online_blocks  memory10            memory9             uevent
+block_size_bytes    memory11            power
+hard_offline_page   memory8             soft_offline_page
+/sys/devices/system/memory # 
+/sys/devices/system/memory # cat /proc/iomem 
+40000000-4fffffff : System RAM
+  40080000-41a1ffff : Kernel code
+  41a20000-41baffff : reserved
+  41bb0000-41e3cfff : Kernel data
+  48000000-480fffff : reserved
+50000000-57ffffff : System RAM
+58000000-5fffffff : System RAM
+/sys/devices/system/memory #
+/sys/devices/system/memory/memory11 # cat /proc/meminfo 
+MemTotal:         355284 kB
+MemFree:          316684 kB
+/sys/devices/system/memory # cd memory10/
+/sys/devices/system/memory/memory10 # ls
+node0        phys_device  power        state        uevent
+online       phys_index   removable    subsystem
+/sys/devices/system/memory/memory10 # cat state 
+offline
+/sys/devices/system/memory/memory10 # echo online > state 
+/sys/devices/system/memory/memory10 # cat /proc/meminfo 
+MemTotal:         486356 kB
+MemFree:          447520 kB
+{% endhighlight %}
+
+BiscuitOS 运行之后，首先查看 IORESOURCE 上的内存设备信息，发现系统此时看不到 0x50000000 到 58000000 的内存信息，并且 "/sys/devices/system/memory/" 目录下并没有 memory10 的目录. 接下来插入模块，查看模块之后可以在 IORESOURCE 下看到 0x50000000 到 58000000 的内存信息，并且 "/sys/devices/system/memory/" 目录可以看到 memory10 的目录。此时查看系统可以物理内存信息，显示为 355284 KiB。接着进入 memory10 目录，查看 state 的信息，显示为 offline，那么表示这块物理内存虽然已经硬件上热插入系统了，但软件上没有，因此将 "online" 字符串发送给 state，让系统将该内存插入。最后查看系统可用内存信息，已经变成了 486356 KiB, 增加的量正好是 128 MiB. 运行的结果符合预期.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000022"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Memory Hotplug auto
+
+本实例用于介绍如何在内核中使用代码进行内存的 "热插" 操作. 安装完模块之后会在 "/sys/device/system/memory/" 目录下生成指定的 memoryX 目录，该目录下存储新热插入内存的信息. 在进行热插拔之前，需要配置内核打开热插拔功能，配置如下:
+
+{% highlight bash %}
+  Memory Management options  --->
+        Memory model (Sparse Memory)  --->
+    [*] Allow for memory hot-add
+{% endhighlight %}
+
+配置完内核之后，再将内核宏 SECTION_SIZE_BITS 设置为 27, 以此表示每个 MEMORY Section 的长度为 128 MiB. 其次如果是 ARM64 架构，那么需要在 arm64_memblock_init() 函数中添加 "memblock_remove(0x50000000, 0x8000000)" 语句将对应的内存区从内核中移除; 如果是 x64 架构，那么需要在 CMDLINE 中添加字段 "memmap=128MiB@0x18000000". 修改完毕之后重新编译内核.
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] MMU (BiscuitOS+)  --->
+        [*] Memory Hotplug auto  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-Memory-Hotplug-auto-0.0.1
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [HKC 计划 BiscuitOS 实践框架介绍](#C0)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Memory Hotplug in Code on BiscuitOS
+ *
+ * (C) 2020.10.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+
+#include <linux/fs.h>
+#include <asm/uaccess.h>
+
+/*
+ * Memory region for Hotplugging.
+ * BTW, The default Block size as 0x8000000, not 2 Gig.
+ *
+ * On Aarch, we reserved a memory region from 0x50000000 to 0x58000000 on
+ * MEMBLOCK allocator that invoke "memblock_reserve(0x50000000, 0x8000000)"
+ * on "arm64_memblock_init()".
+ *
+ * On x86_64, we can use "memmap=" on CMDLINE to reserved a memory
+ * region. The range of memory region from 0x5000000 to 0xD000000, which 
+ * descrbe as "memmap=0x128M$0x5000000".
+ */
+
+/* NUMA NODE */
+static int nid = 0;
+
+#ifdef __aarch64__
+#define BISCUITOS_MEMORY_BASE   0x50000000
+#define BISCUITOS_PATH          "/sys/devices/system/memory/memory10/state"
+#else // X64
+#define BISCUITOS_MEMORY_BASE   0x18000000
+#define BISCUITOS_PATH          "/sys/devices/system/memory/memory3/state"
+#endif
+#define BISCUITOS_MEMORY_SIZE   0x8000000
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+        struct file *filp;
+        mm_segment_t fs;
+        loff_t pos = 0;
+
+#ifdef CONFIG_MEMORY_HOTPLUG
+        /* Add into /sys/device/system/memory/memoryX */
+        add_memory(nid, BISCUITOS_MEMORY_BASE, BISCUITOS_MEMORY_SIZE);
+#endif
+
+        /* open file */
+        filp = filp_open(BISCUITOS_PATH, O_RDWR, 0644);
+        if (IS_ERR(filp)) {
+                printk("ERROR[%ld]: open %s failed.\n", PTR_ERR(filp),
+                                                        BISCUITOS_PATH);
+                return PTR_ERR(filp);
+        }
+
+        fs = get_fs();
+        set_fs(KERNEL_DS);
+
+        /* Write */
+        pos = 0;
+        kernel_write(filp, "online", strlen("online"), &pos);
+
+        /* Close */
+        filp_close(filp, NULL);
+        set_fs(fs);
+
+        return 0;
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+#ifdef CONFIG_MEMORY_HOTPLUG
+        remove_memory(nid, BISCUITOS_MEMORY_BASE, BISCUITOS_MEMORY_SIZE);
+#endif
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("Memory Hotplug in Code on BiscuitOS");
+{% endhighlight %}
+
+例子很简单，通过调用 add_memory() 函数将 BISCUITOS_MEMORY_BASE 处长度为 BISCUITOS_MEMORY_SIZE 的物理内存插入到系统内部。如果插入成功，系统会在 "/sys/devices/system/memory/" 目录下创建热插入内存的信息。接着通过内核向用户空间文件写内容的逻辑，向该目录下 state 节点写入 "online" 字符串，以让系统支持软件层面的热插拔动作。该例子在 BiscuitOS 中运行情况如下:
+
+{% highlight bash %}
+~ # 
+~ # cd /sys/devices/system/memory/
+/sys/devices/system/memory # ls
+auto_online_blocks  memory11            power
+block_size_bytes    memory8             soft_offline_page
+hard_offline_page   memory9             uevent
+/sys/devices/system/memory # cat /proc/iomem 
+40000000-4fffffff : System RAM
+  40080000-41a1ffff : Kernel code
+  41a20000-41baffff : reserved
+  41bb0000-41e3cfff : Kernel data
+  48000000-480fffff : reserved
+58000000-5fffffff : System RAM
+  5d600000-5d7fffff : reserved
+  5d926000-5ddfffff : reserved
+  5def7000-5def7fff : reserved
+  5def8000-5df25fff : reserved
+  5df28000-5df28fff : reserved
+  5df29000-5df3bfff : reserved
+  5df3c000-5df43fff : reserved
+  5df44000-5fffffff : reserved
+4010000000-401fffffff : PCI ECAM
+/sys/devices/system/memory # cat /proc/meminfo 
+MemTotal:         355284 kB
+MemFree:          319308 kB
+/sys/devices/system/memory # insmod /lib/modules/5.0.0/extra/BiscuitOS-Memory-Ho
+tplug-auto-0.0.1.ko
+/sys/devices/system/memory # ls
+auto_online_blocks  memory10            memory9             uevent
+block_size_bytes    memory11            power
+hard_offline_page   memory8             soft_offline_page
+/sys/devices/system/memory # cat /proc/iomem 
+40000000-4fffffff : System RAM
+  40080000-41a1ffff : Kernel code
+  41a20000-41baffff : reserved
+  41bb0000-41e3cfff : Kernel data
+  48000000-480fffff : reserved
+50000000-57ffffff : System RAM
+58000000-5fffffff : System RAM
+  5d600000-5d7fffff : reserved
+  5d926000-5ddfffff : reserved
+  5def7000-5def7fff : reserved
+  5def8000-5df25fff : reserved
+  5df28000-5df28fff : reserved
+  5df29000-5df3bfff : reserved
+  5df3c000-5df43fff : reserved
+  5df44000-5fffffff : reserved
+4010000000-401fffffff : PCI ECAM
+/sys/devices/system/memory # cat /proc/meminfo 
+MemTotal:         486356 kB
+MemFree:          447172 kB
+/sys/devices/system/memory # cd memory10/
+/sys/devices/system/memory/memory10 # cat state 
+online
+{% endhighlight %}
+
+BiscuitOS 运行之后，首先查看 IORESOURCE 上的内存设备信息，发现系统此时看不到 0x50000000 到 58000000 的内存信息，并且 "/sys/devices/system/memory/" 目录下并没有 memory10 的目录. 此时查看系统可以物理内存信息，显示为 355284 KiB。接下来插入模块，查看模块之后可以在 IORESOURCE 下看到 0x50000000 到 58000000 的内存信息，并且 "/sys/devices/system/memory/" 目录可以看到 memory10 的目录。此时查看系统可以物理内存信息，显示为 486356 KiB。接着进入 memory10 目录，查看 state 的信息，显示为 online，那么表示内存已经在模块插入时自动热插拔到系统了。运行的结>果符合预期.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 
 ----------------------------------
 
@@ -3080,7 +4108,7 @@ BiscuitOS/output/linux-XXX-YYY/package/
 
 具体实践办法请参考:
 
-> - [HKC 计划 BiscuitOS 实践框架介绍](#C)
+> [HKC 计划 BiscuitOS 实践框架介绍](#C)
 
 ###### 通用例程
 
