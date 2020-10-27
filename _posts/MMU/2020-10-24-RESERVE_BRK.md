@@ -111,7 +111,7 @@ void __init BiscuitOS_demo(void)
 	char *buffer;
 
 	buffer = BiscuitOS_alloc(0x20);
-> [RESERVE_BRK 分配器声明周期](#D0)	sprintf(buffer, "BiscuitOS");
+	sprintf(buffer, "BiscuitOS");
 	printk("=> %s [%#lx]\n", buffer, __pa(buffer));
 }
 {% endhighlight %}
