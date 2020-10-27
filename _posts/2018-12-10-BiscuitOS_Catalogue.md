@@ -67,7 +67,7 @@ tags:
 >
 >   - [.bss .data Allocator on Static Compile Stage]()
 >
->   - [RESERVE_BRK Allocator \[x86\]]()
+>   - [RESERVE_BRK Allocator \[x86\]](https://biscuitos.github.io/blog/RESERVE_BRK/)
 >
 >   - [Early_res Allocator \[x86\]]()
 >
