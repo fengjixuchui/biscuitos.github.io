@@ -167,7 +167,9 @@ tags:
 
 ## [虚拟化]()
 
-> - [KVM on BiscuitOS \[x86_64/i386\]](https://biscuitos.github.io/blog/KVM-on-BiscuitOS/)
+> - [KVM on BiscuitOS (4KiB Page) \[x86_64/i386\]](https://biscuitos.github.io/blog/KVM-on-BiscuitOS/)
+>
+> - [KVM on BiscuitOS (2MiB HugePage) \[x86_64\]](https://biscuitos.github.io/blog/KVM-2M-on-BiscuitOS/)
 >
 > - KVM
 >
