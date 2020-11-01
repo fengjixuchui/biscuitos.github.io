@@ -177,7 +177,7 @@ tags:
 >
 > - KVM
 >
-> - 内存虚拟化
+> - [内存虚拟化](https://biscuitos.github.io/blog/Memory-Virtualization)
 >
 > - CPU 虚拟化
 
