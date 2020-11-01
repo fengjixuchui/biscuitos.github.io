@@ -171,6 +171,8 @@ tags:
 >
 > - [KVM on BiscuitOS (2MiB HugePage) \[x86_64\]](https://biscuitos.github.io/blog/KVM-2M-on-BiscuitOS/)
 >
+> - [KVM with Special MMAP on BiscuitOS \[x86_64/i386\]](https://biscuitos.github.io/blog/KVM-SMAP-on-BiscuitOS/)
+>
 > - [QEMU-KVM on BiscuitOS \[x86_64\]](https://biscuitos.github.io/blog/qemu-kvm-on-BiscuitOS/)
 >
 > - KVM
