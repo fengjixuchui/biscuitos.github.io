@@ -61,6 +61,8 @@ tags:
 >
 >   - [Detecting Memory from BIOS IVT \[X86\]](https://biscuitos.github.io/blog/MMU-E820/#F1)
 >
+>   - [Detecting Memory from CMDLINE](https://biscuitos.github.io/blog/MMU-E820/#B0007)
+>
 >   - [E820 内存管理器 \[X86\]](https://biscuitos.github.io/blog/MMU-E820/)
 >
 > - Boot-Time Allocator
