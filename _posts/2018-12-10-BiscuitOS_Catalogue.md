@@ -65,11 +65,11 @@ tags:
 >
 > - Boot-Time Allocator
 >
->   - [.bss .data Allocator on Static Compile Stage]()
+>   - [Static Compile Memory Allocator]()
 >
 >   - [RESERVE_BRK Allocator \[x86\]](https://biscuitos.github.io/blog/RESERVE_BRK/)
 >
->   - [Early_res Allocator \[x86\]]()
+>   - [Early_Res Allocator \[x86\]](https://biscuitos.github.io/blog/Early_Res/)
 >
 >   - [Bootmem Allocator](https://biscuitos.github.io/blog/HISTORY-bootmem/)
 >

@@ -586,7 +586,7 @@ Bootmem 分配器相关的代码使用请在 start_kernel()->setup_arch() 函数
 环境部署完毕之后，开发者可以直接运行 BiscuitOS, 此时 boot-time 阶段使用的就是 Bootmem 分配器. 运行的情况，使用如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-i386/
+cd BiscuitOS/output/linux-2.6.36-i386/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
