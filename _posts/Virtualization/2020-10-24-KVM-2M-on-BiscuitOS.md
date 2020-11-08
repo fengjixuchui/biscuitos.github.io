@@ -74,6 +74,15 @@ KOB-2M 项目目前支持 x86_64，由于需要内核 HugePage 的支持，因�
 
 #### <span id="C0001">实践部署</span>
 
+首先确认 Ubuntu 已经安装 KVM 模块，如果没有安装请在 Ubuntu 上安装相应的模块，使用如下命令:
+
+{% highlight bash %}
+sudo apt-get install -y qemu-kvm
+sudo apt-get install -y kvm
+sudo modprobe kvm
+sudo modprobe kvm-intel
+{% endhighlight %}
+
 在部署完毕开发环境之后, 由于需要在内核中支持 KVM 模块和 HugePage，因此开发者需要在内核配置中打开以下宏:
 
 {% highlight bash %}
