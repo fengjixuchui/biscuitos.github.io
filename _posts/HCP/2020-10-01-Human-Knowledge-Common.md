@@ -130,7 +130,9 @@ tags:
 "人类知识共同体" 计划基于 BiscuitOS 提供了一套完整的运行机制，开发者可以参与其中，本节用于介绍加入 "人类知识共同体" 计划。正如 "人类知识共同体" 计划介绍，开发者可以将 "独立程序" 提交加入到项目中，以便和其他人分享。首先开发者应该将自己的 "独立程序" 进行分类，目前项目支持的程序分类如下:
 
 * **编译进内核源码树代码**
-   指的是开发者提供的 "独立代码" 必须编译进内核才能使用，譬如内核源码树内使用 "obj-y" 指定的源文件.
+   指的是开发者提供的 "独立代码" 必须编译进内核才能使用，譬如内核源码树内使用 "obj-y" 指定的源文件. 其核心通过 initcall 机制进行调用
+* **编译进内核源码树，任意位置运行**
+   指的是开发者提供的 "独立代码" 必须编译进内存才能使用，并且需要指明插入内核的位置，这样就可以在内核任意位置运行.
 * **独立内核模块代码**
    指的是开发者提供的 "独立代码" 可以在内核源码数之外进行编译，并通过 KO 的模式使用.
 * **独立 Application 代码**
@@ -139,6 +141,10 @@ tags:
 开发者首先将自己的 "独立程序" 进行分类，如果是 "编译进内核源码树代码", 那么请点击下面链接:
 
 > - [编译进内核源码树代码 -- 独立程序开发办法](#B0)
+
+如果是 "编译进内核源码树"，并在内核指定位置运行，那么请参考如下链接:
+
+> - [编译进内核源码树代码, 任意位置运行 -- 独立程序开发办法](#B3)
 
 如果是 "独立内核模块代码", 开发者可以参考如下链接:
 
@@ -221,6 +227,78 @@ obj-y += usage.o
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
+----------------------------------
+
+<span id="B3"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+
+#### 编译进内核源码树，任意位置运行
+
+BiscuitOS 支持将独立代码编译进内核，并在指定位置运行。开发者可以使用这种办法将你的 "独立代码" 进行提交，具体使用办法如下. 首先开发者基于 BiscuitOS 项目构建指定架构的环境，这里以 "linux 5.0" i386 架构进行讲解，其他架构类型，开发者参考使用。开发者首先在 BiscuitOS 项目下使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS
+make linux-5.0-i386_defconfig
+make menuconfig
+
+  [*] Package  --->
+      [*] BiscuitOS Demo Code  --->
+          [*] Kernel Anywhere Demo Code on BiscuitOS  --->
+
+make
+cd BiscuitOS/output/linux-5.0-i386/package/BiscuitOS-kernel-any-0.0.1/
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000701.png)
+
+开发者使用如下命令部署所需的环境，正如上图，选择 "Kernel Anywhere Demo Code on BiscuitOS" 选项，保存并退出配置，接着使用 make 进行部署，部署成功之后，进入部署的目录, 接着获取 Demo 源码使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-i386/package/BiscuitOS-kernel-any-0.0.1/
+make download
+tree
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000702.png)
+
+通过上面的命令之后，BiscuitOS 会自动部署一个 Demo 程序，其中 BiscuitOS-kernel-any-0.0.1 目录下的 main.c 函数就是源码的位置，同级的 Makefile 就是源码编译描述。Demo 中的 main.c 源码很简单，如下图:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000703.png)
+
+Demo 源码很简单，定义了一个函数，函数不能是 static，返回值必须是 int，参数必须是 void。函数的功能很简单，打印 "Hello BiscuitOS anywhere on kernel." 字符串。源码中还有一个比较重要的文件 "BiscuitOS_insert.bs", 该文件用于描述 main.c 中函数运行的位置，如图:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000704.png)
+
+"[File]" 下一行用于配置函数插入的文件在内核源码树的位置，例如图中插在内核 "init/main.c" 函数里。"[Func]" 下一行的内容用于说明插入在某个函数的前一行，例如上面的例子中插入在 "setup_arch()" 函数的前一行。"[Content]" 下一行用于说明插入的内容，例如上图中，将 main.c 函数的 BiscuitOS_Running() 函数插入到了 "setup_arch()" 函数之前运行. 开发者使用如下命令进行源码编译，并在 BiscuitOS 上运行:
+ 
+{% highlight bash %}
+make
+make install
+make pack
+make run
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000705.png)
+
+从内核启动 log 中看到打印的 "Hello BiscuitOS anywhere on kernel", 至此 Demo 程序演示完毕，接下来讲解开发者如何将 "独立代码" 添加到 BiscuitOS 机制。 开发者可以将自己的 "独立程序" 替换 Demo 程序中的 main.c 函数即可，当函数定义时不能为 static,返回值一定是 int, 参数必须是 void, 例如:
+
+{% highlight bash %}
+int BiscuitOS_Demo(void) {}
+{% endhighlight %}
+
+修改完毕之后，就是编译源码和在 BiscuitOS 验证你的独立程序。如果在 BiscuitOS 上验证无误的话，开发者接下来按如下步骤提交独立代码, 并合入 BiscuitOS 项目里。开发者需要发一份邮件给我，按如下内容进行描述:
+
+{% highlight bash %}
+1. 独立项目的功能
+2. 独立代码在什么架构上验证的，内核版本号信息
+3. 附件添加对应的源码
+3. 开发者的介绍和联系邮箱
+{% endhighlight %}
+
+开发者准备好如上内容发送至 "buddy.zhang@aliyun.com" 邮箱，并微信通知我。待我审批通过之后合入 BiscuitOS 并进行发布.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
 ----------------------------------
 
 <span id="B1"></span>
