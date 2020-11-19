@@ -181,7 +181,11 @@ tags:
 >
 > - [内存虚拟化](https://biscuitos.github.io/blog/Memory-Virtualization)
 >
+>   - [EPT](https://biscuitos.github.io/blog/KVM-EPT)
+>
 > - CPU 虚拟化
+>
+> - QEMU-KVM
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
