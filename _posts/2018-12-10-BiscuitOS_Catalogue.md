@@ -183,7 +183,7 @@ tags:
 >
 >   - [QEMU-KVM on BiscuitOS (2MiB HugePage) \[x86_64\]](https://biscuitos.github.io/blog/qemu-kvm-2M-on-BiscuitOS/)
 >
->   - [QEMU-KVM on BiscuitOS (1Gig HugePage) \[x86_64\]](https://biscuitos.github.io/blog/qemu-kvm-2M-on-BiscuitOS/)
+>   - [QEMU-KVM on BiscuitOS (1Gig HugePage) \[x86_64\]](https://biscuitos.github.io/blog/qemu-kvm-1G-on-BiscuitOS/)
 >
 > - KVM
 >
