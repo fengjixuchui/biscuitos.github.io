@@ -185,6 +185,8 @@ tags:
 >
 >   - [QEMU-KVM on BiscuitOS (1Gig HugePage) \[x86_64\]](https://biscuitos.github.io/blog/qemu-kvm-1G-on-BiscuitOS/)
 >
+>   - [Native Linux KVM tool (kvmtool) on BiscuitOS \[x86_64\]](https://biscuitos.github.io/blog/kvmtool-on-BiscuitOS/)
+>
 > - KVM
 >
 > - [内存虚拟化](https://biscuitos.github.io/blog/Memory-Virtualization)
