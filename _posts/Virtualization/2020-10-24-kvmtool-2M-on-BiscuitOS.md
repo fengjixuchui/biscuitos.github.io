@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Native Linux KVM tool on BiscuitOS"
+title:  "Native Linux KVM tool (2M Hugepage) on BiscuitOS"
 date:   2020-10-24 10:24:00 +0800
 categories: [HW]
 excerpt: kvmtool.
@@ -116,7 +116,7 @@ make menuconfig
 
   [*] Package  --->
       [*] KVM  --->
-          [*] Native Linux KVM tool on BiscuitOS+  --->
+          [*] Native Linux KVM tool (2M Hugepage) on BiscuitOS+  --->
 
 make
 {% endhighlight %}
@@ -124,16 +124,16 @@ make
 配置保存并执行 make，执行完毕之后会在指定目录下部署开发所需的文件，并在该目录下执行如下命令进行源码的部署，请参考如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-kvmtool-github
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-kvmtool-2M-github
 make download
 make tar
 {% endhighlight %}
 
 执行完上面的命令之后，BiscuitOS 会自动部署所需的源码文件，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000764.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000767.png)
 
-"BiscuitOS-kvmtool-github" 目录为 qemu-kvm 的源代码，目前采用 github 提供的版本; Makefile 为编译源码相关的脚本; RunBiscuitOS.sh 是在 BiscuitOS 是运行一个虚拟机的相关配置.
+"BiscuitOS-kvmtool-2M-github" 目录为 qemu-kvm 的源代码，目前采用 github 提供的版本; Makefile 为编译源码相关的脚本; RunBiscuitOS.sh 是在 BiscuitOS 是运行一个虚拟机的相关配置.
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -144,7 +144,7 @@ make tar
 部署完毕之后，接下来进行源码的编译和安装，并在 BiscuitOS 中运行. 参考如下代码:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-kvmtool-github
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-kvmtool-2M-github
 make
 make install
 make pack
@@ -164,9 +164,12 @@ RunBsicuitOS.sh
 脚本运行完毕之后，BiscuitOS 根据 RunBiscuitOS.sh 的工作流启动一个虚拟机，虚拟机运行如上。当想退出虚拟机的话，使用 Ctrl-C 即可. 开发者也可以采用第二种方式启动虚拟机，第二种方式也就是命令行方式，但有一个需要开发者注意的是，命令行必须在 BiscuitOS 的 "/mnt/Freeze/BiscuitOS-kvmtool" 目录下执行，具体命令参考如下:
 
 {% highlight bash %}
+mkdir -p /mnt/Freeze/BiscuitOS-kvmtool/hugetlb-2M/
+mount none /mnt/Freeze/BiscuitOS-kvmtool/hugetlb-2M/ -t hugetlbfs
+echo 100 > /proc/sys/vm/nr_hugepages
 cd /mnt/Freeze/BiscuitOS-kvmtool
 
-lkvm run --name BiscuitOS-kvm --cpus 2 --mem 128 --disk BiscuitOS.img --kernel bzImage --params "loglevel=3"
+lkvm run --name BiscuitOS-kvm --cpus 2 --mem 128 --disk BiscuitOS.img --kernel bzImage --params "loglevel=3" --hugetlbfs /mnt/Freeze/BiscuitOS-kvmtool/hugetlb-2M/
 {% endhighlight %}
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000766.png)

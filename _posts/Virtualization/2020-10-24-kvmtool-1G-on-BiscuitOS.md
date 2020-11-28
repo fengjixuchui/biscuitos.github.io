@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Native Linux KVM tool on BiscuitOS"
+title:  "Native Linux KVM tool (1G Hugepage) on BiscuitOS"
 date:   2020-10-24 10:24:00 +0800
 categories: [HW]
 excerpt: kvmtool.
@@ -83,6 +83,22 @@ sudo modprobe kvm
 sudo modprobe kvm-intel
 {% endhighlight %}
 
+由于要让 kvmtool 支持 1 Gig 的映射，那么需要对 BiscuitOS 的内存进行相应的配置，并且支持 1 Gig 的映射需要修改 CMDLINE 的内容，因此开发者接着要修改 RunBiscuitOS.sh 文件中的相关内容，修改如下:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64
+vi RunBiscuitOS.sh
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000746.png)
+
+正如上图所示，在 RunBiscuitOS.sh 脚本中找到 BiscuitOS 内存配置，其通过变量 "RAM_SIZE" 进行配置，另外 BiscuitOS 使用的 CMDLINE 存储在变量 "CMDLINE" 中，为了支持 1Gig 映射实践，所以将 BiscuitOS 的物理内存修改为 4Gig，并且在 CMDLINE 中添加 1Gig HugePage 的设置 "default_hugepagesz", 如下:
+
+{% highlight bash %}
+RAM_SIZE=4096
+CMDLINE="root=/dev/sda rw rootfstype=${FS_TYPE} console=ttyS0 init=/linuxrc loglevel=8 default_hugepagesz=1G"
+{% endhighlight %}
+
 在部署完毕开发环境之后, 由于需要在内核中支持 KVM 模块，因此开发者需要在内核配置中打开以下宏:
 
 {% highlight bash %}
@@ -116,7 +132,7 @@ make menuconfig
 
   [*] Package  --->
       [*] KVM  --->
-          [*] Native Linux KVM tool on BiscuitOS+  --->
+          [*] Native Linux KVM tool (1G Hugepage) on BiscuitOS+  --->
 
 make
 {% endhighlight %}
@@ -124,16 +140,16 @@ make
 配置保存并执行 make，执行完毕之后会在指定目录下部署开发所需的文件，并在该目录下执行如下命令进行源码的部署，请参考如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-kvmtool-github
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-kvmtool-1G-github
 make download
 make tar
 {% endhighlight %}
 
 执行完上面的命令之后，BiscuitOS 会自动部署所需的源码文件，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000764.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000768.png)
 
-"BiscuitOS-kvmtool-github" 目录为 qemu-kvm 的源代码，目前采用 github 提供的版本; Makefile 为编译源码相关的脚本; RunBiscuitOS.sh 是在 BiscuitOS 是运行一个虚拟机的相关配置.
+"BiscuitOS-kvmtool-1G-github" 目录为 qemu-kvm 的源代码，目前采用 github 提供的版本; Makefile 为编译源码相关的脚本; RunBiscuitOS.sh 是在 BiscuitOS 是运行一个虚拟机的相关配置.
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -144,7 +160,7 @@ make tar
 部署完毕之后，接下来进行源码的编译和安装，并在 BiscuitOS 中运行. 参考如下代码:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-kvmtool-github
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-kvmtool-1G-github
 make
 make install
 make pack
@@ -164,9 +180,12 @@ RunBsicuitOS.sh
 脚本运行完毕之后，BiscuitOS 根据 RunBiscuitOS.sh 的工作流启动一个虚拟机，虚拟机运行如上。当想退出虚拟机的话，使用 Ctrl-C 即可. 开发者也可以采用第二种方式启动虚拟机，第二种方式也就是命令行方式，但有一个需要开发者注意的是，命令行必须在 BiscuitOS 的 "/mnt/Freeze/BiscuitOS-kvmtool" 目录下执行，具体命令参考如下:
 
 {% highlight bash %}
+mkdir -p /mnt/Freeze/BiscuitOS-kvmtool/hugetlb-1G/
+mount none /mnt/Freeze/BiscuitOS-kvmtool/hugetlb-1G/ -t hugetlbfs
+echo 100 > /proc/sys/vm/nr_hugepages
 cd /mnt/Freeze/BiscuitOS-kvmtool
 
-lkvm run --name BiscuitOS-kvm --cpus 2 --mem 128 --disk BiscuitOS.img --kernel bzImage --params "loglevel=3"
+lkvm run --name BiscuitOS-kvm --cpus 2 --mem 128 --disk BiscuitOS.img --kernel bzImage --params "loglevel=3" --hugetlbfs /mnt/Freeze/BiscuitOS-kvmtool/hugetlb-1G/
 {% endhighlight %}
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000766.png)
