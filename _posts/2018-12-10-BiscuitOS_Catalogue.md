@@ -19,7 +19,7 @@ tags:
 >
 > - [Build Upstream Linux from Linus Torvalds](https://biscuitos.github.io/blog/Kernel_Build/#Linux_newest)
 >
-> - [Build Linux 5.9 - RISCV32/RISCV64/ARM32/ARM64/I386/X86_64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5Y)
+> - [Build Linux 5.10 - RISCV32/RISCV64/ARM32/ARM64/I386/X86_64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5Y)
 >
 > - [Build Linux 0.X](https://biscuitos.github.io/blog/Kernel_Build/#Linux_0X)
 >
@@ -144,6 +144,12 @@ tags:
 > - Memory Maps
 >
 >   - [Real Mode Address Space (\< 1 MiB)](https://biscuitos.github.io/blog/MMU-seaBIOS_E820/#B0003)
+>
+> - Memory Principle
+>
+>   - [PAT: Page Attribute Table]()
+>
+>   - [MTRR: Memory Type Range Register]()
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
