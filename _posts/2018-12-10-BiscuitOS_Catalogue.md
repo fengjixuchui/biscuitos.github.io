@@ -77,6 +77,16 @@ tags:
 >
 >   - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
 >
+> - Paging Mechanism
+>
+> - Memory Model
+>
+>   - [Flat Memory Model]()
+>
+>   - [Discontig Memory Model]()
+>
+>   - [SPARSE Memory Model]()
+>
 > - Physical Memory Manager
 >
 >   - [NUMA]()
@@ -84,10 +94,6 @@ tags:
 >   - [UMA]()
 >
 >   - [ZONE]()
->
->   - [SPARSE Memory Model]()
->
->   - [FLAT Memory Model]()
 >
 >   - [Physical Page/Frame]()
 >
@@ -141,6 +147,8 @@ tags:
 >
 >   - [Fixmap Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#P)
 >
+> - Page Fault
+>
 > - Memory Maps
 >
 >   - [Real Mode Address Space (\< 1 MiB)](https://biscuitos.github.io/blog/MMU-seaBIOS_E820/#B0003)
@@ -150,6 +158,8 @@ tags:
 >   - [PAT: Page Attribute Table]()
 >
 >   - [MTRR: Memory Type Range Register]()
+>
+> - [Memory Virtualize]()
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
