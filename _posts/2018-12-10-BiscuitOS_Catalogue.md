@@ -223,6 +223,8 @@ tags:
 
 > - [Bit: bitmap/bitops/bitmask/bit find](https://biscuitos.github.io/blog/BITMAP/)
 >
+> - [NUMA NODE/NODEMASK](https://biscuitos.github.io/blog/NODEMASK/)
+>
 > - [GNU 链接脚本](https://biscuitos.github.io/blog/LD/)
 >
 > - [Device Tree: DTS/DTB/FDT](https://biscuitos.github.io/blog/DTS/)
