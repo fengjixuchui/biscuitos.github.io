@@ -159,6 +159,8 @@ tags:
 >
 >   - [MTRR: Memory Type Range Register]()
 >
+>   - [Register](https://biscuitos.github.io/blog/Register/)
+>
 > - [Memory Virtualize]()
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
