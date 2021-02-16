@@ -79,6 +79,8 @@ tags:
 >
 > - Paging Mechanism
 >
+>   - [Intel 32-Bit Paging Mechanism](https://biscuitos.github.io/blog/32bit-Paging/)
+>
 > - Memory Model
 >
 >   - [Flat Memory Model]()
