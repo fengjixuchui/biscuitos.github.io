@@ -163,6 +163,8 @@ tags:
 >
 >   - [Register](https://biscuitos.github.io/blog/Register/)
 >
+> - Memory Compact Technology
+>
 > - [Memory Virtualize]()
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
