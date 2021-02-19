@@ -44,6 +44,8 @@ tags:
 >   - [Build MIT XV6 on BiscuitOS](https://biscuitos.github.io/blog/XV6-REV11-Usermanual)
 >
 > - [BiscuitOS on RaspberryPi](#RaspberryPi)
+>
+> - [Linux Mechansim](https://biscuitos.github.io/blog/Human-Knowledge-Common/#H000023)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
