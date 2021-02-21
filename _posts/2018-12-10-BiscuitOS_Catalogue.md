@@ -79,10 +79,6 @@ tags:
 >
 >   - [MEMBLOCK Allocator](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
 >
-> - Paging Mechanism
->
->   - [Intel 32-Bit Paging Mechanism](https://biscuitos.github.io/blog/32bit-Paging/)
->
 > - Memory Model
 >
 >   - [Flat Memory Model]()
@@ -151,19 +147,11 @@ tags:
 >
 >   - [Fixmap Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#P)
 >
-> - Page Fault
+> - Paging Mechanism
 >
-> - Memory Maps
+>   - [Intel 32-Bit Paging Mechanism](https://biscuitos.github.io/blog/32bit-Paging/)
 >
->   - [Real Mode Address Space (\< 1 MiB)](https://biscuitos.github.io/blog/MMU-seaBIOS_E820/#B0003)
->
-> - Memory Principle
->
->   - [PAT: Page Attribute Table]()
->
->   - [MTRR: Memory Type Range Register]()
->
->   - [Register](https://biscuitos.github.io/blog/Register/)
+> - Page Fault Mechanism
 >
 > - Memory Compact Technology
 >
@@ -172,6 +160,18 @@ tags:
 >   - SWAP
 >
 > - [Memory Virtualize]()
+>
+> - Memory Principle
+>
+>   - [PAT: Page Attribute Table]()
+>
+>   - [MTRR: Memory Type Range Register]()
+>
+>   - [Register With Memory Mechanism](https://biscuitos.github.io/blog/Register/)
+>
+> - Memory Maps
+>
+>   - [X86: Real Mode Address Space (\< 1 MiB)](https://biscuitos.github.io/blog/MMU-seaBIOS_E820/#B0003)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
