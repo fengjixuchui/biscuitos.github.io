@@ -169,9 +169,11 @@ tags:
 >
 >   - [Register With Memory Mechanism](https://biscuitos.github.io/blog/Register/)
 >
-> - Memory Maps
+> - Address Space Layout
 >
 >   - [X86: Real Mode Address Space (\< 1 MiB)](https://biscuitos.github.io/blog/MMU-seaBIOS_E820/#B0003)
+>
+>   - [进程地址空间构建研究](https://biscuitos.github.io/blog/Process-Address-Space)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
