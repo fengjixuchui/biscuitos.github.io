@@ -46,6 +46,8 @@ tags:
 > - [BiscuitOS on RaspberryPi](#RaspberryPi)
 >
 > - [Linux Favourable Mechansim](https://biscuitos.github.io/blog/Human-Knowledge-Common/#H000023)
+>
+> - [问题反馈及留言](https://github.com/BiscuitOS/BiscuitOS/issues)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
