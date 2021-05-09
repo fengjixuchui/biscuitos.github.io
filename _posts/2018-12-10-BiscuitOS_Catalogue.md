@@ -122,33 +122,6 @@ tags:
 > - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
 >
 > - [用户空间实现 Linux 内核分配器](https://biscuitos.github.io/blog/Memory-Userspace/)
->
->   - [MEMBLOCAK Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#B)
->
->   - [PERCPU(UP) Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#C)
->
->   - [PERCPU(SMP) Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#D)
->
->   - [Buddy-Normal Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#E)
->
->   - [Buddy-HighMEM Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#F)
->
->   - [PCP Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#G)
->
->   - [Slub Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#H)
->
->   - [Kmem_cache Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#J)
->
->   - [Kmalloc Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#K)
->
->   - [NAME Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#L)
->
->   - [VMALLOC Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#M)
->
->   - [KMAP Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#N)
->
->   - [Fixmap Memory Allocator](https://biscuitos.github.io/blog/Memory-Userspace/#P)
->
 > - Paging Mechanism
 >
 >   - [Intel 32-Bit Paging Mechanism](https://biscuitos.github.io/blog/32bit-Paging/)
@@ -176,12 +149,24 @@ tags:
 >   - [X86: Real Mode Address Space (\< 1 MiB)](https://biscuitos.github.io/blog/MMU-seaBIOS_E820/#B0003)
 >
 >   - [进程地址空间构建研究](https://biscuitos.github.io/blog/Process-Address-Space)
+>
+>   - [i386/X86_64 Address Space Layout]()
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
 ## [虚拟文件系统]()
 
 > - [系统调用](https://biscuitos.github.io/blog/SYSCALL)
+>
+>   - [sys_open](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
+>
+>   - sys_mmap/sys_mmap2
+>
+>   - sys_munmap
+>
+>   - sys_brk
+>
+> - SYSCALL on Architecture
 >
 >   - [ARM32 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
 >
@@ -194,8 +179,6 @@ tags:
 >   - [RISCV32 架构中添新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
 >
 >   - [RISCV64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
->
->   - [sys_open](https://biscuitos.github.io/blog/SYSCALL_sys_open/)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
