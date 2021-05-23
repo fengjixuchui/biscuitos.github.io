@@ -150,7 +150,7 @@ tags:
 >
 >   - [进程地址空间构建研究](https://biscuitos.github.io/blog/Process-Address-Space)
 >
->   - [i386/X86_64 Address Space Layout]()
+>   - [i386/X86_64 Address Space Layout](https://biscuitos.github.io/blog/Address-Space-i386)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
