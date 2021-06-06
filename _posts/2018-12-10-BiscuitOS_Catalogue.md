@@ -43,6 +43,8 @@ tags:
 >
 >   - [Build MIT XV6 on BiscuitOS](https://biscuitos.github.io/blog/XV6-REV11-Usermanual)
 >
+>   - [Build SerenityOS on BiscuitOS](https://biscuitos.github.io/blog/SerenityOS)
+>
 > - [BiscuitOS on RaspberryPi](#RaspberryPi)
 >
 > - [Linux Favourable Mechansim](https://biscuitos.github.io/blog/Human-Knowledge-Common/#H000023)
