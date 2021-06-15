@@ -412,6 +412,8 @@ tags:
 > - [系统调用调试建议](https://biscuitos.github.io/blog/SYSCALL_DEBUG/)
 >
 > - [通过 Kernel 历史树实践内核建议](https://biscuitos.github.io/blog/Kernel_History/#header)
+>
+> - [内核核心转储: Kdump with kexec and crash](https://biscuitos.github.io/blog/CRASH)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
