@@ -57,7 +57,9 @@ tags:
 
 > - [Linux MMU History Project](https://biscuitos.github.io/blog/HISTORY-MMU/)
 >
-> - [自己动手设计一个内存管理子系统](https://biscuitos.github.io/blog/Design-MMU/)
+> - [自己动手设计一个内存管理子系统 (ARM Architecture)](https://biscuitos.github.io/blog/Design-MMU/)
+>
+> - [自己动手设计一个内存管理子系统 (X86 Architecture)](https://biscuitos.github.io/blog/Design-MMU/)
 >
 > - Detecting Memory
 >
@@ -124,11 +126,24 @@ tags:
 > - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
 >
 > - [用户空间实现 Linux 内核分配器](https://biscuitos.github.io/blog/Memory-Userspace/)
+>
 > - Paging Mechanism
 >
 >   - [Intel 32-Bit Paging Mechanism](https://biscuitos.github.io/blog/32bit-Paging/)
 >
+>   - [Intel PAE Paging Mechanism]()
+>
+>   - [Intel 4-level/5-level Paging Mechanism]()
+>
+>   - [EPT Paging Mechansim]()
+>
 > - Page Fault Mechanism
+>
+>   - [Anonymous Shared/Private Page Fault]()
+>
+>   - [File Shared/Private Page Fault]()
+>
+> - Memory Mmapping Mechanism
 >
 > - Memory Compact Technology
 >
@@ -136,7 +151,17 @@ tags:
 >
 >   - SWAP
 >
+> - Share Memory Mechanism
+>
+>   - [SHM: Share Memory on Process]()
+>
+>   - [KSM: Kernel Same Page Mechanism]()
+>
+> - Memory Hotplug Technology
+>
 > - [Memory Virtualize]()
+>
+>   - [QEMU Memory Manager]()
 >
 > - Memory Principle
 >
@@ -153,6 +178,12 @@ tags:
 >   - [进程地址空间构建研究](https://biscuitos.github.io/blog/Process-Address-Space)
 >
 >   - [i386/X86_64 Address Space Layout](https://biscuitos.github.io/blog/Address-Space-i386)
+>
+> - Memory Diagnostic Tools
+>
+>   - [Live/offline Crash Tools](https://biscuitos.github.io/blog/CRASH)
+>
+>   - [Memory Statistical tools]()
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
