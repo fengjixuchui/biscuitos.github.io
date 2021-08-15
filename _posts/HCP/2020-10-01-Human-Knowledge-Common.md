@@ -22,7 +22,7 @@ tags:
 >
 > - [HKC 贡献者名单](#D)
 
-<span id="H000023"></span>
+<span id="H000026"></span>
 > - Assembly
 >
 >   - X86/X86_64 Assembly
@@ -44,6 +44,48 @@ tags:
 >   - [kernel cpumask Demo](#H000005)
 >
 > - MMAP
+>
+>   - [Anonymous Share mmap on Userspace](#H000023)
+>
+>   - [Anonymous Private mmap on Userspace](#H000024)
+>
+>   - [File Share mmap on Userspace](#H000025)
+>
+>   - [File Private mmap on Userspace]()
+>
+>   - [File mmap on tmpfs Filesystem (UserSpace)]()
+>
+>   - [File mmap on EXT2 Filesystem (Userspace)]()
+>
+>   - [File mmap on EXT3 Filesystem (Userspace)]()
+>
+>   - [File mmap on EXT4 Filesystem (Userspace)]()
+>
+>   - [File mmap on minix Filesystem (Userspace)]()
+>
+>   - [File mmap on vfat Filesystem (Userspace)]()
+>
+>   - [File mmap on msdos Filesystem (Userspace)]()
+>
+>   - [Special Share mmap on Userspace and kernel]()
+>
+>   - [Special Private mmap on Userspace and kernel]()
+>
+>   - [Hugepage(Hugetlbfs) 2MiB Share mmap on Userspace]()
+>
+>   - [Hugepage(Hugetlbfs) 2MiB Private mmap on Userspace]()
+>
+>   - [Hugepage(Hugetlbfs) 2MiB anonymous share mmap on Userspace]()
+>
+>   - [Hugepage(Hugetlbfs) 2MiB anonymous private mmap on Userspace]()
+> 
+>   - [Hugepage(Hugetlbfs) 1GiB Share mmap on Userspace]()
+>
+>   - [Hugepage(Hugetlbfs) 1GiB Private mmap on Userspace]()
+>
+>   - [Hugepage(Hugetlbfs) 1GiB anonymous share mmap on Userspace]()
+>
+>   - [Hugepage(Hugetlbfs) 1GiB anonymous private mmap on Userspace]()
 >
 >   - [Anonymous mmap on userspace](#H000016)
 >
@@ -4156,6 +4198,275 @@ online
 {% endhighlight %}
 
 BiscuitOS 运行之后，首先查看 IORESOURCE 上的内存设备信息，发现系统此时看不到 0x50000000 到 58000000 的内存信息，并且 "/sys/devices/system/memory/" 目录下并没有 memory10 的目录. 此时查看系统可以物理内存信息，显示为 355284 KiB。接下来插入模块，查看模块之后可以在 IORESOURCE 下看到 0x50000000 到 58000000 的内存信息，并且 "/sys/devices/system/memory/" 目录可以看到 memory10 的目录。此时查看系统可以物理内存信息，显示为 486356 KiB。接着进入 memory10 目录，查看 state 的信息，显示为 online，那么表示内存已经在模块插入时自动热插拔到系统了。运行的结>果符合预期.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000023"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Anonymous Share mmap on Userspace
+
+代码核心功能是在用户空间通过 "共享匿名" 方式映射一段虚拟内存。
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Memory Mapping Mechanism  --->
+        [*]  Anonymous Share mmap on Userspace
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-anonymous-share-mmap-userspace-default/
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [HKC 计划 BiscuitOS 实践框架介绍](#C)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Anonymout share mmap on Userspace
+ *
+ * (C) 2021.04.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+
+#define BISCUITOS_MAP_SIZE      4096
+
+int main()
+{
+        unsigned long *val;
+        char *base;
+
+        /* mmap */
+        base = (char *)mmap(NULL,
+                            BISCUITOS_MAP_SIZE,
+                            PROT_READ | PROT_WRITE,
+                            MAP_SHARED | MAP_ANONYMOUS,
+                            -1,
+                            0);
+        if (base == MAP_FAILED) {
+                printf("ERROR: mmap failed.\n");
+                return -ENOMEM;
+        }
+
+        val = (unsigned long *)base;
+        /* Trigger page fault */
+        *val = 88520;
+        printf("%#lx => %ld\n", (unsigned long)val, *val);
+
+        /* unmap */
+        munmap(base, BISCUITOS_MAP_SIZE);
+
+        return 0;
+}
+{% endhighlight %}
+
+例子很精简，首先通过 mmap() 函数进行映射，在映射的时候传入参数 MAP_SHARED 和 MAP_ANONYMOUS 标志就可以映射一段匿名共享的虚拟内存。当对分配的虚拟内存进行读或者写操作的时候，就会触发缺页异常。当不再使用这段虚拟内核时，可以使用 munmap() 函数进行释放. 例子在 BiscuitOS 中运行的情况如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000889.png)
+
+BiscuitOS 运行之后，在用户空间直接运行 BiscuitOS-anonymous-share-mmap-userspace-default 引用程序即可，运行之后打印虚拟内存的地址以及虚拟内存的值.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000024"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Anonymous Private mmap on Userspace
+
+代码核心功能是在用户空间通过 "私有匿名" 方式映射一段虚拟内存。
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Memory Mapping Mechanism  --->
+        [*]  Anonymous Private mmap on Userspace
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-anonymous-private-mmap-userspace-default/
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [HKC 计划 BiscuitOS 实践框架介绍](#C)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * Anonymout private mmap on Userspace
+ *
+ * (C) 2021.04.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+
+#define BISCUITOS_MAP_SIZE      4096
+
+int main()
+{
+        unsigned long *val;
+        char *base;
+
+        /* mmap */
+        base = (char *)mmap(NULL,
+                            BISCUITOS_MAP_SIZE,
+                            PROT_READ | PROT_WRITE,
+                            MAP_PRIVATE | MAP_ANONYMOUS,
+                            -1,
+                            0);
+        if (base == MAP_FAILED) {
+                printf("ERROR: mmap failed.\n");
+                return -ENOMEM;
+        }
+
+        val = (unsigned long *)base;
+        /* Trigger page fault */
+        *val = 88520;
+        printf("%#lx => %ld\n", (unsigned long)val, *val);
+
+        /* unmap */
+        munmap(base, BISCUITOS_MAP_SIZE);
+
+        return 0;
+}
+{% endhighlight %}
+
+例子很精简，首先通过 mmap() 函数进行映射，在映射的时候传入参数 MAP_PRIVATE 和 MAP_ANONYMOUS 标志就可以映射一段匿名私有的虚拟内存。当对分配的虚拟内存进行读或者写操作的时候，就会触发缺页异常。当不再使用这段虚拟内核时，可以使用 munmap() 函数进行释放. 例子在 BiscuitOS 中运行的情况如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000890.png)
+
+BiscuitOS 运行之后，在用户空间直接运行 BiscuitOS-anonymous-private-mmap-userspace-default 引用程序即可，运行之后打印虚拟内存的地址以及虚拟内存的值.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------
+
+<span id="H000025"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### File Share mmap on Userspace
+
+代码核心功能是在用户空间通过 "共享" 方式将文件映射到一段虚拟内存上。
+
+###### BiscuitOS 配置
+
+在 BiscuitOS 中使用配置如下:
+
+{% highlight bash %}
+[*] Package  --->
+    [*] Memory Mapping Mechanism  --->
+        [*] File Share mmap on Userspace --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-file-share-mmap-userspace-default/
+{% endhighlight %}
+
+具体实践办法请参考:
+
+> [HKC 计划 BiscuitOS 实践框架介绍](#C)
+
+###### 通用例程
+
+{% highlight c %}
+/*
+ * File Share mmap on Userspace
+ *
+ * (C) 2021.04.02 BuddyZhang1 <buddy.zhang@aliyun.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+
+#define BISCUITOS_FILE_PATH     "/BiscuitOS"
+#define BISCUITOS_MAP_SIZE      4096
+
+int main()
+{
+        unsigned long *val;
+        char *base;
+        int fd;
+
+        /* Open */
+        fd = open(BISCUITOS_FILE_PATH, O_RDWR);
+        if (fd < 0) {
+                printf("ERROR: Open %s failed.\n", BISCUITOS_FILE_PATH);
+                return -EBUSY;
+        }
+
+        /* mmap */
+        base = (char *)mmap(NULL,
+                            BISCUITOS_MAP_SIZE,
+                            PROT_READ | PROT_WRITE,
+                            MAP_SHARED,
+                            fd,
+                            0);
+        if (base == MAP_FAILED) {
+                printf("ERROR: mmap failed.\n");
+                close(fd);
+                return -ENOMEM;
+        }
+
+        val = (unsigned long *)base;
+        /* Trigger page fault */
+        *val = 88520;
+        printf("%#lx => %#lx\n", (unsigned long)val, *val);
+
+        /* unmap */
+        munmap(base, BISCUITOS_MAP_SIZE);
+        close(fd);
+
+        return 0;
+}
+{% endhighlight %}
+
+例子很精简，首先通过 open() 函数打开一个文件，然后通过 mmap() 函数进行映射，在映射的时候传入参数 MAP_SHARED 标志, 并传入打开文件的 fd，这样就可以将文件以 "共享" 方式映射到虚拟内存。当对分配的虚拟内存进行读或者写操作的时候，就会触发缺页异常，这个时候就会建立虚拟内存到文件的映射关系。当不再使用这段虚拟内核时，可以使用 munmap() 函数进行释放，最后关闭打开的文件。例子在 BiscuitOS 中运行的情况如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000891.png)
+
+BiscuitOS 运行之后，直接运行 RunBiscuitOS.sh 脚本，脚本首先在当前目录下创建一个文件并写入 "BiscuitOS" 内容，然后在用户空间直接运行 BiscuitOS-file-share-mmap-userspace-default 调用程序，最后使用 hexdump 工具对虚拟内存写入的值是否与文件中的内容一致。通过实践发现结果与预期一致。
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
