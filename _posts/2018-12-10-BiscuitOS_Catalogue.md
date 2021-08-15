@@ -161,7 +161,7 @@ tags:
 >
 > - [Memory Virtualize]()
 >
->   - [QEMU Memory Manager]()
+>   - [QEMU Memory Manager for Virtual machine](Qhttps://biscuitos.github.io/blog/EMU-Memory-Manager-VM)
 >
 > - Memory Principle
 >
