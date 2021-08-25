@@ -18,34 +18,59 @@ tags:
 >
 > - [Overview](#B)
 >
-> QEMU Memory Manager 核心数据结构
+> - [QEMU Memory Manager 实践]()
 >
-> - [MemorySection](#C1)
+> - [QEMU Memory Manager 使用]()
 >
->   - [MemoryRegion 数据结构分析](#C105)
+> - [QEMU Memory Manager 调试工具]()
+>
+> - [QEMU Memory Manager 进阶研究]()
+>
+>   - [内存总线研究](#C108)
+>
+>   - [内存控制器与内存条研究](#C109)
+>
+>   - [内存条物理地址分配研究]()
+>
+>   - [新增一块物理内存研究]()
+>
+>   - [移除一块物理内存研究]()
+>
+>   - [GPA/HVA/HPA 地址转换研究]()
+>
+>   - [GPA AddressSpaceDispatch 页表研究]()
+>
+>   - [内存热插拔之热插研究]()
+>
+>   - [内存热插拔之热拔研究]()
+>
+> - [QEMU Memory Manager 核心数据结构]()
+>
+>   - [AddressSpace]()
 >  
->   - [MemoryRegion 对象初始化](#C106)
->  
->   - [MemoryRegion 对象属性](#C107)
->  
->   - [内存总线 MemoryRegion]()
->  
->   - [内存控制器 MemoryRegion]()
->  
->   - [内存条 RAMBLOCK]()
->  
->   - [物理内存区域 MemoryRegion]()
->  
->   - [MemoryRegion 与 GPA 之间的关系](#C100)
->  
->   - [MemoryRegion 与 HVA 之间的关系](#C101)
->  
->   - [MemoryRegion 与 HPA 之间的关系](#C102)
->  
->   - [MemoryRegion 与 AddressSpace 之间关系](#C103)
->  
->   - [MemoryRegion 与 MemoryRegionSection 之间关系](#C104)
-
+>   - [AddressSpaceDispatch]()
+>
+>   - [FlatRange]()
+>
+>   - [FlatView]()
+>
+>   - [KVMSlot]()
+>
+>   - [kvm_userspace_memory_region]()
+>
+>   - [MemoryListener]()
+>   
+>   - [MemoryRegion](#C1)
+>
+>   - [MemoryRegionSection]()
+>   
+>   - [Node]()
+>
+>   - [PhysPageEntry]()
+>
+>   - [PhysPageMap]()
+>
+>   - [subpage_t]()
 
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
@@ -72,6 +97,8 @@ tags:
 >
 > QEMU 有好多数据管理结构，它们是如何相互联系在一起的?
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
 ----------------------------------
 
 <span id="B"></span>
@@ -79,6 +106,58 @@ tags:
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
 
 #### Overview
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000928.png)
+
+在 QEMU QOM 中，QOM 使用 MemoryRegion 对象描述不同类型的内存组件，其中 MemoryRegion 可以用来描述内存总线。何为内存总线? 广义上的内存总线是用于连接内存系统和芯片组的北桥区域，从技术上讲内存总线由两部分组成: 数据总线在内存和芯片组之间传输信息, 地址总线用于定位存储介质的位置。QEMU 使用 MemoryRegion 对象模拟的内存总线也要具备这些功能。
+
+在 QEMU 中使用 AddressSpace 描述虚拟机的地址空间，是一种高层的内存空间抽象，其下属的内存总线，QEMU 也使用 MemoryRegion 对象来模拟内存总线，这里称这种 MemoryRegion 为 "内存总线" MemoryRegion. QEMU 还使用 MemoryRegion 对象来模拟内存控制器，所谓内存控制器就是控制内存条与 CPU 之间的访问，因此从技术角度来讲，内存总线为了让 CPU 能否访问内存条里面的内存，那么内存总线需要使虚拟机的地址总线能否访问到内存条，另外内存总线需要使虚拟机的数据总线能否和内存条交互数据。QEMU 使用 "物理区域" MemoryRegion 对象从 "内存控制器" MemoryRegion 维护的 "内存条" RAMBlock 中划分一段内存出来，这段内存将暴露给虚拟机使用，也就是虚拟机能看到 "物理区域" MemoryRegion 描述的物理内存，而 "内存控制器" MemoryRegion 的 "内存条" RAMBlock 没有被描述的部分虚拟机是看不到的。"内存总线" MemoryRegion 以 subregions 作为链表头，以 "物理区域" MemoryRegion 的 subregions_link 为节点，将所以 "物理区域" 连接在一起形成模拟的 "内存总线"，每个 "物理区域" MemoryRegion 的 addr 成员指明了其在虚拟机中的物理地址，这样虚拟机的地址总线可以访问到该物理内存区域.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000886.png)
+
+通过上面的描述可以获得上图的关系，"内存控制器" MemoryRegion (R3) 维护的内存有 "内存条" RAMBlock (RB0) 进行描述。在 "内存条" RAMBlock 中，offset 成员表示 QEMU 在虚拟机启动之前将 "内存条" RAMBlock (RB0) 插入到虚拟机地址总线之后获得物理地址，也就是 "内存条" RAMBlock (RB0) 在虚拟机地址总线地址为 GPA:addr3，其在虚拟机内存成为 Memory Bank。另外 QEMU 为 "内存条" RAMBlock (RB0) 分配虚拟内存，通过 "内存条" RAMBlock (RB0) 的 host 成员进行维护，因此 "内存条" RAMBlock 的起始 HVA:addr0 地址就是 host 成员的值. 同理 "物理区域" MemoryRegion (R0) 和 (R1) 从 "内存条" RAMBlock (RB0) 中各自划分了一段物理内存进行描述。"物理区域" MemoryRegion (R0) 在 "内存条" RAMBlock (RB0) 中的偏移是 R0->alias_offset, 那么 "物理区域" MemoryRegion (R0) 的物理地址就是 RB0->offset + R0->alias_offset. 同理 "物理区域" MemoryRegion (R1) 维护的物理区域的起始地址就是 RB0->offset + R1->alias_offset. 
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000929.png)
+
+在 QEMU 中多个 "内存控制器" MemoryRegion 维护的 "内存条" RAMBlock 在上电之前插入到虚拟机的地址总线上，将会形成多个 Memory Bank 区域，这些区域不存在重合的部分，它们之间可以相临或者相离. 虚拟机并不能直接看到这些 "内存条"，而是需要使用 "物理区域" MemoryRegion 描述虚拟机能看到的部分，因此 "内存条" RAMBlock 内存就会出现暴露给虚拟机看到的物理内存区域，如 MR0、MR1 直到 MRn 这些区域。相反如果 "内存条" RAMBlock 中没有被 "物理区域" MemoryRegion 描述的区域虚拟机将不可见，那么这部分对于虚拟机来说就是内存空洞 Hole, 例如上图的 Hole0. "内存总线" MemoryRegion 将所有的 "物理区域" MemoryRegion 连接在一起，起初来看这个链表上的区域就是虚拟机能看到的物理内存，但事情远没有我们想象的简单，"物理区域" MemoryRegion 在描述区域可能会与其他 "物理区域" MemoryRegion 重叠，例如上图的 MR2 于 MR0 和 MR1 都有重叠区域。那么 "内存总线" MemoryRegion 就不能将一个线性的地址空间传递给虚拟机。那么此时 QEMU 使用了 FlatView 来将重叠的 "物理区域" MemoryRegion 中重叠部分去重之后组成一个平坦的线性物理内存空间。
+ 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000930.png)
+
+QEMU 使用 FlatView 数据结构将虚拟机的内存平坦化，其由 AddressSpace 的 current_map 进行指定，FlatView 数据结构维护了一个 FlatRange 的数组, 每个 FlatRange 可以理解为 "内存条" RAMBlock 暴露给虚拟机的区域，因此 FlatRange 只是多个 "物理区域" MemoryRegion 去重之后的物理内存区域描述，所以 FlatRange 主要维护内存来自哪个 "内存控制器" MemoryRegion, 以及描述其在 "内存条" RAMBlock 上的范围。FlatView 最终将暴露给虚拟机内存都按地址从低到高的维护在 FlatRange 数组里，这样从 QEMU 角度来看虚拟机要使用的内存已经平坦化了。那么现在问题来了，Host 端已经使用 FlatView 的 FlatRange 数组实现了平坦物理内存的管理，已经 "内存控制器" MemoryRegion 可以获得 Host 端内存到虚拟机物理内存的映射关系，那么 QEMU Guest 端的物理内存如何与 Host 端的虚拟内存建立映射关系呢? 这个问题可能会与 EPT 页表混淆，这里说明一下 EPT 页表处理的是虚拟机运行时处理 GPA 到 HPA 的关系，而这里的问题是当虚拟机没有启动或者进入 QEMU 的 monitor 模式之后，如何处理虚拟机物理内存与 Host 端内存的关系，两个问题还是有本质区别的。QEMU 这时引入了新的数据结构 MemoryRegionSection, 该数据结构是不是与 MemoryRegion 很相似，对很相似，但其主要处理虚拟机物理内存与 "内存控制器" MemoryRegion 的联系，为什么是 "内存控制器" MemoryRegion 而不是 "内存总线" MemoryRegion 或者 "物理区域" MemoryRegion 的联系呢? 大家可以思考一下 "内存控制器" 可是管理 "内存条" 虚拟机物理内存和 QEMU 分配的虚拟内存，直接建立 "内存控制器" MemoryRegion 便于地址转换.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000933.png)
+
+当 QEMU 将重叠的 "物理区域" MemoryRegion 对象去重之后使用 FlatView 的 FlatRange 数组进行描述时，其逻辑框图如上. 在一个 "内存控制器" MemoryRegion (MC0) 管理的 "内存条" RAMBlock (RB0) 中，其在虚拟机地址总线上的地址为 RB0->offset, 即 Memory Bank (MB0) 区域的地址地址 GPA:addr0, 那么 RB0->offset 就等于 GPA:addr0. QEMU 为 "内存条" RAMBlock (RB0) 分配的虚拟内存通过 host 成员进行指定，其起始虚拟地址为 HVA:addr1. QEMU 将所有重叠和相邻的 "物理区域" MemoryRegion 合并在一起，形成了 Region (R0) 到 Region (Rn) 多个区域，每个区域可以相邻和相离，但不在重叠。此时 FlatView 的 FlatRange 数组按每个区域的起始地址从低到高对 Region 进行描述。例如 FlatRange 数组的第一个成员用于描述第一个 Region (R0), 那么 FaltRange (FR0) 的 AddrRange:addr 用于描述 Region (R0) 在虚拟机地址总线上的起始地址 GPA:addr0 以及 Region (R0) 的长度. FR0 的 mr 成员指向了 "内存控制器" MC0, offset_in_region 成员指向了 Region (R0) 在 "内存条" RAMBlock 内的偏移，那么此时 FR0->offset_in_region 等于 "HVA:addr1 - RB0->host". 同理使用 FlatRange 数组的第二个成员用于描述 Region (R1) 区域，那么 FaltRange (FR1) 的 AddrRange:addr 用于描述 Region (R1) 在虚拟机地址总线上的起始地址 GPA:addr2 以及 Region (R1) 的长度. FR1 的 mr 成员指向了 "内存控制器" MC0, offset_in_region 成员指向了 Region (R1) 在 "内存条" RAMBlock 内的偏移，那么此时 FR1->offset_in_region 等于 "HVA:addr3 - RB0->host" 
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000932.png)
+
+FlatView 和 FlatRange 的存在只是将 "内存总线" MemoryRegion 上的 "物理内存区域" MemoryRegion 去重并平坦化，使 QEMU 看到的 "内存总线" MemoryRegion 上的内存是线性平坦的。然后要在 QEMU 中建立虚拟机物理地址到 QEMU 端虚拟地址的联系，那还需要 MemoryRegionSection 的协助，首先通过上面的代码可以知道 MemoryRegionSection 是从 FlatRange 转换而来，但其在 QEMU 中当担的作用却和 FlatRange 不同，FlatRange 着重描述 Host 侧的内存布局，而 MemoryRegionSection 则是描述虚拟机内物理区域的描述. 从上图的代码可以获得 MemoryRegionSection 与 FlatRange、MemoryRegionSection 与 "内存控制器" MemoryRegion 联系的建立。 
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000931.png)
+
+在一个 "内存控制器" MemoryRegion (MC0) 管理的 "内存条" RAMBlock (RB0) 中，其在虚拟机地址总线上的地址为 RB0->offset, 即 Memory Bank (MB0) 区域的地址地址 GPA:addr0, 那么 RB0->offset 就等于 GPA:addr0. QEMU 为 "内存条" RAMBlock (RB0) 分配的虚拟内存通过 host 成员进行指定，其起始虚拟地址为 HVA:addr1. 此时虚拟机内部 "内存条" RAMBlock 对应 "Memory Bank (MB0)", 该 "Memory Bank (MB0)" 被分作两个区域，第一个区域称为 Region (R0), 第二个区域称为 Region (R1). QEMU 此时使用 MemoryRegionSection (MRS0) 来描述虚拟机内部的 Region (R0) 区域，其 offset_within_address_space 成员表示 Region (R0) 区域在虚拟机地址总线上的起始地址，也就是 GPA:addr0, 接着 mr 成员指向 "内存控制器" MemoryRegion (MC0), fv 成员指向 FlatRange (上图并未给出), offset_within_region 成员则表示其在虚拟内存中的偏移，其值等于 "HVA:addr1 - RB0->host"。同理 MemoryRegionSection (MRS1) 描述虚拟机内部的 Region (R1) 区域，其 offset_within_address_space 成员表示 Region (R1) 区域在虚拟机地址总线上的起始地址，也就是 GPA:addr2, 接着 mr 成员指向 "内存控制器" MemoryRegion (MC0), 其与 MemoryRegionSection (MRS0) 指向同一个 "内存控制器" MemoryRegion. fv 成员指向 FlatRange (上图并未给出), offset_within_region 成员则表示其在虚拟内存中的偏移，其值等于 "HVA:addr3 - RB0->host".
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000935.png)
+
+通过上面的分析，MemoryRegionSection 可以通过其 fv 成员找到 FlatRange，然后通过 FlatRange 的 mr 成员可以找到 "内存控制器" MemoryRegion, 或者 MemoryRegionSection 可以直接通过 mr 找到 "内存控制器" MemoryRegion。只要找到 "内存控制器" MemoryRegion 就可以找到 "内存条" RAMBlock, 进而找到 "内存条" RAMBlock 在虚拟机地址总线上的物理地址 GPA，另外还可以获得 "内存条" RAMBlock 在 Host 端的虚拟内存 HVA。虽然 MemoryRegionSection 可以很好的描述虚拟机物理内存的指定区域，但 QEMU 还是没法通过虚拟机的物理地址 GPA 找到最终的 HVA，因此这个时候如果建立虚拟机物理地址 GPA 到 MemoryRegionSection 的映射关系，那么通过上图的关系虚拟机物理地址 GPA 就可以找到对于的 HVA.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000936.png)
+
+QEMU 使用了一种类似页表的方式建立了虚拟机物理地址到 MemoryRegionSection 的映射。例如虚拟机物理页的长度为 4K，那么虚拟机物理页帧号的范围是物理地址的 65:12, QEMU 将这段地址按 9 bit 作为一段由低到高划分，那么就形成了 6 段偏移，其中 5 个段的位宽都是 9 bit，最高一段 65:57 的位宽是 8 bit。QEMU 首先通过一个类似于 CR3 寄存器的数据结构 PhysPageEntry 作为入口，其指向了由 512 个 PhysPageEntry 组成的数据结构 Node. QEMU 根据虚拟机的物理地址从最高偏移段开始，每个段的值就是一个 offset，并在 Node 中找到下一级 Node 的 PhysPageEntry. QEMU 依次遍历查询虚拟机的物理地址，最终遍历到最后一级 Node 的时候，根据最后一级的偏移找到 PhysPageEntry, 该入口指向了最终要找的 MemoryRegionSection. 以上便是虚拟机物理地址 GPA 与 MemoryRegionSection 映射逻辑.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000937.png)
+
+QEMU 使用 FlatView 来支持虚拟机物理地址 GPA 到 MemoryRegionSection 的映射逻辑，在 FlatView 数据结构中存在 dispatch 成员，该成员是由 struct AddressSpaceDispatch 数据结构进行描述，在 struct AddressSpaceDispatch 数据结构中存在 PhyPageEntry 数据结构的成员 phys_map, 其构成了 "页表" 的 "CR3 寄存器"，QEMU 依次为入口找到 "页表" 的入口，"页表" 通过数据结构 Node 进行描述，其由 512 个 PhysPageEntry 构成，正好构成了 "页表入口"，QEMU 根据查表找到最后一级 "页表入口项"。另外 AddressSpaceDispatch 还存在另外一个成员 map，其由 PhysPageMap 数据结构进行描述。map 成员主要维护了两个内容，第一个是由 nodes 成员指向的 Node 数组，该数组维护了所有的 "页表"。map 成员维护的另外一个是由 sections 指向的 MemoryRegionSection 数组。当为虚拟机物理地址 GPA 建立映射关系时，QEMU 会将虚拟机物理地址的页帧号按 9 bit 划分成多个字段，每个字段作为一个偏移值正好可以表示 512 种值，最高字段只有 8 bit。QEMU 从 AddressSpaceDispatch 的 phys_map 开始进行查找，其存储了第 6 级页表在 map 维护的 Nodes 数组中的偏移，如果此时 phys_map 没有指向一个页表，那么表明第 6 级页表还没有建立，那么 QEMU 就从 map 维护的 nodes 数组中找到一个空闲的 Node 作为页表，并把该 Node 在 nodes 中的偏移存储在 phys_map 中，这样的操作完成了一次页表页的分配和绑定操作。当找到第 6 级页表之后，QEMU 将虚拟机物理地址页帧的第 6 级字段作作为第 6 级页表中的偏移找到下一级页表的 Entry。当找到下一级页表的 Entry 时发现其没有下一级页表的信息，那么采取和上一级页表的操作从 nodes 数组中查找一个空闲的 Node 作为页表页，并将页表页在 nodes 中的索引作为下一级页表的信息填入到 Entry，依次类推。但 QEMU 遍历到最后一级页表的时候 Entry 需要指向 MemoryRegionSection, 此时 QEMU 在 sections 数组中找一个空闲的槽位，将槽位里的 MemoryRegionSection 指针指向 MemoryRegionSection, 接着将槽位在 sections 数组中的索引写入到 Entry 中，那么这样就建立了 Entry 到 MemoryRegionSection 的映射。通过上面的操作完成了虚拟机物理地址 GPA 到 MemoryRegionSection 的映射。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000938.png)
+
+通过上面的映射建立，那么虚拟机的物理地址 GPA 可以通过 "页表映射" AddressSpaceDispatch 找到对应的 MemoryRegionSection，进而找到对应的 "内存控制器" MemoryRegion 和 "内存条" RAMBlock, 最终找到 QEMU 分配的虚拟内存 HVA。有了上面的关系之后，QEMU 接下来要做的就是将这些内存信息提交给 KVM, 然后 KVM 为虚拟机构建内存。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000939.png)
+
+总结之前的分析，一个 "物理区域" MemoryRegion 描述了需要暴露给虚拟机的物理内存信息，然后通过 FlatView 的平坦化转换成了 FlatRange，FlatRange 没有做过多的处理直接转换成了 MemoryRegionSection, MemoryRegionSection 中维护了 "内存控制器" MemoryRegion 的映射。接着通过 AddressSpaceDispatch 建立了虚拟机物理地址 GPA 到 MemoryRegionSection 的映射关系。此时 QEMU 通过 MemoryListener 通知链将新的 MemoryRegionSection 传递给 accel/kvm，其调用 kvm_region_add() 函数将 MemoryRegionSection 转换成 KVMSlot, 进行再加工之后转换成了 kvm_userspace_memory_region 数据结构。最后 QEMU 通过调用 IOCTL KVM_SET_USER_MEMORY_REGION 将新添加的虚拟机内存下发到 KVM 模块，待虚拟机启动就可以使用新的内存。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
@@ -258,7 +337,23 @@ FlatView 和 FlatRange 的存在只是将 "内存总线" MemoryRegion 上的 "�
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000935.png)
 
-通过上面的分析，MemoryRegionSection 可以通过其 fv 成员找到 FlatRange，然后通过 FlatRange 的 mr 成员可以找到 "内存控制器" MemoryRegion, 或者 MemoryRegionSection 可以直接通过 mr 找到 "内存控制器" MemoryRegion。只要找到 "内存控制器" MemoryRegion 就可以找到 "内存条" RAMBlock, 进而找到 "内存条" RAMBlock 在虚拟机地址总线上的物理地址 GPA，另外还可以获得 "内存条" RAMBlock 在 Host 端的虚拟内存 HVA。
+通过上面的分析，MemoryRegionSection 可以通过其 fv 成员找到 FlatRange，然后通过 FlatRange 的 mr 成员可以找到 "内存控制器" MemoryRegion, 或者 MemoryRegionSection 可以直接通过 mr 找到 "内存控制器" MemoryRegion。只要找到 "内存控制器" MemoryRegion 就可以找到 "内存条" RAMBlock, 进而找到 "内存条" RAMBlock 在虚拟机地址总线上的物理地址 GPA，另外还可以获得 "内存条" RAMBlock 在 Host 端的虚拟内存 HVA。虽然 MemoryRegionSection 可以很好的描述虚拟机物理内存的指定区域，但 QEMU 还是没法通过虚拟机的物理地址 GPA 找到最终的 HVA，因此这个时候如果建立虚拟机物理地址 GPA 到 MemoryRegionSection 的映射关系，那么通过上图的关系虚拟机物理地址 GPA 就可以找到对于的 HVA.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000936.png)
+
+QEMU 使用了一种类似页表的方式建立了虚拟机物理地址到 MemoryRegionSection 的映射。例如虚拟机物理页的长度为 4K，那么虚拟机物理页帧号的范围是物理地址的 65:12, QEMU 将这段地址按 9 bit 作为一段由低到高划分，那么就形成了 6 段偏移，其中 5 个段的位宽都是 9 bit，最高一段 65:57 的位宽是 8 bit。QEMU 首先通过一个类似于 CR3 寄存器的数据结构 PhysPageEntry 作为入口，其指向了由 512 个 PhysPageEntry 组成的数据结构 Node. QEMU 根据虚拟机的物理地址从最高偏移段开始，每个段的值就是一个 offset，并在 Node 中找到下一级 Node 的 PhysPageEntry. QEMU 依次遍历查询虚拟机的物理地址，最终遍历到最后一级 Node 的时候，根据最后一级的偏移找到 PhysPageEntry, 该入口指向了最终要找的 MemoryRegionSection. 以上便是虚拟机物理地址 GPA 与 MemoryRegionSection 映射逻辑.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000937.png)
+
+QEMU 使用 FlatView 来支持虚拟机物理地址 GPA 到 MemoryRegionSection 的映射逻辑，在 FlatView 数据结构中存在 dispatch 成员，该成员是由 struct AddressSpaceDispatch 数据结构进行描述，在 struct AddressSpaceDispatch 数据结构中存在 PhyPageEntry 数据结构的成员 phys_map, 其构成了 "页表" 的 "CR3 寄存器"，QEMU 依次为入口找到 "页表" 的入口，"页表" 通过数据结构 Node 进行描述，其由 512 个 PhysPageEntry 构成，正好构成了 "页表入口"，QEMU 根据查表找到最后一级 "页表入口项"。另外 AddressSpaceDispatch 还存在另外一个成员 map，其由 PhysPageMap 数据结构进行描述。map 成员主要维护了两个内容，第一个是由 nodes 成员指向的 Node 数组，该数组维护了所有的 "页表"。map 成员维护的另外一个是由 sections 指向的 MemoryRegionSection 数组。当为虚拟机物理地址 GPA 建立映射关系时，QEMU 会将虚拟机物理地址的页帧号按 9 bit 划分成多个字段，每个字段作为一个偏移值正好可以表示 512 种值，最高字段只有 8 bit。QEMU 从 AddressSpaceDispatch 的 phys_map 开始进行查找，其存储了第 6 级页表在 map 维护的 Nodes 数组中的偏移，如果此时 phys_map 没有指向一个页表，那么表明第 6 级页表还没有建立，那么 QEMU 就从 map 维护的 nodes 数组中找到一个空闲的 Node 作为页表，并把该 Node 在 nodes 中的偏移存储在 phys_map 中，这样的操作完成了一次页表页的分配和绑定操作。当找到第 6 级页表之后，QEMU 将虚拟机物理地址页帧的第 6 级字段作作为第 6 级页表中的偏移找到下一级页表的 Entry。当找到下一级页表的 Entry 时发现其没有下一级页表的信息，那么采取和上一级页表的操作从 nodes 数组中查找一个空闲的 Node 作为页表页，并将页表页在 nodes 中的索引作为下一级页表的信息填入到 Entry，依次类推。但 QEMU 遍历到最后一级页表的时候 Entry 需要指向 MemoryRegionSection, 此时 QEMU 在 sections 数组中找一个空闲的槽位，将槽位里的 MemoryRegionSection 指针指向 MemoryRegionSection, 接着将槽位在 sections 数组中的索引写入到 Entry 中，那么这样就建立了 Entry 到 MemoryRegionSection 的映射。通过上面的操作完成了虚拟机物理地址 GPA 到 MemoryRegionSection 的映射。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000938.png)
+
+通过上面的映射建立，那么虚拟机的物理地址 GPA 可以通过 "页表映射" AddressSpaceDispatch 找到对应的 MemoryRegionSection，进而找到对应的 "内存控制器" MemoryRegion 和 "内存条" RAMBlock, 最终找到 QEMU 分配的虚拟内存 HVA。有了上面的关系之后，QEMU 接下来要做的就是将这些内存信息提交给 KVM, 然后 KVM 为虚拟机构建内存。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000939.png)
+
+总结之前的分析，一个 "物理区域" MemoryRegion 描述了需要暴露给虚拟机的物理内存信息，然后通过 FlatView 的平坦化转换成了 FlatRange，FlatRange 没有做过多的处理直接转换成了 MemoryRegionSection, MemoryRegionSection 中维护了 "内存控制器" MemoryRegion 的映射。接着通过 AddressSpaceDispatch 建立了虚拟机物理地址 GPA 到 MemoryRegionSection 的映射关系。此时 QEMU 通过 MemoryListener 通知链将新的 MemoryRegionSection 传递给 accel/kvm，其调用 kvm_region_add() 函数将 MemoryRegionSection 转换成 KVMSlot, 进行再加工之后转换成了 kvm_userspace_memory_region 数据结构。最后 QEMU 通过调用 IOCTL KVM_SET_USER_MEMORY_REGION 将新添加的虚拟机内存下发到 KVM 模块，待虚拟机启动就可以使用新的内存。
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
