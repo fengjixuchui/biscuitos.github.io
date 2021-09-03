@@ -402,7 +402,7 @@ tags:
 >
 > - PWM
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000210.gif)
 
 ## <span id="Userland">Userland Develop</span>
 
