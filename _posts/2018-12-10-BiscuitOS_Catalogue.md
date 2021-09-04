@@ -214,7 +214,7 @@ tags:
 >
 >   - [RISCV64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
 
-![](https://gitee.com/BiscuitOS_team/GamePIC/raw/Gitee/BS00001.gif)
+![](https://gitee.com/BiscuitOS_team/GamePIC/raw/master/BS00001.gif)
 
 ## [虚拟化]()
 
