@@ -51,7 +51,8 @@ tags:
 >
 > - [问题反馈及留言](https://github.com/BiscuitOS/BiscuitOS/issues)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](https://gitee.com/BiscuitOS_team/GamePIC/raw/master/BF000001.gif)
+
 
 ## [内存管理]()
 
@@ -213,7 +214,7 @@ tags:
 >
 >   - [RISCV64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/NEW/BS00001.gif)
+![](https://gitee.com/BiscuitOS_team/GamePIC/raw/Gitee/BS00001.gif)
 
 ## [虚拟化]()
 
@@ -249,7 +250,7 @@ tags:
 >
 > - QEMU-KVM
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](https://gitee.com/BiscuitOS_team/GamePIC/raw/master/BF000002.gif)
 
 ## [Basic Research]()
 
@@ -297,7 +298,7 @@ tags:
 >
 >   - [atomic 原子操作](https://biscuitos.github.io/blog/ATOMIC/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](https://gitee.com/BiscuitOS_team/GamePIC/raw/master/BF000000.gif)
 
 ## [Linux Source Code list]()
 
