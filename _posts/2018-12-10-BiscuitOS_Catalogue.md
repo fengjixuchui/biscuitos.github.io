@@ -262,6 +262,24 @@ tags:
 >
 > - [Device Tree: DTS/DTB/FDT](https://biscuitos.github.io/blog/DTS/)
 >
+> - [Language Practice on BiscuitOS](https://biscuitos.github.io/blog/Language/)
+>
+>   - [C Language: GNU C/C99/C89 on BiscuitOS](https://biscuitos.github.io/blog/Language/#A)
+>  
+>   - [C++ Language: GNU CPP/C++ on BiscuitOS](https://biscuitos.github.io/blog/Language/#B)
+>  
+>   - [Python: Python2.7 on BiscuitOS](https://biscuitos.github.io/blog/Language/#C)
+>  
+>   - [Shell scripts: ash/bash on BiscuitOS](https://biscuitos.github.io/blog/Language/#D)
+>  
+>   - [X86-64 AT&T Assembly and inline Assembly on BiscuitOS](https://biscuitos.github.io/blog/Language/#E)
+>  
+>   - [i386 AT&T Assembly and inline Assembly on BiscuitOS](https://biscuitos.github.io/blog/Language/#F)
+>  
+>   - [ARM AT&T Assembly and inline Assembly on BiscuitOS](https://biscuitos.github.io/blog/Language/#G)
+>  
+>   - [ARM64 AT&T Assembly and inline Assembly on BiscuitOS](https://biscuitos.github.io/blog/Language/#H)
+>
 > - [汇编]()
 >
 >   - [X86/i386/X64 汇编]()
