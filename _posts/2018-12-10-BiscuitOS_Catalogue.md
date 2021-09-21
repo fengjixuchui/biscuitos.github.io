@@ -144,6 +144,8 @@ tags:
 >
 >   - [File Shared/Private Page Fault]()
 >
+>   - [缺页实践 (Page Fault oractice and trace on 32-Bit Paging)](https://biscuitos.github.io/blog/32bit-Paging/#K0)
+>
 > - Memory Mmapping Mechanism
 >
 > - Memory Compact Technology
