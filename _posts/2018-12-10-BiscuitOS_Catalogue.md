@@ -146,6 +146,12 @@ tags:
 >
 >   - [缺页实践: Page Fault Practice and Trace on 32-Bit Paging](https://biscuitos.github.io/blog/32bit-Paging/#K0)
 >
+> - Huge Page Mechanism
+>
+>   - [Hugetlb and Hugetlbfs Mechanism](https://biscuitos.github.io/blog/Hugetlbfs)
+>
+>   - [Transparent HugePage Mechanism]()
+>
 > - Memory Mmapping Mechanism
 >
 > - Memory Compact Technology
