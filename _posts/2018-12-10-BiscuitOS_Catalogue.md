@@ -49,6 +49,8 @@ tags:
 >
 > - [Linux Favourable Mechansim](https://biscuitos.github.io/blog/Human-Knowledge-Common/#H000023)
 >
+> - [BiscuitOS 社区技术论坛](https://github.com/BiscuitOS/BiscuitOS/discussions)
+>
 > - [问题反馈及留言](https://github.com/BiscuitOS/BiscuitOS/issues)
 
 ![](https://gitee.com/BiscuitOS_team/GamePIC/raw/master/BF000001.gif)
