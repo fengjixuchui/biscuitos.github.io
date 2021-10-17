@@ -13,7 +13,7 @@ tags:
 
 ## <span id="Kernel_Establish">Kernel Establish</span>
 
-> - [Build Linux 5.13 - RISCV32/RISCV64/ARM32/ARM64/I386/X86_64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5Y)
+> - [Build Linux 5.14 - RISCV32/RISCV64/ARM32/ARM64/I386/X86_64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5Y)
 >
 > - [Build Upstream Linux from Linus Torvalds](https://biscuitos.github.io/blog/Kernel_Build/#Linux_newest)
 >
