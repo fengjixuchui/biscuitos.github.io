@@ -13,13 +13,9 @@ tags:
 
 ## <span id="Kernel_Establish">Kernel Establish</span>
 
-> - [New!! BiscuitOS-Desktop GOKU](https://biscuitos.github.io/blog/Desktop-GOKU-Usermanual/)
->
-> - [New!! Build BiscuitOS-Desktop](https://biscuitos.github.io/blog/BiscuitOS-Desktop-arm32-Usermanual/)
+> - [Build Linux 5.13 - RISCV32/RISCV64/ARM32/ARM64/I386/X86_64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5Y)
 >
 > - [Build Upstream Linux from Linus Torvalds](https://biscuitos.github.io/blog/Kernel_Build/#Linux_newest)
->
-> - [Build Linux 5.13 - RISCV32/RISCV64/ARM32/ARM64/I386/X86_64](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5Y)
 >
 > - [Build Linux 0.X](https://biscuitos.github.io/blog/Kernel_Build/#Linux_0X)
 >
@@ -32,6 +28,10 @@ tags:
 > - [Build Linux 4.X](https://biscuitos.github.io/blog/Kernel_Build/#Linux_4X)
 >
 > - [Build Linux 5.X](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+>
+> - [BiscuitOS-Desktop GOKU](https://biscuitos.github.io/blog/Desktop-GOKU-Usermanual/)
+>
+> - [Build BiscuitOS-Desktop](https://biscuitos.github.io/blog/BiscuitOS-Desktop-arm32-Usermanual/)
 >
 > - [Networking on BiscuitOS](https://biscuitos.github.io/blog/Networking-Usermanual/)
 >
