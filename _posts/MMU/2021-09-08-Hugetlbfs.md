@@ -12,24 +12,24 @@ tags:
 
 #### 目录
 
-> - [Hugepage 原理](#A)
+> - [Hugetlb/Hugetlbfs 原理](#A)
 >
-> - [Hugepage 使用](#B)
+> - [Hugetlb/Hugetlbfs 使用](#B)
 >
-> - [Hugepage 实践](#C)
+> - [Hugetlb/Hugetlbfs 实践](#C)
 >
-> - [Hugepage 源码分析](#D)
+> - [Hugetlb/Hugetlbfs 源码分析](#D)
 >
-> - [Hugepage 调试](#E)
+> - [Hugetlb/Hugetlbfs 调试](#E)
 >
-> - Hugepage 进阶研究
+> - [Hugeltb/Hugetlbfs 历史](#F)
+>
+> - Hugetlb/Hugetlbfs 进阶研究
 >
 >   - 硬件如何支持大页
 >
 >   - 通过 CMDLINE 配置大页长度和大页数量
 > 
->     - [hugepagesz= hugepages= default_hugepagesz=]()
->
 >   - CMDLINE 中大页字段的先后顺序对初始化的影响
 >
 >   - 大页所需的内核宏支持
@@ -80,6 +80,36 @@ tags:
 >
 >   - Transparent-hugepage/Persistent-hugepage/Surplus-hugepage 的区别
 >
+>   - Hugetlb resv_map 研究
+>
+>   - 文件大页的体积无节制增加问题
+>
+>   - Hugetlbfs Spool 池子研究
+>
+>   - Hugetlbfs VFS inode operations 接口研究
+>
+>   - 文件大页和匿名大页的区别
+>
+>   - 大页标志集合研究
+>
+>   - 大页使用量统计
+>
+>   - 大页注册 MMU notifier
+>
+>   - 大页 SWAP 研究
+>
+>   - 大页 COW 深度研究
+>
+>   - 通过 hugetlb 大页为用户空间大规格连续物理内存
+>
+>   - 用户空间进程查看大页的物理地址
+>
+> - [Hugetlb/Hugetlbfs BUG and Bugfix](#G)
+>
+> - [Hugetlb/Hugetlbfs Patch](#H)
+>
+> - [Hugeltb/Hugetlbfs 论坛讨论](#F)
+>
 > - [附录/捐赠](#Z0)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
@@ -98,6 +128,8 @@ tags:
 >
 >   - [enum hugetlbfs_size_type]()
 >
+>   - [struct file_region]()
+>
 >   - [struct hugepage_subpool]()
 >
 >   - [struct huge_bootmem_page]()
@@ -109,6 +141,8 @@ tags:
 >   - [struct hugetlbfs_sb_info]()
 >
 >   - [struct node_hstate]()
+>
+>   - [struct resv_map]()
 >
 > - [Hugetlbfs 重要数据](#D0305)
 >
@@ -144,7 +178,7 @@ tags:
 >
 >   - [parsed_valid_hugepagesz](#D0301)
 >
-> - [Hugetlbfs API](#D02046)
+> - [Hugetlbfs API](#D02076)
 >
 >   - [alloc_bootmem_huge_page](#D02011)
 >
@@ -165,6 +199,8 @@ tags:
 >   - [free_pool_huge_page](#D02042)
 >
 >   - [gather_surplus_pages](#D02040)
+>
+>   - [get_hstate_idx](#D02071)
 >
 >   - [HUGETLBFS_SB](#D02032)
 >
@@ -190,6 +226,10 @@ tags:
 >
 >   - [hugepage_new_subpool](#D02045)
 >
+>   - [hugepage_subpool_get_pages](#D02072)
+>
+>   - [hugepage_subpool_put_pages](#D02073)
+>
 >   - [hugepages_supported](#D02000)
 >
 >   - [hugetlb_acct_memory](#D02044)
@@ -200,21 +240,53 @@ tags:
 > 
 >   - [hugetlb_default_setup](#D02001)
 >
+>   - [hugetlb_file_setup](#D02075)
+>
 >   - [hugetlb_hstate_alloc_pages](#D02026)
 >
 >   - [hugetlb_init_hstates](#D02027)
 >
 >   - [hugetlb_nrpages_setup](#D02010)
 >
+>   - [hugetlb_reserve_pages](#D02074)
+>
 >   - [hugetlb_sysfs_add_hstate](#D02029)
 >
 >   - [hugetlb_sysfs_init](#D02030)
+>
+>   - [hugetlbfs_alloc_inode](#D02048)
+>
+>   - [hugetlbfs_create](#D02056)
+>
+>   - [hugetlbfs_dec_free_inodes](#D02047)
+>
+>   - [hugetlbfs_destroy_inode](#D02049)
+>
+>   - [hugetlbfs_fill_super](#D02051)
+>
+>   - [hugetlbfs_get_inode](#D02054)
+>
+>   - [hugetlbfs_get_root](#D02052)
+>
+>   - [hugetlbfs_i_callback](#D02050)
+>
+>   - [hugetlbfs_inc_free_inodes](#D02046)
+>
+>   - [hugetlbfs_mknod](#D02055)
 >
 >   - [hugetlbfs_parse_options](#D02037)
 >
 >   - [hugetlbfs_size_to_hpages](#D02036)
 >
+>   - [inode_resv_map](#D02059)
+>
 >   - [init_hugetlbfs_fs](#D02033)
+>
+>   - [is_file_hugepages](#D02057)
+>
+>   - [is_vm_hugetlb_page](#D02064)
+>
+>   - [is_vma_resv_set](#D02068)
 >
 >   - [PageHeadHuge](#D02016)
 >
@@ -226,7 +298,19 @@ tags:
 >
 >   - [prep_new_huge_page](#D02024)
 >
+>   - [region_abort](#D02063)
+>
+>   - [region_add](#D02061)
+>
+>   - [region_chg](#D02060)
+>
+>   - [region_del](#D02062)
+>
 >   - [report_hugepages](#D02028)
+>
+>   - [reset_vma_resv_huge_page](#D02069)
+>
+>   - [resv_map_alloc](#D02053)
 >
 >   - [return_unsed_surplus_pages](#D02043)
 >
@@ -234,15 +318,25 @@ tags:
 >
 >   - [setup_hugepagesz](#D02002)
 >
+>   - [set_vma_resv_map](#D02065)
+>
+>   - [set_vma_resv_flags](#D02067)
+>
 >   - [size_to_hstate](#D02006)
 >
+>   - [subpool_inode](#D02058)
+>
 >   - [update_and_free_page](#D02041)
+>
+>   - [vma_has_reserves](#D02070)
+>
+>   - [vma_resv_map](#D02066)
 
 ------------------------------------
 
 ###### <span id="D0200X"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000334.png)
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH0010.png)
 
 {% highlight c %}
 {% endhighlight %}
@@ -915,8 +1009,453 @@ mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K -o size=40M 
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001014.png)
 
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02046">hugetlbfs_inc_free_inodes</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001015.png)
+
+在 Hugetlb 大页机制中，内核可以使用 hugetlbfs 文件系统为用户提供接口进行大页分配，由于使用文件系统，大页将以文件形式进行提供，因此每次提供大页分配的时候需要使用 struct inode 进行描述。hugetlbfs_inc_free_inodes() 函数的作用就是当销毁一个共享文件大页的时候增加 hugetlbfs 文件系统中可用 inode 的个数，其底层逻辑是: hugetlbfs 文件系统相关的信息维护在 struct hugetlbfs_sb_info 数据结构里，其中 free_inodes 成员用于统计文件系统中可用的 struct inode 数量，因此当调用该函数时，函数就增加 struct hugetlbfs_sb_info 的 free_inodes 成员.
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02047">hugetlbfs_dec_free_inodes</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001016.png)
+
+在 Hugetlb 大页机制中，内核可以使用 hugetlbfs 文件系统为用户提供接口进行大页分配，由于使用文件系统，大页将以文件形式提供，因此每次提供大页分配的时候需要使用 struct inode 进行描述。hugetlbfs_dec_free_inodes() 函数的作用就是当创建一个共享文件大页的时候减少 hugetlbfs 文件系统中可用 inode 的个数，其底层逻辑是: hugetlbfs 文件系统相关的信息通过 struct hugetlbfs_sb_info 数据进行描述，其中 free_inodes 成员用于统计 hugetlbfs 文件系统中空闲 struct inode 的数量，因此当调用该函数时，函数检测到 free_inodes 的数量大于 0，那么，函数试图去减少 free_inodes 的值，如果此时检查到 free_inodes 的值为 0，那么直接退出，反之将 free_inodes 的值减一.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02048">hugetlbfs_alloc_inode</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001017.png)
+
+在 Hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统为用户空间提供大页内存，hugetlbfs 将大页内存以文件形式提供给用户，因此每次大页内存分配需要基于文件，那么 hugetlbfs 文件系统会为其创建对应的 struct inode。hugetlbfs_alloc_inode() 函数的作用是为 hugetlbfs 文件系统分配新的 struct inode，其底层逻辑为: 内核使用 struct hugetlbfs_sb_info 数据结构描述一个挂载的 hugetlbfs 文件系统，另外内核使用 struct hugetlbfs_inode_info 数据结构描述 hugetlbfs 文件系统中的 inode，其数据结构中包含 VFS 所需的 struct inode 数据结构。函数首先通过 HUGETLBFS_SB() 函数将 struct super_block 数据结构转换成 struct hugetlbfs_sb_info 数据结构，接着函数调用 hugetlbfs_dec_free_inodes() 函数对 hugetlbfs 文件系统的空闲 inode 数量减一，然后调用 kmem_cache_alloc() 函数从 hugetlbfs_inode_cachep 缓存中为 struct hugetlbfs_inode_info 分配内存，如果此时分配失败，那么函数调用 hugetlbfs_inc_free_inodes() 函数重新将空闲的 inode 数量加一。接着调用 mpol_shared_policy_init() 函数初始化 inode 的内存策略，最后函数返回 struct hugetlbfs_inode 中的 vfs_inode 成员，即真实的 struct inode 数据结构.
+
+> [HUGETLBFS_SB](#D02032)
+>
+> [hugetlbfs_dec_free_inodes](#D02047)
+>
+> [hugetlbfs_inc_free_inodes](#D02046)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02049">hugetlbfs_destroy_inode</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001018.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式为用户空间提供大页内存，由于以文件形式提供，那么每次大页分配时需要为其建立相应的 struct inode 数据结构。在 hugetlbfs 文件中使用 struct hugetlbfs_inode_info 描述 inode，其包含具体的 struct inode 数据结构。hugetlbfs_destroy_inode() 函数的作用是摧毁 inode，其底层逻辑是: 函数首先调用 hugetlbfs_inc_free_inodes() 函数增加 hugetlbfs 文件系统的可用 inode 数量，接着调用 mpol_free_shared_policy() 函数修改 inode 的内存策略，最后函数通过 call_rcu() 的方式调用 hugetlbfs_i_callback() 函数进行实际的 inode 摧毁操作.
+
+> [hugetlbfs_i_callback](#D02050)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02050">hugetlbfs_i_callback</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001019.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式为用户空间提供大页内存，由于以文件形式提供，那么每次大页分配时需要为其建立相应的 struct inode数据结构。在 hugetlbfs 文件中使用 struct hugetlbfs_inode_info 描述 inode，其包含具体的 struct inode 数据结构。hugetlbfs_i_callback() 函数的作用通过 RCU 机制对 struct hugetlbfs_inode_info 数据结构进行释放，其底层逻辑是: 当其他函数通过 RCU 机制调用到该函数时，函数通过 container_of() 函数将 head 参数转换成 struct inode 数据结构，接着函数调用 kmem_cache_free() 函数将 inode 释放回 hugetlbfs_inode_cachep 缓存中.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02051">hugetlbfs_fill_super</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001020.png)
+
+在 Hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统为用户提供大页内存，hugetlbfs 以文件的形式为用户提供大页内存。内核使用 struct hugetlbfs_sb_info 描述 hugetlbfs 文件系统相关的信息，struct hugetlbfs_config 则用于描述 hugetlbfs 文件系统挂载时的配置信息。当内核使用 hugetlbfs 文件系统时需要将其进行挂载之后才能使用，内核可以在内核启动的时候进行 hugetlbfs 文件系统的挂载，也可以在用户空间进行挂载。hugetlbfs_fill_super() 函数的作用是当挂载一个 hugetlbfs 文件系统时，系统会调用该函数进行 hugetlbfs 文件系统挂载相关的设置，其底层逻辑是: 函数首先初始化 struct hugetlbfs_config 数据结构的 config 变量，通过 current_fsuid() 函数和 current_fsgid() 函数设置 hugetlbfs 文件系统的 kuid 和 kgid，并将文件系统的访问权限设置为 0755, 接着将 struct hugetlbfs_config 的 hstate 成员设置为 default_hstate, 以此表示该 hugetlbfs 文件系统分配 default_hstate 对应的大页。函数接着调用 hugetlbfs_parse_options() 函数解析 hugetlbfs 文件系统挂载的参数。接着函数函数调用 kmalloc() 函数为 sbinfo 变量分配内存，函数将 struct super_block 的 s_fs_info 指向了 sbinfo，以此表示该 hugetlbfs 文件系统的配置信息通过 sbinfo 遍历进行描述，接着函数将 sbinfo 的 hstate 设置为 config 的 hstate，这里完成了 hugetlbfs 文件系统与 hugetlb 的绑定，sbinfo 的 max_inodes 表示 hugetlbfs 支持最大文件数，但这里不代表最大打开文件数，free_inodes 则表示 hugetlbfs 文件系统中空闲的 inode 数量，两者的值均来自挂载 hugetlbfs 文件系统的参数，接下来将 struct hugetlbfs_config 中的数据转移到 struct hugetlbfs_sb_info 中。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001021.png)
+
+函数接着判断 config 中的 max_hpages 和 min_hpages 是否不为 -1，两个值均从 hugetlbfs 文件系统挂载时进行配置，如果挂载时带上了 "size=" 或 "min_size=" 字段，那么 config 的 max_hpages 或者 min_hpages 将不为 -1，那么表示 hugetlbfs 文件系统在挂载时就要为其预留指定数量的大页，那么函数此时调用 hugepage_new_subpool() 函数从 hugetlb 中预留 min_hpages 数量的大页，并将 subpool 的信息维护在 sbinfo 的 spool 里。接下来是对 hugetlbfs 文件系统的基础设置: s_maxbytes 设置为 MAX_LFS_FIFSIZE 表示文件最大长度，s_blocksize 设置为 huge_page_size() 为大页的长度，s_magic 为文件系统的 MAGIC HUGETLBFS_MAGIC. 函数接着将 s_op 指向了 hugetlbfs_ops，该 ops 中包含了 inode 的创建和摧毁等操作。函数接下来调用 hugetlbfs_get_root() 函数为 hugetlbfs 文件系统分配 root 节点对应的 inode，并调用 d_make_root() 函数将该 inode 设置为 root 目录. 用户空间挂载一个 hugetlbfs 可以参考如下:
+
+{% highlight bash %}
+# Hugetlb 分配大页或超发大页
+echo 10 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_overcommit_hugepages
+# 创建或指定挂载目录
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+# 挂载 Hugetlbfs
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o size=4M,min_size=2M,pagesize=2M,nr_inodes=100
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001022.png)
+
+> [hugetlbfs_parse_options](#D02037)
+>
+> [hugepage_new_subpool](#D02045)
+>
+> [huge_page_size](#D02005)
+>
+> [huge_page_shift](#D02020)
+>
+> [hugetlbfs_get_root](#D02052)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02052">hugetlbfs_get_root</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001023.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式为用户提供大页内存，由于是以文件的方式提供，那么每次大页分配 hugetlbfs 都会为该文件创建 struct inode 数据结构，另外由于是以 hugetlbfs 文件系统的方式提供，那么 hugetlbfs 文件系统在挂载点下也存在 root 节点，hugetlbfs_get_root() 函数的作用就是创建 root 节点对应的 struct inode，其底层逻辑是: 函数首先通过 new_inode() 函数分配了一个新的 struct inode 数据结构，如果分配成功，那么函数使用 struct hugetlbfs_config 维护的配置信息对该 inode 进行初始化，其中将 inode 的 i_op 指向了 hugetlbfs_dir_inode_operations，而 i_fop 指向了 simple_dir_operations. 初始化完毕之后，函数返回该 inode.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02053">resv_map_alloc</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001024.png)
+
+在 Hugetlb 大页机制中，内核可以通过 hugetlbfs 文件系统以文件的形式为用户提供大页内存. 当分配大页时，内核需要在 mmap 阶段将需要分配的大页内存进行预留，以便发生缺页时内核可以提供足够数量的大页。内核使用 resv_map 机制维护大页的预留，在共享文件分配内存时，A 进程预留的共享大页内存被 B 进程打开时，内核不必在预留大页内存，因为 A 和 B 进程都使用共同的大页，因此不许额外使用其他大页内存。Hugetlb 大页机制使用 resv_map 来实现共享文件间的大页预留。resv_map_alloc() 函数的作用就是为共享文件分配一套 resv_map，其底层逻辑为: struct resv_map 描述共享文件大页内存的预留信息，struct file_region 描述某个进程对共享文件大页内存的使用情况。函数首先通过 kmalloc() 为 resv_map 和 rg 变量分配内存，接着调用 kref_init() 函数初始化 struct resv_map 的 refs 成员，以此表示该贡献文件大页内存没有其他进程使用。函数接着将维护各个进程的 file_region 链表 resv_map->regions 进程初始化，此时函数将 adds_in_progress 设置为 0，表示此时共享文件的大页内存不存在预留变更。函数接着将 rg 插入到 resv_map->regions_cache 链表中，供特殊情况使用，并将 region_cache_count 设置为 1，表示该 resv_map 维护了 1 个可用的 struct file_region. 函数最后返回 resv_map。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02054">hugetlbfs_get_inode</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001025.png)
+
+在 Hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式为用户提供大页内存，每次通过该方法分配大页内存时，内核都会在 hugetlbfs 文件系统挂载点下创建一个 struct inode, 并打开或创建文件的方式使用大页。hugetlbfs_get_inode() 函数的作用就是为 hugetlbfs 文件系统创建一个新的 VFS inode, 其底层逻辑是: 在 hugetlb 大页机制中，大页在 mmap 阶段需要将分配的大页内存进行预留，内核使用 resv_map 机制维护共享文件内存的预留信息，函数在创建文件阶段，在 46 行通过调用 resv_map_alloc() 函数分配 resv_map 数据结构，然后在 50 行通过 new_inode() 函数分配一个 VFS inode. 如果 inode 分配成功，那么文件创建成功。在 hugetlbfs 文件系统中使用 struct hugetlbfs_inode_info 描述 hugetlbfs inode 信息。函数在 54 行设置了 VFS inode ID，并在 58 行设置了 VFS inode address_space operations 为 hugetlbfs_aops. 接着 59 行通过调用 current_time() 函数设置 VFS inode 时间相关的信息。函数接下来在 60 行将 resv_map 塞到 VFS inode 的 i_mapping->private_data 里，以便共享时候使用。接下来函数将判断 VFS inode 的类型，如果是 S_IFREG, 即 VFS inode 描述一个文件，那么函数将 VFS inode 的 inode operations 设置为 hugetlbfs_inode_operations, 并将 VFS inode 的 file operations 设置为 hugetlbfs_file_operations; 反之 inode 的类型是 S_IFDIR, 那么 VFS inode 是一个目录，那么函数将 VFS inode 的 inode operations 设置为 hugetlbfs_dir_inode_operations, 同时将 VFS inode 的 file operations 设置为 simple_dir_operations, 最后调用 inc_nlink() 函数将 inode 的 i_nlink 加一，以此让新目录下 的 "." 的引用计数为 2; 反之 inode 类型是 S_IFLNK, 那么 VFS inode 是一个链接，那么将 VFS inode 的 inode operations 设置为 page_symlink_inode_operations, 并调用 inode_nohighmem() 函数。函数最后返回 VFS inode.
+
+> [resv_map_alloc](#D02053)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02055">hugetlbfs_mknod</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001026.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式为用户提供大页内存，因此通过次方式分配大页内存之前都需要在 hugetlbfs 文件系统挂载点下创建一个文件或者打开一个已经存在的文件，hugetlbfs_mknod() 函数的作用是在 hugetlbfs 文件系统中创建一个文件或目录，其底层逻辑是: 函数首先调用 hugetlbfs_get_inode() 函数在参数 dir 的目录下创建并初始化一个 VFS inode, VFS inode 可以是一个文件或者是一个目录，当 VFS inode 创建成功，那么函数调整 dir inode 的时间为 current_time() 对应的时间，接着函数调用 d_instantiate() 将新分配的 VFS inode 加入到 dentry 目录下作为新的节点，最后调用 dget() 增加目录的引用计数. 至此 dentry 目录下新增一个文件或者目录.
+
+> [hugetlbfs_get_inode](#D02054)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02056">hugetlbfs_mkdir</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001027.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式为用户空间提供大页内存，那么当使用该形式分配大页内存时，内核需要在 hugetlbfs 文件系统的挂载点下创建一个文件或打开一个已经存在的文件，hugetlbfs_create() 函数的作用是在 hugetlbfs 文件系统挂载点下创建一个文件，其底层逻辑是: 参数 dentry 指明 hugetlbfs 文件系统挂载点信息，参数 dir 则是挂载点目录对应的 VFS inode，函数直接通过调用 hugetlbfs_mknod() 函数创建文件. 函数调用完毕之后可以在 dentry 目录下看到一个文件.
+
+> [hugetlbfs_mknod](#D02055)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02057">is_file_hugepages</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001028.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式为用户空间提供大页，基于该形式，在每次分配大页的时候，内核需要在 hugetlbfs 文件系统挂载点下创建一个文件或打开一个已经存在的大页。is_file_hugepages() 函数的作用是判断一个文件是否为 hugetlbfs 的大页文件，其底层逻辑为: hugetlbfs 的文件大页都是维护 hugetlbfs 文件系统挂载点下，并且其 file operations 设置为 hugetlbfs_file_operations, 因此可以通过这个条件判断一个文件是否为大页文件。另外由于历史原因还保留 SHM 的大页接口，is_file_shm_hugepages() 函数则判断 file operations 为 shm_file_operations_huge 时也认为文件为用于映射大页的文件.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02058">subpool_inode</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000991.png)
+
+在 Hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式向用户空间提供大页内存，如果使用该方式分配内存，那么首先需要挂载 hugetlbfs 文件系统，hugetlbfs 使用 struct hugetlbfs_sb_info 描述 hugetlbfs super block 信息，其成员 spool 指向了该 hugetlbfs 挂载点上大页数量信息。函数可以根据上面的信息通过 VFS 的关系链从 struct file/struct inode/struct super_block 最终找到 subpool。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001029.png)
+
+函数 subpool_inode() 的作用就是通过 VFS inode 找到对应 hugetlbfs 文件挂载点的 subspool. 其底层逻辑为: 首先通过 i_sb 找到 VFS super_block, 然后通过宏 HUGETLBFS_SB() 函数找到对应的 hugetlbfs super block, 其 spool 成员指向 struct hugepage_subpool。
+
+> [HUGETLBFS_SB](#D02032)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02059">inode_resv_map</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001030.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件页的形式为用户空间提供大页内存。在进程分配虚拟内存用于映射大页物理内存时，内核需要为虚拟内存预留足够的大页，此时内核使用 resv_map 机制进行预留大页的管理。inode_resv_map() 用于获得 struct resv_map 数据，其底层逻辑为: 在 hugetlbfs 文件系统挂载点上，当内核分配大页内存时，需要进程在其挂载点下创建一个文件或打开一个文件，因此每次大页分配都涉及一个 VFS inode，因此内核将 resv_map 塞到了 inode->i_mapping 的 private_data 成员里，这样在共享方式打开文件时，可以获得唯一的 struct resv_map 数据。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02060">region_chg</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001031.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件形式为用户空间提供大页内存，当进程需要通过文件方式分配大页，那么首先需要在 hugetlbfs 文件系统的挂载点上创建一个文件或打开一个文件，然后将文件通过 mmap 映射到进程的地址空间中。在进程映射过程中，内核需要计算虚拟内存消耗的大页数量，并将这部分大页进行预留。另外如果文件是以共享的方式创建，那么表示多个进程可以共同使用同一个大页，那么内核在进程 mmap 时只需预留一份大页内存，而不需要每个进程都预留一份。内核为了更好的管理多个进程共享一个文件使用的大页预留，引入了 resv_map 机制进行预留内存的管理。resv_map 机制以打开文件的 pgoff 和 len 作为区间注册到 resv_map 维护的链表上，如果其他进程打开文件的区间已经在 resv_map 链表上了，那么内核不需要为其预留大页; 反之区间不完全与 resv_map 链表上存在的区间重合，那么内核需要为多出的区域预留大页内存.
+
+region_chg() 函数的作用就是判断新增加的区域是否需要预留大页, 其底层逻辑为: 函数首先在 357 行获得 resv_map 的区间链表，每个区间使用 struct file_region 进行描述，函数接着在 370 行检查 resv_map 的 adds_in_progress 是否大于 region_cache_count, 这里 adds_in_progress 表示正在修改 resv_map 进程的数量，而 region_cache_count 则表示 resv_map 维护的 struct file_region 缓存数量，如果 adds_in_progress 大于 region_cache_count, 那么表示多个进程正在进行预留，但 struct file_region 缓存不够，此时需要动态申请一个 struct file_region, 并将其添加到 resv_map 的 region_cache 链表上，以便供其他进程分配时使用。分配完毕之后增加 resv_map region_cache_count 成员的数量，最后跳转到 retry_locked 处重新执行该函数. 
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001032.png)
+
+函数接着在 391 行遍历所有已经预留的区域，如果检查到预留的区域的结束地址不小于此次预留的起始值，那么结束循环，发生这种情况的一般是以前的进程打开了文件的后半段，文件的前面部分还没有打开，那么这时系统可能向前或者预留区间的范围。另外如果文件没有被任何进程预留过，那么 rg 变量不指向任何 file_region. 函数接着在 398 行判断，如果 resv_map 没有任何预留区间，或者新预留的结束地址小于已经存在预留区间的起始值，那么函数进入 399 的分支执行，如果此时 nrg 变量为空，那么函数进入 400 分支，函数首先将 adds_in_progress 减一，并调用 kmalloc() 函数为 nrg 分配内存，并将 nrg 的 from 和 to 成员都设置为 f，并将 nrg 链表初始化，最后在 409 行跳转到 retry 处执行，这个分支一般是需要新增预留区间的情况会执行，并且第一次进程 400 行分支，跳转到 retry 之后还是会进入 399 分支，第二次进入函数直接执行 412 行代码，函数将 nrg 加入到 resv_map 的区间链表上，并计算此时预留区域的长度，t 减去 f 的值即为区间改变的值，函数接着跳转到 out_nrg 处执行。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001033.png)
+
+首先看 444 行 out_nrg 处，函数将 spin 锁解除之后直接返回新增区间的大小。另外一种情况是 resv_map 的预留区间链表上已经存在预留区间，此时可能出现三种情况: 第一种是需要预留区间被已经存在的预留区间包含、第二种情况则是新增区域可能与已存在的区域重叠，但新增区间的左边存在一部分并不与存在的预留区间重叠、同理最后一种是新增区域可能和已经存在的区间重叠，但新增区域的最右边一定存在一份区域与已经存在的预留区间不重合。对于上面情况，函数的处理在 418 行，函数发现新增区域的起始值大于已经存在区域的起始值，那么函数将新增区域的起始值设置为已经存在预留区间的起始值，函数接着在 420 行重新计算了新增区间的长度。函数继续在 423 行使用 list_for_each_entry() 函数遍历 resv_map 的预留区间，在遍历每个预留区域时，函数首先在 424 行判断是否已经遍历一遍了，如果是则跳出遍历; 反之如果没有遍历完，那么函数在 426 行如果检查到预留区域的起始地址大于新增区域的结束地址，由于这种情况上一张图已经处理完了，那么此时函数认为这是一种错误的情况，那么函数直接跳转到 out 处; 反之那么新增区间可能与已存在的预留区间可能相交. 函数继续在 432 行判断预留区间的结束地址是否大于新增区域的结束地址，如果大于，那么函数在 433 行重新计算新区域的长度，并将新增区域的结束地址指向了已经存在区域的结束地址，最后函数在 436 行再次计算新区域的长度。函数最后返回新增预留区域的长度 chg.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02061">region_add</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001034.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件形式为用户空间提供大页内存，当进程需要通过文件方式分配大页，那么首先需要在 hugetlbfs 文件系统的挂载点上创建一个文件或打开一个文件，然后将文件通过 mmap 映射到进程的地址空间中。在进程映射过程中，内核需要计算虚拟内存消耗的大页数量，并将这部分大页进行预留。另外如果文件是以共享的方式创建，那么表示多个进程可以共同使用同一个大页，那么内核在进程 mmap 时只需预留一份大页内存，而不需要每个进程都预留一份。内核为了更好的管理多个进程共享一个文件使用的大页预留，引入了 resv_map 机制进行预留内存的管理。resv_map 机制以打开文件的 pgoff 和 len 作为区间注册到 resv_map 维护的链表上，如果其他进程打开文件的区间已经在 resv_map 链表上了，那么内核不需要为其预留大页; 反之区间不完全与 resv_map 链表上存在的区间重合，那么内核需要为多出的区域预留大页内存.
+
+region_add() 函数的作用是向 resv_map 中新增一个预留区间，其底层逻辑为: 函数首先在 261 行获得 resv_map 的预留区间链表，然后在 267 行使用 list_for_each_entry() 函数遍历所有预留区域，如果发现新增预留区间起始值不大于现有预留区间的结束地址，那么函数停止循环, 如果遍历里所有现有的预留区间都没有匹配该条件，那么新增区域的起始值比现存的预留区间还大。无论两种情况如何，函数都获得一个现有的预留区间。函数接着在 277 行判断 rg 是否为空，或者新增预留区的结束地址小于 rg 对应预留区的起始地址，那么函数将进入 278 分支继续执行。函数从 resv_map 的 region_cache 中获得一个 struct file_region, 然后将该预留区的起始值 from 和结束值 to 设置为新增预留区范围，接着将预留区加入到 resv_map 的预留区链表上，最后计算处新增预留区的长度之后跳转到 out_locked 处运行。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001035.png)
+
+函数在 294 行判断新增预留区间的起始值是否大于现有预留区间的起始值，如果大于，那么表示新增预留区在后面，那么函数将新增预留区间的起始值设置为现有预留区间的起始地址。函数接着在 299 行调用 list_for_each_entry_safe() 遍历 resv_map 的所有预留区间，在每次遍历过程中，函数在 300 行判断是否已经遍历一遍了，如果是直接退出; 反之如果不是，那么函数检测到预留区的起始地址大于新增预留区的结束地址，那么函数直接结束循环，新增的预留区将添加在现有预留区; 反之如果预留区的结束地址大于新增预留区，那么函数将新增预留区的结束值设置为现有预留区的结束值; 如果此时检查到遍历的预留区不等于已经找到的预留区，那么函数认为原先的预留区已经被移除，那么此时函数将预留区从 resv_map 的预留区链表中移除，是否预留区资源并更新新增预留区的大小。经过遍历之后，函数找到了一个合适的区间将新增预留区插入进去，那么函数在 321 行再次更新新增预留区的长度，并将预留区的范围扩大成新的范围.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02062">region_del</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001036.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件形式为用户空间提供大页内存，当进程需要通过文件方式分配大页，那么首先需要在 hugetlbfs 文件系统的挂载点上创建一个文件或打开一个文件，然后将文件通过 mmap 映射到进程的地址空间中。在进程映射过程中，内核需要计算虚拟内存消耗的大页数量，并将这部分大页进行预留。另外如果文件是以共享的方式创建，那么表示多个进程可以共同使用同一个大页，那么内核在进程 mmap 时只需预留一份大页内存，而不需要每个进程都预留一份。内核为了更好的管理多个进程共享一个文件使用的大页预留，引入了 resv_map 机制进行预留内存的管理。resv_map 机制以打开文件的 pgoff 和 len 作为区间注册到 resv_map 维护的链表上，如果其他进程打开文件的区间已经在 resv_map 链表上了，那么内核不需要为其预留大页; 反之区间不完全与 resv_map 链表上存在的区间重合，那么内核需要为多出的区域预留大页内存.
+
+region_del() 函数的作用从 resv_map 中移除一个预留区，其底层逻辑是: 参数 f 和 t 指明了需要移除预留区的范围，函数在 484 行获得 resv_map 预留区链表，然后函数在 491 行使用 list_for_each_entry_safe() 函数遍历 resv_map 的所有预留区间，在遍历每个预留区时，函数首先在 499 行进行判断，如果需要移除的预留区的起始值不小于当前预留区间的结束值，那么函数继续判断，如果此时预留区不是空的，或者当前预留区间与移除区间不想交，那么函数继续遍历下一个预留区间; 反之函数继续在 502 行进行判断，如果当前区间的起始值不小于移除区间的结束地址，那么说明移除区间和当前区间可能相离，但不相交，那么说明移除区间并不在 resv_map 维护的预留区间内，此时函数直接结束循环; 反之函数继续在 505 行进行判断，如果移除区域的起始值大于当前预留区间的起始值，并且当前预留区的结束值大于移除预留区域的结束地址，那么移除区域位于当前预留区的内部，那么当前预留区间将会被拆分成两个预留区，函数进入 506 分支，函数在 510 行检查到 nrg 为 NULL，并且 resv_map 的 region_cache_count 大于 adds_in_progress, 那么函数认为 resv_map region_cache 中维护的 struct file_region 过多，于是使用 list_first_entry() 函数从 resv_map 的 region_cache 链表中移除一个 struct file_region 成员，接着将 resv_map 的 region_cache_count 减一; 反之如果此时只检测到 nrg 为空，那么此时调用 kmalloc() 函数为 nrg 分配内存, 内存分配成功之后，函数跳转到 retry 处继续执行。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001037.png)
+
+函数继续在 527 行计算移除区域的长度，由于此时移除的区域位于当前预留区的前段，那么函数在 530 行将 nrg 的起始值设置为移除预留区的结束地址，将 nrg 的结束值设置为当前区域的结束值。函数最后将 nrg 插入到 resv_map 的预留区链表上; 另外处理上面的情况，如果移除区间的范围正好包含了当前预留区，那么函数进入 543 分支，函数统计当前预留区的长度并存储到 del 遍历里，最后将当前预留区从 resv_map 的预留区间链表中移除，并释放预留区占用的内存. 最后移除的区域可以部分与当前预留区相交，函数 549 行检测到移除区间与当前预留区的前半部分相交，那么函数直接将当前预留区间的起始值设置为移除预留区的结束值，del 为当前预留区起始值到移除预留区结束值的长度; 函数 552 行则检测到移除预留区间与当前预留区间的后半部相交，那么函数只需将当前预留区的结束值设置为移除预留区的起始值即可，del 的值则为移除预留区的起始值与当前预留区结束值的长度。遍历完所有的预留区之后，移除区域已经从 resv_map 预留区间中移除，因此函数在 559 行将 nrg 占用的内存释放.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02063">region_abort</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001038.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件形式为用户空间提供大页内存，当进程需要通过文件方式分配大页，那么首先需要在 hugetlbfs 文件系统的挂载点上创建一个文件或打开一个文件，然后将文件通过 mmap 映射到进程的地址空间中。在进程映射过程中，内核需要计算虚拟内存消耗的大页数量，并将这部分大页进行预留。另外如果文件是以共享的方式创建，那么表示多个进程可以共同使用同一个大页，那么内核在进程 mmap 时只需预留一份大页内存，而不需要每个进程都预留一份。内核为了更好的管理多个进程共享一个文件使用的大页预留，引入了 resv_map 机制进行预留内存的管理。resv_map 机制以打开文件的 pgoff 和 len 作为区间注册到 resv_map 维护的链表上，如果其他进程打开文件的区间已经在 resv_map 链表上了，那么内核不需要为其预留大页; 反之区间不完全与 resv_map 链表上存在的区间重合，那么内核需要为多出的区域预留大页内存.
+
+region_abort() 函数的作用是终止对 resv_map 预留区的修改，其底层逻辑是: 当函数检测到 resv_map 的 region_cache_count 为 0 时，函数就调用 VM_BUG_ON() 进行报错，此时将 resv_map 的 adds_in_progress 减一，以此终止系统继续向 resv_map 添加新的宇路区间.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02064">is_vm_hugetlb_page</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001039.png)
+
+在 Hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件页形式为用户空间提供大页内存。进程通过在 hugetlbfs 文件系统挂载点上创建文件或打开已经存在的文件方式，将文件 mmap 到进程的地址空间，通过这种方式映射的虚拟内存可以与大页进行映射。is_vm_hugetlb_page() 函数用于判断进行的指定虚拟内存是否映射 hugetlbfs 提供的大页，其底层逻辑是: 当进程打开文件之后，使用 mmap 分配虚拟内存用于映射大页内存时，内核会将 VMA 添加 VM_HUGETLB 表示，这样将映射大页的 VMA 与一般的 VMA 区分开来。因此该函数通过判断 VMA 中是否包含 VM_HUGETLB 表示进行实际的判断.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02065">set_vma_resv_map</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001040.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式为用户空间提供大页内存。当进程在为大页内存分配用于映射的虚拟内存时，内核需要为进程预留指定数量的大页内存，内核使用 resv_map 机制管理大页内存的预留。当通过 hugetlbfs 文件系统挂载点创建文件或打开文件的时，hugetlbfs 文件系统都会为文件准备唯一的 VFS inode, 对于共享文件而言，VFS inode 可以被多次打开，因此对于这种情况，多个进程可以实现大页内存的共享。由于存在多个进程共享同一个大页，那么此时系统只需预留一个大页，为了更好的维护大页预留，linux 使用 resv_map 机制，为了确保多个文件共享大页时能够正确的进行大页预留，那么内核将 resv_map 维护在 inode 里。但对于私有文件页，那么进程不会与其他进程共享一个大页，那么此时可以将 resv_map 放置在 VMA 的 private_data 里。set_vma_resv_map() 函数的作用就是将 resv_map 放置到指定的 VMA 的 private_data 里进行维护，其底层逻辑是: 函数首先调用 is_vm_hugetlb_page() 函数判断对应的 VMA 是否映射 hugetlb 大页，如果不是则报错. 接着函数如果检测到 VMA 是共享的，而不是私有的，那么函数会报错. 检测都通过之后，函数调用 set_vma_private_data() 函数将 resv_map 存储到 VMA 的 private_data 里，并带上了 HPAGE_RESV_MASK 标志.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02066">vma_resv_map</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001041.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件形式为用户提供大页内存，由于以文件形式给出，因此需要在 hugetlbfs 文件系统挂载点下创建文件或打开文件方式进行大页内存分配。进程在打开文件之后需要通过 mmap 为大页内存分配虚拟内存，进程可以通过共享的方式进行映射，可以通过私有的方式进行映射，无论使用那种映射方式，进程 mmap 分配虚拟内存时，内核同时计算需要分配大页的数量，并将这些大页进行预留。内核使用 resv_map 机制管理预留内存，由于采用不同的映射方式，resv_map 相关的管理数据可能维护在 VFS inode 中，也可能维护在 VMA 的 private_data 里. vma_resv_map() 函数的作用是获得进程指定 VMA 映射大页时使用的 resv_map. 其底层逻辑为: 函数首先调用 is_vm_hugetlb_page() 函数判断 VMA 是否通过 hugetlbfs 文件方式分配的大页，如果不是则报错. 函数接着判断 VMA 是共享映射还是私有映射，如果是共享映射，那么 resv_map 存在于 VFS inode 中，那么函数调用 inode_resv_map() 函数从 VFS inode 中取出 resv_map; 反之是私有映射，那么 resv_map 存在与 VMA 的 private_data，因此函数直接通过调用 get_vma_private_data() 函数并去除预留标志之后，即是 resv_map。
+
+> [inode_resv_map](#D02059)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02067">set_vma_resv_flags</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001042.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件页的形式为用户空间提供大页内存。其文件页方式支持共享和私有的方式，当通过该方式分配大页内存时，根据需要在使用大页之前需要对大页内存提前预留，私用和共享在预留上存在不同的策略，对于共享，预留的内存可以和其他进程共享; 对于私有方式，那么预留的内存只能自己使用。由于两种方式在预留大页存在差异，那么也就导致 fork 场景下预留大页的策略不同。对于私有映射大页预留在 VMA 的 private_date 里，并且需要标记该大页是预留给父进程的，因此内核需要对父进程预留的大页进行打标。set_vma_resv_flags() 函数的作用就是用于设置预留页的标志，对于父进程，其预留标志可以设置为 HPAGE_RESV_OWNER，表示大页预留给自己，不预留给子进程。函数的底层逻辑是: 函数首先调用 is_vm_hugetlb_page() 函数判断 VMA 是否通过 hugetlbfs 映射的大页，如果不是就报错. 接着判断 VMA 是否为私有映射，如果不是，那么函数同样报错。最后函数调用 set_vma_private_data() 函数向 VMA 的 resv_map 添加上 flags 的标志.
+
+> [is_vm_hugetlb_page](#D02064)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02068">is_vma_resv_set</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001043.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件页的形式为用户空间提供大页内存。其文件页方式支持共享和私有的方式，当通过该方式分配大页内存时，根据需要在使用大页之前需要对大页内存提前预留，私用和共享在预留上存在不同的策略，对于共享，预留的内存可以和其他进程共享; 对于私有方式，那么预留的内存只能自己使用。内核使用 resv_map 机制管理预留大页内存，由于私有和映射存在差异，内核将 resv_map 存储在不同位置。对于私有映射方式，内核将 resv_map 维护在 VMA 的 private_data 成员里，另外对于私有映射，内核还会打上不同标志，因此确认大页是给父进程预留的还是给子进程预留的。函数 is_vma_resv_set() 函数的作用就是判断 VMA 的 private_data 是否已经打上相应的标签。函数的底层逻辑为: 函数首先调用 is_vm_hugetlb_page() 函数判断 VMA 是否映射了 hugetlb 大页，如果没有映射则报错. 函数接着调用 get_vma_private_data() 函数获得 VMA 的 private_data 成员，并判断其是否已经打上 flag 对应的标.
+
+> [is_vm_hugetlb_page](#D02064)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02069">reset_vma_resv_huge_pages</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001044.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件页的形式为用户空间提供大页内存。其文件页方式支持共享和私有的方式，当通过该方式分配大页内存时，根据需要在使用大页之前需要对大页内存提前预留，私用和共享在预留上存在不同的策略，对于共享，预留的内存可以和其他进程共享; 对于私有方式，那么预留的内存只能自己使用。内核使用 resv_map 机制管理预留大页内存，由于私有和映射存在差异，内核将 resv_map 存储在不同位置。对于私有映射方式，内核将 resv_map 维护在 VMA 的 private_data 成员里; 而对于共享映射 resv_map 则存储在文件对于 inode 里，这样方便共享的进程使用。reset_vma_resv_huge_pages() 函数的作用是当内核释放并解除一段大页映射的时候，内核需要将私有映射的 VMA private_data 成员清零，其底层逻辑是: 函数首先调用 is_vm_hugetlb_page() 判断 VMA 是否映射了 hugetlb 大页，如果不是则报错。接着函数判断 VMA 是否为私有映射，如果是则匹配上了私有 hugetlb 映射，那么函数将 VMA 的 private_data 成员清零.
+
+> [is_vm_hugetlb_page](#D02064)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02070">vma_has_reserves</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001045.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式为用户空间提供大页内存。进程在使用大页内存之前，需要在进程地址空间分配虚拟内存，以此在缺页时将虚拟内存映射到大页的物理内存上。进程在为大页分配虚拟内存时需要提前预留大页内存，然后等待进程访问大页引起缺页时，内核从预留的大页中为其分配大页内存，并建立虚拟内存到大页物理内存的映射。内核使用 resv_map 机制来管理 hugetlb 大页的预留，另外由于文件存在私有映射和共享映射，那么 resv_map 预留策略存在差异。对于共享映射，多个进程可以与其他进程共享预留大页，而私有映射只能使用自己的预留大页。vma_has_reserves() 函数的作用是判断 chg 个大页是否需要预留。函数的底层逻辑是: 如果 VMA 带有 VM_NORESERVE 标志，那么表示该进程的 VMA 使用的大页内存在映射阶段不需要预留，或者表示其他进程已经预留的大页。函数接着检查到如果 chg 为 0 即不需要预留任何大页，且 VMA 是共享映射，因此这种情况下内核认为大页已经预留好了; 反之返回 false。函数如果没有检查到 VMA 中包含 VM_NORESERVE, 那么函数接着判断是否为共享映射，如果是且 chg 不为 0，那么代表内核还没有为 chg 对应的虚拟内存预留大页，因此返回 false; 如果此时 chg 为 0，那么表示内核已经为虚拟内存预留了大页，因此返回 true.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001046.png)
+
+如果函数发现 VMA 是私有映射，那么函数调用 is_vma_resv_set() 判断 VMA 的 private_data 是否已经包含了 HPAGE_RESV_OWNER 标志，如果包含，那么该进程是父进程并使用自己预留的大页，此时如果 chg 不为 0 表示需要新预留大页，因此返回 false; 反之表示私有映射无需预留新的大页。如果以上情况都不匹配，那么函数直接返回 false.
+
+> [is_vma_resv_set](D02068)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02071"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001047.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式为用户空间提供大页内存。内核在初始化阶段自动 mount 里不同长度大页的 hugetlbfs 文件系统挂载点，其挂载点维护在 hugetlbfs_vfsmount[] 数组中，数组中的成员按大页的长度从小进行排序，2M 大页的 mount 点为 hugetlbfs_vfsmount[] 数组的第一个成员。get_hstate_idx() 函数的作用是通过长度找到其在 hugetlbfs_vfsmount[] 数组中的索引，其底层逻辑为: 参数 page_size_log 长度的 log 指数，函数首先调用 hstae_sizelog() 函数获得指定长度大页的 struct hstate 数据结构，如果 h 存在，那么将 h 减去 hstates 数组，因此可以获得偏移，因此可以知道 hstates[] 与 hugetlbfs_vfsmount[] 数组存在一一对应关系.
+
+> [hstate_sizelog](#D02031)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02072">hugepage_subpool_get_pages</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001048.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件的形式为用户空间提供大页内存。在每个 hugetlbfs 文件系统的 mount 点下都维护一个 subpool 小池子，该池子可以预留一定数量的大页进行管理。内核如果在该 mount 点下分享大页内存，那么内核将从 subpool 池子中分配大页内存。hugepage_subpool_get_pages() 函数用于从指定的 subpool 中分配大页，其底层逻辑为: 参数 spool 为指定 mount 点下的 subpool 池子，参数 delta 表示需要分配大页的数量。函数首先判断 spool 是否为空，有的 hugetlbfs 文件系统的 mount 点下就不带 subpool，因此 spool 参数可能为空，如果为空直接返回不从 subpool 小池子分配大页; 反之 spool 不为空，那么函数检查 spool 的 max_hpages 是否不为 -1， 那么表示 subpool 池子设置了最大大页数量，那么函数将池子已经分配的大页数 used_hpages 加上要分配的大页数量的和，如果和没有超过 subpool 的最大大页数，那么函数将 subpool 的 used_hpages 加上 delta; 反之表示 subpool 不能在增加大页了，那么函数直接返回 ENOMEM; 如果 subpool 没有设置维护大页的上限，那么函数此时检查 subpool 维护大页数量的下限，如果此时 min_hpages 不为 -1，并且 subpool 的 rev_hpages 不为 0，那么 subpool 设置了下限，并且预留了一定数量的大页，那么函数此时检查 delta 是否大于预留的大页，如果不大于，那么 subpool 预留的大页可以满足分配，那么函数将 ret 设置为 0，然后将 subpool 的 rsv_hpages 减去 delta; 反之如果此时预留的大页不够 delta 分配，那么函数计算抛开预留还剩没有分配的大页数量，并将 subpool 的 rev_hpages 设置为 0. 函数最后返回 ret，此时 ret 代表了还需要额外分配大页的数量.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02073">hugepage_subpool_put_pages</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001049.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件形式向用户空间提供大页内存。在 hugetlbfs 文件系统 mount 的挂载点下都维护一个 subpool 小池子，小池子里从系统大页中预留一定数量的大页进行维护。如果进程在该 mount 挂载点下分配大页内存，那么内核会从该 subpool 中分配大页内存，如果进程不再使用大页内存，那么进程将大页再次归还 subpool。hugepage_subpool_put_pages() 函数的作用是将大页归还给 subpool，其底层逻辑为: 参数 spool 指向需要归还的池子，参数 delta 则表明需要归还大页的数量。函数首先判断 subpool 是否存在，由于 hugetlbfs 文件系统的挂载点不一定都存在 subpool。如果 subpool 不存在，系统直接返回，那么需要归还的大页就直接返回给系统大页池子里; 反之 subpool 存在，那么 subpool 中的 max_hpages 表示该池子能够维护最大的大页数，min_hpages 表明 subpool 至少维护的大页数量，used_hpages 则表示 subpool 池子已经分配的大页数量，rev_hpages 则表示 subpool 已经从系统大页池子中预留的大页数量. 函数如果检测到 max_hpages 不为 -1，那么 subpool 池子已经设置了最大维护大页数量，那么函数直接将 used_hpages 减去 delta 个大页。函数如果接着检测到 min_hpages 不等于 -1，并且 used_hpages 小于 min_hpages, 那么说明 subpool 需要预留一定数量的大页。如果 rsv_hpages 加上 delta 之后不超过 min_hpages, 那么说明 subpool 不需要从系统大页池子中预留大页; 反之 subpool 不要从大页池子中预留大页。函数接着将 rsv_hpages 增加 delta 进行预留，如果此时 rsv_hpages 大于 min_hpages, 那么 subpool 需要减少预留大页的数量，那么函数将 rsv_hpages 设置为 min_hpages. 函数最后返回 ret 表示需要从系统大页池子中再预留大页的数量.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02074">hugetlb_reserve_pages</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001050.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件形式向用户空间提供大页内存。进程通过在 hugetlbfs 文件系统的挂载点下创建或打开文件的方式，将大页物理内存映射到进程的地址空间。进程在使用 mmap 从地址空间分配虚拟内存时，内核需要为虚拟内存预留指定数量的大页，由于进程可以通过共享或私有的方式映射大页内存，内核使用 resv_map 管理预留大页内存。对于共享映射，resv_map 用于管理多个进程之间预留大页内存，而对于私有映射，resv_map 只需维护父进程大页预留。hugetlb_reserve_pages() 函数的作用是进程在分配虚拟内存时预留指定数量的大页内存，其底层逻辑是: 参数 inode 指向打开的文件，参数 from 和 to 指明了文件 page cache 的范围，参数 vma 指明进程的 VMA，vm_flags 则表明 VMA 映射内存的标志. 函数首先在 439 行通过 hstate_inode() 函数将 inode 转换成指定长度的 struct hstate 数据结构，接着在 440 行通过 subpool_inode() 函数获得 hugetlbfs 文件系统挂载点的 subpool 小池子。from 和 to 参数是文件的按大页粒度的文件偏移，如果 from 大于 to，那么函数认为这是不可能发生的情况，因此函数在 446 行报错之后直接返回 -EINVAL. 函数接着在 455 行判断 VMA 在映射时是否设置了 MAP_NORESERVE 这个标志，这个描述被内核转换为 VM_NORESERVE, 以此告诉内核在为该 VMA 映射时不要预留大页内存，那么如果 VMA 包含了该标志，函数无需为进程预留大页内存，那么函数直接返回 0. 接下来函数在 464 行判断 VMA 不存在或者 VMA 是共享映射的情况，那么函数进入 465 行分支，这里对于 VMA 不存在的情况，其一般发生在 IPC 进程之间使用 hugetlb 大页通信的情况, 因此这两种情况都可以统一归纳为共享映射模式下，resv_map 维护在文件对于的 struct inode 中，因此函数调用 inode_resv_map() 函数获得 resv_map, 将 resv_map 存在 inode 中便于多个进程打开文件时对应的 inode 都是同一个，那么这样便于 resv_map 数据的唯一和同步。函数接着在 467 行调用 region_chg() 函数检查 from 到 to 的区域中最终需要新增几个大页进行预留，结果存储在 chg 中，这里可以知道如果文件的某个区域被其他进程预留过大页，那么其他进程在使用文件这段区域时将不会被预留大页; 反之 VMA 是私有映射，所谓私有映射就是内存只能该进程写不能被其他进程共享，因此对应私有映射，函数进程 470 分支。对于私有映射，其 resv_map 可以存储在进程 VMA 的 private_data 成员里，因为 VMA 的 private_data 的数据不会继承到子进程或被其他进程共享，因此私有映射的 resv_map 维护在 VMA 的 private_data 中。函数首先在 470 行调用 resv_map_alloc() 函数新分配一个 resv_map 专门给当前进程使用，此时函数在 474 行将 to 减去 from 计算预留的大页数量，接着在 476 行调用 set_vma_resv_map() 函数将新分配的 resv_map 塞到 VMA 的 private_data 成员里，并调用 set_vma_resv_flags() 函数将 HPAGE_RESV_OWNER 标志加入到 resv_map 里，以此表示预留的大页只供给该进程使用。函数接着在 480 行检测到 chg 小于 0，那么预留的大页数不正确，那么函数跳转到 out_err 处; 反之 chg 可能是不小于 0 的值.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001051.png)
+
+函数在 490 行调用 hugepage_subpool_get_pages() 函数从 hugetlbfs 文件系统挂载点的 subpool 中预留 chg 数量的大页，如果 subpool 有足够数量的大页，那么函数将从 subpool 进行预留; 反之 subpool 中没有足够的大页，那么函数将不从 subpool 中进行预留。另外有的 hugetlbfs 文件系统挂载点并没有 subpool 小池子。函数接下来在 500 行调用 hugetlb_acct_memory() 函数检查系统大页池子中是否有充足的大页进行预留，如果有则从大页池子中预留指定数量的大页，如果没有充足的大页的话，那么函数通过大页超发机制动态分配指定数量的大页进行预留。如果以上两种方法都无法找到充足的大页进行预留，那么函数在 503 行调用 hugepage_subpool_put_pages() 函数是否从 subpool 中分配的大页，并跳转到 out_err 处。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001052.png)
+
+函数已经从大页池子中预留足够数量的大页之后，函数需要将共享映射预留大页同步到 resv_map 中，因此函数在 518 行检测到 VMA 不存在或者 VMA 是共享映射时，函数进入 529 分支继续支持，这里 VMA 不存在的情况是 IPC 进程使用 hugetlb 大页进行共享通信的时候。函数首先在 519 行调用 region_add() 函数将 from 到 to 的新预留区域更新到 resv_map 中。如果此时发现 chg 大于 add，那么表示预留失败，可能此时某个进程将已经预留的区域取消了预留，那么函数将在 531 行调用 hugepage_subpool_put_pages() 将 subpool 已经预留的大页释放，另外调用 hugetlb_acct_memory() 函数重新更新系统大页池子中预留大页的情况。函数最后返回 0. 如果函数执行过程中跳转到 out_err 处执行，那么函数首先判断是否为非私有映射，如果是函数发现 chg 大于 0，那么说明已经预留新的大页，那么函数直接调用 region_abort() 函数停止预留，另外如果函数在 542 行判断了 VMA 映射是私有映射，那么函数调用 kref_put() 函数减少 resv_map refs 的引用计数。
+
+> [is_vma_resv_set](#D02068)
+>
+> [hugetlb_acct_memory](#D02044)
+>
+> [hugepage_subpool_put_pages](#D02073)
+>
+> [hugepage_subpool_get_pages](#D02072)
+>
+> [region_add](#D02061)
+>
+> [region_chg](#D02060)
+>
+> [region_abort](#D02063)
+>
+> [set_vma_resv_map](#D02065)
+>
+> [set_vma_resv_flags](#D02067)
+>
+> [resv_map_alloc](#D02053)
+>
+> [inode_resv_map](#D02059)
+>
+> [subpool_inode](#D02058)
+>
+> [hstate_inode](#D02034)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02075">hugetlb_file_setup</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001053.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件形式为用户空间提供大页内存。进程想分配大页内存就需要在 hugetlbfs 文件系统的挂载点下创建或打开文件，然后从进程地址空间分配一段虚拟内存用于映射文件的 page cache，这里的 page cache 即大页内存。进程在分配这段虚拟内存之后，内核会为这段虚拟内存预留指定数量的大页内存，这里的预留并不是真正的建立页表。当进程访问这段虚拟内存时触发缺页中断，缺页中断处理函数将虚拟内存映射到之前预留的大页内存上，待缺页中断返回之后，进程就可以真正使用大页物理内存。hugetlb_file_setup() 函数的作用是为进程从 hugetlbfs 文件系统的挂载点下创建一个文件用于映射大页物理内存，其底层逻辑是: name 参数指明文件的名字，size 指明文件的长度，accflag 创建文件的标志。内核使用 hstates[] 数组维护不同长度的大页，每种长度的大页使用 strut hstate 数据结构进行维护，内核在启动过程中会为每种长度的大页创建一个 hugetlbfs 文件系统挂载点，用于匿名映射时使用，这些 mount 点的顺序与 hstaes[] 数组中的顺序一致，并存储在 hugetlbfs_vfsmount[] 数组中。函数在 336 行通过调用 get_hstate_idx() 函数获得 page_size_log 对应长度的 mount 点的索引，并存储在 hstate_idx 里，函数接着在 341 行结合 hstate_idx 从 hugetlbfs_vfsmount[] 数组中获得指定长度的 hugetlbfs 文件系统挂载点，并使用 mnt 指向该挂载点。345-356 行历史遗留的代码不做过多分析. 函数在 358 行将 file 变量初始化为 -ENOSPC, 接着调用 hugetlbfs_get_inode() 函数从 mnt 对应的 mount 点下分配一个 struct inode。函数在 362 行如果检查到 create_flags 中包含 HUGETLB_SHMFS_INODE 标志，那么函数将 S_PRIVATE 添加到 inode 的 i_flags 中，不过这种情况已经不存在。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001054.png)
+
+函数在 365 行将 inode 的 i_size 设置为 size，那么打开文件的长度就是 size。函数接着调用 clear_nlink() 移除 inode 的链接相关的信息。函数接着调用 hugetlb_reserve_page() 函数从系统大页池子中预留指定数量的大页。如果预留成功，那么函数接着调用 alloc_file_pseudo() 函数创建一个虚拟文件，并将文件的操作函数设置为 hugetlbfs_file_operations. 最后如果文件创建成功之后，文件节点页预留了足够数量的大页，那么函数将返回打开的文件 file.
+
+> [hugetlb_reserve_pages](D02074)
+>
+> [hugetlbfs_get_inode](#D02054)
+>
+> [get_hstate_idx](#D02071)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
