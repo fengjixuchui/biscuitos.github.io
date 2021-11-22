@@ -52,11 +52,11 @@ tags:
 >
 > - [Hugetlb/Hugetlbfs 源码分析](#D)
 >
->   - hugetlb/hugetlbfs 数据结构
+>   - [hugetlb/hugetlbfs 数据结构](#D0)
 >
->   - hugetlb/hugetlbfs 核心数据
+>   - [hugetlb/hugetlbfs 核心数据](#D3)
 >
->   - hugetlb/hugetlbfs API
+>   - [hugetlb/hugetlbfs API](#D2)
 >
 > - [Hugetlb/Hugetlbfs 调试](#E)
 >
@@ -178,30 +178,32 @@ tags:
 
 #### Hugetlbfs 源码分析
 
-> - [Hugetlbfs 架构](#D00)
+<span id="D0"></span>
+> - [Hugetlbfs 数据结构](#D015)
 >
-> - [Hugetlbfs 数据结构](#D01)
->
->   - [enum hugetlbfs_size_type]()
+>   - [enum hugetlbfs_size_type](#D010)
 >
 >   - [struct file_region]()
 >
->   - [struct hugepage_subpool]()
+>   - [struct hstate](#D014)
+>
+>   - [struct hugepage_subpool](#D011)
 >
 >   - [struct huge_bootmem_page]()
 >
->   - [struct hugetlbfs_config]()
+>   - [struct hugetlbfs_config](#D012)
 >
 >   - [struct hugetlbfs_inode_info]()
 >
->   - [struct hugetlbfs_sb_info]()
+>   - [struct hugetlbfs_sb_info](#D013)
 >
 >   - [struct node_hstate]()
 >
 >   - [struct resv_map]()
 >
 >   - [vma_resv_mode]()
->
+
+<span id="D3"></span>
 > - [Hugetlbfs 重要数据](#D0305)
 >
 >   - [default_hstate]()
@@ -235,8 +237,9 @@ tags:
 >   - [node_hstates]()
 >
 >   - [parsed_valid_hugepagesz](#D0301)
->
-> - [Hugetlbfs API](#D02131)
+
+<span id="D2"></span>
+> - [Hugetlbfs API](#D02133)
 >
 >   - [alloc_bootmem_huge_page](#D02011)
 >
@@ -303,6 +306,8 @@ tags:
 >   - [huge_page_shift](#D02020)
 >
 >   - [huge_page_size](#D02005)
+>
+>   - [huge_pte_alloc](#D02132)
 >
 >   - [huge_pte_clear](#D02100)
 >
@@ -405,6 +410,8 @@ tags:
 >   - [hugetlbfs_inc_free_inodes](#D02046)
 >
 >   - [hugetlbfs_mknod](#D02055)
+>
+>   - [hugetlbfs_pagecache_page](#D02131)
 >
 >   - [hugetlbfs_parse_options](#D02037)
 >
@@ -2353,7 +2360,7 @@ subpool_vma() 函数的作用就是通过 VMA 找到其对应的 hugetlbfs 文�
 >
 > [huge_ptep_get](#D02089)
 >
-> [hugetlbfs_pagecache_page]()
+> [hugetlbfs_pagecache_page](#D02131)
 >
 > [vma_end_reservation](#D02108)
 >
@@ -2361,11 +2368,9 @@ subpool_vma() 函数的作用就是通过 VMA 找到其对应的 hugetlbfs 文�
 >
 > [huge_pte_write](#D02096)
 >
-> [hugetlb_no_page]()
+> [hugetlb_no_page](#D02130)
 >
 > [vma_hugecache_offset](#D02078)
->
-> [huge_pte_alloc]()
 >
 > [huge_pte_offset](#D02086)
 >
@@ -2374,6 +2379,8 @@ subpool_vma() 函数的作用就是通过 VMA 找到其对应的 hugetlbfs 文�
 > [huge_page_mask](#D02092)
 >
 > [hstate_vma](#D02080)
+>
+> [huge_pte_alloc](#D02132)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
@@ -2383,9 +2390,517 @@ subpool_vma() 函数的作用就是通过 VMA 找到其对应的 hugetlbfs 文�
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001119.png)
 
-在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件 page cache 的方式为用户进程提供大页内存。进程通过在 hugetlbfs 文件系统挂载点下创建或打开一个文件大页，然后从进程地址空间分配一段虚拟内存映射文件大页。当进程访问这段虚拟内存时，由于虚拟内存还没有与大页物理内存建立页表，那么会触发系统缺页中断。在缺页中断处理程序中，内核会从大页内存池子中分配一个大页人，然后建立虚拟内存到物理大页的页表。待缺页中断返回之后，进程就可以通过访问虚拟内存的途径使用大页物理内存了。在缺页处理函数里，需要从大页内存池子中分配大页，如果大页池子没有足够的大页，那么会通过大页超发机制，动态从 buddy 分配器中分配大页。hugetlb_no_page() 函数的作用是在 hugetlb 缺页中断中分配大页，其底层逻辑是: 参数 mm 指向进程的地址空间
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件 page cache 的方式为用户进程提供大页内存。进程通过在 hugetlbfs 文件系统挂载点下创建或打开一个文件大页，然后从进程地址空间分配一段虚拟内存映射文件大页。当进程访问这段虚拟内存时，由于虚拟内存还没有与大页物理内存建立页表，那么会触发系统缺页中断。在缺页中断处理程序中，内核会从大页内存池子中分配一个大页人，然后建立虚拟内存到物理大页的页表。待缺页中断返回之后，进程就可以通过访问虚拟内存的途径使用大页物理内存了。在缺页处理函数里，需要从大页内存池子中分配大页，如果大页池子没有足够的大页，那么会通过大页超发机制，动态从 buddy 分配器中分配大页。hugetlb_no_page() 函数的作用是在 hugetlb 缺页中断中分配大页，其底层逻辑是: 参数 mm 指向进程的地址空间, 参数 vma 对应进程的虚拟内存 VMA，参数 mapping 对应大页文件的 struct address_space 数据结构，参数 idx 指明缺页地址在大页文件中的偏移，参数 address 指向发生缺页的地址，参数 ptep 指向最后一级页表，参数 flags 则指向缺页的标志集合. 函数首先在 3725 行调用 hstate_vma() 函数获得 VMA 虚拟内存映射大页的 struct hstate, 该数据结构用于维护指定长度的大页，函数接着在 3732 行调用 huge_page_mask() 函数将缺页地址按大页 mask 进行对齐。函数首先在 3740 行调用 is_vma_resv_set() 函数检查 VMA 是否设置了 HPAGE_RESV_UNMAPPED 标志，如果该标志置位，表示父进程 fork 子进程之后，系统没有足够的大页为子进程分配大页，因此这种情况下需要直接 kill 掉子进程，那么函数进入 3740 分支打印相关的信息之后，直接返回 VM_FAULT_SIGBUG, 此时系统会因为 BUS Err 夯住.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001120.png)
+
+函数接下来调用 find_lock_page() 函数在文件的 mapping 中查找映射的 page cache，如没有找到进入 3753 分支执行，缺页情况下大概率找不到 page cache，需要新分配大页。函数 3760 到 3786 行是大页 userfaultfd 的处理流程，这里先不做讨论.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001121.png)
+
+函数接下来在 3788 行调用 alloc_huge_page() 函数分配一个大页，如果分配失败，那么函数使用 ret 记录下出错的原因，并跳转到 out 处执行; 反之成功分配一个新的大页，函数接着调用 clear_huge_page() 函数将大页内容清零，接着调用 \_\_SetPageUptodate() 将大页标记一个刚更新的新大页，函数接着将 new_page 设置为 true。函数接下来在 3797 行检查虚拟内存是否通过共享方式映射到大页的，如果是那么进入 3797 分支执行，此时由于采用共享映射的方式进行映射，那么多个进程的虚拟内存可能映射到同一个大页上，那么函数调用 huge_add_to_page_cache() 函数将大页添加到大页文件的 mapping。如果添加失败，那么函数将大页的引用计数减一，如果此时失败的原因是 EEXIST, 即 page cahce 已经存在，那么函数直接跳转到 retry 处执行 page cache 存在的逻辑，否则直接跳转到 out 处执行. 如果 page cache 添加成功，那么调用 anon_vma_prepare() 函数添加匿名映射的反向映射，如果虚拟内存不是匿名映射，那么直接跳过, 否则反向映射如果失败，那么函数将 ret 设置为 VM_FAULT_OOM, 然后跳转到 backout_unlocked 处执行; 反之函数将 anon_rmap 设置为 1, 这里值得注意的是 3806 分支的虚拟内存按私有方式进行映射.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001122.png)
+
+接下处理的是 page cache 本来就存在的情况，此时函数进入 3814 分支，此时函数会检测大页是否为 HWPOISON, 如果是那么函数将 ret 设置为 VM_FAULT_HWPOISON, 最后跳转到 backout_unlocked 处执行. 函数接下来在 3832 行通过两个判断确认缺页是否为私有映射对写保护引起的，如果是那么函数进入 3833 分支执行，此时函数调用 vma_needs_reservation() 函数检查预留的大页是否满足缺页的需求，如果大页池子没有足够的大页，那么函数认为内存不足，然后将 ret 设置为 VM_FAULT_OOM, 然后跳转到 backout_unlocked 处执行，否则函数调用 vma_end_reservation() 结束预留检测。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001123.png)
+
+函数接下来要对新分配的大页建立相应的页表，那么函数首先需要在 3841 行调用 huge_pte_lock() 函数对页表上锁，接着调用 i_size_read() 函数获得大页文件最大长度，然后向右移动 huge_page_shift() 获得大页文件最大的偏移数，函数接着判断发生缺页的 idx 是否已经超出文件最大的索引，如果超出那么跳转到 backout 处执行; 反之发生缺页的位置是安全的。函数继续在 3847 行调用 huge_pte_none() 函数检查页表是否为空，如果不空那么不符合预期并跳转到 backout 处，此时页表应该空. 函数接着检查 anon_rmap 是否为真，如果为真那么为私有映射，那么函数调用 ClearPagePrivate() 将新大页的 PG_Private 标志清零，然后调用 hugepage_add_new_anon_rmap() 函数建立大页 page 到 VMA 的方向映射; 反之映射为共享映射，那么函数在 3854 行调用 page_dump_rmap() 函数设置反向映射。函数接下来调用 make_huge_pte() 函数构建页表，构建时根据虚拟区域是否可写，已经 VMA 是否为共享映射两个条件进行判断，如果 VMA 是共享映射且可写，那么页表是可写的。函数接着在 3857 行调用 set_huge_pte_at() 函数设置对应的页表。设置完页表之后，函数调用 hugetlb_count_add() 函数添加进程对 hugetlb 大页的引用计数。函数在 3860 行判断到映射是一个私有可写时，函数会调用 hugetlb_cow() 函数确保页表可写。至此缺页分配大页的逻辑基本处理完毕，接下来就是解锁和异常处理。在 3865 行对页表解锁，然后检查到 new_page 为真，那么需要将大页设置为正在使用态。最后解锁大页并返回 ret。对于 backout_unlocked 分支函数解锁大页，并调用 restore_reserve_on_error() 函数重置大页的 resv_map 统计，最后将大页的引用计数减一，触发大页的回收。backout 分支则多了页表解锁操作. 最后都跳转到 out 处返回 ret.
+
+> [restore_reserve_on_error](#D02127)
+>
+> [hugetlb_cow](#D02126)
+>
+> [hugetlb_count_add](#D02123)
+>
+> [set_huge_pte_at](#D02102)
+>
+> [make_huge_pte](#D02121)
+>
+> [hugepage_add_new_anon_rmap](#D02120)
+>
+> [huge_pte_none](#D02104)
+>
+> [huge_ptep_get](#D02089)
+>
+> [huge_page_shift](#D02020)
+>
+> [vma_end_reservation](#D02108)
+>
+> [vma_needs_reservation](#D02106)
+>
+> [huge_add_to_page_cache](#D02118)
+>
+> [clear_huge_page](#D02116)
+>
+> [alloc_huge_page](#D02114)
+>
+> [is_vma_resv_set](#D02068)
+>
+> [huge_page_mask](#D02092)
+>
+> [hstate_vma](#D02080)
+
+------------------------------------
+
+###### <span id="D02131">hugetlbfs_pagecache_page</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001124.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件 page cache 的方式为进程提供大页。进程通过在 hugetlbfs 文件系统的挂载点下创建或打开一个大页文件，然后将进程地址空间的一段虚拟内存映射到文件，当进程访问这段虚拟内存时，由于虚拟内存没有与大页物理内存建立页表，那么此时会触发系统缺页。在缺页处理程序中，内核会为虚拟内存分配大页，并建立虚拟内存到大页物理内存的页表，待缺页中断返回之后，进程可以通过访问虚拟内存间接使用大页内存。hugetlbfs_pagecache_page() 函数的作用就是获得虚拟内存对应的大页 page cache，该函数不是通过页表获得，而是通过虚拟空间映射文件的逻辑实现，其底层逻辑为: 进程将虚拟内存映射大页内存时，其通过大页文件 struct file 的 f_mapping 成员维护虚拟内存到大页文件 page cache 的关系，f_mapping 为 struct address_space 数据结构，该数据结构维护一颗基数树或者 Xarray，用于建立虚拟地址在文件中的偏移与大页 page cache 的映射，因此函数首先通过 VMA 找到对应的大页文件 vma->vm_file, 然后获得对应的 f_mapping 成员，接着调用 vma_hugecache_offset() 获得虚拟地址 address 在文件中的偏移，偏移的粒度与大页粒度一致。最后函数调用 find_lock_page() 从 f_mapping 的基数树或者 Xarray 中获得对应的 page cache.
+
+> [vma_hugecache_offset](#D02078)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D02132">huge_pte_alloc</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001125.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件 page cache 的方式为进程提供大页。进程通过在 hugetlbfs 文件系统的挂载点下创建或打开一个大页文件，然后将进程地址空间的一段虚拟内存映射到文件，当进程访问这段虚拟内存时，由于虚拟内存没有与大页物理内存建立页表，那么此时会触发系统缺页。在缺页处理程序中，内核会为虚拟内存分配大页，并建立虚拟内存到大页物理内存的页表，待缺页中断返回之后，进程可以通过访问虚拟内存间接使用大页内存。huge_pte_alloc() 函数的作用是为映射大页的页表分配最后一级页表，其底层逻辑是: 参数 mm 指向进程的地址空间，参数 addr 表示页表的虚拟地址，sz 则表示虚拟内存的长度。由于 Linux 支持 5 级页表，分别是 PGD、P4D、PUD、PMD 和 PTE，由于大页粒度的不同，最后一级页表也有所不同，对于 1Gig 的大页，其最后一级页表是 PMD, 而对于 2MiB 的大页，其最后一级页表是 PUD. 函数首先在 63 行通过 pgd_offset() 从进程地址空间 mm 获得 PGD 页表，接着直接调用 p4d_alloc() 函数分配 P4D 页表，如果存在则直接返回 P4D 页表，接着函数调用 pud_alloc() 函数分配 PUD，如果此时 PUD 存在，那么函数继续检测虚拟内存的长度 sz 是否为 PUD_SIZE, 即检测大页的长度是否为 1Gig，如果是那么最后一级页表就是 PUD; 反之大页粒度是 2MiB，那么此时如果检测到 sz 不等于 PMD_SIZE 系统就报错，否则函数继续检测是否需要共享 PMD 且 PUD 是空的，那么函数就调用 huge_pmd_share() 函数分配最后一级页表; 反之函数调用 pmd_alloc() 函数分配最后一级页表. 当最后页表分配完毕之后，函数如果检测到最后一级页表存在当最后一级页表不是映射大页，那么系统就会报错。最后函数返回最后一级页表的 Entry 地址.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D010">enum hugetlbfs_size_type</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001126.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件 page cache 的方式为用户进程提供大页内存。用户进程通过在 hugetlbfs 文件系统挂载点下创建或打开一个大页文件，并从进程的地址空间分配一段虚拟内存映射大页文件，当进程访问这段虚拟内存时，由于虚拟内存还没有与大页物理内存建立页表，因此会触发系统的缺页中断。在去也中断处理函数中，内核会从大页池子中找到一个可用的大页，并建立虚拟内存到大页物理内存的页表，待缺页中断返回之后，进程可以通过访问这段虚拟内存间接的使用大页。内核为了让用户进程可以使用上大页，那么内核会自动挂载 hugetlbfs 文件系统以供用户进程分配匿名 hugetlb 大页，另外用户进程也可以挂载 hugetlbfs 文件系统，以此分配文件 hugetlb 大页。无论是分配匿名大页还是文件大页，其都需要挂载 hugetlbfs 文件系统。enum hugetlbfs_size_type 枚举变量用于指明 hugetlbfs 文件系统挂载时的长度类型，这里的长度类型具体指 hugetlbfs 文件系统中包含大页数量的计算方式。hugetlbfs 文件系统支持三种长度类型。
+
+###### NO_SIZE
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K
+{% endhighlight %}
+
+NO_SIZE 类型用于指明在挂载 hugetlbfs 文件系统时，没有指明该挂载点包含的大页的数量，那么挂载点可以直接使用大页池子中所有大页。以上便是挂载 NO_SIZE 类型的 hugetlbfs 文件系统，首先创建一个目录，然后向大页池子中添加 20 个大页，接着在使用 mount 挂载 hugetlbfs 文件系统时，不使用任何参数指明挂载点的大页，那么挂载点默认的长度就等于大页池子的长度.
+
+###### SIZE_STD
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K,size=8M,min_size=4M
+{% endhighlight %}
+
+SIZE_STD 类型用于在挂载 hugetlbfs 文件系统时，显示的指明了挂载点的长度，该长度可以使用标准长度单位: K/M/G. 当显示的指明长度之后，挂载点就包含了指定数量的大页，可以从上面的例子中看 SIZE_STD 的使用方式: 创建一个目录，然后向大页池子中添加 20 个大页，接着挂载 hugetlbfs 文件系统时，使用 "size=" 字段指明挂载点的最大长度是 8MiB, 那么挂载点最大包含 4 个大页，另外使用 "min_size=" 字段指明挂载点至少预留的大页数量，例子中设置为 4M，那么 hugetlbfs 文件系统挂载是必须保证其最少有 2 个大页是专门给该挂载点使用的.
+
+###### SIZE_PERCENT
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K,size=50%,min_size=10%
+{% endhighlight %}
+
+SIZE_PERCENT 类型用于在挂载 hugetlbfs 文件系统时，显示的指明挂载点包含大页数量占大页内存池子的百分比。当显示指明长度之后，挂载点就包含了百分比的大页，可以从上面的例子中看 SIZE_PERCENT 的使用方式: 创建一个目录，然后向大页内存池子中添加 20 个大页，接着挂载 hugetlbfs 文件系统时，使用 "size=" 字段指明挂载点最大长度时使用了百分比，也就是该挂载点最大长度占大页池子的百分比，在例子中是 50%，那么挂载点最多包含 10 个大页，另外可以使用 "min_size=" 字段指明挂载点至少预留大页时也可以使用百分比，以此表示挂载点至少从大页池子中预留大页的百分比，例如例子中是 10%，那么挂载点最少预留 2 个大页.
+
+最后当 hugetlbfs 文件系统挂载完毕之后，可以使用 mount 命令或者通过 "/proc/mounts" 节点查看 hugetlbfs 文件系统挂载参数信息:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001128.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D011">struct hugepage_subpool</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001127.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件 page cache 的方式为用户进程提供大页内存。用户进程通过在 hugetlbfs 文件系统挂载点下创建或打开一个大页文件，并从进程的地址空间分配一段虚拟内存映射大页文件，当进程访问这段虚拟内存时，由于虚拟内存还没有与大页物理内存建立页表，因此会触发系统的缺页中断。在去也中断处理函数中，内核会从大页池子中找到一个可用的大页，并建立虚拟内存到大页物理内存的页表，待缺页中断返回之后，进程可以通过访问这段虚拟内存间接的使用大页。内核为了让用户进程可以使用上大页，那么内核会自动挂载 hugetlbfs 文件系统以供用户进程分配匿名 hugetlb 大页，另外用户进程也可以挂载 hugetlbfs 文件系统，以此分配文件 hugetlb 大页。无论是分配匿名大页还是文件大页，其都需要挂载 hugetlbfs 文件系统。内核使用 struct hstate 数据结构维护系统的大页内存池子，hugetlbfs 文件系统也可以维护一个私有的小池子，该小池子用于描述 hugetlbfs 文件系统挂载点包含最大可使用大页数量和最小预留大页数量，小池子使用 struct hugepage_subpool 数据结构进行维护。hugetlbfs 文件系统挂载点不一定要使用小池子，但一旦使用 hugetlbfs 文件系统挂载点就会从内核大页池子中预留一部分大页，然后进程优先从挂载点的小池子中分配大页。hugetlbfs 文件系统挂载点并不实际维护大页，而是维护大页的使用，包括挂载点包含的大页数量、正在使用的大页数量和预留的大页数量等，那么接下来具体分析每个成员的含义:
+
+###### count
+
+count 成员用于指明 hugetlbfs 文件系统挂载点是否正在使用 subpool。当挂载点确认使用 subpool 的时候，会将 count 成员设置为 1，以此表示 count 正在使用，可以通过 hugepage_new_subpool() 函数查看其逻辑。另外当系统 umount hugetlbfs 文件系统的挂载点是，系统会调用 hugepage_put_subpool() 函数将 count 成员减一。最终内核调用 unlock_or_release_subpool() 函数检判断 subpool 是否释放，其释放条件是 count 为 0 且没有进程使用 subpool 中的大页时，添加满足内核将 subpool 释放. 因此 count 成员用于指明 subpool 是否正在使用。count 成员和 used_hpages 成员组合可以有已下集中情况:
+
+* count = 1 && used_hpages = 0: Subpool 正在使用但池子中的大页没有进程在使用
+* count = 1 && used_hpages > 0: Subpool 正在使用且池子中的大页有进程在使用
+* count = 0 && used_hpages = 0: Subpool 没有在使用并且池子中的大页没有进程在使用
+* count = 0 && used_hpages > 0: Subpool 没有使用但有进程还在使用池子中的大页
+
+###### max_hpages
+
+max_hpages 成员用于说明 hugetlbfs 文件系统挂载点最多可以使用大页数量，其值有两种，当 max_hpages 等于 -1 表示没有对 hugetlbfs 文件系统挂载点的最大可使用大页数量进行限制，即内核大页内存池子中有多少可用大页，subpool 就能使用多少大页; max_hpages 的另外一种值是一个大于 0 的整数值，用于描述 hugetlbfs 文件系统挂载点最多可以使用大页的数量。当 max_hpages 大于 0 时，即 hugetlbfs 文件系统挂载点设置了最多可使用的大页数量时，如果进程所使用的大页数量超过 max_hpages, 那么映射将失败。如果 struct hugepage_subpool 的 min_hpages 不为零，那么 hugetlbfs 文件系统挂载点的 subpool 预留一定数量的大页，那么此时系统优先从 subpool 的 resv_hpages 中分配大页。hugepage_subpool_get_pages() 函数中可以看出 subpool 的分配策略:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001048.png)
+
+在 hugepage_subpool_get_pages() 函数中，函数首先判断 max_hpages 是否不为 -1，如果不为 -1， 那么此时 used_pages 表示 subpool 已经从系统大页池子中分配使用的大页，如果此时 used_pages 加上即将分配的大页数量小于 max_hpages, 那么可以继续从 subpool 中分配大页，此时只需将 used_pages 引用计数增加即可; 反之如果 used_hpages 加上即将分配的大页数量已经超过 max_hpages, 那么系统将报 ENOMEM 错误导致 hugetlbfs 文件系统挂载点分配大页失败. 另外当 max_hpages 等于 -1 的时候，也就是不对 subpool 的最大大页数进行限制，只要系统大页池子有多少大页，subpool 就能分配多少大页。函数接下来样检测 min_hpages 和 resv_hpages 的值，如果 min_hpage 不等于 -1 且 resv_hpages 不为零，那么这种情况首先说明 hugetlbfs 文件系统挂载点提前预留了一定数量的大页，这些大页作为 subpool 私有的大页，那么内核优先从 subpool 的预留页中进行分配，如果预留页足够分配，那么 subpool 从 resv_hpages 中减去需要分配的页; 反之如果 subpool 的 resv_hpages 预留页少于需要分配的大页，那么 subpool 将全部的预留大页分配出去，然后不够的大页从系统大页池子中进行分配. max_hpages 的值需要在 hugetlbfs 文件系统挂载时指定，例如:
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K,size=8M,min_size=4M
+{% endhighlight %}
+
+如上面的例子，在挂载 hugetlbfs 文件系统时，使用参数 "size=" 字段可以指明挂载点最大可使用大页数量，"size=" 可以支使用 K/M/G 为单位的标准的长度模式，例如在上面的例子中 "size=8M", 那么 max_hpages 成员的值就是 4 个大页 (8M/2M); 也可以使用百分比的方式指明挂载点最大可用大页数量. 例如 "size=50%", 那么 max_hpaegs 成员的值等于 10 个大页 (nr_hugepages/2M).
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K,min_size=4M
+{% endhighlight %}
+
+如上面的例子，在挂载 hugetlbfs 文件系统时，由于没有使用 "size=" 字段而只使用了 "min_size" 字段，那么 max_hpages 成员的值为 -1. 那么系统优先从 subpool 的预留大页中分配，如果预留大页中没有可用的大页，那么系统从大页池子中分配大页. hugetlbfs 文件系统如果要使用 subpool, 那么挂载的时候 "size=" 和 "min_size=" 字段必须存在其一.
+
+###### used_hpages
+
+used_hpages 成员用于在 hugetlbfs 文件系统挂载点限定最大使用大页数量之后，该值用于记录 subpool 大页使用数量，以防止 subpool 超额使用大页。当 subpool 分配一定数量的大页时，subpool 首先检测 used_hpages 的数量加上需要分配的大页数量是否已经超过 subpool 的上限 max_hpages, 如果是直接返回 ENOMEM; 反之如果 used_hpages 的数量加上需要分配的大页数量没有超过上限 max_hpages, 那么 subpool 可以提供大页。如果 hugetlbfs 文件系统挂载点没有设置最大使用大页量而只设置最小预留大页数量时，即 hugetlbfs 文件系统启用 subpool 大页小池子，那么这个时候由于 max_hpages 没有启用，那么 used_hpages 也不启用。hugetlbfs 文件系统如果要启用 used_hpages, 那么挂载参数如下:
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K,size=8M,min_size=4M
+{% endhighlight %}
+
+###### hstate
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000991.png)
+
+hstate 成员用于指向指定的大页，在 hugetlb 大页机制中，内核使用 struct hstate 维护指定长度的大页，那么不同的粒度都对应一个 struct hstate. subpool 可以通过 hstate 成员快速知道其使用的大页基础信息.
+
+###### min_hpages
+
+min_hpages 成员用于指明 hugetlbfs 文件系统挂载点至少预分配的大页数量。在 hugetlbfs 文件系统挂载时，如果指定了 "min_size=" 字段，那么系统大页内存池子必须为 hugetlbfs 文件系统挂载点的 subpool 小池子预留指定数量的大页。min_hpages 成员与 resv_hpages 成员搭配使用，hugetlbfs 文件系统在挂载时，系统根据 min_hpages 的值从系统大页池子中分配指定数量的大页，然后 hugetlbfs 文件系统挂载点的 subpool 将这些大页作为自己预留使用，同时将 resv_hpages 初始化预留的大页数。min_hpages 的值有两种情况，一种情况为 -1，即代表 hugetlbfs 文件系统挂载点的 subpool 没有是指预留水位线，即 subpool 需要包含大页的最小值，那么 subpool 只能从系统大页池子中分配; min_hpages 的另外一类值是大于 0 的值，即 hugetlbfs 文件系统在挂载时，系统就为 subpool 预留了指定数量的大页，当需要从 subpool 中分配内存，那么先从 resv_hpages 预留的大页中进行分配。hugepage_subpool_get_pages() 函数可以看出 subpool 的 min_hpages 分配策略:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001048.png)
+
+在 hugepage_subpool_get_pages() 函数中，函数首先判断 max_hpages 是否不为 -1，如果不为 -1， 那么此时 used_pages 表示 subpool 已经从系统大页池子中分配使用的大页，如果此时 used_pages 加上即将分配的大页数量小于 max_hpages, 那么可以继续从 subpool 中分配大页，此时只需将 used_pages 引用计数增加即可; 反之如果 used_hpages 加上即将分配的大页数量已经超过 max_hpages, 那么系统将报 ENOMEM 错误导致 hugetlbfs 文件系统挂载点分配大页失败. 另外当 max_hpages 等于 -1 的时候，也就是不对 subpool 的最大大页数进行限制，只要系统大页池子有多少大页，subpool 就能分配多少大页。函数接下来样检测 min_hpages 和 resv_hpages 的值，如果 min_hpage 不等于 -1 且 resv_hpages 不为零，那么这种情况首先说明 hugetlbfs 文件系统挂载点提前预留了一定数量的大页，这些大页作为 subpool 私有的大页，那么内核优先从 subpool 的预留页中进行分配，如果预留页足够分配，那么 subpool 从 resv_hpages 中减去需要分配的页; 反之如果 subpool 的 resv_hpages 预留页少于需要分配的大页，那么 subpool 将全部的预留大页分配出去，然后不够的大页从系统大页池子中进行分配. min_hpages 的值需要在 hugetlbfs 文件系统挂载时指定，例如:
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K,size=8M,min_size=4M
+{% endhighlight %}
+
+如上面的例子，在挂载 hugetlbfs 文件系统时，使用参数 "min_size=" 字段可以指明挂载点最大可使用大页数量，"min_size=" 可以支使用 K/M/G 为单位的标准的长度模式，例如在上面的例子中 "size=4M", 那么 min_hpages 成员的值就是 2 个大页 (8M/2M); 也可以使用百分比的方式指明挂载点最大可用大页数量. 例如 "min_size=50%", 那么 min_hpaegs 成员的值等于 10 个大页 (nr_hugepages/2M).
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001129.png)
+
+在 BiscuitOS 上直接挂载一个 hugetlbfs 文件系统，并为挂载参数 "min_size=" 字段的值设置为 4M，那么系统大页池子中将为其预留 2 个大页，此时查看大页池子的情况，可以看到 HugePages_Rsvd 字段为 2，那么系统为 hugetlbfs 文件系统挂载点的 subpool 预留了 2 个大页.
+
+###### resv_hpages
+
+当 hugetlbfs 文件系统挂载参数中指定了 "min_size=" 时，系统大页池子需要为其预留指定数量的大页，resv_hpages 用于维护 hugetlbfs 文件系统挂载点 subpool 的预留大页使用情况。当系统从 hugetlbfs 文件系统挂载点上分配大页时，如果 subpool 中 min_hpages 不为 -1，那么 subpool 优先检查其 resv_hpages 是否满足分配需求，如果满足那么从 subpool 的预留的大页中进行分配; 反之如果预留的大页无法满足分配需求，那么 subpool 优先从预留的大页中进行分配，剩余的从系统大页池子中进行分配. 分配过程中 resv_hpages 记录了 subpool 预留大页的剩余情况.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D012">struct hugetlbfs_config</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001130.png)
+
+在 hugetlb 大页机制中，内核可以基于  hugetlbfs 文件系统以文件 page cache 的方式为用户进程提供大页内存，因此进程在使用大页之前需要挂载一个 hugetlbfs 文件系统。内核支持在启动的时候为不同粒度的大页挂载 hugetlbfs 文件系统，以此为匿名映射提供大页，另外内核也支持用户空间挂载 hugetlbfs 文件系统，以此为文件映射提供大页。hugetlbfs 文件系统在挂载时支持一定的挂载参数，用于控制 hugetlbfs 文件系统挂载点的特征。struct hugetlbfs_config 数据结构用于存储 hugetlbfs 文件系统挂载时的挂载参数，以此共给 hugetlbfs 文件系统内部使用，其各成员的含义如下:
+
+###### hstate
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000991.png)
+
+在 hugetlb 大页机制，内核使用 struct hstate 数据结构委维护指定长度的大页，hstate 成员用于指定 hugetlbfs 文件系统挂载点所使用的大页池子。通过该成员建立了 struct hugetlbfs_config 到 struct hstate 的映射关系.
+
+###### max_hpages
+
+max_hpages 成员用于指明 hugetlbfs 文件系统挂载点支持最大大页数量，hugetlbfs 文件系统在挂载时，可以使用 "size=" 字段指明该挂载点具有最大大页内存的长度。如果 hugetlbfs 挂载点限制了最大大页数量，那么其 subpool 将被启用。hugetlbfs 文件系统挂载时的 "size=" 字段的最大长度转换成 struct hugetlbfs_config 的 max_hpages, 最终 struct hugetlbfs_config 将 max_hpages 转换成 hugetlbfs 文件系统挂载点的 subpool 的 max_hpages, 以此表示 subpool 最大大页数量上限。如果 max_hpages 成员要生效，可以参考如下挂载方式:
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K,size=8M
+{% endhighlight %}
+
+如上面的例子，在挂载 hugetlbfs 文件系统时，使用参数 "size=" 字段可以指明挂载点最大可使用大页数量，"size=" 可以支使用 K/M/G 为单位的标准的长度模式，例如在上面的例子中 "size=8M", 那么 max_hpages 成员的值就是 4 个大页 (8M/2M); 也可以使用百分比的方式指明挂载点最大可用大页数量. 例如 "size=50%", 那么 max_hpaegs 成员的值等于 10 个大页 (nr_hugepages/2M). struct hugetlbfs_config 的转换主要在 hugetlbfs_fill_super() 函数中，可以参考其实现:
+
+> [hugetlbfs_fill_super](#D02051)
+
+###### nr_inodes
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件 page cache 的方式为用户进程提供大页，用户进程通过在 hugetlbfs 文件系统的挂载点下创建或打开一个大页文件，然后从进程的地址空间中分配一段虚拟内存用于映射大页文件。当进程向通过访问这段虚拟内存的方式间接使用大页内存时，由于系统没有建立虚拟内存到大页物理内存的物理内存的页表，那么会触发系统缺页中断。在缺页中断处理函数中，系统会从为其分配大页，然后建立虚拟内存到大页物理内存的页表，待缺页中断返回之后，进程可以真正的通过访问虚拟内存来使用大页物理内存。由于上面的逻辑存在，那么 hugetlbfs 文件系统需要通过大页文件在中间进行中转，进程每次打开大页文件时 hugetlbfs 文件系统都会为其分配 struct file 来维护打开的大页，另外 hugetlbfs 文件系统在挂载点下创建的大页文件都唯一对应一个 struct inode, 而该 struct inode 可以被多个进程打开，每次被打开 hugetlbfs 都会为进程分配一个 struct file. 因此就形成了多个 struct file 对应一个 struct inode。hugetlbfs 文件系统的 struct inode 描述了其包含大页文件的数量，因此在 hugetlbfs 文件系统挂载时可以通过 "nr_inodes=" 字段设置最大文件数量，这里文件数量不是指问文件的打开数量，当 hugetlbfs 文件系统挂载时包含了 "nr_inodes=" 字段时，该字段将会在 hugetlbfs_parse_options() 函数传递给 struct hugetlbfs_config 的 nr_inodes 成员，系统最终将 struct hugetlbfs_config 的 nr_inodes 传递给 struct hugetlbfs_sb_info 的 max_inodes 成员，以此控制 hugetlbfs 文件系统挂载点最大文件数. 如果 nr_inodes 成员要生效，可以参考如下挂载方式:
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K,nr_inodes=20
+{% endhighlight %}
+
+如上面的例子，在挂载 hugetlbfs 文件系统时，使用参数 "nr_inodes=" 字段可以指明挂载点最大大页文件数量，以此表示该挂载点下最大可以创建 nr_inodes 个大页文件。另外指定注意的是 hugetlbfs 文件系统挂载是，挂载点本身作为 root 节点需要消耗一个 struct inode, 那么为了 hugetlbfs 文件系统创建出一个文件，那么 "nr_inodes=" 字段如果存在，那么其值必须大于 1. 当 hugetlbfs 文件系统挂载点的文件数量已经等于 "nr_inodes" 限定的值，如果继续尝试在 hugetlbfs 文件系统挂载点创建文件，那么将会导致文件创建失败。
+
+###### min_hpages
+
+min_hpages 成员用于指明 hugetlbfs 文件系统挂载点预先预留大页的数量，hugetlbfs 文件系统在挂载时，可以使用 "min_size=" 字段指明 hugetlbfs 文件系统在挂载时需要预留大页的数量。如果 "min_size=" 字段存在，那么 hugetlbfs 文件系统挂载点的的 subpool
+ 将被启用，那么 "min_size=" 字段将被存储在 struct hugetlbfs_config 的 min_hpages 成员里，以此在 hugetlbfs 文件系统挂载是系统为其预留 min_hpages 个大页，并且启用 subpool 小池子，另外 subpool 小池子的 min_hpages 被设置为 struct hugetlbfs_config 的 min_hpages. 如果 min_hpages 成员要生效，可以参考如下的挂载方式:
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K,min_size=2M
+{% endhighlight %}
+
+如上面的例子，在挂载 hugetlbfs 文件系统时，使用参数 "min_size=" 字段可以指明挂载点最大可使用大页数量，"min_size=" 可以支使用 K/M/G 为单位的标准的长度模式，例如在上面的例子中 "size=2M", 那么 min_hpages 成员的值就是 1 个大页 (8M/2M); 也可以使用百分比的方式指明挂载点最大可用大页数量. 例如 "min_size=50%", 那么 min_hpaegs 成员的值等于 10 个大页 (nr_hugepages/2M). 值得注意的是，hugetlbfs 文件系统在挂载时指定了预留大页数量，如果此时系统大页池子没有足够大页内存时会导致 hugetlbfs 文件系统挂载失败。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D013">struct hugetlbfs_sb_info</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001131.png)
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件 page cache 的方式为用户进程提供大页内存，用户进程通过在 hugetlbfs 文件系统挂载点下创建或打开一个大页文件，然后从进程地址空间分配一段虚拟内存用于映射大页文件。当进程访问这段虚拟内存时，由于虚拟内存还没有与大页的物理内存建立页表，因此会触发系统缺页中断，在缺页中断处理函数中，系统会为其分配大页并建立虚拟内存到大页物理内存的页表，待缺页中断返回之后，进程可以通过访问虚拟内存间接的使用大页内存。从上面的分析可知如果系统向用户空间提供大页内存，那么必须基于 hugetlbfs 文件系统，hugetlbfs 文件系统是一个没有后端存储的虚文件系统，通过文件 page cache 的方式可以为用户进程提供大页，因此在使用 hugetlb 大页之前，系统需要挂载 hugetlbfs 文件系统。hugetlbfs 文件系统的挂载分两类，第一类是内核启动过程中内核挂载的 hugetlbfs 文件系统，这类文件系统主要用于匿名映射的大页; 另外一类是用户空间挂载的 hugetlbfs 文件系统，这类文件系统主要用于文件映射的大页。hugetlbfs 文件系统也是基于 VFS 的文件系统，那么其也通过一个 struct super_block 进行描述，并提供相应的 VFS 接口, 另外 struct super_block 数据结构也包含了每种文件系统的私有描述，struct hugetlbfs_sb_info 就是用于描述 hugetlbfs 文件系统的私有描述，用于指定 hugetlbfs 文件系统的指定特定，其成员描述为:
+
+###### max_inodes/free_inodes
+
+用户进程如果向使用大页的方法是在 hugetlbfs 文件系统挂载点下创建或打开一个大页文件，每个大页文件对应唯一的 struct inode，进程每当创建或打开该文件大页时，hugetlbfs 文件系统会为其分配一个 struct file. 另外每个 hugetlbfs 文件系统挂载点可以限制最大文件创建数量，而对于文件打开数没有限制，那么内核使用 struct hugetlbfs_sb_info 的 max_inodes 成员用来指明该 hugetlbfs 文件系统挂载点最多可以创建文件大页的数量, 另外使用 free_inodes 成员来统计当前 hugetlbfs 文件系统挂载点还可以创建大页文件的数量，那么在 hugetlbfs 文件系统挂载点下存在如下关系:
+
+{% highlight bash %}
+# Hugetlbfs mount
+最大创建大页文件数 = max_inodes
+可以创建大页文件数 = free_inodes
+已经创建大页文件数 = max_indoes - free_indoes
+{% endhighlight %}
+
+hugetlbfs 文件系统挂载点的最大可以创建文件数在挂载时通过 "nr_inodes=" 字段进行指定，那么 struct hugetlbfs_sb_info 的 max_inodes 就有两类值: 第一类值是 hugetlbfs 文件系统挂载时通过挂载参数 "nr_inodes=" 进行指定，需要注意的是 hugetlbfs 文件系统挂载点的根节点本身也占用一个 struct inode, 因此使用 "nr_inodes=" 设置最大文件打开数时需要比预期值多一个，那么挂载可以参考如下命令:
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K,nr_inodes=6
+{% endhighlight %}
+
+如上面的例子，在挂载 hugetlbfs 文件系统时，使用参数 "nr_inodes=" 字段指明挂载点最大可创建 5 个文件，如果创建文件超过 5 个会失败。max_inodes 的另外一类值就是在 hugetlbfs 文件系统挂载时不指定 "nr_inodes=" 参数，那么 hugetlbfs 文件系统的挂载点下没有创建大页文件的限制，进程可以创建 VFS 支持的最大文件数. 那么挂载可以参考如下命令:
+
+{% highlight c %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 20 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K
+{% endhighlight %}
+
+对于 free_inodes 成员的统计逻辑，其初始值是在 hugetlbfs 文件系统挂载时初始化为与 max_inodes 成员一样的值。如果 max_inodes 成员没有使用那么 free_inodes 也没有启用。每当进程在 hugetlbfs 文件系统挂载点下新建立一个大页文件时，free_inodes 的计数就减一，相反当在 hugetlbfs 文件系统挂载点下移除一个大页文件时，free_inodes 的计数将加一.
+
+###### hstate
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000991.png)
+
+在 hugetlb 大页机制，内核使用 struct hstate 数据结构委维护指定长度的大页，hstate 成员用于指定 hugetlbfs 文件系统挂载点所使用的大页池子。通过该成员建立了 struct hugetlbfs_sb_info 到 struct hstate 的映射关系.
+
+###### spool
+
+在 hugetlb 大页机制中，内核使用 struct hstate 描述指定长度的大页内存池子，内核可以从大页内存池子中分配大页，不同粒度的大页都对应一个 struct hstate 数据结构，因此系统会为不同粒度的大页维护不同的内存池子。hugetlbfs 文件系统也支持私有大页内存池子，其使用 struct hugepage_subpool 数据结构维护该私有池子，其工作原理是在 hugetlbfs 文件系统挂载时从指定长度的大页内存池子中预留一部分大页，这部分大页只能该 hugetlbfs 文件系统挂载点使用，其他 hugetlbfs 文件系统挂载点或系统的大页池子都无法使用这部分大页。当进程在该 hugetlbfs 文件系统挂载点下分配大页内存，挂载点优先从其 subpool 私有池子中分配大页，如果 subpool 池子中没有足够的大页时才从系统的大页内存池子中分配大页; 当挂载点下的文件摧毁时，其对应的大页将被 subpool 私有池子回收，subpool 回收时只有满足需要预留的大页之后才会将剩余的大页释放回系统大页内存池子里. 因此 struct hugetlbfs_sb_info 的 spool 成员指向其私有的内存池子，并且一个 hugetlbfs 文件系统挂载点最多只有一个 subpool; hugetlbfs 文件系统挂载点也可以不使用任何 subpool, 那么 subpool 为 NULL. 具体的 spool 描述可以参考:
+
+> [struct hugepage_subpool 完全解析](#D011)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+###### <span id="D014">struct hstate</span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001132.png)
+
+在 hugetlb 大页机制中，内核对大小为 4KiB 物理内存块称为小页，另外把大于 4KiB 的物理内存块称为大页。由于不同的架构支持的大页粒度有所不同，在 X86 架构中，大页的粒度可以为 2MiB 和 1Gig。内核使用 struct hstate 数据结构维护指定长度的大页，因此每一种粒度的大页都对应一个 struct hstate 数据结构。struct hstate 抽象为大页内存池子，内核将所有的大页都维护在内存池子了，进程需要分配大页时，内核就从这个内存池子中分配大页，当进程不需要大页时，可以将大页归还大页内存池子。另外内核可以基于 hugetlbfs 文件系统以 page cache 的方式为用户空间分配大页，进程通过在 hugetlbfs 文件系统挂载点下创建或打开一个大页文件，然后从进程的地址空间中分配一段虚拟内存用于映射大页文件，当进程访问虚拟内存时，由于进程的虚拟内存还没有与大页的物理内存建立页表，那么触发系统的缺页中断。在缺页中断处理函数中，系统从指定长度的大页内存池子中分配一个大页，然后建立虚拟内存到大页物理内存的页表，待缺页中断返回之后，进程就可以通过访问虚拟内存间接使用大页。当进程使用完大页之后将大页文件摧毁时，系统回收大页并重新放回指定长度的大页内存池子中.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001133.png)
+
+struct hstate 数据结构有三部分组成，第一部分是基础信息部分，这部分用于记录大页内存池子的名字 name[], 大页的长度相关的信息 order，大页对应的掩码 mask; 第二部分则是计数部分，用于管理大页内存池子的使用情况，大页存在多种状态，分别是: 空闲状态、预留状态、超发状态、以及激活状态等. 计数部分就是用来统计大页内存池子中不同状态的大页数量，另外结合 NUMA 架构，统计时也对不同的 NUMA NODE 进行统计; 第三部分为链表区域，该区域维护的链表上就是一个一个大页，大页处于不同的状态会被移动到不同的链表上，以便 hstate 统一管理，另外结合 NUMA 架构，每个 NUMA NODE 上也会维护一个链表，用于将同 NUMA NODE 且同状态的大页维护在链表上，另外一个大页同一时刻只能在一个链表上。那么接下来对 struct hstate 的成员进行讲解:
+
+###### order
+
+在 hugetlb 大页机制中，内核使用 struct hstate 数据结构维护指定长度的大页，大页的粒度可以是 2MiB 或 1Gig，那么 order 成员用来指明 struct hstate 数据结构维护大页的长度的信息，不过这个长度信息不是直接的长度，而是首先计算 1 个大页是由多少个 4KiB 的小页组成，然后使用以 2 为底 order 为指数的幂来表示使用小页的个数，因此 order 的计算方式如下:
+
+{% highlight bash %}
+# 2MiB 大页
+nr_4KiB   = 2MiB / 4KiB = 512
+nr_4KiB   = 2^order
+2^order   = 512
+order     = 9
+Size_2MiB = (1 << 9) * 4KiB
+Size_2MiB = 0x200000
+
+# 1Gig 大页
+nr_4KiB   = 1Gig / 4KiB = 262144 = 0x40000
+nr_4KiB   = 2^order
+2^order   = 0x40000
+order     = 18
+Size_1Gig = (1 << 18) * 4KiB
+Size_1Gig = 0x40000000
+{% endhighlight %}
+
+对于 2MiB 大页，其需要 512 个 4KiB 小页组成, 那么用于描述 2MiB 的 struct hstate 数据结构的 order 为 **9**; 同理对于 1Gig 大页，其需要 262144 个 4KiB 小页组成，那么用于描述 1Gig 的 struct hstate 数据结构的 order 为 **18**.
+
+###### mask
+
+mask 成员是大页的对齐掩码，对于 2MiB 粒度的大页，mask 的值为 0xffffffffffe00000，对于 1Gig 粒度的大页，mask 的值为 0xC0000000. mask 的计算方式如下:
+
+{% highlight bash %}
+# Type of mask
+mask = ~((1ULL << (order + PAGE_SHIFT)) - 1)
+
+# 2MiB 大页
+mask = ~((1ULL << (order + PAGE_SHIFT)) - 1)
+mask = ~((1ULL << (9 + 12)) - 1)
+mask = ~((0x200000) - 1)
+mask = 0xffffffffffe00000
+
+# 1Gig 大页
+mask = ~((1ULL << (order + PAGE_SHIFT)) - 1)
+mask = ~((1ULL << (18 + 12)) - 1)
+mask = ~((0x40000000) - 1)
+mask = 0xffffffffc0000000
+{% endhighlight %}
+
+mask 经常被用于对虚拟地址按大页粒度向下对齐，或者用于获得大页地址的内部偏移，或者对 vm_pgoff 进行对齐。
+
+###### name
+
+name 成员用于表示大页内存池子的名字，内核在调用 hugetlb_add_hstate() 函数初始化一个指定长度大页的 struct hstate 时对 name 进行赋值。对于 2MiB 粒度的大页内存池子，其名字为 **hugepages-2048kB**, 对于 1Gig 粒度的大页内存池子，其名字为 **hugepages-1048576kB**.
+
+###### nr_huge_pages
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001141.png)
+
+nr_huge_pages 成员用于指明在指定长度的大页内存池子中总共包含大页的数量。当 struct hstate 数据结构在 hugetlb_add_hstate() 函数初始化时，nr_huge_pages 初始化为 0.系统可以通过三种方法增加大页内存池子中大页的数量: 第一种是通过 CMDLINE 在启动时为大页内存池子分配指定数量的大页; 第二种是通过 /sys/kernel/mm/hugepages/hugepages-X/nr_hugepages 提供的接口主动扩容; 第三种是通过大页的超发机制动态的增加大页内存池子中大页数量。无论采用那种方式都会增加指定长度大页的 struct hstate 数据结构 nr_huge_pages 成员的值。另外系统可以通过两种方法减少内存池子中大页的数量: 第一种是通过 /sys/kernel/mm/hugepages/hugepages-X/nr_hugepages 提供的接口主动缩容; 第二种是在存在通过超发机制添加的大页情况下，系统释放大页会触发大页内存池子的缩容。两种方式的缩容都会减少指定长度大页的 struct hstate 数据结构 nr_huge_pages 成员的值. 系统提供了 /proc/meminfo 接口可以动态查看 nr_huge_pages 的值:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001134.png)
+
+/prc/meminfo 的 HugePages_Total 字段即 struct hstate 数据结构的 nr_huge_pages 成员，通过上面的大页内存池子的扩容和缩容，可以看到 HugePages_Total 字段都在跟随变化，因此可以通过 HugePages_Total 成员获得指定长度大页池子的大页总数. 最后可以通过 /sys/kernel/mm/hugepages/hugepages-X/nr_hugepages 查看当前指定长度大页内存池子中大页总数.
+
+###### max_huge_pages
+
+max_huge_pages 成员用于指明指定长度大页内存池子中固定大页的数量, 所谓固定大页就是一次性分配的多个大页，并一直维护在大页内存池子中的大页。相对固定大页，对可动态分配和动态回收的大页称为超发大页。大页内存池子中的大页根据来源可以分作两类，第一类是通过 CMDLINE 内存启动时预先分配的大页，或者通过 /sys/kernel/mm/hugepages/hugepages-X/nr_hugepages 扩容的大页称为固定大页 (Persistent HugePage); 第二类通过大页超发机制动态分配的大页，这里大页称为超发大页 (Surplus HugePage). struct hstate 数据结构使用 nr_huge_pages 表示内存池中大页的总数，而 surplus_huge_pages 成员表示超发的大页数量，那么三者之间的关系是:
+
+{% highlight bash %}
+# 大页内存池子大页总数
+nr_huge_pages = max_huge_pages + surplus_huge_pages
+# 大页内存池子中固定大页的总数
+nr_Persistent = nr_huge_pages - surplus_huge_pages
+# 大页内存池子中超发大页的总数
+nr_Surplus    = nr_huge_pages - max_huge_pages
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001135.png)
+
+接下来用一个实例进行讲解，在实例中通过文件映射和匿名映射分别分配 2 个大页，并使用 4 个大页，停留 10s 之后释放虚拟内存，并关闭文件。如果上面的程序执行成功，那么在 "/mnt/BiscuitOS-hugetlbfs/" 目录下还存在 hugepage 文件，那么接下来使用如下命令进行测试:
+
+{% highlight bash %}
+mkdir -p /mnt/BiscuitOS-hugetlbfs/
+echo 2 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+echo 2 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_overcommit_hugepages
+mount -t hugetlbfs none /mnt/BiscuitOS-hugetlbfs/ -o pagesize=2048K
+{% endhighlight %}
+
+命令首先创建目录 "/mnt/BiscuitOS-hugetlbfs/", 然后通过 "nr_hugepages" 接口分配两个固定大页，然后通过 "nr_overcommit_hugepages" 接口设置系统可以超发 2 个大页，最后挂载一个 hugetlbfs 文件系统在 "/mnt/BiscuitOS-hugetlbfs/" 目录下，此时系统 2MiB 的大页内存池子中大页总数为 2. 那么接下来运行程序:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001136.png)
+
+当系统启动完毕之后，向 nr_hugepages 写入 2 以此分配两个固定大页，接着向 nr_overcommit_hugepages 写入 2 以此支持动态分配 2 个大页，但此时没有分配超发的大页，因此查看 /proc/memcinfo 时 HugePages_Surp 为 0，且 HugePages_Total 为 2; 当程序运行的前 10s，此时程序通过文件映射和匿名映射总共分配了 4 个大页，由于此时固定大页只有 2 个大页，那么剩余的两个通过动态分配两个超发大页，那么此时查看 /proc/meminfo 可以看到 HugePages_Surp 为 2，且 HugePages_Total 为 4; 应用程序运行 10s 之后，应用程序将文件映射和匿名映射的虚拟内存解除映射，然后关闭文件并退出程序，此时超发大页将动态回收，但不是所有的超发大页一次行回收，其会预留一部分超发大页作为空闲大页待下一次分配使用，另外由于大页文件还存在没有被摧毁，那么被大页文件占用的大页还在使用中，因此此时查看 /proc/meminfo 可以看到 HugePages_Surp 的数量为 1，并且这个超发大页处在空闲状态，那么 HugePages_Free 为 1，最后此时 HugePages_Total 的值为 3，那么大页内存池子中包含 3 个大页.
+
+###### free_huge_pages
+
+free_huge_pages 成员用于表示指定长度大页内存池子中空闲大页的数量，空闲但不代表可用。在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件 page cache 的方式为用户进程提供大页，用户进程可以通过在 hugetlbfs 文件系统挂载点下创建或打开一个大页文件，然后从进程的地址空间分配一段虚拟内存用于映射大页文件，此时系统会为这段映射大页的虚拟内存预留一定数量的大页，这些大页就是预留大页，但这些大页因为没有被真正使用，所以属于空闲大页，但这些大页只能用于这段映射大页文件的虚拟内存，不能用于其他进程，因此虽然这些大页是空闲的但属于不可再分配的大页。当进程访问这段虚拟内存时，由于没有建立虚拟内存到大页物理内存的页表，那么会触发系统缺页中断。在中断处理函数中，内核会从预留大页中找到一个大页，这个大页此时是空闲状态，然后建立虚拟内存到该大页物理内存的页表，并将这个大页的状态修改为激活态度，然后系统会减少大页内存池子中空闲大页数量和预留大页数量各自减一，待缺页中断返回之后，进程可以通过访问这段虚拟内存间接使用大页。通过上面的分析大页内存池子中存在如下关系:
+
+{% highlight bash %}
+# 可分配大页数量
+nr_Alloc_HugePage  = free_huge_pages - resv_huge_pages
+# 正在使用的大页数量
+nr_Active_HugePage = nr_huge_pages - free_huge_pages
+{% endhighlight %}
+
+通过上面的讨论可以知道，由于进程分配虚拟内存映射大页文件时，默认情况下系统需要在真正使用前为这段虚拟内存预留足够的大页，否则映射会失败，在大页未真正使用之前预留的大页不能被用于其他用途，但此时大页的状态是空闲的，因此对于大页内存池子可分配的大页数量为空闲大页数减去预留大页数，因此 free_huge_pages 的大页集合不一定都可分配。在大页内存池子中抛除空闲的大页就是正在使用的大页，或称为激活态的大页，那么正在使用的大页等于大页内存池子大页总数 nr_huge_pages 减去空闲大页 free_huge_pages.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001137.png)
+
+接下来通过一个实例验证上面的说法，实例首先分配一段虚拟内存映射大页，然后等待 10s，接着正在使用大页，然后停留 10s，最后释放映射的虚拟内存。使用如下命令进行测试:
+
+{% highlight bash %}
+echo 2 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+cat /proc/meminfo | grep Huge
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001138.png)
+
+系统启动完毕之后，向 nr_hugepages 接口写如 2 以便分配两个固定大页，此时查看 /proc/meminfo, 可以看到 HugePages_Total 为 2，以此表示大页内存池子中总共两个大页，另外 HugePages_Free 为 2，而 HugePages_Rsvd 为 0，那么大页内存池子中空闲 2 个大页，并且可分配 2 个大页。当程序运行是，进程只是分配一段虚拟内存映射大页文件，并未建立页表，那么此时系统会为这段虚拟内存预留 2 个大页，因此此时 /proc/meminfo 下的 HugePages_Rsvd 为 2，另外这两个大页的状态是空闲的，因此此时 HugePages_Free 为 2，那么此时可分配的大页为 0. 接下来进程开始缺页然后正在使用大页，该大页从预留的池子中分离出来，并从原先的空闲态转变为激活态，那么此时 /proc/meminfo 下 HugePages_Free 的值为 1 个大页，并且 HugePages_Rsvd 也变成为 1，此时可分配的大页依旧为 0; 进程最后将使用完的大页归还给大页内存池子，此时大页由激活态变成了空闲态，但此时这些大页已经没有进程预留了，因此此时查看 /proc/meminfo 下 HugePages_Free 为 2，而 HugePages_Rsvd 为 0，那么可分配的大页数变成 2.
+
+###### resv_huge_pages
+
+resv_huge_page 成员用于表示指定长度大页内存池子中预留池子的大页数量。在 hugetlb 大页机制中，内核可以基于 hugelbfs 文件系统以文件 page cache 的方式为用户进程提供大页，进程通过在 hugetlbfs 文件系统挂载点下创建或打开一个大页文件，然后从进程地址空间分配一段虚拟内存用于映射大页文件，系统默认情况下会为映射大页文件的虚拟内存预留足够数量的大页，这些大页来自大页内存池子，当被预留之后，这些大页将进入预留池子中，只有预留大页的进程才能使用这部分大页。当进程访问这段虚拟内存时，由于虚拟内存到大页物理内存的页表不存在，那么触发系统的缺页中断。在缺页中断处理函数中，系统从大页预留池子中找一个大页，接着将大页移出大页预留池子，并将 resv_huge_pages 减一，然后建立虚拟内存到大页物理内存的页表，最后将大页的状态修改为激活态，并将大页放入大页激活链表里。待缺页中断返回之后，进程可以正常访问这段虚拟内存，并间接使用大页。内核使用 struct hstate 数据结构维护指定长度的大页内存池子，因此 resv_huge_pages 用于统计大页内存池子中预留池子的大小。rsve_huge_pages 成员与其他几个成员的关系:
+
+{% highlight bash %}
+# 可分配大页
+nr_Alloc_HugePage = free_huge_pages - resv_huge_pages
+{% endhighlight %}
+
+当大页的状态处于空闲状态时，由于 hugetlb 预留机制的存在，那么空闲大页不一定是直接可以分配的大页，系统需要将空闲大页数量减去预留大页数量才是真正可以分配的大页数量. 另外进程分配虚拟内存映射大页文件时也可以不提前预留大页，可以在 mmap() 时使用标志 MAP_NORESERVE, 那么只有进程真正缺页使用大页内存时，系统才真正为其分配大页. 可以通过一下例子验证上面的说法:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001140.png)
+
+验证的例子如上，程序被分作两部分，第一部分是进程通过 mmap 分配一段虚拟内存用于映射大页，这个时候并为真正使用，停留 10s 之后访问内存导致缺页，最终真正使用大页，之后再次停留 10s，接着将虚拟内存解除映射，至此第一部分完成。第二部分的逻辑与第一部分一致，唯一的不同点是在 mmap 分配虚拟内存是新增了 MAP_NORESERVE 标志，那么接下来使用命令进行实例测试:
+
+{% highlight bash %}
+echo 2 > /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages
+cat /proc/meminfo | grep Huge
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001139.png)
+
+从实际的运行可以看出，当向 nr_hugepages 接口分配 2 个固定大页时，/proc/meminfo 的 HugePages_Total 和 HugePages_Free 为 2，HugePages_Rsvd 为 0，那么此时大页内存池子可以提供两个大页用于分配。当第一部分执行是，首先调用 mmap 分配虚拟内存之后，由于预留机制的存在，那么系统会为这段虚拟内存预留大页，此时虚拟内存长度为 2 个大页，那么预留大页的数量为 2，此时查看 /proc/meminfo，HugePages_Free 和 HugePages_Rsvd 的值都是 2，那么此时大页内存池子可提供分配的大页数量为 0，HugePages_Total 的 2 个大页都被进程给预留了，虽然 2 个大页此时还是空闲状态，但还是大页内存池子无法提供任何大页。接着进程访问虚拟内存触发缺页中断，缺页中断处理程序从预留的大页池子中获得一个大页，并建立虚拟内存到大页物理内存的页表，以此同时将大页预留池子大页数减一，然后将大页的状态有空闲态转换成激活态，此时查看 /proc/meminfo 的信息，HugePages_Free 和 HugePages_Rsvd 的数都变成了 1，因此 HugePages_Active 为 1， 此时大页内存池子可提供分配的大页数量任然为 0. 第一部分的最后操作是将映射大页的虚拟内存释放，那么此时这段虚拟内存预留的大页也解除了预留，进程正在使用的大页也被系统回收放入系统大页内存池子中，此时查看 /proc/meminfo 的信息，HugePages_Free 变成了 2，但 HugePages_Rsvd 变成 0，此时系统大页内存池子可提供的分配的大页数量为 2，正在使用的大页数也变成了 0.
+
+对于第二部分操作，逻辑大体与第一部分一致，在进程开始第二部分之前，/proc/meminfo 信息显示 HugePages_Total 和 HugePages_Free 为 2，其余为 0，那么系统大页内存池子可向外提供分配大页的数量为 2. 进程开始调用 mmap 分配虚拟内存映射大页文件，由于 mmap 时带有 MAP_NORESERVE 标志，那么系统在该阶段不会为映射大页文件的虚拟内存预留大页，那么此时 /proc/meminfo 的信息显示 HugePages_Free 为 2，而 HugePages_Rsvd 为 0，那么系统确实没有为这段虚拟内存预留大页，那么此时系统大页内存池子确实可以向外提供分配的大页数量为 2. 进程接着访问这段虚拟内存并触发缺页中断，在缺页处理函数中，函数直接从系统大页内存池子中获得一个可分配的大页，由于之前有两个可分配的大页，那么缺页中断不会因为没有大页而失败，此时缺页处理程序建立虚拟内存到大页物理内存的页表，并将大页的状态由空闲转换为激活状态，待缺页中断返回之后，进程就可以使用该大页了，此时查看 /proc/meminfo 信息，HugePages_Free 变为 1，当 HugePages_Rsvd 仍然为 0，那么此时系统大页池子可以向外提供分配大页数量为 1. 第二部分的最后一个操作就是释放这段虚拟内存，此时正在使用大页会被系统回收，并将大页的状态由激活态转换为空闲态，并加入系统大页内存空闲池子中，此时查看 /proc/meminfo 的信息可以知 HugePages_Free 变成了 2，但 HugePages_Rsvd 仍为 0，那么此时系统大页内存池子可以向外提供分配大页的数量为 2. 通过上面实践例子的分析结果可以验证之前的说法.
+
+###### nr_overcommit_huge_pages
+
+nr_overcommit_hugepages 成员用于指明指定长度大页能否超发大页的数量，大页超发机制是相对固定分配机制而言的，在默认的情况下，系统大页内存池子中的大页需要通过 CMDLINE 或 /sys/kernel/mm/hugepages/hugepages-X/nr_hugepages 接口指定并一次性分配，如果没有显示的缩容，那么这些大页空闲的时候都一直待在大页内存池子了，这样的策略存在有一定的好处，那么就是确保系统大页内存池子可以为系统提供固定数量的大页，不好的地方就是在系统内存紧张的时候，系统大页内存池子却有很多空闲的大页，这些大页占用了很大部分的内存系统却不能使用，另外一个缺点就是当大页内存池子中没有空闲的大页，当系统还有很多空闲大页，那么大页内存池子还是无法向外提供大页。为了解决这个问题大页引入了超发机制，所谓超发机制就是设置一个上限值，当系统大页内存池子没有足够的大页时，系统可以从 Buddy 分配器中动态分配大页，然后将其添加到系统大页内存池子中，当进程不再使用大页将其归还给大页内存池子时，系统会检查其是否为超发的大页，如果是且现在大页内存池子空闲大页相对充裕或者系统内存相对紧张，那么系统将超发的大页重新归还给 Buddy 分配器。hugetlb 大页机制向外提供了接口，以便用户配置大页超发数量，其使用如下:
+
+{% highlight bash %}
+# HugePage Overcommint Interface (hugepages-X 为 2MiB 或 1Gig 的目录)
+/sys/kernel/mm/hugepages/hugepages-X/nr_overcommit_hugepages
+# Current Overcommit
+cat /sys/kernel/mm/hugepages/hugepages-X/nr_overcommit_hugepages
+# Setup Overcommit
+echo NR_OverCommit > /sys/kernel/mm/hugepages/hugepages-X/nr_overcommit_hugepages
+# Expand Overcommit Space
+# NEW_OC > Default_OC
+echo NEW_OC > /sys/kernel/mm/hugepages/hugepages-X/nr_overcommit_hugepages
+# Shrink Overcommit Space
+# NEW_OC < Default_OC
+echo NEW_OC > /sys/kernel/mm/hugepages/hugepages-X/nr_overcommit_hugepages
+{% endhighlight %}
+
+系统提供了 nr_overcommit_hugepages 接口，该接口可读可写。当读取该接口时可以获得当前指定长度大页内存池子中允许超发的大页数量; 当向接口写入值时用于设置指定长度大页内存池子新的超发大页数量。另外值得注意的是，如果写入的值大于当前值，那么相当于大页内存池子的扩容，反之如果写入的值小于当前值，那么相对于大页内存池子的缩容，但释放的大页均来自超发的大页。另外如果缩容的时候没有达到预期，即没有其他超发大页可以释放，并且需要缩容超发的大页还在被使用，那么系统会等到该超发大页释放并回收成功之后 nr_overcommit_hugepages 才更新为预期的值，否则为实际缩容的值.
+
+###### suplus_huge_pages
+
+suplus_huge_pages 成员用于表示指定长度大页内存池子中通过超发机制动态分配的大页数量。所谓超发大页就是当系统大页内存没有可用的大页时，系统会从 Buddy 分配器动态分配内存构成大页，并填充到大页内存池子内，struct hstate 数据结构使用 surplus_huge_pages 成员来统计超发大页的数量，并使用 nr_overcommit_huge_pages 成员限制了系统最大可以分配超发大页的数量，那么当大页内存池子使用了 nr_overcommit_huge_pages 个大页之后，那么大页内存池子将没有能力向外提供可分配的大页。超发大页与固定大页在大页池子中没有特殊的区分，都是作为一个大页来看待。相对于固定大页，超发大页由于通过从 Buddy 分配器中动态分配，那么超发大页分配的时候耗时会比较多一些，另外由于从 Buddy 分配器动态分配，可能受内存碎片的影响，Buddy 分配器可能找不到连续物理内存组成大页。当系统大页内存池子中存在较多空闲大页时，系统通过将新释放的大页归还给 Buddy，以此减少超发大页的数量。另外系统也可以强制大页内存池子释放超发的大页，但无法强制释放固定大页。surplus_huge_pages 与其他几个成员之间的关系:
+
+{% highlight bash %}
+# Total HugePages: nr_huge_pages
+nr_huge_pages      = max_huge_pages + surplus_huge_pages
+# Persistent HugePages
+max_huge_pages     = nr_huge_pages - surplus_huge_pages
+# Surplus HugePages
+surplus_huge_pages = nr_huge_pages - max_huge_pages
+# Limit
+suplus_huge_pages <= nr_overcommit_huge_pages
+max_huge_pages
+{% endhighlight %}
+
+系统大页内存池子中只有在统计上区分固定大页和超发大页，而实际中固定大页和超发大页没有任何区别。统计上大页内存池子中大页总数等于固定大页数量加上超发大页数量。/proc/meminfo 接口提供的信息可以知道大页内存池子的大页总数 HugePages_Total, 以此超发大页的数量 HugePages_Surp, 因此可以通过上面的公式获得大页内存池子中固定大页的数量。另外可以通过 /sys/kernel/mm/hugepages/ 目录下的 nr_overcommit_hugepages 获得可以超发大页的上限，以及 surplus_hugepages 接口可以获得当前超发大页的数量。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001142.png)
+
+系统可以通过超发大页机制动态改变系统大页内存池子的大页的数量，以此达到大页内存池子的扩容和缩容。对于扩容只能在大页内存池子中固定大页消耗殆尽的时候才能进行扩容，而进程不再使用超发大页时，超发大页会立即归还 Buddy 分配器，以此达到大页内存池子缩容效果.
+
+###### hugepage_freelists
+
+
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
 
 
 > [https://blog.csdn.net/yk_wing4/article/details/88080442](https://blog.csdn.net/yk_wing4/article/details/88080442)
+
