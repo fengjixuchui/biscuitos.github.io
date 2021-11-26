@@ -36,9 +36,9 @@ tags:
 >
 >   - hugetlb 大页超发机制使用攻略
 >
-> - [Hugetlb/Hugetlbfs 实践](#C)
+> - Hugetlb/Hugetlbfs 实践
 >
->   - hugeltb/hugetlbfs on X86_64
+>   - Hugeltb/Hugetlbfs on X86_64
 >
 >   - hugetlb/hugetlbfs on i386
 >
@@ -70,15 +70,17 @@ tags:
 >
 >   - hugetlb/hugetlbfs on Linux v2.2.26
 >
-> - Hugetlb/Hugetlbfs 进阶研究
+> - [Hugetlb/Hugetlbfs 进阶研究](#KC)
 >
 >   - 硬件如何支持大页
 >
->   - 通过 CMDLINE 配置大页长度和大页数量
-> 
->   - CMDLINE 中大页字段的先后顺序对初始化的影响
+>   - 2MiB Hugetlb 大页研究
 >
->   - 大页所需的内核宏支持
+>   - 1Gig Hugetlb 大页研究
+>
+>   - [Hugetlb/Hugetlbfs 与 CMDLINE 关系研究](#KA)
+> 
+>   - [Hugetlb 大页机制与内核宏关系研究](#KB)
 >
 >   - CMDLINE 传递错误的大页数量
 >
@@ -2900,6 +2902,238 @@ max_huge_pages
 
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------
+
+<span id="KA"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+
+#### Hugetlb/Hugetlbfs 与 CMDLINE 关系研究
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001169.png)
+
+在 hugetlb 大页机制中，内核会提前分配一定数量的大页到系统大页内存池子里，并作为固定大页供给用户进程重复使用，只有主动释放这些大页，不然这些大页会一直存在大页内存池子里。系统获取大页的方式有两种，第一种通过 CMDLINE 中的特定字段进行设置，系统在启动初期从 CMDLINE 中捕获了 Hugetlb 相关的字段之后，接着申请一定数量的大页放到大页内存池子里; 另外一种获得固定大页的方式是系统提供了的两个接口来扩容或缩容大页内存池子，两个接口为:
+
+{% highlight bash %}
+# 不同粒度的大页
+# size 为大页粒度按 KiB 的值
+/sys/kernel/mm/hugepages/hugepages-{size}kB/nr_hugepages
+# 默认粒度的大页
+/proc/sys/vm/nr_hugepages
+{% endhighlight %}
+
+无论使用以上哪种方式，都会向指定粒度的大页内存池子中添加或缩减一定数量的固定大页。另外两种方式虽然都是添加了固定大页，但固定大页的来源却存在差异。对于 1Gig 粒度的大页，如果固定大页来自 CMDLINE，那么大页来自 MEMBLOCK 内存分配器; 而对于 /proc 或 /sys 接口分配大页，其来自 CMA 内存分配器。对于 2MiB 粒度的大页，无论那种方式，其来自 Buddy 分配的复合页转变而来。本节不对大页的来源进行讨论，而对 CMDLINE 方式提供的大页进行分配，并在多个架构中进行分析研究。
+
+###### CMDLINE default_hugepagesz 字段
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001143.png)
+
+default_hugepagesz 字段用于设置系统默认使用的大页粒度。当系统同时支持多种粒度的大页场景下，如果没有明确的指定使用哪种粒度的情况下，系统默认使用该粒度的大页，例如分配匿名大页时，如果没有在 mmap 中包含 MAP_HUGE_2MB 或者 MAP_HUGE_1GB 等字段时，匿名大页使用 default_hugepaegs 指定的大页。如果 CMDLINE 中没有使用 default_hugepagesz 字段，那么系统缺省使用某种粒度的大页作为默认大页，不同的架构缺省默认大页粒度不一致，例如 i386 架构缺省默认粒度大页为 4MiB，而 X86_64 和 ARM64 架构缺省默认粒度大页为 2MiB。系统为默认大页提供了 /proc/sys/vm/ 目录下的 nr_hugepages、nr_hugepages_mempolicy、nr_overcommit_hugepages 三个节点，分别管理默认大页内存池子 , default_hugepagesz 字段则可以指定默认大页池子。另外 /proc/meminfo 中展示了默认大页内存池子的信息，其中 Hugepagesize 表示默认大页的长度，HugePages_Total 表示默认大页池子中大页数量，HugePages_Free 表示默认大页池子中空闲没有使用的大页数量, HugePages_Rsvd 表示默认大页池子中预留大页的数量, HugePages_Surp 表示默认大页池子中超发大页的数量。由于 default_hugepagesz 可以指定默认粒度的大页，那么 hugetlbfs 文件系统挂载时没有显示指明使用哪种大页，那么可以使用 default_hugepagesz 字段控制这里 hugetlbfs 文件系统使用的大页粒度. 那么接下来通过实践例子验证上面的说法, 首先在 CMDLINE 添加 default_hugepagesz 字段，并指定大小，实践基于 BiscuitOS X86_64 架构进行讲解，首先在 BiscuitOS 的 RunBiscuitOS.sh 中 CMDLINE 中添加该字段:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001144.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001145.png)
+
+当内核的 CMDLINE 中指定了 "default_hugepagesz=2M", 那么系统默认的 hugetlb 大页粒度为 2MiB，那么 /proc/sys/vm/ 目录下关于大页的配置节点都是指向 2MiB 粒度的大页，例如上图中在 /proc/sys/vm/nr_hugepages 节点写入 2，也就是使 2MiB 大页内存池子中固定大页的数量为 2，此时查看 /proc/meminfo 就可以看到 HugePages_Total 和 HugePages_Free 的值都是 2. 并且 Hugepagesize 的值为 2MiB。最后挂载一个 hugetlbfs 文件系统，此时没有指定其使用大页的粒度，因此挂载点使用默认的大页粒度，也就是 2MiB，通过 mount 命令可以看到 hugetlbfs 文件系统挂载点的 pagesize 大小为 2MiB。
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001146.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001147.png)
+
+当内核的 CMDLINE 中指定了 "default_hugepagesz=1G", 那么系统默认的 hugetlb 大页粒度为 1Gig，那么 /proc/sys/vm 目录下关于大页的配置节点都值针对 1Gig 粒度的大页内存池子，例如上图中在 /proc/sys/vm/nr_hugepages 节点写入 1，那么系统将 1Gig 粒度大页池子中固定大页的数量控制在 1 个大页，此时查看 /proc/meminfo 就可以看到 HugePages_Total 和 HugePages_Free 的值都是 1，并且 Hugepagesize 为 1Gig。最后挂载一个 hugetlbfs 文件系统，此时没有指定其使用的大页粒度，因此挂载点使用默认的大页粒度，也就是 1Gig，并通过 mount 命令可以看到 hugetlbfs 文件系统挂载点 pagesize 大页为 1Gig.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001148.png)
+
+如果内核的 CMDLINE 中没有指定 default_hugepagesz 字段，那么不同的架构默认大页粒度可能不同，那么接下来对几个常见的架构进行实践分析:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001149.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001150.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001151.png)
+
+通过 BiscuitOS 上运行不同的架构的 /proc/sys/vm/nr_hugepages 节点写入 10，以此向系统默认的大页内存池子中调整固定大页的数量为 10，接着查看各个架构此时 /proc/meminfo 中关于大页统计信息的描述，可以通过 Hugepagesize 字段看出默认大页的长度，那么总计几个架构特点如下:
+
+* i386 架构默认大页粒度是 4MiB
+* X86_64 架构默认大页粒度是 2MiB
+* ARM64 架构默认大页粒度是 2MiB
+
+最后还需要研究的就是 default_hugepagesz 字段在不同架构下能够设置哪些值，根据不同架构的硬件页表的描述，支持大页的粒度有所不同，总结为:
+
+* i386 架构支持: 4MiB
+* X86_64 架构支持: 1Gig/2MiB
+* ARM64 架构支持: 64KiB/2MiB/32MiB/1Gig
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001158.png)
+
+接下来是实践 default_hugepagesz 字段干预匿名大页选择不同大页粒度的场景，实践使用一个简单的程序，程序首先通过 mmap 分配一段虚拟内存映射匿名大页，虚拟内存的长度为 4MiB，接着使用这段虚拟内存，但最后使用 sleep(-1) 不释放虚拟内存，此时观察系统默认大页内存使用情况，另外为了更好的说明问题，在 CMDLINE 中同时支持 2MiB 和 1Gig 粒度的大页，然后通过 default_hugepagesz 控制匿名大页使用不同粒度的大页:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001159.png)
+
+从实践结果可以看出，当内核 CMDLINE 中 default_hugepagesz 字段值为 2M 时，并且同时存在 1Gig 和 2MiB 粒度的大页内存池子，此时通过 /proc/meminfo 查看默认粒度大页的信息，Hugepagesize 为 2MiB 说明默认大页为 2MiB 粒度，HugePages_Total 和 HugePages_Free 为 10，说明 2MiB 粒度的大页池子 10 个大页空闲。接着运行程序分配匿名大页，此时匿名大页使用完毕之后并未释放，那么查看 /proc/meminfo 的值，可以看到默认粒度大页池子的 HugePages_Free 变成 9，且 HugePages_rsvd 变为 1，说明程序运行时的进程分配了 4MiB 虚拟内存预留了 2 个 2MiB 大页，并且其中一个大页被使用，而另外一个没有被使用保持预留状态，因此说明匿名大页使用了 default_hugepagesz 字段指定粒度的大页。那么接下来将进程杀死之后释放占用的大页，此时查看 /proc/meminfo 默认粒度大页可用大页又变回 10 个大页。那么接下来将 default_hugepagesz 字段修改为 1G:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001160.png)
+
+当内核 CMDLINE 的 default_hugepagesz 字段修改为 1G 之后，并且同时存在 1Gig 和 2MiB 粒度的大页内存池子，此时通过 /proc/meminfo 查看默认粒度大页的信息，Hugepaegsize 为 1Gig 说明默认大页已经是 1Gig 粒度，HugePages_Total 和 HugePages_Free 为 1，说明 1Gig 粒度的大页池子 1 个大页空闲。接下来运行程序分配匿名大页，此时匿名大页使用完毕之后并未释放，那么查看 /proc/meminfo 的值，可以看到默认粒度大页内存池子的 HugePages_Free 变成 0，那么此时默认粒度大页内存池子中没有可供分配的大页。程序运行时的进程只是分配了 4MiB 的虚拟内存映射匿名大页，那么默认粒度大页池子就会预留一个大页，当进程使用这个大页时，默认粒度大页池子预留数量减一，可用大页数量也减一，那么符合当前 /proc/meminfo 展示的默认大页内存池子状态。最后就是杀掉进程，进程将占用的大页释放会默认粒度大页池子，此时可以从 /proc/meminfo 中获得默认粒度大页池子的可用大页已经为 1。从上面两个验证实验可以得出，在不改变分配匿名大页代码逻辑的前提下，如果映射大页采用默认粒度的大页，那么内核 CMDLINE 的 default_hugepagesz 字段确实可以控制匿名大页的粒度。那么放过来问，匿名大页如果控制使用指定粒度的大页呢? 这里做简单的介绍，在通过匿名映射大页时，可以在 mmap() 函数中使用 MAP_HUGE\_\{粒度\} 的标志, 如下图，标志定义在头文件 "linux/mmap.h" 中，当匿名映射大页时，可以使用下图标志映射指定粒度的大页: 
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001161.png)
+
+
+---------------------------------------------
+
+###### CMDLINE hugepagesz/hugepages 字段
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001152.png)
+
+hugepagesz 字段和 hugepages 字段搭配使用，用于告诉系统启动时创建一个 hugepagesz 粒度的大页池子，并且池子中包含 hugepages 个大页。hugepagesz 字段用于指明大页的粒度，hugepages 用于指明大页的数量，两者通常搭配使用，另外 CMDLINE 中可以同时存在多对 hugepagesz/hugepages。当 hugepagesz/hugepages 字段生效后，系统会在 /sys/kernel/mm/hugepage/ 目录下为其创建名为 hugepages-{size}KB 的目录，其中 size 为大页粒度按 KB 为单位的十进制值。每个目录下是关于该粒度大页池子中的管理数据，如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001153.png)
+
+free_hugepages 节点用于指明该粒度大页池子中没有被使用的大页数量; nr_hugepages 节点用于指明该粒度大页池子中大页的数量; resv_hugepages 节点用于指明指定粒度大页池子中被预留大页的数量; surplus_hugepages 节点用于指明指定粒度大页池子中已经超发大页的数量; nr_overcommit_hugepages 节点用于指明指定粒度大页池子中能够超发大页的数量. 通过 hugepagesz/hugepages 字段创建一个大页内存池子之后，系统挂载 hugetlbfs 文件系统时就可以与指向该大页池子进行绑定，这样进程可以基于该 hugetlbfs 文件系统挂载点使用该粒度的大页。接下来在 BiscuitOS X86 架构中验证上面的说法, 开发者首先在 BiscuitOS 的 RunBiscuitOS.sh CMDLINE 中添加字段:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001154.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001155.png)
+
+在 kernel 的 CMDLINE 中添加了 "hugepagesz=2M hugepages=10" 字段之后，系统启动之后会创建一个粒度为 2MiB 的大页池子，池子里面包含了 10 个固定大页，此时查看 /proc/meminfo 节点的信息，可以看到 HugePages_Total 和 HugePages_Free 为 10，并且此时系统默认大页长度 Hugepagesize 为 2MiB，如果这里不是 2MiB，需要在 kernel CMDLINE 中添加 "default_hugepagesz=2M" 的字段，以此 /proc/meminfo 节点显示 2MiB 大页池子信息. 接着 /sys/kernel/mm/hugepages 目录下存在 hugepages-2048KB 目录，该目录下的节点信息用于管理系统 2MiB 粒度大页池子。最后在挂载 hugetlbfs 文件系统时，可以设置挂载参数 "pagesize=2M", 以及 "min_size=16M", 这样这个挂载点就与 2MiB 大页池子挂钩，并且挂载点的 spool 小池子从 2MiB 大页池子中预留了 8 个大页。此时查看 /proc/meminfo 可以看到 2MiB 大页池子 HugePages_Rsvd 为 8。以上实践数据正好符合预期, 因此上面所述属实. 接下来讨论 CMDLINE 中同时存在多对 hugepagesz/hugepages 的情况:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001157.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001156.png)
+
+在 kernel 的 CMDLINE 中添加 "hugepagesz=2M hugepages=10 hugepagesz=1G hugepages=1" 字段之后，系统启动之后会创建两个大页池子，其中一个大页池子的粒度是 2MiB 并且包含 10 个大页，另外一个大页池子的粒度是 1Gig 并且包含 1 个大页。此时可以看到 /sys/kernel/mm/hugepages/ 目录下存在 hugepages-2048KB 和 hugepages-1048576KB 两个目录，通过查看两个目录下的 nr_hugepages 和 free_hugepages 节点，都可以获得与 hugepagesz/hugepages 字段一样的值，那么接下来分别挂载两个 hugetlbfs 文件系统，第一个 hugetlbfs 文件系统与 2MiB 粒度大页池子绑定，然后挂载点预留 8 个大页; 另外一个 hugetlbfs 文件系统与 1Gig 粒度大页池子绑定，然后挂载点预留 1 个大页。此时从 /sys/kernel/mm/hugepages 目录下各粒度对应目录下的 resv_hugepages 节点均为挂载点预留的值，最后使用 mount 命令查看两个 hugetlbfs 文件系统挂载点的信息，均符合预期值，因此实践验证上述说法正确无误.
+
+最后需要研究的就是 hugepagesz 和 hugepages 的取值范围，hugepagesz 的取值范围与具体的体系架构有关，有的架构可以支持多种粒度的大页，但有的架构就支持一种粒度的大页，总结来说如下:
+
+* i386 架构支持: 4MiB
+* X86_64 架构支持: 1Gig/2MiB
+* ARM64 架构支持: 64KiB/2MiB/32MiB/1Gig
+
+对于 hugepages 的取值，原则上只要 hugepages 的取值不要超过系统内存大小即可，但为了保证 hugepages 有效，最好不要超过系统内存的一半.
+
+------------------------------------
+
+###### Hugetlb CMDLINE Usage
+
+通过上面的分析，可以知道 Hugetlb 机制提供的 CMDLINE 字段主要完成两个任务，第一个任务是设置系统使用的默认粒度的大页; 另外一个任务是创建指定粒度的大页内存池子并向池子中添加指定数量的大页。在使用这些字段时需要注意:
+
+* default_hugepagesz 和 hugepagesz 的值是要复合要求的
+* hugepagesz 和 hugepages 要搭配使用
+* hugepagesz/hugepages 可以同时存在多对，但 hugepagesz 的值不能相同
+* hugepages 的值不能超过系统内存大页，最后是系统内存的一半
+
+既然有这些条件限制，那么就会出现合规的情况和非法的情况，接下来对每种情况进行分析。首先是合规的情况，如下:
+
+{% highlight bash %}
+# 假设系统硬件支持 1Gig 和 2MiB 的大页
+# 并且系统内存为 8Gig
+
+# 设置默认粒度大页
+CMDLINE="... default_hugepagesz=1G ..."
+CMDLINE="... default_hugepagesz=2M ..."
+
+# 创建指定粒度的大页内存池子
+CMDLINE= "... hugepagesz=1G hugepages=2 ..."
+CMDLINE= "... hugepagesz=2M hugepages=1024 ..."
+CMDLINE= "... hugepagesz=1G hugepages=1 hugepagesz=2M hugepages=20 ..."
+{% endhighlight %}
+
+对于合规的使用场景，系统能够创建出符合要求的大页池子，也可以正确设置系统使用的默认粒度大页。接下来看看非法使用情况:
+
+{% highlight bash %}
+# 假设系统硬件支持 1Gig 和 2MiB 的大页
+# 并且系统内存为 8Gig
+
+# 设置默认粒度大页
+CMDLINE="... default_hugepagesz=32M ..."
+CMDLINE="... default_hugepagesz=64M ..."
+
+# 创建指定粒度的大页内存池子
+CMDLINE= "... hugepagesz=32M hugepages=2 ..."
+CMDLINE= "... hugepagesz=2M hugepages=8192 ..."
+CMDLINE= "... hugepagesz=2M hugepages=1024 hugepagesz=2M hugepages=20 ..."
+{% endhighlight %}
+
+当 default_hugepagesz 和 hugepagesz 设置了不支持的粒度时，系统启动时会打印提示信息, 对于 default_hugepagesz 设置为不支持的大页粒度时，系统会提示设置错误，并将默认大页粒度修改为某种正确的粒度，该粒度与体系架构有关. 当 hugepagesz 设置为不支持的粒度时，系统会提出错误信息，然后将 hugepages 字段也一同忽略.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001162.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001163.png)
+
+当 hugepagesz 字段正确，但 hugepages 字段设置错误，例如 hugepages 设置的值转换成大页内存之后，其长度超过系统物理内存. 由于 hugepages 字段是在系统启动的时候从 Buddy 分配器动态分配所需的内存，系统启动阶段会一直从 Buddy 分配器中分配复合页来构成大页内存池中的大页，直到分配够才停止分配，这样很容易导致 Buddy 分配器触发系统 OOM.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001164.png)
+
+当 hugepagesz 和 hugepages 字段都正确，只是 CMDLINE 中出现重复的 hugepagesz 值相同的情况，对于这种情况，系统会打印提示信息，然后只采用第一次 "hugepagesz/hugepages" 的配置，其他都忽略丢弃.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001165.png)
+
+{% highlight bash %}
+# 假设系统硬件支持 1Gig 和 2MiB 的大页
+# 并且系统内存为 8Gig
+
+# 创建指定粒度的大页内存池子
+CMDLINE= "... hugepagesz=1G hugepages=7 ..."
+CMDLINE= "... hugepagesz=2M hugepages=3700 ..."
+CMDLINE= "... hugepagesz=1G hugepages=4 hugepagesz=2M hugepages=20 ..."
+{% endhighlight %}
+
+hugetlb CMDLINE 字段除了合规和非法使用的场景外还存在第三种场景，这种场景下每个字段都是符合要求的，但是系统无法提供足够的内存共给大页内存池子，例如上面提到的三种情况，第一种情况就是对于 1Gig 大页，其来自 MEMBLOCK 内存分配器，此时系统没法提供这么多的连续物理内存, 但此时系统并不会因为分配不出内存而 OOM，而是尽可能的分配足够数量的大页，例如下图的场景，需要分配 7 个 1Gig 的大页，但系统只能分配 5 个 1Gig 的大页，那么系统就只分配 5 个 1Gig 的大页.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001166.png)
+
+另外一种场景是分配粒度为 2MiB 的大页，由于 2MiB 的大页通过 Buddy 分配器分配的复合页构成，因此当系统需要分配大量的大页时，但 Buddy 无法提供这么多连续复合页，那么系统可以在分配过程中触发 OOM，例如下面在分配 3999 个 2MiB 大页，分配到 3800 个左右的时候触发系统 OOM.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001167.png)
+
+最后一种场景就是内核 CMDLINE 中同时存在分配两种粒度的大页，其中先分配 1G 粒度的大页，接着分配 2MiB 的粒度，这种情况下 1G 粒度大页分配成功，但这个时候 Buddy 分配器已经分配不出更多的复合页，那么这个时候就会触发 Buddy 分配器的 OOM，如上图。就算不触发 OOM，那么也会使系统可用内存超级少，这回导致系统运行卡顿等问题. 因此通过上面的讨论，在创建大页内存池子之前一定要做好规划.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001168.png)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------
+
+<span id="KB"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+
+#### Hugetlb 大页机制与内核宏关系研究
+
+在 hugetlb 大页机制中，内核可以基于 hugetlbfs 文件系统以文件 page cache 的方式向用户空间提供大页。无论进程通过文件映射的方式在指定 hugetlbfs 文件系统挂载点，还是通过匿名映射的方式在系统默认的 hugetlbfs 文件系统挂载点，进程都需要创建或打开一个大页文件，只是对于文件映射方式创建或打开的是一个大页文件，而匿名映射则创建一个大页虚拟文件，两种文件文件没有本质区别。进程接着从进程空间分配一段虚拟内存并用于映射大页文件(大页虚拟文件)，此时系统会为进程的这段虚拟内存预留指定数量的大页(在特殊情况下也可以不预留)。待进程访问这段虚拟内存时，由于虚拟内存还没有与任何大页的物理内存建立页表，因此会触发系统缺页。在缺页中断处理函数中，系统会从预留的大页池子中获得一个大页，然后建立虚拟内存到大页物理内存的页表。待缺页中断返回之后，进程可以正常访问这段虚拟内存，并间接使用大页。当进程不再使用大页时候，对于匿名映射进程直接解除这段虚拟内存与大页的映射，并将大页归还大页内存池子; 对于文件映射进程同样解除虚拟内存到大页的映射并关闭文件，但是由于大页文件的存在，大页并不会归还大页池子，只有到文件被摧毁的时候才会被释放会大页池子。以上便是一次完整的大页分配过程，其关键点是基于 hugetlbfs 文件系统，并且系统支持大页。那么本节用来研究在不同的架构中为了支持 hugetlb 大页机制，内核需要启用哪些内核宏。
+
+###### CONFIG_HUGETLBFS
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001170.png)
+
+CONFIG_HUGETLBFS 宏用于支持 Hugetlbfs 文件系统，如果系统启用该宏，那么系统在启动过程中会为默认粒度和内核 CMDLINE 中指定粒度的大页内存池子创建 hugetlbfs 文件系统挂载点，该 hugetlbfs 文件系统有内核挂载，以便为进程通过匿名映射分配大页。该宏启用之后可以在用户空间挂载一个 hugetlbfs 文件系统并绑定指定粒度的大页。该宏如果要启用，首先需要满足任一条件:
+
+* X86 架构支持
+* IA64 架构支持
+* SPARC64 架构支持
+* S390 架构且 64 位模式支持
+* SYS_SUPPORTS_HUGETLBFS 宏启用
+* BROKEN 宏启用
+
+如果 CONFIG_HUGETLBFS 宏启用，CONFIG_HUGETLB_HUGE 宏一同被启用。另外系统会在 /proc/meminfo 中显示默认粒度大页内存池子的使用情况，并会在 /proc/sys/vm 目录下提供默认粒度大页内存池子的配置节点 (), 最后会在 /sys/kernel/mm/hugepages 目录下为不同粒度的大页池子创建目录，并在每种粒度大页目录下存在其内存池子的配置节点 ().
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 > [https://blog.csdn.net/yk_wing4/article/details/88080442](https://blog.csdn.net/yk_wing4/article/details/88080442)
