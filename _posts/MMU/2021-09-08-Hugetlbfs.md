@@ -20,7 +20,7 @@ tags:
 >
 >   - hugetlbfs 文件系统使用攻略
 >
->   - 共享匿名大页使用攻略
+>   - [共享匿名大页使用攻略](#BA)
 >
 >   - 共享文件大页使用攻略
 >
@@ -3116,7 +3116,323 @@ CONFIG_HUGETLBFS 宏用于支持 Hugetlbfs 文件系统，如果系统启用该�
 * SYS_SUPPORTS_HUGETLBFS 宏启用
 * BROKEN 宏启用
 
-如果 CONFIG_HUGETLBFS 宏启用，CONFIG_HUGETLB_HUGE 宏一同被启用。另外系统会在 /proc/meminfo 中显示默认粒度大页内存池子的使用情况，并会在 /proc/sys/vm 目录下提供默认粒度大页内存池子的配置节点 (), 最后会在 /sys/kernel/mm/hugepages 目录下为不同粒度的大页池子创建目录，并在每种粒度大页目录下存在其内存池子的配置节点 ().
+如果 CONFIG_HUGETLBFS 宏启用，CONFIG_HUGETLB_PAGE 宏一同被启用。另外系统会在 /proc/meminfo 中显示默认粒度大页内存池子的使用情况，并会在 /proc/sys/vm 目录下提供默认粒度大页内存池子的配置节点 (nr_hugepages nr_hugepages_mempolicy nr_overcommit_hugepages), 最后会在 /sys/kernel/mm/hugepages 目录下为不同粒度的大页池子创建目录，并在每种粒度大页目录下存在其内存池子的配置节点 (nr_hugepages free_hugepages nr_hugepages_mempolicy nr_overcommit_hugepages resv_hugepages surplus_hugepages). 另外可以在 /proc/filesystems 中看到系统挂载的 hugeltbfs 文件系统，以及用户可以自行挂载 hugetlbfs 文件系统.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001171.png)
+
+###### Hugetlb CONFIG on X86_64
+
+为了在 X86_64 架构中支持 Hugetlb 大页机制，内核必须打开指定的宏。由于 X86_64 架构支持的大页粒度为 2MiB 和 1Gig。对于 2MiB 粒度的大页，其一直由 Buddy 分配器分配的复合页构成，而对于 1Gig 粒度的大页，如果是通过 CMDLINE 分配，那么其由 MEMBLOCK 分配，如果是系统运行中分配，那么其由 CMA 分配其分配，因此如果要支持 1Gig 粒度，系统需要支持 CMA. 总结 X86_64 架构需要启用的宏如下:
+
+{% highlight bash %}
+# Hugetlbfs
+CONFIG_HUGETLBFS
+CONFIG_HUGETLB_PAGE
+CONFIG_ARCH_ENABLE_HUGEPAGE_MIGRATION
+
+# CMA
+CONFIG_MEMORY_ISOLATION
+CONFIG_CMA
+CONFIG_CMA_AREAS=7
+{% endhighlight %}
+
+另外如果要在 X86_64 架构中关闭 Hugetlb 大页机制，只需关闭 CONFIG_HUGETLBFS 宏即可，CMA 功能只是影响是否能不能分配到 1Gig 的连续内存，但不与 hugetlb 大页机制强耦合，因此不必关闭 CMA 功能.
+
+###### Hugetlb CONFIG on i386
+
+为了在 i386 架构中支持 Hugetlb 大页机制，内核必须打开指定的宏。由于 i386 架构只支持 4MiB 粒度的大页。因此只需支持 Hugetlbfs 文件系统即可使用大页，因此 i386 架构所需的宏如下:
+
+{% highlight bash %}
+# Hugetlbfs
+CONFIG_HUGETLBFS
+CONFIG_HUGETLB_PAGE
+{% endhighlight %}
+
+另外如果要在 i386 架构中关闭 Hugetlb 大页机制，只需关闭 CONFIG_HUGETLBFS 宏即可，这将彻底关闭 Hugetlbfs 文件系统和 hugetlb 大页机制.
+
+###### Hugetlb CONFIG on ARM64
+
+为了在 ARM64 架构中支持 Hugetlb 大页机制，内核必须打开指定的宏。由于 ARM64 架构同时支持 64KiB、2MiB、32MiB、1Gig 粒度的大页, 因此 ARM64 架构所需的宏如下:
+
+{% highlight bash %}
+# Hugetlbfs
+CONFIG_HUGETLBFS
+CONFIG_HUGETLB_PAGE
+CONFIG_SYS_SUPPORTS_HUGETLBFS
+{% endhighlight %}
+
+另外如何要在 ARM64 架构中关闭 Hugetlb 大页机制，只需关闭 CONFIG_HUGETLBFS 宏即可.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------
+
+<span id="BA"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000N.jpg)
+
+#### 共享匿名映射 Hugetlb 大页使用攻略
+
+在 hugetlb 大页机制，内核可以基于 hugetlbfs 文件系统以文件 page cache 的方式为用户进程提供大页内存。进程可以通过匿名共享的方式从系统获得 hugetlb 大页，其底层逻辑是: 系统在启动过程中内核会自动挂载多种粒度大页的 hugetlbfs 文件系统，进程从其地址空间分配一段虚拟内存，然后使用 MAP_HUGETLB 和 MAP_SHARED 标志进行匿名映射，如果没有指定映射 hugetlb 大页的粒度，那么系统会在绑定默认大页粒度的 hugetlbfs 文件系统挂载点下创建一个虚拟文件; 如果进程匿名映射时指定了 hugetlb 大页的粒度，那么系统会在绑定指定大页粒度的 hugetlbfs 文件系统挂载点下创建一个虚拟文件。然后将进程的虚拟内存映射到该虚拟文件上, 此时并没有建立虚拟内存到 hugetlb 大页物理内存的页表，而是系统会为这段虚拟内存从指定粒度的大页内存池子中预留指定数量的大页，这些被预留的大页除了可以被进程和其子进程使用外，其他进程都不能再使用这些大页，直到进程释放这些大页。当进程第一次访问这段虚拟内存，由于虚拟内存没有建立到大页物理内存的页表，那么会触发系统缺页异常，进程暂停运行系统进入缺页中断，在缺页中断处理函数中，系统会从指定粒度大页预留池子中取出一个大页，然后建立虚拟内存到大页物理内存的页表，待缺页中断返回之后进程恢复运行，此时进程可以正常访问虚拟内存，并间接使用大页。待进程不再使用这段虚拟内存时，进程解除虚拟内存到虚拟文件的映射，那么此时系统会回收虚拟内存已经使用的大页，以及虚拟内存预留的大页，这些大页最终都会回到指定粒度大页内存池子中。
+
+匿名映射大页是与文件映射相对了，与普通的映射不同点是 hugetlb 大页机制的匿名映射也会创建一个虚拟文件，然后与文件映射一样基于文件的 page cache 为进程提供大页。但与文件映射大页不同的地方是进程无需显示的在 hugetlbfs 文件系统挂载点下创建或打开一个大页文件，而指向直接映射然后系统会在默认的 hugetlbfs 文件系统挂载点为其创建一个文件。另外进程不再使用文件映射的大页时，大页并不能直接被回收，而是要等到文件大页被摧毁时才能被回收; 而进程在使用完匿名大页时，只要解除进程虚拟内存到虚拟大页文件映射时，系统就会回收大页。对于共享匿名大页，那么是与私有匿名大页对比来说的，两者的区别在与当进程分配一段虚拟内存映射虚拟大页文件时，系统会为这段虚拟内存映射预留指定数量的大页，对于共享匿名映射的大页来说，这些预留的大页可以被进程和其子进程读写，但对于私有匿名映射的大页来说，这些预留的大页只能被进程使用，其子进程只能读不能写。另外匿名映射的大页粒度也不同，不同的架构可以支持多种粒度的大页，并且统一架构统一进程可以同时使用不同粒度的匿名大页，那么接下来给出了多种场景用来说明匿名大页的使用攻略.
+
+> [默认粒度共享匿名映射 Hugetlb 大页使用攻略](#BA0)
+>
+> [64KiB 粒度共享匿名映射 Hugetlb 大页使用攻略](#BA1)
+>
+> [2MiB 粒度共享匿名映射 Hugetlb 大页使用攻略](#BA2)
+>
+> [32MiB 粒度共享匿名映射 Hugetlb 大页使用攻略](#BA2)
+>
+> [1Gig 粒度共享匿名映射 Hugetlb 大页使用攻略](#BA3)
+>
+> [指定粒度共享匿名映射 Hugetlb 大页使用攻略](#BA4)
+>
+> [进程与子进程共同使用匿名共享大页](#BA4)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+
+
+--------------------------------------
+
+<span id="BA0"></span>
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+
+#### 默认粒度共享匿名映射 Hugetlb 大页使用攻略
+
+在支持 hugetlb 大页机制的系统中，如果没有在内核 CMDLINE 中通过 default_hugepagesz 字段指明默认大页粒度的情况下，不同架构会采用某种粒度的大页作为默认粒度的大页，并且内核会在 /proc/sys/vm 目录下创建 nr_hugepages、nr_overcommit_hugepages、nr_hugepages_mempolicy 用于控制默认粒度的大页内存池子。进程在使用共享匿名映射方式使用 hugetlb 大页时，如果没有显示的指明大页的粒度，那么系统将会分配默认粒度的大页给进程使用。另外默认粒度大页内存池子的大页可来自三个地方: 第一个是通过内核 CMDLINE 的 hugepagesz 和 hugepages 字段在系统启动阶段分配的固定大页; 第二个是来自 /proc/sys/vm 提供的 nr_hugepagesz 接口分配的固定大页; 第三种通过 /proc/sys/vm 提供的 nr_overcommit_hugepages 接口动态从系统内存分配器分配的超发大页. 那么接下来重点分析如何在系统中使用默认粒度的共享匿名映射 hugetlb 大页
+
+###### 准备 Hugetlb 大页
+
+通过上面的分析可以知道，在使用默认粒度大页之前，默认粒度的大页内存池子中需要要能分配可用的大页，那么分别介绍三种方式的使用攻略. 如果默认粒度的大页来自系统启动时的固定大页，那么需要在内核 CMDLINE 中进行指定，如下:
+
+{% highlight bash %}
+# size 为默认粒度的大页长度，单位可以是 K/M/G
+# num 为需要分配默认粒度大页的数量
+#   e.g. size 可以的值为: 64K、2M、32M、1G
+CMDLINE= "... default_hugepagesz={size} hugepagesz={size} hugepages={num} ..."
+{% endhighlight %}
+
+内核 CMDLINE 的 default_hugepagesz 字段可以指定系统默认大页的粒度，如果不使用该字段，那么不同的架构默认大页粒度不同，例如 X86_64 和 ARM64 架构默认粒度为 2MiB，而 i386 架构默认粒度为 4MiB。无论 default_hugepagesz 字段是否存在，hugepagesz/hugepages 字段必须存在，并且 hugepagesz 的值必须是默认粒度大页的长度，hugepages 字段则指明默认粒度大页的固定大页数量. 通过上面的设置系统在启动完毕之后，就可以在 /proc/meminfo 节点下看到默认粒度大页池子中已经存在 hugepages 个空闲大页. 如果不在系统启动是准备默认粒度的固定大页，而是在系统启动完毕之后再分配固定大页，那么可以参考如下命令进行分配:
+
+{% highlight bash %}
+# Num 为默认粒度固定大页数量
+echo {Num} > /proc/sys/vm/nr_hugepages
+{% endhighlight %} 
+
+通过上面命令，如果系统有充足的连续内存，那么系统会分配指定数量的固定大页到默认粒度大页内存池子中，分配完毕之后可以在 /proc/meminfo 节点下查看默认粒度大页内存池子的使用情况. 如果也不想通过这种方式来填充默认粒度大页内存池子，而是想考虑系统内存的灵活性，想让进程使用多少大页就分配多少大页，不使用时就归还给系统，那么可以采用超发大页机制来满足默认粒度大页内存池子的分配需求，可以参考如下命令进行分配:
+
+{% highlight bash %}
+# Num 为允许默认粒度大页内存池子最多可获得超发大页数量
+echo {Num} > /proc/sys/vm/nr_overcommit_hugepages
+{% endhighlight %}
+
+通过上面这种方法，只有进程运行时默认粒度大页池子才会从系统分配超发大页，这样能很好平衡默认大页池子与系统内存池子的可用内存占用比例。无论采用上述那种方法分配大页，从系统角度来看都是默认粒度大页内存池子中的一个可用大页而已。那么接下来就是实践例子，其在 BiscuitOS 部署逻辑如下:
+
+###### BiscuitOS 实践运行
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+[*] Package  --->
+    [*]  Hugetlb and Hugetlbfs Mechanism  --->
+        [*] hugetlb: Anonymous Shared-mapping for Default Size Hugepage  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-default
+{% endhighlight %}
+
+> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001172.png)
+
+实践例子是一个用户空间的程序，代码逻辑很简单，首先调用 mmap() 映射一段虚拟内存，此时 MAP_ANONYMOUS 标志用于指明这次映射是匿名映射，MAP_SHARED 标志则指明这次是共享映射，MAP_HUGETLB 标志则指明用于映射 Hugetlb 大页，通过这三个标志就可以实现共享匿名映射一个 Hugetlb 大页。另外映射的权限设置为 PROT_READ 和 PROT_WRITE，即进程对这段虚拟内存具有读写权限。这段虚拟内存的长度为 BISCUITOS_MAP_SIZE 即 4MiB。接着如果映射成功，那么系统在会在系统挂载默认粒度大页的 hugetlbfs 文件系统下创建一个大页，然后为这段虚拟内存预留指定数量的大页，如果默认粒度是 2MiB，那么系统会预留 2 个大页; 如果默认粒度是 4MiB，那么系统会预留一个大页; 如果默认粒度大于 4MiB， 那么系统预留 1 个大页。接下来进程向这段虚拟区域的第一个字节写入 "B" 字符，此时由于虚拟内存还没有与某个大页的物理内存建立页表，此时触发缺页异常，进程停止运行并进入系统缺页中断处理程序，系统会从预留的大页中任意挑选一个大页，并将大页的状态调整为激活态，然后建立虚拟内存到大页物理内存的页表。待缺页中断处理程序执行完毕之后，进程恢复执行，进程再次访问虚拟内存，此时虚拟内存已经和大页的物理内存建立页表，那么进程可以访问这段虚拟内存，从而间接使用大页。进程接着将虚拟内存的地址和值打印出来，最后进程使用完虚拟内存之后使用 munmap() 函数解除映射，此时系统将回收进程预留的大页和被进程激活的大页，将其归还给默认粒度大页内存池子，如果此时大页是超发大页，那么默认粒度大页内存池子将超发大页就继续归还给系统, 至此实践例子进程周期完结. 接下来在 BiscuitOS 上实践该案例:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001173.png)
+
+在 BiscuitOS 系统启动完毕之后，首先读取 /proc/meminfo 节点，以此获得默认粒度大页内存池子，此时可以看到大页默认粒度为 2MiB，此时默认粒度大页池子中没有可用的大页，那么此时运行程序，结果程序在映射阶段就失败了，这是应为共享匿名映射时会从默认粒度大页池子中预留 2 个大页，但是此时默认粒度大页池子没有可用的大页，因此预留大页失败导致了映射失败。那么接下来通过 /proc/sys/vm/nr_hugepages 接口写入 10 让系统向默认粒度大页内存池子中新增 10 个可用大页，此时查看 /proc/meminfo 节点，已经看到默认粒度大页内存池子中已经有 10 个可用大页了，此时成功运行程序。待程序运行完毕之后，系统回收了所有进程占用的大页并归还给默认粒度大页，由于大页都是固定大页，因此默认粒度大页内存池子不会将固定大页继续归还给系统。至此就是一次完整的共享匿名映射 hugetlb 大页的使用过程。
+
+-----------------------------------
+
+###### 自定义默认粒度大页
+
+通过上述的分析研究可以知道应用程序如何使用一个共享匿名大页，那么接下来进一步将如何控制系统默认粒度大页的大页。通过上面的分析，如果向控制默认粒度的大页，那么需要使用内核 CMDLINE 的 default_hugepagesz 字段进行控制，由于不同架构支持的大页粒度不同，但在可支持大页粒度前提下，可以将需要设定的大页粒度写入到 default_hugepagesz, 具体写法如下:
+
+{% highlight bash %}
+# size 为需要指定默认粒度大页长度
+# num 为需要分配默认粒度大页的数量
+CMDLINE= "... default_hugepagesz={size} ..."
+CMDLINE= "... default_hugepagesz={size} hugepagesz={size} hugepages={num} ..."
+
+# 64KiB 默认粒度大页
+CMDLINE= "... default_hugepagesz=64K ..."
+CMDLINE= "... default_hugepagesz=64K hugepagesz=64K hugepages=10 ..."
+
+# 2MiB 默认粒度大页
+CMDLINE= "... default_hugepagesz=2M ..."
+CMDLINE= "... default_hugepagesz=2M hugepagesz=2M hugepages=10 ..."
+
+# 32M 默认粒度大页
+CMDLINE= "... default_hugepagesz=32M ..."
+CMDLINE= "... default_hugepagesz=32M hugepagesz=32M hugepages=10 ..."
+
+# 1Gig 默认粒度大页
+CMDLINE= "... default_hugepagesz=1G ..."
+CMDLINE= "... default_hugepagesz=1G hugepagesz=1G hugepages=10 ..."
+{% endhighlight %}
+
+在内核 CMDLINE 中通过 default_hugepagesz 字段指定默认粒度大页时，可以连带使用 "hugepagesz/hugepages" 为默认粒度大页内存池子预先分配指定数量的固定大页, 也可以只指定默认粒度大页的大小，而等到系统启动完毕之后再分配固定大页或动态分配超发大页。系统启动完毕之后，可以在 /proc/meminfo 节点下查看默认粒度大页池子的信息，此时在不改变实践例子的情况下，运行实践例子就可以通过共享匿名映射使用指定粒度的大页。(例如 i386 架构上使用默认 4MiB 粒度的大页)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001174.png)
+
+在 BiscuitOS 上运行实践例子，此时在内核 CMDLINE 中设置了 default_hugepagesz 字段为 4MiB，接着使用 hugepagesz/hugepages 字段向 4MiB 粒度大页池子中预分配了 10 个大页，待系统启动完毕之后，查看 /proc/meminfo 节点，可以看到默认粒度大页为 4MiB，并且有 10 个大页都可用。那么运行程序，进程通过共享匿名映射的方式映射了 2 个 4MiB 大页，并使用了其中的一个 4MiB 大页，进程运行完毕之后，系统回收进程占用的 2 个大页，此时查看 /proc/meminfo 节点，可以看到默认粒度大页已经恢复 10 个可用大页.
+
+-----------------------------------------
+
+###### 绑定 NUMA NODE
+
+在支持多 NUMA NODE 的系统中，默认粒度大页内存池子的大页可以来自不同 NUMA NODE，另外提供了 numactl 工具，可以将应用程序绑定在指定的 CPU 和 NUMA NODE 上分配资源，这是可以基于这些特性来自定义进程使用的默认粒度大页来自指定的 NUMA NODE. 如果进程要使用指定 NUMA NODE 上的大页，那么首先确保默认粒度大页内存池子中有来自该 NUMA NODE 的大页，可以使用如下命令从指定 NUMA NODE 上分配大页:
+
+{% highlight bash %}
+# 从 <node-list> 的 NUMA NODE 上交错分配固定大页
+# 固定大页会交错散布在 <node-list> 的 NUMA NODE 上
+numactl --interleave <node-list> echo 20 > /proc/sys/vm/nr_hugepages_mempolicy
+ 
+# 从可以分配内存的 NUMA NODE 列表 <node-list> 上分配固定大页
+# 固定大页会均匀的散布在 <node-list> 的 NUMA NODE 上
+# 可以将 <node-list> 指定为某个 NUMA NODE, 那么只从该 NUMA NODE 上分配固定大页
+numactl -m <node-list> echo 20 > /proc/sys/vm/nr_hugepages_mempolicy
+
+# 从本地 NUMA NODE 上分配固定大页
+numactl --localalloc echo 20 > /proc/sys/vm/nr_hugepages_mempolicy
+
+# 优先从指定的 NUMA NODE 上分配固定大页
+numactl --preferred={node} echo 20 > /proc/sys/vm/nr_hugepages_mempolicy
+{% endhighlight %}
+
+以上提供了多种从 NUMA NODE 上分配固定大页的方法，如果上述代码的 <node-list> 只是一个 NUMA NODE 的话，那么系统只从该 NUMA NODE 上分配固定大页，这会导致进程如果非要从某个 NUMA NODE 上分配内存，但该 NUMA NODE 上没有可用的固定大页，其他 NUMA NODE 上却有固定大页，但进程还是会分配失败. 当在指定 NUMA NODE 上分配完毕固定大页之后，可以通过如下命令查看指定 NUMA NODE 分配大页情况:
+
+{% highlight bash %}
+# NODE_INFO 为 NUMA NODE 的节点
+cat /sys/devices/system/node/${NODE_INFO}/meminfo | fgrep Huge
+
+~ # Node {NODE_INFO} HugePages_Total:    10
+~ # Node {NODE_INFO} HugePages_Free:     10
+~ # Node {NODE_INFO} HugePages_Surp:      0
+{% endhighlight %}
+
+每个 NUMA NODE 的 meminfo 节点下记录大页总数 HugePages_Total，空闲大页总数 HugePages_Free, 以及超发大页总数 HugePages_Surp. 那么接下来在不改动实践程序的基础上，控制进程通过共享匿名映射指定 NUMA NODE 上的固定大页: (在 BiscuitOS 上实践之前需要准备 NUMA 环境和 numactl 工具，可以餐卡如下)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001179.png)
+
+为了支持 NUMA 环境，需要在 BiscuitOS 的启动脚本 RunBiscuitOS.sh 中添加上面字段用于部署两个 NUMA NODE, 并且 2 个 CPU 各自亲和在一个 NUMA NODE 上，每个 NUMA NODE 的内存大小为总内存的一半，接下来就是部署 numactl 工具，其部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+[*] Package  --->
+    [*]  NUMA Mechanism  --->
+        [*] numctl tools and libnuma library  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/numactl-libnuma-default
+{% endhighlight %}
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001175.png)
+
+BiscuitOS 启动之后，首先查看系统默认粒度大页内存池的情况，目前没有任何大页。接着从 NUMA NODE 0 上分配 10 个固定大页填充到默认粒度大页内存池子中，此时查看 NUMA NODE 0 上 meminfo 节点信息，可以看到该节点上总共具有 10 个大页，其中 10 个空闲大页和 0 个超发大页。接下来运行程序，使用 numactl 工具加上 "--membind=0" 参数，让进程从 NUMA NODE 0 上通过共享匿名映射的方式分配 2 个大页，并使用其中一个大页，此时查看 NUMA NODE 0 上 meminfo 节点信息, 可以看到有一个大页在使用，空闲大页变成 9 (由于没有统计预留大页，并且预留大页也是空闲大页，因此这里实际有 1 个大页是预留的). 接着查看 NUMA NODE 1 上大页情况，此时 NUMA NODE 1 上的 meminfo 展示没有任何大页，此时通过 /proc/meminfo 节点继续查看系统默认粒度大页内存池子信息，发现还有 8 个可分配的大页，那么此时让进程在 NUMA NODE 1 上通过共享匿名映射分配大页，当程序运行之后发现进程只要一访问虚拟内存就会触发 Bus error 错误，这是因为进程访问虚拟内存触发缺页中断，当缺页中断处理程序无法在 NUMA NODE 0 上找到可用的大页，最终触发内核的 Bus error 错误。以上便是共享匿名映射的大页绑定 NUMA NODE 的分析.
+
+-----------------------------------
+
+###### 默认粒度大页用途
+
+共享匿名映射大页可让两个或多个进程共同读写一个 hugetlb 大页，也可以让父进程和子进程共同读写一个大页，那么这里重点介绍如何让多个进程共同读写一个 hugetlb 大页。实践案例在 BiscuitOS 中的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+[*] Package  --->
+    [*]  Hugetlb and Hugetlbfs Mechanism  --->
+        [*] hugetlb: Anonymous Shared-mapping for SHMEM  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-shmem-default
+{% endhighlight %}
+
+> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001176.png)
+
+为了更好的展示多个进程共享匿名映射 hugetlb 大页，案例中使用了 Server 端和 Client 端来模拟两个进程共同使用一个 hugetlb 大页，上图是 Server 端。程序首先调用 shmget() 函数创建一个共享匿名 hugetlb 大页对象，然后调用 shmat() 函数把共享内存区域对象映射到进程的地址空间，接下来向共享区域写入字符串.
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001177.png)
+
+对于 SHMEM 的 Client 端，程序首先调用 system() 函数运行 "ipcs -m" 命令查看当前共享内存信息，接着调用  shmget() 函数获得一个共享匿名 hugetlb 内存区对象，同理调用 shmat() 函数将共享内存对象映射到进程的地址空间。映射完毕之后读取共享区域的内容，并通过 printf() 函数大页读取的内容。函数读取完毕之后，调用 shmdt() 函数断开共享内存的连接，并调用 shmctl() 函数对共享内存进行操作，这里使用 IPC_RMID 命令，即删除这片共享内存。程序最后再次调用 system() 函数运行 "ipcs -m" 命令查看共享内存信息. 那么接下来在 BiscuitOS 上进行实践:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001178.png)
+
+BiscuitOS 运行之后，首先向默认粒度的大页内存池子中新增 10 个固定大页。然后后台方式运行 Server 端程序，接着查看 /proc/meminfo 节点下 Hugetlb 大页使用情况，此时可以看到两个大页被使用，这与 Server 程序预期一致. 接着运行 Clint 段程序，Client 进程首先使用命令 "ipcs -m" 查看当前系统的共享内存信息，可以看到此时 key 为 2 的共享区域对象存在一块 4MiB 的共享区域，然后 Client 进程映射 key 为 2 的共享区域并读取首地址处的字符串，此时打印的字符串正好是 Server 端向共享区域写入的字符串 "Hello BiscuitOS on Shared Anonymous Hugepage!". 接着 Client 进程与 Server 端断开，然后删除了这块共享内存区域，最后再次查看系统共享内存信息，此时已经没有任何共享内存。以上便是通过匿名共享映射方式实现多个进程使用一个 hugetlb 大页.
+
+-------------------------------------
+
+###### [提高] 迁移一个默认粒度的共享匿名映射 hugetlb 大页
+
+在支持多 NUMA NODE 的架构中，默认粒度大页内存池子的大页可以来自不同的 NUMA NODE, 另外提供的 numactl 工具可以将应用程序绑定在指定的 CPU 上运行以及指定的 NUMA NODE 上分配内存，这是前面有讨论的，那么本节基于之前多 NUMA NODE 情况下共享匿名映射 hugetlb 大页的讨论，进一步研究如何在 NUMA NODE 之间迁移共享匿名映射的 hugetlb 大页。迁移的本质是在应用程序不感知的情况下将虚拟内核映射的物理页替换成其他物理页，同理共享匿名映射 hugetlb 大页的迁移也是让应用程序不感知的情况下替换成其他 NUMA NODE 的 hugetlb 大页，这里使用一个实践案例进行讲解，在讲解之前同样也需要在 BiscuitOS 上准备多 NUMA 的环境以及带有 numactl 工具的系统，那么可以参考如下:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001179.png)
+
+为了支持 NUMA 环境，需要在 BiscuitOS 的启动脚本 RunBiscuitOS.sh 中添加上面字段用于部署两个
+ NUMA NODE, 并且 2 个 CPU 各自亲和在一个 NUMA NODE 上，每个 NUMA NODE 的内存大小为总内存的
+一半，接下来就是部署 numactl 工具，其部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+[*] Package  --->
+    [*]  NUMA Mechanism  --->
+        [*] numctl tools and libnuma library  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/numactl-libnuma-default
+{% endhighlight %}
+
+准备好工具和环境之后，接下来是在 BiscuitOS 上部署实践代码，其部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+[*] Package  --->
+    [*]  Hugetlb and Hugetlbfs Mechanism  --->
+        [*] hugetlb: Anonymous Shared-mapping for Migration  --->
+
+OUTPUT:
+BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-migration-default
+{% endhighlight %}
+
+> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001180.png)
+
+实践程序主体分作三大部分，第一个部分就是通过共享匿名映射的方式分配一个 hugetlb 大页，然后使用这个 hugetlb 大页，相关代码为 56 到 73 行。第二部分就是通过 numa_move_pages() 函数获得当前进程所在的 NUMA NODE 信息，之后再次调用 numa_move_pages() 函数将进程的 NUMA NODE 信息设置为预期的节点, 相关代码为 84 到 90 行。第三部分则是调用 numa_migrate_pages() 函数执行实际的迁移操作，迁移完毕之后再次查看进程所在的 NUMA NODE 信息，相关代码为 93 到 100 行。程序 81 行和 103 行添加了两个 sleep() 函数的目的是为了便于观察系统在不同 NUMA NODE 上默认粒度大页内存池子的使用情况。那么接下来在 BiscuitOS 实际运行验证:
+
+![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH001181.png)
+
+BiscuitOS 运行之后，用户首先向 /proc/sys/vm/nr_hugepages 节点写入 10，以此向系统默认粒度大页内存池子中添加 10 个固定大页，接着查看各 NUMA NODE 上固定大页池子的分布，可以看到起始状态时 NUMA NODE 0 和 NUMA NODE 1 上都有 5 个可用的大页。那么接下来运行测试程序，此时测试进程显示其位于 NUMA NODE 1 上，并且程序会消耗一个大页，接着再次查看 NUMA NODE 0 和 NUMA NODE 1 上大页消耗情况，此时注意到 NUMA NODE 1 上确实被消耗了一个大页，可用大页变成了 4，而 NUMA NODE 0 上没有消耗任何大页. 继续等待进程迁移，可以看到进程打印消息显示已经将大页由 NUMA NODE 1 迁移到 NUMA NODE 0 上，此时查看 NUMA NODE 0 和 NUMA NODE 1 上大页消耗情况，此时 NUMA NODE 0 上消耗 1 个大页，而 NUMA NODE 1 上没有消耗任何大页。通过上面实践符合预期结果，成功迁移一个共享匿名映射的 Hugetlb 大页.
+
+--------------------------------------
+
+###### 共享匿名映射 Hugetlb 大页失败合集
+
+
+
+
 
 
 
