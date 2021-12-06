@@ -128,8 +128,6 @@ tags:
 >
 > - [CMA: Contiguous Memory Allocator](https://biscuitos.github.io/blog/CMA)
 >
-> - [用户空间实现 Linux 内核分配器](https://biscuitos.github.io/blog/Memory-Userspace/)
->
 > - Paging Mechanism
 >
 >   - [Intel 32-Bit Paging Mechanism](https://biscuitos.github.io/blog/32bit-Paging/)
@@ -195,6 +193,16 @@ tags:
 >   - [Live/offline Crash Tools](https://biscuitos.github.io/blog/CRASH)
 >
 >   - [Memory Statistical tools](https://biscuitos.github.io/blog/Memory-Statistic-Tools)
+>
+> - Userspace Memory Manager
+>
+>   - GLIBC/LIBC: malloc/mallopt
+>
+>   - tcmalloc
+>
+>   - libhugetlbfs: Hugetlb allocator on Userspace
+>
+>   - [用户空间实现 Linux 内核分配器](https://biscuitos.github.io/blog/Memory-Userspace/)
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
