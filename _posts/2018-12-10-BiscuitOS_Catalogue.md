@@ -324,6 +324,8 @@ tags:
 >
 >   - [红黑树](https://biscuitos.github.io/blog/Tree_RBTree/)
 >
+>   - [Interval Tree](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Algorithem/tree/interval-tree)
+>
 >   - [Radix Tree 基数树](https://biscuitos.github.io/blog/RADIX-TREE/)
 >
 > - [IDR: ID Radix](https://biscuitos.github.io/blog/IDR/)
