@@ -194,7 +194,7 @@ tags:
 >
 >   - [Memory Statistical tools](https://biscuitos.github.io/blog/Memory-Statistic-Tools)
 >
->   - [GUN GCC Address Sanitizers (ASAN)]()
+>   - [GUN GCC Address/Memory/Leaks Sanitizers (ASAN)]()
 >
 > - Userspace Memory Manager
 >
