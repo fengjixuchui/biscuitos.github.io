@@ -58,6 +58,8 @@ tags:
 
 ## [内存管理]()
 
+> - [内存百科全书]()
+>
 > - [Linux MMU History Project](https://biscuitos.github.io/blog/HISTORY-MMU/)
 >
 > - [自己动手设计一个内存管理子系统 (ARM Architecture)](https://biscuitos.github.io/blog/Design-MMU/)
@@ -196,6 +198,8 @@ tags:
 >
 >   - [GUN GCC Address/Memory/Leaks Sanitizers (ASAN)](https://biscuitos.github.io/blog/ASAN)
 >
+>   - [KASAN/KMEM]()
+>
 > - Userspace Memory Manager
 >
 >   - GLIBC/LIBC: malloc/mallopt
@@ -205,6 +209,10 @@ tags:
 >   - libhugetlbfs: Hugetlb allocator on Userspace
 >
 >   - [用户空间实现 Linux 内核分配器](https://biscuitos.github.io/blog/Memory-Userspace/)
+>
+> - 内存压测工具
+>
+>   - Intel MLC
 
 ![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
 
