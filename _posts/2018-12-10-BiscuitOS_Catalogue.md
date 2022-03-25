@@ -9,7 +9,7 @@ tags:
 
 ![](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000204.gif)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 ## <span id="Kernel_Establish">Kernel Establish</span>
 
@@ -53,7 +53,7 @@ tags:
 >
 > - [问题反馈及留言](https://github.com/BiscuitOS/BiscuitOS/issues)
 
-![](https://gitee.com/BiscuitOS_team/GamePIC/raw/master/BF000001.gif)
+![](/assets/PDB/GamePICBF000001.gif)
 
 
 ## [内存管理]()
@@ -214,7 +214,7 @@ tags:
 >
 >   - Intel MLC
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000108.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000108.png)
 
 ## [虚拟文件系统]()
 
@@ -242,7 +242,7 @@ tags:
 >
 >   - [RISCV64 架构中添加新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
 
-![](https://gitee.com/BiscuitOS_team/GamePIC/raw/master/BS00001.gif)
+![](/assets/PDB/GamePICBS00001.gif)
 
 ## [虚拟化]()
 
@@ -278,7 +278,7 @@ tags:
 >
 > - QEMU-KVM
 
-![](https://gitee.com/BiscuitOS_team/GamePIC/raw/master/BF000002.gif)
+![](/assets/PDB/GamePICBF000002.gif)
 
 ## [Basic Research]()
 
@@ -346,7 +346,7 @@ tags:
 >
 >   - [atomic 原子操作](https://biscuitos.github.io/blog/ATOMIC/)
 
-![](https://gitee.com/BiscuitOS_team/GamePIC/raw/master/BF000000.gif)
+![](/assets/PDB/GamePICBF000000.gif)
 
 ## [Linux Source Code list]()
 
@@ -354,7 +354,7 @@ tags:
 >
 > - [Linux 5.x 函数列表](https://biscuitos.github.io/blog/SC-LIST-5.0/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ## <span id="Uboot">Bootloader</span>
 
@@ -380,7 +380,7 @@ tags:
 >
 >   - [Build BiscuitOS seaBIOS](https://biscuitos.github.io/blog/seaBIOS-Usermanual)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ## <span id="Architecture">Architecture</span>
 
@@ -394,7 +394,7 @@ tags:
 >
 > - [RISCV-64]()
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ## <span id="Enginerring">Enginerring Practice</span>
 
@@ -421,7 +421,7 @@ tags:
 > - [DTS](https://biscuitos.github.io/blog/DTS/)
 
 <span id="RaspberryPi"></span>
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000000.png)
+![](/assets/PDB/RPI/RPI000000.png)
 
 ## Hardware Platform Practice
 
@@ -473,7 +473,7 @@ tags:
 >
 >   - [tetris 俄罗斯方块](https://biscuitos.github.io/blog/USER_tetris/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ## <span id="Debug">Debug Tools and Usermanual </span>
 
@@ -495,7 +495,7 @@ tags:
 >
 > - [内核核心转储: Kdump with kexec and crash](https://biscuitos.github.io/blog/CRASH)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ## <span id="OpenProject">BiscuitOS 社区开源项目</span>
 
@@ -505,7 +505,7 @@ tags:
 >
 > - [BiscuitOS 社区 "人类知识共同体" 计划](https://biscuitos.github.io/blog/Human-Knowledge-Common/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ## My Hobbies
 
@@ -517,4 +517,4 @@ tags:
 
 ## Donation 🙂
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
