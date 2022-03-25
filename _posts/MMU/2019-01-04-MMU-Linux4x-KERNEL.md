@@ -193,4 +193,4 @@ FIX_KMAP_END，内核可以通过 fix_to_virt() 和 set_fixmap() 函数进行该
 
 打赏一下吧 :-)
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![LD](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

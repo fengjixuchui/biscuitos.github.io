@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
 
 > [Github: 红黑树插入操作之：插入根节点](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Insert/Case0)
 >
@@ -29,7 +29,7 @@ tags:
 -----------------------------------
 <span id="原理分析"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000Y.jpg)
 
 # 红黑树插入根节点
 
@@ -73,7 +73,7 @@ __rb_insert(struct rb_node *node, struct rb_root *root,
 -----------------------------------
 <span id="23Tree"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 # 红黑树插入根节点与 2-3 树的关系
 
@@ -81,7 +81,7 @@ __rb_insert(struct rb_node *node, struct rb_root *root,
 根节点的时候，此时红黑树中不存在任何 2- 或者 3- 的节点，因此不用考虑融合和提取，只需
 之间插入到红黑树作为一个 2- 节点。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000091.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000091.png)
 
 更多红黑树与 2-3 树的关系请看文档：
 
@@ -90,7 +90,7 @@ __rb_insert(struct rb_node *node, struct rb_root *root,
 --------------------------------------------------
 <span id="实践"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000D.jpg)
 
 # 红黑树插入根节点实践
 
@@ -261,4 +261,4 @@ rb-tree/Insert/Case0$ ./rbtree
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

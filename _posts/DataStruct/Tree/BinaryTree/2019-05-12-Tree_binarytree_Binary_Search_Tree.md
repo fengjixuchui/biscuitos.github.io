@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 > [Github: 二叉查找树](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/binary-tree/Class/Binary_Search_Tree)
 >
@@ -27,7 +27,7 @@ tags:
 
 # <span id="原理">二叉查找树原理</span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000073.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000073.png)
 
 对于二叉树中任意一个元素, 若其左子树中所有元素的值都小于该元素的值, 并且其右子树中
 所有元素的值都大于该元素的值, 这个二叉树就叫做搜索二叉树。二叉搜索树中序遍历后的结
@@ -228,4 +228,4 @@ Middorder Traverse Binary-Tree:
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

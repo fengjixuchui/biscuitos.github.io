@@ -8,9 +8,9 @@ tags:
   - MMU
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -34,17 +34,17 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### buddy 分配器原理
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 Buddy 内存管理器用于管理 Linux 内核中可用的物理内存。在 Linux 内核中，将
 物理内存以 PAGE_SIZE 为单位，划分成大量的内存区域，这些内存区域称为物理页，
@@ -53,7 +53,7 @@ Buddy 内存管理器用于管理 Linux 内核中可用的物理内存。在 Lin
 中，物理内存的物理地址不一定都是从地址 0 开始，因此物理页帧不一定从 0 开始
 编号。物理页、物理页帧与物理内存之间的关系如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000828.png)
+![](/assets/PDB/RPI/RPI000828.png)
 
 正如上图所示，物理内存的起始地址是 PHYS_OFFSET, 物理内存以 PAGE_SIZE 为单位
 被划分许多内存区域 "Memory Region", 将这些内存区域按物理地址从低到高一次
@@ -80,7 +80,7 @@ Region2 起始地址 = PHYS_OFFSET + Fram2 * PAGE_SIZE
 
 从上面的推到关系可以反推得到:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000829.png)
+![](/assets/PDB/RPI/RPI000829.png)
 
 {% highlight bash %}
 物理地址 = PHYS_OFFSET + 物理页帧号 << PAGE_SHIFT
@@ -110,7 +110,7 @@ ZONE_HIGHMEM. 内核使用 struct zone 来管理一个分区里面的所有物�
 包括当前分区物理页数量、可用物理页数量、已经分配物理页数量等信息。Liux
 Zone 划分如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000735.png)
+![](/assets/PDB/RPI/RPI000735.png)
 
 不同的架构 ZONE 的划分不一样，但基本已上图类似。在上图中定义了 4 个 Zone，
 其中 ZONE_DMA 和 ZONE_DMA32 位于物理内存的最前端 (但不是一定位于最前端)，
@@ -127,7 +127,7 @@ ZONE_HIGHMEM 区间内，Linux 内核的 VMALLOC，KMAP 和 FIXMAP 等一些内�
 
 ###### Buddy 分配器初始化
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 有了上面的基础数据介绍之后，那么开始讨论今天的主角 Buddy 物理内存管理器。
 Buddy 物理内存管理器用于管理 Zone 区间内的物理页，包括物理页的申请、释放
@@ -138,7 +138,7 @@ free_area[0] 维护的物理页数为 1 的物理页块; free_area[1] 维护物�
 的物理页块; free_area[2] 维护物理页数为 4 的物理页块. 以此类推，free_area[n]
 维护物理页数为 2^n 的物理页块.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000831.png)
+![](/assets/PDB/RPI/RPI000831.png)
 
 Linux 内核初始化过程中，bootmem/MEMBLOCK 内存分配器初始化完物理内存之后，
 使用循环将可以物理内存按一定的长度转移给 Buddy 内存分配器。这里值得注意
@@ -149,12 +149,12 @@ bootmem 分配器转移物理块的最大长度是 BITS_PER_LONG 个物理页集
 Buddy 内存管理器在介绍到物理页块之后，按最大 2 的幂次个物理页对物理页块
 进行拆分，正如上图所示，被才分成三个块，每个块都包含 2 的倍数个物理页。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000830.png)
+![](/assets/PDB/RPI/RPI000830.png)
 
 Buddy 内存分配器将拆分只有的物理页块依次插入到指定的 free_area[] 链表中，
 在每次插入过程中，Buddy 内存分配器先找到物理页块对应的 free_area[] 链表.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000833.png)
+![](/assets/PDB/RPI/RPI000833.png)
 
 Buddy 内存管理器在指定的 free_area[] 链表中遍历所有的成员，查找是否与
 即将插入的物理页块存在 "Buddy" 关系，何为 Buddy 关系呢? 正如上图所示，
@@ -171,13 +171,13 @@ PageSet 的页帧号，如上图所示，PageSet0 和 PageSet1 是 "Buddy"; Page
 PageSet0、PageSet1、PageSet2、PageSet3 组成的物理页块与 PageSet4、PageSet5、
 PageSet6、PageSet7 组成的物理页块是 "Buddy" 关系。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000832.png)
+![](/assets/PDB/RPI/RPI000832.png)
 
 当在 free_area[] 指定的链表中遍历所有的成员，并未发现存在插入物理页块的
 "Buddy" 物理页块，那么 Buddy 就按上图所示的插入到 free_area[] 指定链表的
 尾部。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000834.png)
+![](/assets/PDB/RPI/RPI000834.png)
 
 当 Buddy 管理器遍历 Free_area[] 指定链表的所有成员时，找到了即将插入物理页块
 的 "Buddy" 时，Buddy 管理器继续检测找到的 "Buddy" 物理页块是否满足条件进行
@@ -194,17 +194,17 @@ Buddy 内存管理器将 bootmem/MEMBLOCK 分配器转移的物理页块全部�
 链表集合，那么对于单 node 的系统，系统中有多少个 ZONE 分区，系统就有多少个
 独立的 "Buddy 内存分配器"。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000835.png)
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000836.png)
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000837.png)
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000838.png)
+![](/assets/PDB/RPI/RPI000835.png)
+![](/assets/PDB/RPI/RPI000836.png)
+![](/assets/PDB/RPI/RPI000837.png)
+![](/assets/PDB/RPI/RPI000838.png)
 
 那么多个独立 Buddy 分配器之间存在怎样的联系呢? 当从指定 ZONE 上分配物理内存
 的时候，如果当前 ZONE 有可用的物理内存，那么 Buddy 就会从指定 ZONE 对应的
 "Buddy 分配器" 上分配可用物理内存; 如果当前 ZONE 上没有可用物理内存，那么
 Buddy 就按一定的顺序从其他 Zone 上获得可用物理内存，关系如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000839.png)
+![](/assets/PDB/RPI/RPI000839.png)
 
 从上图不免可以得到 Buddy 分配的关系:
 
@@ -276,7 +276,7 @@ __GFP_NORETRY:
 参数确定需要分配页的大小。综合上面的信息之后，Buddy 内存分配器就从指定的
 ZONE 的 free_area[] 链表中查找可用的物理页块。这时会涉及两种基本情况:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000840.png)
+![](/assets/PDB/RPI/RPI000840.png)
 
 例如上面的情况，需要从指定的 ZONE 中分配 1 个物理页，但由于此时该 ZONE
 的 free_area[0] 里面中没有可用的物理页块，那么 Buddy 分配器就会从下一级
@@ -284,7 +284,7 @@ free_area[1] 链表中查找一个可用的物理页，如果找到将其从 fre
 表中移除，然后对半拆分成两个物理页块，一个给分配物理内存的请求者，另外
 一个物理页块插入到低一级的 free_area[0] 里面, 如下图是分配之后的情况:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000841.png)
+![](/assets/PDB/RPI/RPI000841.png)
 
 在第一种情况下，如果向高一级的 free_area[] 查找可用物理页没有找到，那么
 再向更高一级 free_area[] 查找，直到查找到 free_area[MAX_ORDER-1] 链表为止。
@@ -294,7 +294,7 @@ free_area[1] 链表中查找一个可用的物理页，如果找到将其从 fre
 还大，那么继续从中间均分成两块，一块插入到更低一级 free_area[] 链表中。
 重复上面的动作知道分到合适的物理页块.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000842.png)
+![](/assets/PDB/RPI/RPI000842.png)
 
 对于第二种情况，Buddy 分配器从指定的 ZONE 上分配指定大小的物理内存，正好
 对于的 free_area[] 链表上正好存在可以物理页块，那么 Buddy 就直接从指定的
@@ -304,7 +304,7 @@ free_area[] 上移除可用物理页块给申请者即可。
 存在某些长度的物理页块已经很紧缺，甚至已经没有，这个 Buddy 内存分配器往往
 采取一些测量来应对这些问题。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000839.png)
+![](/assets/PDB/RPI/RPI000839.png)
 
 第一种情况就是当前 ZONE 已经没有可用的物理页块了，那么就按上面的关系从其他
 ZONE 中进行查找. 如果找到就反馈给调用者，如果没有找到，那么就进行第二种情况。
@@ -352,13 +352,13 @@ Buddy 内存分配器用于分配物理内存，也只管理物理内存，并�
 由于系统长时间的运行，Buddy 内存分配器中大块的物理页块越来越少，对
 大块连续物理内存的申请带来不便.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------
 
 <span id="B"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### buddy 分配器使用
 
@@ -372,7 +372,7 @@ Buddy 内存分配器用于分配物理内存，也只管理物理内存，并�
 >
 > - [ZONE_HIGHMEM 中分配物理页](#B0004)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------------
 
@@ -420,13 +420,13 @@ nr_free_highpages
 
 > - [buddy API](#K)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------------
 
 #### <span id="B0001">ZONE_DMA 中分配物理页</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000835.png)
+![](/assets/PDB/RPI/RPI000835.png)
 
 从 ZONE_DMA 中分配物理内存，开发者可以参考如下代码:
 
@@ -463,13 +463,13 @@ static int TestCase_alloc_page_from_DMA(void)
 }
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------------
 
 #### <span id="B0002">ZONE_DMA32 中分配物理页</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000836.png)
+![](/assets/PDB/RPI/RPI000836.png)
 
 从 ZONE_DMA32 中分配物理内存，开发者可以参考如下代码:
 
@@ -506,13 +506,13 @@ static int TestCase_alloc_page_from_DMA32(void)
 }
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------------
 
 #### <span id="B0003">ZONE_NORMAL 中分配物理页</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000837.png)
+![](/assets/PDB/RPI/RPI000837.png)
 
 从 ZONE_NORMAL 中分配物理内存，开发者可以参考如下代码:
 
@@ -549,13 +549,13 @@ static int TestCase_alloc_page_from_NORMAL(void)
 }
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------------
 
 #### <span id="B0004">ZONE_HIGHMEM 中分配物理页</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000838.png)
+![](/assets/PDB/RPI/RPI000838.png)
 
 从 ZONE_HIGHMEM 中分配物理内存，开发者可以参考如下代码:
 
@@ -585,13 +585,13 @@ static int TestCase_alloc_page_from_HIGHMEM(void)
 }
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------------
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### buddy 分配器实践
 
@@ -605,7 +605,7 @@ static int TestCase_alloc_page_from_HIGHMEM(void)
 >
 > - [测试建议](#C0004)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -630,19 +630,19 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000746.png)
+![](/assets/PDB/RPI/RPI000746.png)
 
 选择并进入 "[\*] Package  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000747.png)
+![](/assets/PDB/RPI/RPI000747.png)
 
 选择并进入 "[\*]   Memory Development History  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000843.png)
+![](/assets/PDB/RPI/RPI000843.png)
 
 选择并进入 "[\*]   Buddy Allocator  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000844.png)
+![](/assets/PDB/RPI/RPI000844.png)
 
 选择 "[\*]   buddy on linux 2.6.12  --->" 目录，保存并退出。接着执行如下命令:
 
@@ -650,7 +650,7 @@ make menuconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000750.png)
+![](/assets/PDB/RPI/RPI000750.png)
 
 成功之后将出现上图的内容，接下来开发者执行如下命令以便切换到项目的路径:
 
@@ -659,11 +659,11 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_buddy-2.6.12
 make download
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000845.png)
+![](/assets/PDB/RPI/RPI000845.png)
 
 至此源码已经下载完成，开发者可以使用 tree 等工具查看源码:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000846.png)
+![](/assets/PDB/RPI/RPI000846.png)
 
 arch 目录下包含内存初始化早期，与体系结构相关的处理部分。mm 目录下面包含
 了与各个内存分配器和内存管理行为相关的代码。init 目录下是整个模块的初始化
@@ -676,7 +676,7 @@ start_kernel()。
 到系统的 DTS 里面，"BiscuitOS.dts" 里的内容用来从系统中预留 100MB 的物理
 内存供项目使用，具体如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000738.png)
+![](/assets/PDB/RPI/RPI000738.png)
 
 开发者将 "BiscuitOS.dts" 的内容添加到:
 
@@ -691,7 +691,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_buddy-2.6.12
 make kernel
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000847.png)
+![](/assets/PDB/RPI/RPI000847.png)
 
 --------------------------------------------
 
@@ -705,7 +705,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_buddy-2.6.12
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000848].png)
+![](/assets/PDB/RPI/RPI000848].png)
 
 以上就是模块成功编译，接下来将 ko 模块安装到 BiscuitOS 中，使用如下命令:
 
@@ -722,7 +722,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_buddy-2.6.12
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000849.png)
+![](/assets/PDB/RPI/RPI000849.png)
 
 在 BiscuitOS 中插入了模块 "BiscuitOS_buddy-2.6.12.ko"，打印如上信息，那么
 BiscuitOS Memory Manager Unit History 项目的内存管理子系统已经可以使用，
@@ -733,7 +733,7 @@ cat /proc/buddyinfo_bs
 cat /proc/vmstat_bs
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000756.png)
+![](/assets/PDB/RPI/RPI000756.png)
 
 --------------------------------------
 
@@ -752,7 +752,7 @@ BiscuitOS Memory Manager Unit History 项目提供了大量的测试用例用于
 /xspace/OpenSource/BiscuitOS/BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_buddy-2.6.12/BiscuitOS_buddy-2.6.12/Makefile
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000771.png)
+![](/assets/PDB/RPI/RPI000771.png)
 
 Makefile 内提供了两种方案的编译开关，例如需要使用打开 buddy 内存管理器的
 源码树内部调试功能，需要保证 Makefile 内下面语句不被注释:
@@ -784,17 +784,17 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 在上面的例子中，例如打开了 buddy 的模块调试功能，重新编译模块并在 BiscuitOS
 上运行，如下图，可以在 "lib/module/5.0.0/extra/" 目录下看到两个模块:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000772.png)
+![](/assets/PDB/RPI/RPI000772.png)
 
 然后先向 BiscuitOS 中插入 "BiscuitOS_buddy-2.6.12.ko" 模块，然后再插入
 "BiscuitOS_buddy-2.6.12-buddy.ko" 模块。如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000773.png)
+![](/assets/PDB/RPI/RPI000773.png)
 
 以上便是测试代码的使用办法。开发者如果想在源码中启用或关闭某些宏，可以
 修改 Makefile 中内容:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000774.png)
+![](/assets/PDB/RPI/RPI000774.png)
 
 从上图可以知道，如果要启用某些宏，可以在 ccflags-y 中添加 "-D" 选项进行
 启用，源码的编译参数也可以添加到 ccflags-y 中去。开发者除了使用上面的办法
@@ -830,13 +830,13 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 {% endhighlight %}
 
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### buddy 历史补丁
 
@@ -862,19 +862,19 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 >
 > - [buddy Linux 2.6.15](#H-linux-2.6.15)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000785.JPG)
+![](/assets/PDB/RPI/RPI000785.JPG)
 
 #### buddy Linux 2.6.12
 
 Linux 2.6.12 依旧采用 buddy 作为其物理内存管理器。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 ###### Buddy 内存分配
 
@@ -914,7 +914,7 @@ nr_free_highpages
 
 buddy 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000850.png)
+![](/assets/PDB/RPI/RPI000850.png)
 
 ###### 补丁
 
@@ -923,19 +923,19 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000786.JPG)
+![](/assets/PDB/RPI/RPI000786.JPG)
 
 #### buddy Linux 2.6.12.1
 
 Linux 2.6.12.1 依旧采用 buddy 作为其物理内存管理器。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 ###### Buddy 内存分配
 
@@ -975,7 +975,7 @@ nr_free_highpages
 
 buddy 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000850.png)
+![](/assets/PDB/RPI/RPI000850.png)
 
 ###### 补丁
 
@@ -984,19 +984,19 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000787.JPG)
+![](/assets/PDB/RPI/RPI000787.JPG)
 
 #### buddy Linux 2.6.12.2
 
 Linux 2.6.12.2 依旧采用 buddy 作为其物理内存管理器。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 ###### Buddy 内存分配
 
@@ -1036,7 +1036,7 @@ nr_free_highpages
 
 buddy 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000850.png)
+![](/assets/PDB/RPI/RPI000850.png)
 
 ###### 补丁
 
@@ -1045,19 +1045,19 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.3"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000788.JPG)
+![](/assets/PDB/RPI/RPI000788.JPG)
 
 #### buddy Linux 2.6.12.3
 
 Linux 2.6.12.3 依旧采用 buddy 作为其物理内存管理器。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 ###### Buddy 内存分配
 
@@ -1097,7 +1097,7 @@ nr_free_highpages
 
 buddy 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000850.png)
+![](/assets/PDB/RPI/RPI000850.png)
 
 ###### 补丁
 
@@ -1106,19 +1106,19 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.4"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000789.JPG)
+![](/assets/PDB/RPI/RPI000789.JPG)
 
 #### buddy Linux 2.6.12.4
 
 Linux 2.6.12.4 依旧采用 buddy 作为其物理内存管理器。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 ###### Buddy 内存分配
 
@@ -1158,7 +1158,7 @@ nr_free_highpages
 
 buddy 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000850.png)
+![](/assets/PDB/RPI/RPI000850.png)
 
 ###### 补丁
 
@@ -1167,19 +1167,19 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.5"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000790.JPG)
+![](/assets/PDB/RPI/RPI000790.JPG)
 
 #### buddy Linux 2.6.12.5
 
 Linux 2.6.12.5 依旧采用 buddy 作为其物理内存管理器。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 ###### Buddy 内存分配
 
@@ -1219,7 +1219,7 @@ nr_free_highpages
 
 buddy 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000850.png)
+![](/assets/PDB/RPI/RPI000850.png)
 
 ###### 补丁
 
@@ -1228,19 +1228,19 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.6"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000791.JPG)
+![](/assets/PDB/RPI/RPI000791.JPG)
 
 #### buddy Linux 2.6.12.6
 
 Linux 2.6.12.6 依旧采用 buddy 作为其物理内存管理器。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 ###### Buddy 内存分配
 
@@ -1280,7 +1280,7 @@ nr_free_highpages
 
 buddy 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000850.png)
+![](/assets/PDB/RPI/RPI000850.png)
 
 ###### 补丁
 
@@ -1289,19 +1289,19 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.13"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000792.JPG)
+![](/assets/PDB/RPI/RPI000792.JPG)
 
 #### buddy Linux 2.6.13
 
 Linux 2.6.13 依旧采用 buddy 作为其物理内存管理器。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 ###### Buddy 内存分配
 
@@ -1341,7 +1341,7 @@ nr_free_highpages
 
 buddy 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000850.png)
+![](/assets/PDB/RPI/RPI000850.png)
 
 ###### 补丁
 
@@ -1390,14 +1390,14 @@ tig mm/page_alloc.c include/linux/gfp.h include/linux/mmzone.h include/linux/mm.
                                      [main] e310fd43256b3cf4d37f6447b8f7413ca744657a 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000851.png)
+![](/assets/PDB/RPI/RPI000851.png)
 
 {% highlight bash %}
 git format-patch -1 b84a35be0285229b0a8a5e2e04d79360c5b75562
 vi 0001-PATCH-mempool-NOMEMALLOC-and-NORETRY.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000852.png)
+![](/assets/PDB/RPI/RPI000852.png)
 
 该补丁向 Buddy 管理器中添加了 "\_\_GFP_NOMEMPOOL" 标志，使用该标志之后
 当从 MEMPOOL 中分配物理内存的时候，如果分配表值中包含了 "\_\_GFP_NOMEMPOOL"
@@ -1408,19 +1408,19 @@ git format-patch -1 295ab93497ec703f7d6eaf0787dd9768b83035fe
 vi 0001-PATCH-mm-add-proc-zoneinfo.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000853.png)
+![](/assets/PDB/RPI/RPI000853.png)
 
 该补丁用于向系统添加 "/proc/zoneinfo"，以便从用户空间获得 ZONE 的信息，
 在 BiscuitOS 上使用情况如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000854.png)
+![](/assets/PDB/RPI/RPI000854.png)
 
 {% highlight bash %}
 git format-patch -1 753ee728964e5afb80c17659cc6c3a6fd0a42fe0 
 vi 0001-PATCH-VM-early-zone-reclaim.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000855.png)
+![](/assets/PDB/RPI/RPI000855.png)
 
 该补丁是向 Buddy 内存分配器添加了页回收机制，并在 IA64 和 i386 架构上添加
 了新的系统调用 sys_set_zone_reclaim. 首先在 struct zone 结构中添加了 
@@ -1435,7 +1435,7 @@ git format-patch -1 0c35bbadc59f5ed105c34471143eceb4c0dd9c95
 vi 0001-PATCH-VM-add-__GFP_NORECLAIM.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000856.png)
+![](/assets/PDB/RPI/RPI000856.png)
 
 该补丁向 Buddy 内存管理器中添加了 \_\_GFP_NORECLAIM 标志，以便在 Buddy 分配
 器在没有可用物理内存的时候，不执行回收策略。
@@ -1445,7 +1445,7 @@ git format-patch -1 1e7e5a9048b30c57ba1ddaa6cdf59b21b65cde99
 vi 0001-PATCH-VM-rate-limit-early-reclaim.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000857.png)
+![](/assets/PDB/RPI/RPI000857.png)
 
 该补丁用于在 struct zone 中添加 "reclaim_in_progress" 成员，该成员用于
 统计标记该 ZONE 是否正在进行页回收操作. 每当 ZONE 进行页回收的时候就会
@@ -1457,7 +1457,7 @@ git format-patch -1 1ad539b2bd89bf2e129123eb24d5bcc4484a35de
 vi 0001-PATCH-vm-try_to_free_pages-unused-argument.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000858.png)
+![](/assets/PDB/RPI/RPI000858.png)
 
 该补丁用于修改的 try_to_free_pages() 函数的参数，移除了 order 参数. 移除
 的原因是从 2.6.0 开始，order 参数就没有使用过.
@@ -1467,7 +1467,7 @@ git format-patch -1 83e5d8f7253cb7b14472385a6d57df1e9f848e8e
 vi 0001-PATCH-__mod_page_state-pass-unsigned-long-instead-of.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000859.png)
+![](/assets/PDB/RPI/RPI000859.png)
 
 该补丁用于将 \_\_mod_page_state() 函数的 offset 参数类型由 unsigned 转变为
 unsigned long。
@@ -1477,7 +1477,7 @@ git format-patch -1 c2f29ea111e3344ed48257c2a142c3db514e1529
 vi 0001-PATCH-__read_page_state-pass-unsigned-long-instead-o.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000860.png)
+![](/assets/PDB/RPI/RPI000860.png)
 
 该补丁用于修改 \_\_read_page_state() 函数 offset 参数的类型，由 unsigned
 转变为 unsigned long. 以便解决一些编译遇到的问题.
@@ -1487,7 +1487,7 @@ git format-patch -1 578c2fd6a7f378434655e5c480e23152a3994404
 vi 0001-PATCH-add-OOM-debug.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000861.png)
+![](/assets/PDB/RPI/RPI000861.png)
 
 该补丁用于在出现 OOM 时候打印所有 mem 信息。并且在 Buddy 分配器无法分配
 可用物理内存的时候，打印当前内存信息.
@@ -1497,7 +1497,7 @@ git format-patch -1 334795eca421287c41c257992027d29659dc0f97
 vi 0001-PATCH-bad_page-clear-reclaim-and-slab.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000862.png)
+![](/assets/PDB/RPI/RPI000862.png)
 
 该补丁在 bad_page() 函数判断 page 标志是增加了 PG_slab、PG_private 和 
 PG_reclaim 标志. 在 prep_new_page() 函数中添加了对 page 映射数量、是否
@@ -1510,7 +1510,7 @@ git format-patch -1 c0d62219a48bd91ec40fb254c930914dccc77ff1
 vi 0001-PATCH-Kill-stray-newline.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000863.png)
+![](/assets/PDB/RPI/RPI000863.png)
 
 该补丁修改了打印信息的格式.
 
@@ -1519,7 +1519,7 @@ git format-patch -1 348f8b6c4837a07304d2f72b11ce8d96588065e0
 vi 0001-PATCH-sparsemem-base-reorganize-page-flags-bit-opera.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000864.png)
+![](/assets/PDB/RPI/RPI000864.png)
 
 该补丁基于 NODE 相关信息重新规划了 ZONES_MASK, ZONETABLE_MASK 和 NODES_MASK
 等宏，以此重新规划了 zone_table[] 的布局，这样的修改影响到了 page_zonenum()，
@@ -1531,7 +1531,7 @@ git format-patch -1 93b7504e3e6c1d98586854806e51bea329ea3aa9
 vi 0001-PATCH-Introduce-new-Kconfig-option-for-NUMA-or-DISCO.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000865.png)
+![](/assets/PDB/RPI/RPI000865.png)
 
 该补丁新增了一个宏 CONFIG_NEED_MULTIPLE_NODES, 并在 Buddy 分配器相关的代码里，
 将 CONFIG_DISCONTIGMEM 替换成 CONFIG_NEED_MULTIPLE_NODES，在函数
@@ -1542,7 +1542,7 @@ git format-patch -1 3212c6be251219c0f4c2df0c93e122ff5be0d9dc
 vi 0001-PATCH-fix-WANT_PAGE_VIRTUAL-in-memmap_init.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000866.png)
+![](/assets/PDB/RPI/RPI000866.png)
 
 该补丁用于在 Buddy 分配器初始化每个 page 的时候，如果系统支持 WANT_PAGE_VIRTUAL,
 那么如果这个 page 不是 ZONE_HIGHMEM，那么 memap_init_zone() 函数就会给
@@ -1554,7 +1554,7 @@ git format-patch -1 79b9ce311e192e9a31fd9f3cf1ee4a4edf9e2650
 vi 0001-PATCH-print-order-information-when-OOM-killing.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000867.png)
+![](/assets/PDB/RPI/RPI000867.png)
 
 该补丁修改了 out_of_memory() 的参数，添加了 order 参数用于指定 Buddy
 分配器中是哪条 free_area[] 上没有可用物理内存了。
@@ -1564,7 +1564,7 @@ git format-patch -1 37b173a4d03d1681e6c9529bc43d7a3308132db6
 vi 0001-PATCH-remove-completly-bogus-comment-inside-__alloc_.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000868.png)
+![](/assets/PDB/RPI/RPI000868.png)
 
 该补丁从 Buddy 内存分配器的 \_\_alloc_oages() 函数中移除了一些注释.
 
@@ -1573,7 +1573,7 @@ git format-patch -1 0db925af1db5f3dfe1691c35b39496e2baaff9c9
 vi 0001-PATCH-propagate-__nocast-annotations.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000869.png)
+![](/assets/PDB/RPI/RPI000869.png)
 
 该补丁用于将与 Buddy 内存分配器相关的函数中，gfp 参数的类型修改为
 "unsinged int \_\_nocast" 类型，以便内核做静态检测. 并对 \_\_GFP_DMA 和
@@ -1584,7 +1584,7 @@ git format-patch -1 12b1c5f382194d3f656e78fb5c9c8f2bfbe8ed8a
 vi 0001-PATCH-Remove-bogus-warning-in-page_alloc.c.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000870.png)
+![](/assets/PDB/RPI/RPI000870.png)
 
 该补丁在 Buddy 内存分配器创建过程中，移除了 ZONE 对齐的一些操作.
 
@@ -1593,25 +1593,25 @@ git format-patch -1 e310fd43256b3cf4d37f6447b8f7413ca744657a
 vi 0001-PATCH-Fix-NUMA-node-sizing-in-nr_free_zone_pages.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000871.png)
+![](/assets/PDB/RPI/RPI000871.png)
 
 该补丁用于在计算一个 ZONE 上物理的数量支持了多 NODE. 更多补丁的使用请参考:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.13.1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000793.JPG)
+![](/assets/PDB/RPI/RPI000793.JPG)
 
 #### buddy Linux 2.6.13.1
 
 Linux 2.6.13.1 依旧采用 buddy 作为其物理内存管理器。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 ###### Buddy 内存分配
 
@@ -1651,7 +1651,7 @@ nr_free_highpages
 
 buddy 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000850.png)
+![](/assets/PDB/RPI/RPI000850.png)
 
 ###### 补丁
 
@@ -1660,19 +1660,19 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.14"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000794.JPG)
+![](/assets/PDB/RPI/RPI000794.JPG)
 
 #### buddy Linux 2.6.14
 
 Linux 2.6.14 依旧采用 buddy 作为其物理内存管理器。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 ###### Buddy 内存分配
 
@@ -1712,7 +1712,7 @@ nr_free_highpages
 
 buddy 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000850.png)
+![](/assets/PDB/RPI/RPI000850.png)
 
 ###### 补丁
 
@@ -1743,14 +1743,14 @@ tig mm/page_alloc.c include/linux/gfp.h include/linux/mmzone.h include/linux/mm.
                                             [main] dd0fc66fb33cd610bc1a5db8a5e232d34879b4d7
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000872.png)
+![](/assets/PDB/RPI/RPI000872.png)
 
 {% highlight bash %}
 git format-patch -1 242e54686257493f0b10ac557e730419d9af7d24 
 vi 0001-PATCH-mm-remove-atomic.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000873.png)
+![](/assets/PDB/RPI/RPI000873.png)
 
 该补丁添加了 "\_\_ClearPageDirty(page)", 用于标记某个页变沾了，并在 Buddy
 内存分配器分配过程中，对可用的物理进行检测的时候，如果检测到页是沾的，那么
@@ -1766,14 +1766,14 @@ vi 0001-PATCH-VM-zone-reclaim-atomic-ops-cleanup.patch
 的 reclaim_in_progress 初始化为 0，并在 shrik_zone() 外面的 reclaim_in_progress
 操作全部移到了 shrink_zone() 函数内部.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000874.png)
+![](/assets/PDB/RPI/RPI000874.png)
 
 {% highlight bash %}
 git format-patch -1 c07e02db76940c75fc92f2f2c9adcdbb09ed70d0
 vi 0001-PATCH-VM-add-page_state-info-to-per-node-meminfo.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000875.png)
+![](/assets/PDB/RPI/RPI000875.png)
 
 该补丁修改 Buddy 内存管理器中 page 使用状况相关的函数. 添加了 cpu_mask 的
 支持. 补丁还添加了 NODE 节点内存信息的打印.
@@ -1783,7 +1783,7 @@ git format-patch -1 c3d8c1414573be8cf7c8fdc1e076935697c7f6af
 vi 0001-PATCH-More-__read_mostly-variables.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000876.png)
+![](/assets/PDB/RPI/RPI000876.png)
 
 该补丁用于对 Buddy 内存管理器使用的一些数据定义为 "\_\_read_mostly".
 
@@ -1792,7 +1792,7 @@ git format-patch -1 6c231b7bab0aa6860cd9da2de8a064eddc34c146
 vi 0001-PATCH-Additions-to-.data.read_mostly-section.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000877.png)
+![](/assets/PDB/RPI/RPI000877.png)
 
 该补丁用于对 Buddy 内存管理器使用的一些数据定义为 "\_\_read_mostly".
 
@@ -1801,7 +1801,7 @@ git format-patch -1 f90b1d2f1aaaa40c6519a32e69615edc25bb97d5
 vi 0001-PATCH-cpusets-new-__GFP_HARDWALL-flag.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000878.png)
+![](/assets/PDB/RPI/RPI000878.png)
 
 向 Buddy 内存分配器添加了 \_\_GFP_HARDWALL 标志.
 
@@ -1810,7 +1810,7 @@ git format-patch -1 9bf2229f8817677127a60c177aefce1badd22d7b
 vi 0001-PATCH-cpusets-formalize-intermediate-GFP_KERNEL-cont.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000879.png)
+![](/assets/PDB/RPI/RPI000879.png)
 
 该补丁修改了 cpuset_zone_allowed() 函数，添加了 gfp_mask 参数，补丁将 Buddy
 内存分配器调用的 cpuset_zone_allowed() 函数的 gfp_mask 参数全部设置为
@@ -1821,7 +1821,7 @@ git format-patch -1 207f36eec9e7b1077d7a0aaadb4800e2c9b4cfa4
 vi 0001-PATCH-remove-invalid-comment-in-mm-page_alloc.c.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000880.png)
+![](/assets/PDB/RPI/RPI000880.png)
 
 该补丁修改了注释，表明 free_pages_bulk() 不支持 count 为 0 的 list 释放.
 
@@ -1830,7 +1830,7 @@ git format-patch -1 9f1583339a6f52c0c26441d39a0deff8246800f7
 vi 0001-PATCH-use-add_taint-for-setting-tainted-bit-flags.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000881.png)
+![](/assets/PDB/RPI/RPI000881.png)
 
 该补丁向 Buddy 内存分配器的 bad_page() 函数添加了 add_taile() 的处理，移除
 之前的同类代码.
@@ -1840,26 +1840,26 @@ git format-patch -1 dd0fc66fb33cd610bc1a5db8a5e232d34879b4d7
 vi 0001-PATCH-gfp-flags-annotations-part-1.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000882.png)
+![](/assets/PDB/RPI/RPI000882.png)
 
 该补丁用于将 Buddy 内存分配器相关函数的 gfp 参数全部修改为 gfp_t 类型.
 更多补丁的使用请参考:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.15"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000795.JPG)
+![](/assets/PDB/RPI/RPI000795.JPG)
 
 #### buddy Linux 2.6.15
 
 Linux 2.6.15 依旧采用 buddy 作为其物理内存管理器。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 ###### Buddy 内存分配
 
@@ -1899,7 +1899,7 @@ nr_free_highpages
 
 buddy 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000850.png)
+![](/assets/PDB/RPI/RPI000850.png)
 
 ###### 补丁
 
@@ -1952,14 +1952,14 @@ tig mm/page_alloc.c include/linux/gfp.h include/linux/mmzone.h include/linux/mm.
                                     [main] 3148890bfa4f36c9949871264e06ef4d449eeff9
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000883.png)
+![](/assets/PDB/RPI/RPI000883.png)
 
 {% highlight bash %}
 git format-patch -1 af4ca457eaf2d6682059c18463eb106e2ce58198 
 vi 0001-PATCH-gfp_t-infrastructure.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000884.png)
+![](/assets/PDB/RPI/RPI000884.png)
 
 该补丁为 Buddy 内存分配器的标志添加了 \_\_force 进行 sparse 静态强制类型
 检测。
@@ -1969,7 +1969,7 @@ git format-patch -1 260b23674fdb570f3235ce55892246bef1c24c2a
 vi 0001-PATCH-gfp_t-the-rest.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000885.png)
+![](/assets/PDB/RPI/RPI000885.png)
 
 该补丁继续将 Buddy 内存管理器核心函数内的 gfp 标志的类型设置为 gfp_t. 添加
 了 highest_zone() 实现，这在建立每个 ZONE 的后备 ZONE 的时候提供了便捷
@@ -1980,7 +1980,7 @@ git format-patch -1 b5810039a54e5babf428e9a1e89fc1940fabff11
 vi 0001-PATCH-core-remove-PageReserved.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000886.png)
+![](/assets/PDB/RPI/RPI000886.png)
 
 该补丁用于 Buddy 分配器在 put_page() 的时候，由原先检测 page 是否预留并且
 没有其他地方引用它，修改成了只检测是否有其他地方引用它. Buddy 分配器在检测
@@ -1992,7 +1992,7 @@ git format-patch -1 4c21e2f2441dc5fbb957b030333f5a3f2d02dea7
 vi 0001-PATCH-mm-split-page-table-lock.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000887.png)
+![](/assets/PDB/RPI/RPI000887.png)
 
 该补丁将 struct page 的 private 成员与新的 ptl 成员组成新的联合体 u. 并且
 提供了 private 成员的访问接口 "page_private()" 和 "set_page_private()".
@@ -2002,7 +2002,7 @@ git format-patch -1 ed8ece2ec8d3c2031b1a1a0737568bb0d49454e0
 vi 0001-PATCH-memory-hotplug-prep-break-out-zone-initializat.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000888.png)
+![](/assets/PDB/RPI/RPI000888.png)
 
 该补丁用于当在 Buddy 内存分配器初始化过程中，如果 ZONE 是一个空的，那么
 也要兼容空 ZONE 的初始化。
@@ -2012,7 +2012,7 @@ git format-patch -1 208d54e5513c0c02d85af0990901354c74364d5c
 vi 0001-PATCH-memory-hotplug-locking-node_size_lock.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000889.png)
+![](/assets/PDB/RPI/RPI000889.png)
 
 该补丁在 struct pglist_data 结构中添加了与 CONFIG_MEMORY_HOTPLUG 相关的
 新成员 node_size_lock 锁。Buddy 内存分配器初始化过程中，会调用 
@@ -2023,7 +2023,7 @@ git format-patch -1 bdc8cb984576ab5b550c8b24c6fa111a873503e3
 vi 0001-PATCH-memory-hotplug-locking-zone-span-seqlock.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000890.png)
+![](/assets/PDB/RPI/RPI000890.png)
 
 该补丁向 struct zone 中增加了 span_seqlock 成员，该成员用于操作当前 ZONE
 的 spanned_pages 成员时使用读写锁. 并在 Buddy 分配器初始化的时候添加对该
@@ -2034,7 +2034,7 @@ git format-patch -1 2f96996de0eda378df2a5f857ee1ef615ae10a4f
 vi 0001-PATCH-mm-wider-use-of-for_each_-cpu.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000891.png)
+![](/assets/PDB/RPI/RPI000891.png)
 
 该补丁用于在 Buddy 管理器内部，show_free_areas() 在打印所有 ZONE 内存信息
 的时候，将遍历所有 CPU 的函数提出按成了 for_each_cpu(), 该函数会遍历系统
@@ -2045,7 +2045,7 @@ git format-patch -1 f8b8db77b0cc36670ef4ed6bc31e64537ffa197e
 vi 0001-PATCH-unexport-nr_swap_pages.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000892.png)
+![](/assets/PDB/RPI/RPI000892.png)
 
 该补丁取消将 nr_swap_pages 导出到全局的符号表里.
 
@@ -2054,7 +2054,7 @@ git format-patch -1 6b482c6779daaa893b277fc9b70767a7c2e7c5eb
 vi 0001-PATCH-Don-t-print-per-cpu-vm-stats-for-offline-cpus.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000893.png)
+![](/assets/PDB/RPI/RPI000893.png)
 
 该补丁用于 Buddy 内存分配器的 show_free_area() 打印所有 ZONE 内存信息的时候，
 遍历所有的 CPU，从原先的 for_each_cpu() 替换成了 for_each_online_cpu(),
@@ -2065,7 +2065,7 @@ git format-patch -1 885036d32f5d3c427c3e2b385b5a5503805e3e52
 vi 0001-PATCH-mm-__GFP_NOFAIL-fix.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000894.png)
+![](/assets/PDB/RPI/RPI000894.png)
 
 该补丁用于在 Buddy 内存分配器分配物理内存的时候，当没有可用物理内存分配的
 时候，如果此时分配标志中包含了 \_\_GFP_NOFAIL, 那么函数就调用 
@@ -2077,7 +2077,7 @@ git format-patch -1 7fb1d9fca5c6e3b06773b69165a73f3fb786b8ee
 vi 0001-PATCH-mm-__alloc_pages-cleanup.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000895.png)
+![](/assets/PDB/RPI/RPI000895.png)
 
 该补丁重新整理了 Buddy 内存分配器 \_\_alloc_pages() 的过程，新建立了函数
 get_page_from_freelist(), 并将函数替代的代码移除。并增加了 ALLOC_ 标志控制
@@ -2088,7 +2088,7 @@ git format-patch -1 2d6c666e8704cf06267f29a4fa3d2cf823469c38
 vi 0001-PATCH-mm-gfp_noreclaim-cleanup.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000896.png)
+![](/assets/PDB/RPI/RPI000896.png)
 
 该补丁用于从 Buddy 内存管理器中移除 \_\_GFP_NORECLAIM 标志.
 
@@ -2097,7 +2097,7 @@ git format-patch -1 669ed17521b9b78cdbeac8a53c30599aca9527ce
 vi 0001-PATCH-mm-highmem-watermarks.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000897.png)
+![](/assets/PDB/RPI/RPI000897.png)
 
 该补丁为 ZONE_HIGHMEM 也添加了水位线.
 
@@ -2106,7 +2106,7 @@ git format-patch -1 a2f1b424900715ed9d1699c3bb88a434a2b42bc0
 vi 0001-PATCH-x86_64-Add-4GB-DMA32-zone.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000898.png)
+![](/assets/PDB/RPI/RPI000898.png)
 
 该补丁用于向 X86_64 系统 4GB 内存的情况下增加 DMA32 ZONE, 并未 ZONE_DMA32
 设置后备 ZONE 分区。
@@ -2116,7 +2116,7 @@ git format-patch -1 07808b74e7dab1aa385e698795875337d72daf7d
 vi 0001-PATCH-x86_64-Remove-obsolete-ARCH_HAS_ATOMIC_UNSIGNE.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000899.png)
+![](/assets/PDB/RPI/RPI000899.png)
 
 该补丁将 struct page 的 flags 成员的类型修改为 unsigned long 型.
 
@@ -2125,7 +2125,7 @@ git format-patch -1 6b1de9161e973bac8c4675db608fe4f38d2689bd
 vi 0001-PATCH-VM-fix-zone-list-restart-in-page-allocatate.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000900.png)
+![](/assets/PDB/RPI/RPI000900.png)
 
 该补丁微调正了 Buddy 分配器分配内存的细节.
 
@@ -2134,7 +2134,7 @@ git format-patch -1 664beed0190fae687ac51295694004902ddeb18e
 vi 0001-PATCH-unpaged-unifdefed-PageCompound.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000901.png)
+![](/assets/PDB/RPI/RPI000901.png)
 
 该补丁移除了 CONFIG_HUGETLB_PAGE 的一些设置.
 
@@ -2143,7 +2143,7 @@ git format-patch -1 689bcebfda16d7bace742740bfb3137fff30b529
 vi 0001-PATCH-unpaged-PG_reserved-bad_page.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000902.png)
+![](/assets/PDB/RPI/RPI000902.png)
 
 该补丁让预留页测试不能被 free 之后供 Buddy 分配器分配.
 
@@ -2152,7 +2152,7 @@ git format-patch -1 ac3461ad632e86e7debd871776683c05ef3ba4c6
 vi 0001-Fix-up-GFP_ZONEMASK-for-GFP_DMA32-usage.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000903.png)
+![](/assets/PDB/RPI/RPI000903.png)
 
 该补丁修改 GFP_ 标志与具体 ZONE 的匹配逻辑.
 
@@ -2161,32 +2161,32 @@ git format-patch -1 3148890bfa4f36c9949871264e06ef4d449eeff9
 vi 0001-PATCH-mm-__alloc_pages-cleanup-fix.patch 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000904.png)
+![](/assets/PDB/RPI/RPI000904.png)
 
 该补丁向 Buddy 内存管理器分配物理页时，新增了多个 ALLOC\_ 与水位线有关的标志.
 更多补丁的使用请参考:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="G"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### buddy 历史时间轴
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000905.png)
+![](/assets/PDB/RPI/RPI000905.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="K"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 #### buddy API
 
@@ -2685,13 +2685,13 @@ int zone_watermark_ok(struct zone *z, int order, unsigned long mark,
   作用: Buddy 管理器检查当前 ZONE 的可用物理页是否已经低于 ZONE 的水位线.
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="F"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 #### buddy 进阶研究
 
@@ -2699,13 +2699,13 @@ int zone_watermark_ok(struct zone *z, int order, unsigned long mark,
 >
 > - [Buddy-HighMEM Memory Allocator On Userspace](https://biscuitos.github.io/blog/Memory-Userspace/#F)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="E"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### buddy 分配器调试
 
@@ -2715,7 +2715,7 @@ int zone_watermark_ok(struct zone *z, int order, unsigned long mark,
 >
 > - [BiscuitOS Buddy 内存分配器调试](#C0004)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------
 
@@ -2728,9 +2728,9 @@ Linux 内核从 linux 2.6.13 开始向 Proc 文件系统添加了 zoneinfo 节�
 cat /proc/zoneinfo
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000906.png)
+![](/assets/PDB/RPI/RPI000906.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------
 
@@ -2743,7 +2743,7 @@ free_area[] 各个链表的使用情况, 开发者参考下列命令使用:
 cat /proc/buddyinfo
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000907.png)
+![](/assets/PDB/RPI/RPI000907.png)
 
 -----------------------------------------------
 
@@ -2760,4 +2760,4 @@ cat /proc/buddyinfo
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

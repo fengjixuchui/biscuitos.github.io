@@ -95,7 +95,7 @@ ld -static -T Demo.lds DemoA.o DemoB.o DemoC.c -o a.out
 objdump -sSdhx a.out
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000489.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000489.png)
 
 从上面的数据可知，所有的段都按着链接脚本内容进行链接，Demotext 段包含了所有目
 标文件的 .text, .data 和 .rodata 段。链接脚本中 INCLUDE 关键字包含其他链接脚本
@@ -117,4 +117,4 @@ objdump -sSdhx a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

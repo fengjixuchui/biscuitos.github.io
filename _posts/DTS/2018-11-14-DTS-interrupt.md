@@ -129,7 +129,7 @@ Example:
 
 # ARM General Interrupt Controller (GIC) on DTS
 
-![GIC](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/INT000001.png)
+![GIC](/assets/PDB/BiscuitOS/kernel/INT000001.png)
 
 ## GIC
 
@@ -415,7 +415,7 @@ spi@10600 {
 
 对应的硬件手册如下：
 
-![A385](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/INT000002.png)
+![A385](/assets/PDB/BiscuitOS/kernel/INT000002.png)
 
 GPIO0 控制器使用了 53， 54， 55， 56 四条 SPI 中断，而且在 GPIO0 的 DTS 中，
  **#interrupt-cells** 为 2， 所以其他节点的 interrupt-parent 指向 gpio0 的 

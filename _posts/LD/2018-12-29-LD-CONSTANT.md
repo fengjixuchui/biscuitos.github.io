@@ -114,7 +114,7 @@ ld -static -T Demo.lds -o a.out
 objdump -xSsdh a.out
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUD000027.png)
+![LD](/assets/PDB/BiscuitOS/kernel/BUD000027.png)
 
 通过运行的数据可知，输出 DemoText 的 VMA 地址对齐到 0x0804a000，而不是 
 0x08049001。输出 DemoData 的 VMA 地址对齐到了 0x08051000，而不是 0x08050001。
@@ -135,5 +135,5 @@ objdump -xSsdh a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
 

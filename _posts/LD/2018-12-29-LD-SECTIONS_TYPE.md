@@ -82,7 +82,7 @@ ld -static -T Demo.lds DemoA.o DemoB.o DemoC.c -o a.out
 objdump -x a.out
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000504.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000504.png)
 
 通过上面数据 .comment 段的属性设置为 CONTENTS，READONLY。程序运行之后，进程不
 包含 .comment 段。
@@ -103,4 +103,4 @@ objdump -x a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

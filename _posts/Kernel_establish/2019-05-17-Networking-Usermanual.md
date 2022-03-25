@@ -8,9 +8,9 @@ tags:
   - Tree
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 ## 目录
 
@@ -26,7 +26,7 @@ tags:
 
 <span id="A03"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 ## BiscuitOS 网络使用方法
 
@@ -72,7 +72,7 @@ sudo ./RunBiscuitOS.sh net
 
 BiscuitOS 在启动初期会打印网卡和网桥相关的信息，如下：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000000.png)
+![](/assets/PDB/BiscuitOS/mall/MALL000000.png)
 
 BiscuitOS 就会启动，启动之后，进入 BiscuitOS 系统，使用 ifconfig 命令设置
 BiscuitOS 的 eth0 网卡：
@@ -81,7 +81,7 @@ BiscuitOS 的 eth0 网卡：
 ifocnfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000001.png)
+![](/assets/PDB/BiscuitOS/mall/MALL000001.png)
 
 接下来为 eth0 配置 IP，为了使 BiscuitOS 能够访问外网，那么在配置 IP
 时应遵循一下规则。
@@ -99,7 +99,7 @@ ifocnfig
 ifconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000002.png)
+![](/assets/PDB/BiscuitOS/mall/MALL000002.png)
 
 例如在我的主机端，存在一个名为 bsBridge0 的网桥，这就是上面
 提到的虚拟网桥，虚拟网桥此时的 IP 是 192.88.1.1，因此开发
@@ -118,7 +118,7 @@ ifconfig eth0 192.88.1.6
 ifconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000003.png)
+![](/assets/PDB/BiscuitOS/mall/MALL000003.png)
 
 为了是 BiscuitOS 能够访问外网，需要配置 BiscuitOS 的默认
 网关，上面介绍过网关的约束条件为：BiscuitOS 的默认网关必须
@@ -131,12 +131,12 @@ route add default gw 192.88.1.1
 route
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000004.png)
+![](/assets/PDB/BiscuitOS/mall/MALL000004.png)
 
 此时，可以在 BiscuitOS 上访问到虚拟网关，主机上的网卡，以及
 外网上的 IP，如下：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000005.png)
+![](/assets/PDB/BiscuitOS/mall/MALL000005.png)
 
 至此，BiscuitOS 基本网络功能已经建立，开发者可以
 使用网络功能进行所需的开发。
@@ -145,7 +145,7 @@ route
 
 <span id="A00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 ## telnet
 
@@ -165,13 +165,13 @@ BiscuitOS login:
 
 默认 Telnet 的账号和密码都是 root，登录成功如下：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000006.png)
+![](/assets/PDB/BiscuitOS/mall/MALL000006.png)
 
 -----------------------------------
 
 <span id="A01"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 ## NFS
 
@@ -203,7 +203,7 @@ $ sudo apt-get install -y nfs-common
 sudo vi /etc/exports
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000007.png)
+![](/assets/PDB/BiscuitOS/mall/MALL000007.png)
 
 如上图，添加相应的配置信息，保存并退出。最后重启 nfs 服务，
 使用如下命令:
@@ -236,11 +236,11 @@ mount -t nfs 192.88.1.2:/home/nfs /nfs -o nolock
 
 BiscuitOS 端 NFS:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000008.png)
+![](/assets/PDB/BiscuitOS/mall/MALL000008.png)
 
 主机端 NFS:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/mall/MALL000009.png)
+![](/assets/PDB/BiscuitOS/mall/MALL000009.png)
 
 至此 NFS 可以正常使用，开发者可以根据自己需要进行使用。
 
@@ -262,5 +262,5 @@ BiscuitOS 端 NFS:
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
 

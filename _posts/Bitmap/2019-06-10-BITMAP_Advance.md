@@ -8,7 +8,7 @@ tags:
   - Bitmap
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -23,7 +23,7 @@ tags:
 -----------------------------------
 <span id="Bitmap 应用场景"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 ## Bitmap 应用场景
 
@@ -31,7 +31,7 @@ tags:
 -----------------------------------
 <span id="内核中Bitmap 应用分析"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 ## 内核中Bitmap 应用分析
 
@@ -57,4 +57,4 @@ tags:
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

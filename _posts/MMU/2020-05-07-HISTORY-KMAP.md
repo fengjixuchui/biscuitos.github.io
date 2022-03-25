@@ -8,9 +8,9 @@ tags:
   - MMU
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -34,17 +34,17 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### KMAP 分配器原理
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000226.png)
+![](/assets/PDB/HK/HK000226.png)
 
 KMAP 内存管理器用于分配和释放零时映射虚拟内存。Linux 从内核虚拟空间划分
 一段大小为 2MB 的虚拟内存，起始地址 PKMAP_BASE。在有的体系中，物理内存
@@ -57,7 +57,7 @@ VMALLOC 分配器分配的虚拟地址是连续了，为了最大限度保持虚
 所以不建议使用 VMALLOC 做短时间的零时映射. Linux 内核于是推出了 KMAP 内存
 管理器，用于短时间的虚拟内存到物理内存映射，满足一些任务的需要.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 KMAP 内存管理器实现很简练. PKMAP 分配器拥有固定长度的虚拟内存，然后将
 固定长度的虚拟内存划分为 LAST_PKMAP 个入口，每个入口对应一个虚拟地址。
@@ -85,13 +85,13 @@ KMAP 分配器将其制作成一个大数组 pkmap_count[LAST_PKMAP], 总共包�
 
 由于要动态建立页表, 系统开销较大.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------
 
 <span id="B"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### KMAP 分配器使用
 
@@ -99,7 +99,7 @@ KMAP 分配器将其制作成一个大数组 pkmap_count[LAST_PKMAP], 总共包�
 >
 > - [KMAP 分配虚拟内存](#B0001)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -127,13 +127,13 @@ kunmap_atomic
 
 > - [KMAP API](#K)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------------
 
 #### <span id="B0001">KMAP 分配虚拟内存</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 从 KMAP 区域内存分配、使用和释放虚拟内存，开发者可以参考如下代码:
 
@@ -171,13 +171,13 @@ static int TestCase_kmap(void)
 }
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------------
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### KMAP 分配器实践
 
@@ -191,7 +191,7 @@ static int TestCase_kmap(void)
 >
 > - [测试建议](#C0004)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -216,19 +216,19 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000746.png)
+![](/assets/PDB/RPI/RPI000746.png)
 
 选择并进入 "[\*] Package  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000747.png)
+![](/assets/PDB/RPI/RPI000747.png)
 
 选择并进入 "[\*]   Memory Development History  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000970.png)
+![](/assets/PDB/RPI/RPI000970.png)
 
 选择并进入 "[\*]   KMAP Allocator  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000971.png)
+![](/assets/PDB/RPI/RPI000971.png)
 
 选择 "[\*]   KMAP on linux 2.6.12  --->" 目录，保存并退出。接着执行如下命令:
 
@@ -236,7 +236,7 @@ make menuconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000750.png)
+![](/assets/PDB/RPI/RPI000750.png)
 
 成功之后将出现上图的内容，接下来开发者执行如下命令以便切换到项目的路径:
 
@@ -245,11 +245,11 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_KMAP-2.6.12
 make download
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000972.png)
+![](/assets/PDB/RPI/RPI000972.png)
 
 至此源码已经下载完成，开发者可以使用 tree 等工具查看源码:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000973.png)
+![](/assets/PDB/RPI/RPI000973.png)
 
 arch 目录下包含内存初始化早期，与体系结构相关的处理部分。mm 目录下面包含
 了与各个内存分配器和内存管理行为相关的代码。init 目录下是整个模块的初始化
@@ -262,7 +262,7 @@ start_kernel()。
 到系统的 DTS 里面，"BiscuitOS.dts" 里的内容用来从系统中预留 100MB 的物理
 内存供项目使用，具体如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000738.png)
+![](/assets/PDB/RPI/RPI000738.png)
 
 开发者将 "BiscuitOS.dts" 的内容添加到:
 
@@ -277,7 +277,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_KMAP-2.6.12
 make kernel
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000974.png)
+![](/assets/PDB/RPI/RPI000974.png)
 
 --------------------------------------------
 
@@ -291,7 +291,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_KMAP-2.6.12
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000975.png)
+![](/assets/PDB/RPI/RPI000975.png)
 
 以上就是模块成功编译，接下来将 ko 模块安装到 BiscuitOS 中，使用如下命令:
 
@@ -308,7 +308,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_KMAP-2.6.12
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000976.png)
+![](/assets/PDB/RPI/RPI000976.png)
 
 在 BiscuitOS 中插入了模块 "BiscuitOS_KMAP-2.6.12.ko"，打印如上信息，那么
 BiscuitOS Memory Manager Unit History 项目的内存管理子系统已经可以使用。
@@ -330,7 +330,7 @@ BiscuitOS Memory Manager Unit History 项目提供了大量的测试用例用于
 /xspace/OpenSource/BiscuitOS/BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_KMAP-2.6.12/BiscuitOS_KMAP-2.6.12/Makefile
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000771.png)
+![](/assets/PDB/RPI/RPI000771.png)
 
 Makefile 内提供了两种方案的编译开关，例如需要使用打开 buddy 内存管理器的
 源码树内部调试功能，需要保证 Makefile 内下面语句不被注释:
@@ -362,17 +362,17 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 在上面的例子中，例如打开了 buddy 的模块调试功能，重新编译模块并在 BiscuitOS
 上运行，如下图，可以在 "lib/module/5.0.0/extra/" 目录下看到两个模块:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000772.png)
+![](/assets/PDB/RPI/RPI000772.png)
 
 然后先向 BiscuitOS 中插入 "BiscuitOS_KMAP-2.6.12.ko" 模块，然后再插入
 "BiscuitOS_KMAP-2.6.12-buddy.ko" 模块。如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000773.png)
+![](/assets/PDB/RPI/RPI000773.png)
 
 以上便是测试代码的使用办法。开发者如果想在源码中启用或关闭某些宏，可以
 修改 Makefile 中内容:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000774.png)
+![](/assets/PDB/RPI/RPI000774.png)
 
 从上图可以知道，如果要启用某些宏，可以在 ccflags-y 中添加 "-D" 选项进行
 启用，源码的编译参数也可以添加到 ccflags-y 中去。开发者除了使用上面的办法
@@ -408,15 +408,15 @@ $(MODULE_NAME)-kmap-m           := modules/kmap/module.o
 
 KMAP 模块测试结果如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000977.png)
+![](/assets/PDB/RPI/RPI000977.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### KMAP 历史补丁
 
@@ -442,17 +442,17 @@ KMAP 模块测试结果如下:
 >
 > - [KMAP Linux 2.6.15](#H-linux-2.6.15)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000785.JPG)
+![](/assets/PDB/RPI/RPI000785.JPG)
 
 #### KMAP Linux 2.6.12
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 Linux 2.6.12 采用 KMAP 分配器管理 KMAP 虚拟内存区域。
 
@@ -480,15 +480,15 @@ kunmap_atomic
 
 KMAP 内存分配器与本项目相关的 kmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000979.png)
+![](/assets/PDB/RPI/RPI000979.png)
 
 KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000980.png)
+![](/assets/PDB/RPI/RPI000980.png)
 
 项目中虚拟内存布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 在项目中，KMAP 虚拟内存的管理的范围是: 0x96000000 到 0x96200000. 
 
@@ -499,17 +499,17 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000786.JPG)
+![](/assets/PDB/RPI/RPI000786.JPG)
 
 #### KMAP Linux 2.6.12.1
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 Linux 2.6.12.1 采用 KMAP 分配器管理 KMAP 虚拟内存区域。
 
@@ -537,15 +537,15 @@ kunmap_atomic
 
 KMAP 内存分配器与本项目相关的 kmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000979.png)
+![](/assets/PDB/RPI/RPI000979.png)
 
 KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000980.png)
+![](/assets/PDB/RPI/RPI000980.png)
 
 项目中虚拟内存布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 在项目中，KMAP 虚拟内存的管理的范围是: 0x96000000 到 0x96200000. 
 
@@ -555,17 +555,17 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000787.JPG)
+![](/assets/PDB/RPI/RPI000787.JPG)
 
 #### KMAP Linux 2.6.12.2
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 Linux 2.6.12.2 采用 KMAP 分配器管理 KMAP 虚拟内存区域。
 
@@ -593,15 +593,15 @@ kunmap_atomic
 
 KMAP 内存分配器与本项目相关的 kmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000979.png)
+![](/assets/PDB/RPI/RPI000979.png)
 
 KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000980.png)
+![](/assets/PDB/RPI/RPI000980.png)
 
 项目中虚拟内存布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 在项目中，KMAP 虚拟内存的管理的范围是: 0x96000000 到 0x96200000. 
 
@@ -611,17 +611,17 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.3"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000788.JPG)
+![](/assets/PDB/RPI/RPI000788.JPG)
 
 #### KMAP Linux 2.6.12.3
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 Linux 2.6.12.3 采用 KMAP 分配器管理 KMAP 虚拟内存区域。
 
@@ -649,15 +649,15 @@ kunmap_atomic
 
 KMAP 内存分配器与本项目相关的 kmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000979.png)
+![](/assets/PDB/RPI/RPI000979.png)
 
 KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000980.png)
+![](/assets/PDB/RPI/RPI000980.png)
 
 项目中虚拟内存布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 在项目中，KMAP 虚拟内存的管理的范围是: 0x96000000 到 0x96200000. 
 
@@ -667,17 +667,17 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.4"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000789.JPG)
+![](/assets/PDB/RPI/RPI000789.JPG)
 
 #### KMAP Linux 2.6.12.4
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 Linux 2.6.12.4 采用 KMAP 分配器管理 KMAP 虚拟内存区域。
 
@@ -705,15 +705,15 @@ kunmap_atomic
 
 KMAP 内存分配器与本项目相关的 kmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000979.png)
+![](/assets/PDB/RPI/RPI000979.png)
 
 KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000980.png)
+![](/assets/PDB/RPI/RPI000980.png)
 
 项目中虚拟内存布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 在项目中，KMAP 虚拟内存的管理的范围是: 0x96000000 到 0x96200000. 
 
@@ -723,17 +723,17 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.5"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000790.JPG)
+![](/assets/PDB/RPI/RPI000790.JPG)
 
 #### KMAP Linux 2.6.12.5
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 Linux 2.6.12.5 采用 KMAP 分配器管理 KMAP 虚拟内存区域。
 
@@ -761,15 +761,15 @@ kunmap_atomic
 
 KMAP 内存分配器与本项目相关的 kmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000979.png)
+![](/assets/PDB/RPI/RPI000979.png)
 
 KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000980.png)
+![](/assets/PDB/RPI/RPI000980.png)
 
 项目中虚拟内存布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 在项目中，KMAP 虚拟内存的管理的范围是: 0x96000000 到 0x96200000. 
 
@@ -779,17 +779,17 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.6"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000791.JPG)
+![](/assets/PDB/RPI/RPI000791.JPG)
 
 #### KMAP Linux 2.6.12.6
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 Linux 2.6.12.6 采用 KMAP 分配器管理 KMAP 虚拟内存区域。
 
@@ -817,15 +817,15 @@ kunmap_atomic
 
 KMAP 内存分配器与本项目相关的 kmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000979.png)
+![](/assets/PDB/RPI/RPI000979.png)
 
 KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000980.png)
+![](/assets/PDB/RPI/RPI000980.png)
 
 项目中虚拟内存布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 在项目中，KMAP 虚拟内存的管理的范围是: 0x96000000 到 0x96200000. 
 
@@ -835,17 +835,17 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.13"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000792.JPG)
+![](/assets/PDB/RPI/RPI000792.JPG)
 
 #### KMAP Linux 2.6.13
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 Linux 2.6.13 采用 KMAP 分配器管理 KMAP 虚拟内存区域。
 
@@ -873,15 +873,15 @@ kunmap_atomic
 
 KMAP 内存分配器与本项目相关的 kmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000979.png)
+![](/assets/PDB/RPI/RPI000979.png)
 
 KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000980.png)
+![](/assets/PDB/RPI/RPI000980.png)
 
 项目中虚拟内存布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 在项目中，KMAP 虚拟内存的管理的范围是: 0x96000000 到 0x96200000. 
 
@@ -896,14 +896,14 @@ tig mm/highmem.c include/linux/highmem.h
                                      [main] 60e64d46a58236e3c718074372cab6a5b56a3b15
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000981.png)
+![](/assets/PDB/RPI/RPI000981.png)
 
 {% highlight bash %}
 git format-patch -1 60e64d46a58236e3c718074372cab6a5b56a3b15
 vi 0001-PATCH-kdump-Routines-for-copying-dump-pages.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000982.png)
+![](/assets/PDB/RPI/RPI000982.png)
 
 该补丁添加了 kmap_atomic_pfn() 实现.
 
@@ -912,17 +912,17 @@ vi 0001-PATCH-kdump-Routines-for-copying-dump-pages.patch
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.13.1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000793.JPG)
+![](/assets/PDB/RPI/RPI000793.JPG)
 
 #### KMAP Linux 2.6.13.1
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 Linux 2.6.13.1 采用 KMAP 分配器管理 KMAP 虚拟内存区域。
 
@@ -950,15 +950,15 @@ kunmap_atomic
 
 KMAP 内存分配器与本项目相关的 kmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000979.png)
+![](/assets/PDB/RPI/RPI000979.png)
 
 KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000980.png)
+![](/assets/PDB/RPI/RPI000980.png)
 
 项目中虚拟内存布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 在项目中，KMAP 虚拟内存的管理的范围是: 0x96000000 到 0x96200000. 
 
@@ -968,17 +968,17 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.14"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000794.JPG)
+![](/assets/PDB/RPI/RPI000794.JPG)
 
 #### KMAP Linux 2.6.14
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 Linux 2.6.14 采用 KMAP 分配器管理 KMAP 虚拟内存区域。
 
@@ -1006,15 +1006,15 @@ kunmap_atomic
 
 KMAP 内存分配器与本项目相关的 kmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000979.png)
+![](/assets/PDB/RPI/RPI000979.png)
 
 KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000980.png)
+![](/assets/PDB/RPI/RPI000980.png)
 
 项目中虚拟内存布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 在项目中，KMAP 虚拟内存的管理的范围是: 0x96000000 到 0x96200000. 
 
@@ -1024,17 +1024,17 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.15"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000795.JPG)
+![](/assets/PDB/RPI/RPI000795.JPG)
 
 #### KMAP Linux 2.6.15
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 Linux 2.6.12.1 采用 KMAP 分配器管理 KMAP 虚拟内存区域。
 
@@ -1062,15 +1062,15 @@ kunmap_atomic
 
 KMAP 内存分配器与本项目相关的 kmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000979.png)
+![](/assets/PDB/RPI/RPI000979.png)
 
 KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000980.png)
+![](/assets/PDB/RPI/RPI000980.png)
 
 项目中虚拟内存布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 在项目中，KMAP 虚拟内存的管理的范围是: 0x96000000 到 0x96200000. 
 
@@ -1080,25 +1080,25 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="G"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### KMAP 历史时间轴
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000983.png)
+![](/assets/PDB/RPI/RPI000983.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="K"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 #### KMAP API
 
@@ -1172,31 +1172,31 @@ void set_page_address(struct page *page, void *virtual)
   作用: 设置物理页的虚拟地址.
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="F"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### KMAP 进阶研究
 
 > - [用户空间实现一个 KMAP 内存分配器](https://biscuitos.github.io/blog/Memory-Userspace/#N)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="E"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 #### KMAP 内存分配器调试
 
 > - [BiscuitOS KMAP 内存分配器调试](#C0004)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -1213,4 +1213,4 @@ void set_page_address(struct page *page, void *virtual)
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

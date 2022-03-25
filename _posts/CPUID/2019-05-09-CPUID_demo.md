@@ -8,7 +8,7 @@ tags:
   - CPUID
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000C.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000C.jpg)
 
 > [Github: BBBXXX](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/BBBXXX)
 >
@@ -146,4 +146,4 @@ Device Driver--->
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

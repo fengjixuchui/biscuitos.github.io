@@ -124,7 +124,7 @@ ld -static -T Demo.lds -o a.out
 objdump -xSsdh a.out
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000524.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000524.png)
 
 -----------------------------------------------
 
@@ -142,4 +142,4 @@ objdump -xSsdh a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

@@ -8,7 +8,7 @@ tags:
   - DTS
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/DEV000106.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/DEV000106.jpg)
 
 > Github: [of_scan_flat_dt](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/of_scan_flat_dt)
 >
@@ -311,7 +311,7 @@ fdt_next_tag() 函数首先通过传入参数 startoffset 和 fdt 到 fdt_offfse
 第一个字节也就是 tag 进行判断，看其是否属于节点还是属性，以下是一个 
 device-tree structure 的基本结构：
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000547.png)
+![DTS](/assets/PDB/BiscuitOS/kernel/MMU000547.png)
 
 如果 device-tree structure 的 tag 是 FDT_BEGIN_NODE，那么 device-tree 
 structure 就是一个独立的节点或子节点；如果 device-tree structure 的首地址是 

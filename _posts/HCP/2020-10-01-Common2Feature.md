@@ -8,9 +8,9 @@ tags:
   - Common2Feature
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -26,13 +26,13 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### BiscuitOS 一带一路计划介绍
 
@@ -44,13 +44,13 @@ tags:
 
 小伙伴们该怎么做呢？ 由于每个小伙伴的学习时间无法统一，因此每个小伙伴可以自行安排时间，只要自己准备好时间之后，就可以向笔者申请课程进行学习，每当学习完成一个课程之后，提交相应的作业，符号要求之后，小伙伴可以向笔者申请下一课。如果学习期间遇到问题，可以直接在 "BiscuitOS 一带一路社区" 微信群进行提问，里面都是同道中人，会尽可能帮你解决问题。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="Lesson0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### Lesson0
 
@@ -78,13 +78,13 @@ tags:
 
 截图发给笔者，合格之后发下一个作业。如果遇到问题，请直接在 "一带一路群" 里提问.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="Lesson1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### Lesson1
 
@@ -98,13 +98,13 @@ tags:
 
 课程的作业就是提交一个基于第一个 platform 驱动之上实现的一个 bitmap 逻辑，具体逻辑自行设定，截图提交代码为过，若有问题请直接在一带一路群里提问。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="Lesson2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 #### Lesson2
 
@@ -120,13 +120,13 @@ BiscuitOS 一带一路计划第三个作业是内核双链表，内核双链表�
 
 如果你愿意参加，请根据这个计划的提示，提交一份关于双链表的独立程序到 BiscuitOS。如果不参加，也提交一个基于第一个 platform 驱动之上实现的一个双链表逻辑，具体逻辑自行设定，截图提交代码为过，若有问题请直接在一带一路群里提问。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="Lesson3"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### Lesson3
 
@@ -138,7 +138,7 @@ BiscuitOS 一带一路计划第四个作业是二叉树，内核中树的使用�
 
 作业提交也是提交一份关于二叉树独立代码，代码逻辑自行设计，有问题请在 "BiscuitOS 一带一路" 群讨论.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -155,4 +155,4 @@ BiscuitOS 一带一路计划第四个作业是二叉树，内核中树的使用�
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

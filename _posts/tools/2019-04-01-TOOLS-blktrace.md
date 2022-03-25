@@ -25,7 +25,7 @@ tags:
 --------------------------------------------------------------
 <span id="工具原理"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 # 工具原理
 
@@ -64,7 +64,7 @@ block 层的各个 tracepoint 就会开始工作，把相关的数据透过 rela
 -------------------------------------------------------------
 <span id="工具安装"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/IND00000A.jpg)
 
 本教程安装基于 BiscuitOS 制作的 Linux 5.0 系统，其他平台参照安装。如需要安装基于 BiscuitOS
 的 Linux 5.0 开发环境，请参考下面文章：
@@ -131,7 +131,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 -------------------------------------------------------------
 <span id="工具使用"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/IND00000A.jpg)
 
 
 
@@ -159,4 +159,4 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

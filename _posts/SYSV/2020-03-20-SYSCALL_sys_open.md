@@ -8,7 +8,7 @@ tags:
   - syscall
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -88,13 +88,13 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### 原理简介
 
@@ -136,13 +136,13 @@ SYSCALL_DEFINE3(open, const char __user *, filename, int, flags, umode_t, mode)
 sys_open() 函数就会执行指定的任务。open() 函数是使用对频繁的系统调用，
 开发者可以参考文章的其他章节进行了解.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A10"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### 文件打开标志
 
@@ -220,7 +220,7 @@ O_NONBLOCK、O_SYNC。
 >
 > - [O_PATH](#A0001L)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------
 
@@ -383,13 +383,13 @@ EPERM。
 
 获得一个能表示文件在文件系统中位置的文件描述符.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A11"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### 用户权限标志
 
@@ -410,7 +410,7 @@ st_mod 字段的第 12 位定义了文件权限。其中的前 3 位为专有位
 set-user-ID 位、set-group-ID 位和 sticky 位(在下图中标记为 U、G、T 位)。
 其余 9 bit 构成了定义权限的掩码，分别授予访问文件的各类用户.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000035.png)
+![](/assets/PDB/HK/HK000035.png)
 
 文件权限掩码分 3 类:
 
@@ -430,7 +430,7 @@ set-user-ID 位、set-group-ID 位和 sticky 位(在下图中标记为 U、G、T
 
 针对上面的内容，开发者可以使用 `ls -l` 命令直接查看文件的权限，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000036.png)
+![](/assets/PDB/HK/HK000036.png)
 
 如上图所示的文件权限，Owner 具有可读可写可执行的权限，Group 具有可读
 可执行的权限，Other 具有可读和可执行的权限。Linux 支持的用户权限标志如下:
@@ -475,7 +475,7 @@ set-user-ID 位、set-group-ID 位和 sticky 位(在下图中标记为 U、G、T
 >
 > - [S_IXUGO](#A00043S)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------
 
@@ -604,7 +604,7 @@ S_IRWXUGO 是一个掩码，用户获得文件的所有权限，其定义如下:
 
 S_IALLUGO 是文件权限与 sticky 的掩码，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000035.png)
+![](/assets/PDB/HK/HK000035.png)
 
 掩码的范围除了最高的 4bit，其余都掩上，其定义如下:
 
@@ -642,17 +642,17 @@ S_IXUGO 是拥有者、用户组以及其他用户的执行权限掩码，其定
 #define S_IXUGO         (S_IXUSR|S_IXGRP|S_IXOTH)
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A12"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000W.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000W.jpg)
 
 #### 文件类型标志
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000035.png)
+![](/assets/PDB/HK/HK000035.png)
 
 linux 使用 struct stat 结构维护打开文件相关信息，其中 st_mode
 成员包含了文件的类型和文件权限。正如上图所示，st_mode 的高 4 位
@@ -676,7 +676,7 @@ linux 使用 struct stat 结构维护打开文件相关信息，其中 st_mode
 >
 > - [S_IFMT](#A000436X)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------
 
@@ -726,15 +726,15 @@ S_IFLNK 是文件类型标志，用于指明文件属于符号链接。
 
 S_IFMT 是文件类型的掩码，在 linux 内核中，文件类型的布局如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000035.png)
+![](/assets/PDB/HK/HK000035.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A14"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Z.jpg)
 
 #### 文件查找标志
 
@@ -770,7 +770,7 @@ S_IFMT 是文件类型的掩码，在 linux 内核中，文件类型的布局如
 > - [LOOKUP_DOWN](#A00044D)
 
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -876,13 +876,13 @@ LOOKUP_ROOT 标志表示如果开始查找的文件时候，如果目录是根�
 
 ###### <span id="A00044D">LOOKUP_DOWN</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A15"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### 错误码
 
@@ -905,7 +905,7 @@ LOOKUP_ROOT 标志表示如果开始查找的文件时候，如果目录是根�
 >
 > - [ETXTBSY](#A00036)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
@@ -953,17 +953,17 @@ LOOKUP_ROOT 标志表示如果开始查找的文件时候，如果目录是根�
 
 所指定的文件为可执行文件，且在运行。系统不允许修改正在运行的程序。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A00010D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### struct filename
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000021.png)
+![](/assets/PDB/HK/HK000021.png)
 
 "struct filename" 结构定义在 "include/linux/fs.h"，用于管理
 用户空间传递下来的路径名。成员 name 用于指向用户空间路径名拷贝到
@@ -982,7 +982,7 @@ refcnt 用于指定该文件路径名引用的次数; aname 参数用于内核�
 "struct filename" 结构占用了这部分内存的头部，剩余的部分用于
 存储从用户空间传递下来的路径名，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000001.png)
+![](/assets/PDB/HK/HK000001.png)
 
 第二种针对文件路径名长度大于等于 EMBEDDED_NAME_MAX 而小于
 PATH_MAX 的情况，这种情况下，内核首先从 names_cachep 中分配
@@ -991,19 +991,19 @@ PATH_MAX 的情况，这种情况下，内核首先从 names_cachep 中分配
 的 name 成员指向了从 names_cachep 中分配出来的内存，这个内存
 就用来存储用户空间传递下来的文件路径名，其逻辑如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000002.png)
+![](/assets/PDB/HK/HK000002.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A00011D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000A.jpg)
 
 #### struct files_struct
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000717.png)
+![](/assets/PDB/RPI/RPI000717.png)
 
 struct files_struct 结构用于管理进程打开文件的信息。
 
@@ -1032,17 +1032,17 @@ fd_array 成员是进程所有打开的文件数组。在 Linux 中，每个打�
 struct file 结构进行维护，进程将自己所有打开的文件的 struct file 维护在
 fd_array 中，并使用文件描述符进行索引.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A00012D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000D.jpg)
 
 #### struct fdtable
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000023.png)
+![](/assets/PDB/HK/HK000023.png)
 
 struct fdtable 数据结构用来管理进程的文件描述符。在进程中，每个打开
 的文件使用一个文件描述符进行管理，文件描述符是一个整形数值。struct
@@ -1113,34 +1113,34 @@ bitmap 中 BITS_PER_LONG 个 bit 的分配情况。例如 open_fds 中的第 n �
 BITS_PER_LONG bit 全部置位，那么对应 full_fds_bits 的 bit 也置位，以此
 表示 open_fds 对应的文件描述符全部分配。其关系如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000025.png)
+![](/assets/PDB/HK/HK000025.png)
 
 这样的设计就是利用了空间换时间，也为加速 struct fdtable 能够快速找到
 一个可用的文件描述符。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A00013D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### struct nameidata
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000030.png)
+![](/assets/PDB/HK/HK000030.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A00016D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000G.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000G.jpg)
 
 #### filp_cachep
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000033.png)
+![](/assets/PDB/HK/HK000033.png)
 
 filp_cachep 是一个 "struct file" 的缓存。由于内核运行过程中，需要
 大量的申请和释放 "struct file" 结构，为了减小这样操作带来的开销，
@@ -1149,23 +1149,23 @@ filp_cachep 是一个 "struct file" 的缓存。由于内核运行过程中，�
 
 filp_cachep 的初始化如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000034.png)
+![](/assets/PDB/HK/HK000034.png)
 
 系统初始化过程中，调用 files_init() 函数，并在函数内部调用
 kmem_cache_create() 函数分配缓存，缓存的名字是 "filp", 大小为
 "sizeof(struct file)".
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A00017D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### struct open_flags
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000038.png)
+![](/assets/PDB/HK/HK000038.png)
 
 struct open_flags 结构用于协助 open 系统调用管理相关的标志。open 系统调用
 将文件打开标志和文件访问标志传递到内核之后，内核调用 build_open_flags()
@@ -1176,7 +1176,7 @@ struct open_flags 结构用于协助 open 系统调用管理相关的标志。op
 
 open_flag 成员用于存储合法有效的文件打开标志。更多有效文件打开标志如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000559.png)
+![](/assets/PDB/RPI/RPI000559.png)
 
 > - [文件打开标示详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A10)
 
@@ -1184,7 +1184,7 @@ open_flag 成员用于存储合法有效的文件打开标志。更多有效文�
 
 mode 成员由于存储文件的访问权限和文件类型信息。更多标志如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000035.png)
+![](/assets/PDB/HK/HK000035.png)
 
 > - [文件权限标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
 
@@ -1193,7 +1193,7 @@ mode 成员由于存储文件的访问权限和文件类型信息。更多标志
 acc_mode 成员是用于存储文件的 permission 信息。该信息主要用于检测文件系统，
 inode 等是否具有相应的 permission 信息. 更多 permission 信息如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000558.png)
+![](/assets/PDB/RPI/RPI000558.png)
 
 ###### intent
 
@@ -1206,13 +1206,13 @@ lookup_flags 成员用于存储系统调用在文件系统中查找时候所使�
 
 > - [文件查找标志](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A14)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 # <span id="B2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### 快速实践系统调用
 
@@ -1226,7 +1226,7 @@ lookup_flags 成员用于存储系统调用在文件系统中查找时候所使�
 >
 > - [内核实统调用调试](#B22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -1270,15 +1270,15 @@ make linux-5.0-arm32_defconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 上图显示了 ARM32 实践环境的位置，以及相关的 README.md 文档，开发者
 可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM32 Linux 开发
 环境:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000340.png)
+![](/assets/PDB/RPI/RPI000340.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -1296,19 +1296,19 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+![](/assets/PDB/RPI/RPI000341.png)
 
 选择并进入 "[\*] Package  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+![](/assets/PDB/RPI/RPI000342.png)
 
 选择 "[\*]   strace" 和 "[\*]   System Call" 并进入 "[\*]   System Call  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000504.png)
+![](/assets/PDB/RPI/RPI000504.png)
 
 选择并进入 "[\*]   sys_open  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000505.png)
+![](/assets/PDB/RPI/RPI000505.png)
 
 选择 "[\*]   open() in C  --->" 保存配置并退出. 接下来执行下面的命令部署
 用户空间系统调用程序部署:
@@ -1318,7 +1318,7 @@ cd BiscuitOS
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
 
@@ -1340,13 +1340,13 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000506.png)
+![](/assets/PDB/RPI/RPI000506.png)
 
 上图中，main.c 与用户空间系统调用相关的源码,
 "open_common-0.0.1/Makefile" 是 main.c 交叉编译的逻辑。因此开发者只
 需关注 main.c, 内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000507.png)
+![](/assets/PDB/RPI/RPI000507.png)
 
 在该函数中，main 函数首先接收来自命令行的参数，并将其转换为 sys_open 系统
 调用所需的参数。由于 sys_open 支持两个参数和三个参数的类型，因此调用
@@ -1363,7 +1363,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -1377,7 +1377,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000508.png)
+![](/assets/PDB/RPI/RPI000508.png)
 
 开发者可以使用如下命令查看 open 系统调用工具的使用方法:
 
@@ -1399,7 +1399,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ~ # ls -l BiscuitOS_file
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000509.png)
+![](/assets/PDB/RPI/RPI000509.png)
 
 从运行结果可以看出，系统创建了指定的文件 BiscuitOS_file, 并且文件的拥有
 者和组权限都设置成指定的读权限。接着可以使用 strace 工具查看具体的系统调
@@ -1410,7 +1410,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ~ # strace open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000510.png)
+![](/assets/PDB/RPI/RPI000510.png)
 
 从 strace 打印的消息可以看出:
 
@@ -1421,7 +1421,7 @@ close(3)
 
 sys_open 系统调用已经成功触发，接下来进入系统调用内核部分。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -1449,11 +1449,11 @@ vi fs/open.c
 开发者可以在内核系统调用函数添加打印信息，结合用户空间系统调用传递的参数，
 进行调试，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000511.png)
+![](/assets/PDB/RPI/RPI000511.png)
 
 在文件中添加如下信息:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000528.png)
+![](/assets/PDB/RPI/RPI000528.png)
 
 添加完毕之后，在用户空间 sys_open 系统调用代码中添加如下:
 
@@ -1462,7 +1462,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/open_common-0.0.1
 vi open_common-0.0.1/main.c
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000529.png)
+![](/assets/PDB/RPI/RPI000529.png)
 
 重新编译内核和应用程序，并运行系统，执行下面命令:
 
@@ -1472,17 +1472,17 @@ make kernel
 make build
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000530.png)
+![](/assets/PDB/RPI/RPI000530.png)
 
 通过上面的运行结果可以看出，采用这样的办法可以快速高效的调试系统调用。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
 
 #### open 系统调用调试工具
 
@@ -1494,7 +1494,7 @@ make build
 >
 > - [工具使用](#C03)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
@@ -1514,7 +1514,7 @@ open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 打开的标志以及自定义打开的模式，工具支持多个打开标志同时使用。详细工具
 的使用参考下面章节。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------------------
 
@@ -1527,7 +1527,7 @@ open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 open_common-0.0.1 -h
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000604.png)
+![](/assets/PDB/RPI/RPI000604.png)
 
 从 open 系统调用调试工具的使用情况可以看出，open_common 必须提供一个文件
 路径名、打开文件标志以及文件模式，这样才能正常使用这个工具。
@@ -1577,13 +1577,13 @@ open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
 
 > - [文件打开模式标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 # <span id="C02"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### 工具部署
 
@@ -1605,13 +1605,13 @@ make linux-5.0-arm32_defconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 上图显示了 ARM32 实践环境的位置，以及相关的 README.md 文档，开发者
 可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM32 Linux 开发
 环境:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000340.png)
+![](/assets/PDB/RPI/RPI000340.png)
 
 如果需要在其他架构上部署该工具，可以参考下面文档:
 
@@ -1627,7 +1627,7 @@ make
 >
 > - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 BiscuitOS 提供了一套完整的系统调用编译系统，开发者可以使用下面步骤快速简单
 的部署该工具，BiscuitOS 并可以对该工具从源码进行交叉编译，安装，
@@ -1640,19 +1640,19 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+![](/assets/PDB/RPI/RPI000341.png)
 
 选择并进入 "[\*] Package  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+![](/assets/PDB/RPI/RPI000342.png)
 
 选择 "[\*]   strace" 和 "[\*]   System Call" 并进入 "[\*]   System Call  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000605.png)
+![](/assets/PDB/RPI/RPI000605.png)
 
 选择并进入 "[\*]   sys_open  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000606.png)
+![](/assets/PDB/RPI/RPI000606.png)
 
 选择 "[\*]   open() in C  --->" 保存配置并退出. 接下来执行下面的命令部署
 用户空间系统调用程序部署:
@@ -1662,7 +1662,7 @@ cd BiscuitOS
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
 
@@ -1684,13 +1684,13 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000506.png)
+![](/assets/PDB/RPI/RPI000506.png)
 
 上图中，main.c 与用户空间系统调用相关的源码,
 "open_common-0.0.1/Makefile" 是 main.c 交叉编译的逻辑。因此开发者只
 需关注 main.c, 内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000607.png)
+![](/assets/PDB/RPI/RPI000607.png)
 
 在该函数中，main 函数首先接收来自命令行的参数，并将其转换为 sys_open 系统
 调用所需的参数。由于 sys_open 支持两个参数和三个参数的类型，因此调用
@@ -1707,7 +1707,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -1721,7 +1721,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000508.png)
+![](/assets/PDB/RPI/RPI000508.png)
 
 开发者可以使用如下命令查看 open 系统调用工具的使用方法:
 
@@ -1743,7 +1743,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ~ # ls -l BiscuitOS_file
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000509.png)
+![](/assets/PDB/RPI/RPI000509.png)
 
 从运行结果可以看出，系统创建了指定的文件 BiscuitOS_file, 并且文件的拥有
 者和组权限都设置成指定的读权限。接着可以使用 strace 工具查看具体的系统调
@@ -1754,7 +1754,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ~ # strace open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000510.png)
+![](/assets/PDB/RPI/RPI000510.png)
 
 从 strace 打印的消息可以看出:
 
@@ -1767,13 +1767,13 @@ close(3)
 系统调用已经成功触发，接下开发者可以使用这个工具为 sys_open() 源码创造
 指定的情况.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
 
 #### 任意长度文件名工具
 
@@ -1785,7 +1785,7 @@ close(3)
 >
 > - [工具使用](#C13)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
@@ -1806,7 +1806,7 @@ getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 打开的标志以及自定义打开的模式，工具支持多个打开标志同时使用。详细工具
 的使用参考下面章节。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------------------
 
@@ -1819,7 +1819,7 @@ getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 getname_common-0.0.1 -h
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000608.png)
+![](/assets/PDB/RPI/RPI000608.png)
 
 从任意长度文件名工具的使用情况可以看出，getname_common 必须提供文件
 名长度、打开文件标志以及文件模式，这样才能正常使用这个工具。
@@ -1868,13 +1868,13 @@ getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
 
 > - [文件打开模式标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 # <span id="C12"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### 工具部署
 
@@ -1896,13 +1896,13 @@ make linux-5.0-arm32_defconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 上图显示了 ARM32 实践环境的位置，以及相关的 README.md 文档，开发者
 可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM32 Linux 开发
 环境:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000340.png)
+![](/assets/PDB/RPI/RPI000340.png)
 
 如果需要在其他架构上部署该工具，可以参考下面文档:
 
@@ -1918,7 +1918,7 @@ make
 >
 > - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 BiscuitOS 提供了一套完整的系统调用编译系统，开发者可以使用下面步骤快速简单
 的部署该工具，BiscuitOS 并可以对该工具从源码进行交叉编译，安装，
@@ -1931,19 +1931,19 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+![](/assets/PDB/RPI/RPI000341.png)
 
 选择并进入 "[\*] Package  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+![](/assets/PDB/RPI/RPI000342.png)
 
 选择 "[\*]   strace" 和 "[\*]   System Call" 并进入 "[\*]   System Call  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000605.png)
+![](/assets/PDB/RPI/RPI000605.png)
 
 选择并进入 "[\*]   sys_open  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000609.png)
+![](/assets/PDB/RPI/RPI000609.png)
 
 选择 "[\*]   getname(): Max open file name  --->" 保存配置并退出. 接下来执
 行下面的命令部署用户空间系统调用程序部署:
@@ -1953,7 +1953,7 @@ cd BiscuitOS
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
 
@@ -1975,13 +1975,13 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000610.png)
+![](/assets/PDB/RPI/RPI000610.png)
 
 上图中，main.c 与用户空间系统调用相关的源码,
 "getname_common-0.0.1/Makefile" 是 main.c 交叉编译的逻辑。因此开发者只
 需关注 main.c, 内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000611.png)
+![](/assets/PDB/RPI/RPI000611.png)
 
 在该函数中，main 函数首先接收来自命令行的参数，函数获得文件名的长度之后，
 将 path 字符数组的全部字节设置为 'B' 字符，并在字符数组的指定长度末尾设置
@@ -2000,7 +2000,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -2014,7 +2014,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000612.png)
+![](/assets/PDB/RPI/RPI000612.png)
 
 开发者可以使用如下命令查看 open 系统调用工具的使用方法:
 
@@ -2037,7 +2037,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ~ # ls -l BB*
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000613.png)
+![](/assets/PDB/RPI/RPI000613.png)
 
 从运行结果可以看出，系统创建了文件名长度为 128 的文件, 并且文件的拥有
 者和组权限都设置成指定的读权限。接着可以使用 strace 工具查看具体的系统调
@@ -2048,7 +2048,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ~ # strace getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000614.png)
+![](/assets/PDB/RPI/RPI000614.png)
 
 从 strace 打印的消息可以看出:
 
@@ -2061,13 +2061,13 @@ close(3)
 系统调用已经成功触发，接下开发者可以使用这个工具为 sys_open() 源码创造
 指定的情况.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 #### 打开任意个文件工具
 
@@ -2079,7 +2079,7 @@ close(3)
 >
 > - [工具使用](#C23)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
@@ -2100,7 +2100,7 @@ number_open_common-0.0.1 -n 2 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 同理可以自定义打开的标志以及自定义打开的模式，工具支持多个打开标志同时
 使用。详细工具的使用参考下面章节。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------------------
 
@@ -2112,7 +2112,7 @@ number_open_common-0.0.1 -n 2 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 number_open_common-0.0.1 -h
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000615.png)
+![](/assets/PDB/RPI/RPI000615.png)
 
 从打开任意个文件工具的使用情况可以看出，open_common 必须提供一个文件
 路径名、打开文件标志以及文件模式，这样才能正常使用这个工具。
@@ -2171,13 +2171,13 @@ number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
 
 > - [文件打开模式标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 # <span id="C22"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### 工具部署
 
@@ -2199,13 +2199,13 @@ make linux-5.0-arm32_defconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 上图显示了 ARM32 实践环境的位置，以及相关的 README.md 文档，开发者
 可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM32 Linux 开发
 环境:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000340.png)
+![](/assets/PDB/RPI/RPI000340.png)
 
 如果需要在其他架构上部署该工具，可以参考下面文档:
 
@@ -2221,7 +2221,7 @@ make
 >
 > - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 BiscuitOS 提供了一套完整的系统调用编译系统，开发者可以使用下面步骤快速简单
 的部署该工具，BiscuitOS 并可以对该工具从源码进行交叉编译，安装，
@@ -2234,19 +2234,19 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+![](/assets/PDB/RPI/RPI000341.png)
 
 选择并进入 "[\*] Package  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+![](/assets/PDB/RPI/RPI000342.png)
 
 选择 "[\*]   strace" 和 "[\*]   System Call" 并进入 "[\*]   System Call  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000605.png)
+![](/assets/PDB/RPI/RPI000605.png)
 
 选择并进入 "[\*]   sys_open  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000616.png)
+![](/assets/PDB/RPI/RPI000616.png)
 
 选择 "[\*]   open number files  --->" 保存配置并退出. 接下来执行下面的命令
 部署用户空间系统调用程序部署:
@@ -2256,7 +2256,7 @@ cd BiscuitOS
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
 
@@ -2278,13 +2278,13 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000617.png)
+![](/assets/PDB/RPI/RPI000617.png)
 
 上图中，main.c 与用户空间系统调用相关的源码,
 "number_open_common-0.0.1/Makefile" 是 main.c 交叉编译的逻辑。因此开发者只
 需关注 main.c, 内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000618.png)
+![](/assets/PDB/RPI/RPI000618.png)
 
 在该函数中，main 函数首先接收来自命令行的参数，解析出需要打开的文件数量，
 为文件描述符指针数组分配指定长度的内存，然后使用 for 循环分配打开一个文件，
@@ -2306,7 +2306,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -2320,7 +2320,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000619.png)
+![](/assets/PDB/RPI/RPI000619.png)
 
 开发者可以使用如下命令查看工具的使用方法:
 
@@ -2342,7 +2342,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ~ # ls -l BiscuitOS*
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000620.png)
+![](/assets/PDB/RPI/RPI000620.png)
 
 从运行结果可以看出，系统创建了指定的文件 BiscuitOS-*, 并且文件的拥有
 者和组权限都设置成指定的读权限。接着可以使用 strace 工具查看具体的系统调
@@ -2353,7 +2353,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ~ # strace number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000621.png)
+![](/assets/PDB/RPI/RPI000621.png)
 
 从 strace 打印的消息可以看出:
 
@@ -2370,13 +2370,13 @@ close(3)
 系统调用已经成功触发，接下开发者可以使用这个工具为 sys_open() 源码创造
 指定的情况.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C3"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
 
 #### strace
 
@@ -2388,7 +2388,7 @@ close(3)
 >
 > - [工具使用](#C33)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
@@ -2400,7 +2400,7 @@ strace 常用来跟踪进程执行时的系统调用和所接收的信号。 在
 设备。strace 可以跟踪到一个进程产生的系统调用, 包括参数，返回值，执行消耗
 的时间等。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
@@ -2460,13 +2460,13 @@ strace 参数如下:
 -u username            以 username 的 UID 和 GID 执行被跟踪的命令.
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 # <span id="C32"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000D.jpg)
 
 #### 工具部署
 
@@ -2488,13 +2488,13 @@ make linux-5.0-arm32_defconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 上图显示了 ARM32 实践环境的位置，以及相关的 README.md 文档，开发者
 可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM32 Linux 开发
 环境:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000340.png)
+![](/assets/PDB/RPI/RPI000340.png)
 
 如果需要在其他架构上部署该工具，可以参考下面文档:
 
@@ -2510,7 +2510,7 @@ make
 >
 > - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 BiscuitOS 提供了一套完整的系统调用编译系统，开发者可以使用下面步骤快速简单
 的部署该工具，BiscuitOS 并可以对该工具从源码进行交叉编译，安装，
@@ -2523,11 +2523,11 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+![](/assets/PDB/RPI/RPI000341.png)
 
 选择并进入 "[\*] Package  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+![](/assets/PDB/RPI/RPI000342.png)
 
 选择 "[\*]   strace  --->" 保存配置并退出. 接下来执行下面的命令
 部署用户空间系统调用程序部署:
@@ -2537,7 +2537,7 @@ cd BiscuitOS
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
 
@@ -2565,7 +2565,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -2579,7 +2579,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000718.png)
+![](/assets/PDB/RPI/RPI000718.png)
 
 开发者可以使用如下命令查看工具:
 
@@ -2587,26 +2587,26 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ~ # strace mkdir BiscuitOS
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000719.png)
+![](/assets/PDB/RPI/RPI000719.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C4"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 #### /prco/sys/fs 参数合集
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000722.png)
+![](/assets/PDB/RPI/RPI000722.png)
 
 Linux 在 /proc/sys/fs 节点下提供了很多参数供开发者动态修改或获得特定的系统
 参数，其中关于 open 系统调用相关的参数如下:
 
 > - [nr_open](#C40)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------
 
@@ -2619,7 +2619,7 @@ nr_open 参数用于控制进程最大可打开文件的数量，可以使用如
 cat /proc/sys/fs/nr_open
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000720.png)
+![](/assets/PDB/RPI/RPI000720.png)
 
 也可以动态修改进程最大文件打开数, 使用如下命令:
 
@@ -2628,19 +2628,19 @@ echo 544 > /proc/sys/fs/nr_open
 cat /proc/sys/fs/nr_open
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000721.png)
+![](/assets/PDB/RPI/RPI000721.png)
 
 值得注意的是 nr_open 不一定能够控制进程最大文件打开数，需要和 "ulimit -n"
 参数，以及特定的文件系统结合才有效果，但一般情况下，只要 nr_open 小于
 "ulimit -m" 的时候，设置 nr_open 是可以起到效果的。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C5"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000D.jpg)
 
 #### ulimit
 
@@ -2651,7 +2651,7 @@ shell 进程及其子进程的资源使用设置限制。使用格式如下:
 ulimit -a
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000723.png)
+![](/assets/PDB/RPI/RPI000723.png)
 
 ###### 参数说明
 
@@ -2682,15 +2682,15 @@ ulimit -n 4096
 ulimit -n
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000724.png)
+![](/assets/PDB/RPI/RPI000724.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="B3"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000D.jpg)
 
 #### 实践建议
 
@@ -2707,7 +2707,7 @@ ulimit -n
 
 准备好上面的内容之后，接下来就是进入源码级实践调试，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000670.png)
+![](/assets/PDB/RPI/RPI000670.png)
 
 上图是 open 系统调用相关的某个函数调用过程，开发者可以根据上图的调用
 关系，在下面的文档中找到合适的入口进行源码调试:
@@ -2721,7 +2721,7 @@ ulimit -n
 
 写在最后，开发者也可以在 BiscuitOS 社区进行 open 系统调用的讨论。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
@@ -2738,4 +2738,4 @@ ulimit -n
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

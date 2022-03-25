@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -25,7 +25,7 @@ tags:
 -----------------------------------
 <span id="SC00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 ## 测试说明
 
@@ -71,7 +71,7 @@ test_find_first_bit()、test_find_next_and_bit() 所花费的时间。测试
 -----------------------------------
 <span id="SC01"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 ## 测试方法
 
@@ -86,15 +86,15 @@ test_find_first_bit()、test_find_next_and_bit() 所花费的时间。测试
 make menuconfig ARCH=arm
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000136.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000136.png)
 
 选择 **Kernel hacking --->**
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000137.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000137.png)
 
 选择 **Runtime Testing --->**
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000138.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000138.png)
 
 选择 **Test find_bit functions --->**, 选中后保存退出，并重新编译内核。具体过程请参考：
 
@@ -109,7 +109,7 @@ make menuconfig ARCH=arm
 -----------------------------------
 <span id="SC02"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 ## 测试分析
 
@@ -187,4 +187,4 @@ find_last_bit() 函数越容易找到置位的 bit。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

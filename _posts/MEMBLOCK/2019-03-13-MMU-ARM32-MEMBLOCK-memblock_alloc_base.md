@@ -8,9 +8,9 @@ tags:
   - MMU
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -198,7 +198,7 @@ MEMBLOCK 通过上面的数据结构管理 arm32 早期的物理内存，使操�
 物理内存，也可以将指定的物理内存预留给操作系统。通过这样的逻辑操作，早期的物理的内存得
 到有效的管理，防止内存泄露和内存分配失败等问题。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------------
 
@@ -559,7 +559,7 @@ memblock_reserve() 函数源码分析请看:
 
 <span id="实践"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 ### 实践
 
@@ -581,7 +581,7 @@ memblock_reserve() 函数源码分析请看:
 >
 > [驱动分析](#驱动分析)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
@@ -897,7 +897,7 @@ Region: 0x9ff00000 - 0xa0000000
 0x9ff00000, 长度为 0x100000 的内存区，再者，预留区内多了一块内存区块：
 [0x9ff00000, 0xa0000000], 因此分配成功。更多原理请看源码分析。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -915,4 +915,4 @@ Region: 0x9ff00000 - 0xa0000000
 
 #### 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

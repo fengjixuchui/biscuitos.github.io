@@ -8,7 +8,7 @@ tags:
   - DTS
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/DEV000106.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/DEV000106.jpg)
 
 > Github: [for_each_available_child_of_node](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/for_each_available_child_of_node)
 >
@@ -383,7 +383,7 @@ make ARCH=arm BiscuitOS/output/linux-4.20.8/arm-linux-gnueabi/arm-linux-gnueabi/
 
 # <span id="附录">附录</span>
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
 
 
 

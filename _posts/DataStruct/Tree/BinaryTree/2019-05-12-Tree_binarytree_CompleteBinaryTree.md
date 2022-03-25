@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 > [Github: 完全二叉树](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/binary-tree/Class/Complete_BinaryTree)
 >
@@ -27,7 +27,7 @@ tags:
 
 # <span id="原理">完全二叉树原理</span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000070.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000070.png)
 
 在二叉树中，完全二叉树从根结点到倒数第二层满足完美二叉树，最后一层可以不完全填充，
 其叶子结点都靠左对齐。如上图中的二叉树就是一个完美二叉树。接下来通过一个实践进一
@@ -292,4 +292,4 @@ The Binary-Tree leaf: 5
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

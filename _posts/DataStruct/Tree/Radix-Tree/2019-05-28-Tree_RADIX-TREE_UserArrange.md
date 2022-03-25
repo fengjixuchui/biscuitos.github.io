@@ -8,7 +8,7 @@ tags:
   - RBTREE
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 > [Github: 用户空间 Radix-Tree](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree/Basic)
 >
@@ -25,7 +25,7 @@ tags:
 -----------------------------------
 <span id="Radix-Tree 部署方法"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 ## Radix-Tree 部署方法
 
@@ -48,7 +48,7 @@ radix.h 中包含了调用 Radix-Tree 的接口。
 
 <span id="Radix-Tree使用方法"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 ## Radix-Tree 使用方法
 
@@ -198,4 +198,4 @@ int main()
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

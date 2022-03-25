@@ -8,7 +8,7 @@ tags:
   - syscall
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -47,13 +47,13 @@ tags:
 > - [task_rlimit](#A0000016)
 
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000000">build_open_flags</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000555.png)
+![](/assets/PDB/RPI/RPI000555.png)
 
 build_open_flags 函数用于处理 open 系统调用从用户空间传递下来的 flags
 参数和 mode 参数，经过处理合成内核打开文件所需的标志, 标志存在在 
@@ -65,13 +65,13 @@ struct open_flags 结构中。(源码较长分段解析)。开发者如果需要
 
 ###### 源码 1
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000556.png)
+![](/assets/PDB/RPI/RPI000556.png)
 
 参数 flags 是从用户空间传递下来的文件打开标志，mode 参数是 open 系统调用
 的 mode 参数，op 参数是一个指向 struct open_flags 的指针。struct open_flags
 的结构体定义如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000557.png)
+![](/assets/PDB/RPI/RPI000557.png)
 
 open_flag 成员由于存储 open 系统调用打开标志; mode 用于存储 open 系统调用
 的 mode 标志; acc_mode 用于存储文件的访问标志; intent 成员用于存储;
@@ -101,7 +101,7 @@ lookup_flags 标志用于存储查找文件的标志. 以上成员存储这不�
 变量里。VALID_OPEN_FLAGS 宏包含了内核支持的所有打开标志，上面的代码处理之后，
 内核过滤了 flags 参数不合法的文件打开标志。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000559.png)
+![](/assets/PDB/RPI/RPI000559.png)
 
 开发者可以利用 BiscuitOS 提供的 open 工具调试上面的代码，以此查看每个
 结果的具体导, 例如在 BiscuitOS 上使用 open 工具传递不同的文件打开标志。
@@ -114,7 +114,7 @@ lookup_flags 标志用于存储查找文件的标志. 以上成员存储这不�
 
 ###### 源码 2
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000560.png)
+![](/assets/PDB/RPI/RPI000560.png)
 
 函数接着检查文件打开参数中是否包含了 O_CREAT 或者 \_\_O_TMPFILE 标志，
 如果包含，那么函数将 mode 参数与 S_IALLUGO 相与之后并加上 S_IFREG 标志
@@ -130,11 +130,11 @@ lookup_flags 标志用于存储查找文件的标志. 以上成员存储这不�
 
 并在源码中添加如下打印信息:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000561.png)
+![](/assets/PDB/RPI/RPI000561.png)
 
 重新编译内核并运行 open 工具，内核打印如下信息:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000562.png)
+![](/assets/PDB/RPI/RPI000562.png)
 
 在上面的测试命令中，由于 mode 默认的参数中就包含了 S_IRUSR 和 S_IRGRP, 其
 值为 0x120, 此时 S_IFREG 的值是 0x8000, 因此从运行的结果来看，只要包含了
@@ -146,7 +146,7 @@ O_CREAT 或者 \_\_O_TMPFILE 标志，那么 struct open_flags 的 mode 成员�
 移除的原因是用户空间不应该设置这两个标志。开发者也可以试着在用户空间加上
 O_CLOEXEC 标志，看看测试结果，源码修改如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000563.png)
+![](/assets/PDB/RPI/RPI000563.png)
 
 {% highlight c %}
 ~ # open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CLOEXEC -m S_IRUSR,S_IRGRP
@@ -154,14 +154,14 @@ O_CLOEXEC 标志，看看测试结果，源码修改如下:
 
 重新编译内核，运行上面的命令，结果如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000564.png)
+![](/assets/PDB/RPI/RPI000564.png)
 
 从上图可以看到 O_CLOEXEC 的值是 0x80000, 经过上面的代码处理之后，O_CLOEXEC
 已经从 flags 参数中剔除了.
 
 ###### 源码 3
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000565.png)
+![](/assets/PDB/RPI/RPI000565.png)
 
 函数检测打开参数中是否包含 \_\_O_SYNC, 该标志用于表示以同步 I/O 方式打开
 文件，具体分析请看如下链接:
@@ -178,11 +178,11 @@ O_CLOEXEC 标志，看看测试结果，源码修改如下:
 ~ # open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,__O_SYNC -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000566.png)
+![](/assets/PDB/RPI/RPI000566.png)
 
 重新编译内核和运行调试命令, 结果如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000567.png)
+![](/assets/PDB/RPI/RPI000567.png)
 
 从运行结果可以看出，源码将 O_DSYNC(0x1000) 标志加到 flags 变量里. 这个标志
 在执行同步时候有使用。
@@ -209,7 +209,7 @@ O_CLOEXEC 标志，看看测试结果，源码修改如下:
 或者此时 "O_CREAT" 标志存在，那么内核就报错，此时可以在 BiscuitOS 进行
 如下测试, 内核中加入调试代码:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000568.png)
+![](/assets/PDB/RPI/RPI000568.png)
 
 重新编译内核并在 BiscuitOS 运行测试命令:
 
@@ -219,7 +219,7 @@ O_CLOEXEC 标志，看看测试结果，源码修改如下:
 
 运行结果如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000569.png)
+![](/assets/PDB/RPI/RPI000569.png)
 
 从运行结果来看，内核并没有在指定的位置报错，只是从其他位置报错。为了保证
 测试不受上一次测试影响，重新启动 BiscuitOS，接着使用如下测试命令:
@@ -228,7 +228,7 @@ O_CLOEXEC 标志，看看测试结果，源码修改如下:
 ~ # open_common-0.0.1 -p BiscuitOS_file -f __O_TMPFILE,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000570.png)
+![](/assets/PDB/RPI/RPI000570.png)
 
 从运行结果来看，内核从指定位置报错，因此这样的打开标志是不正确的。为了保证
 测试不受上一次测试影响，重新启动 BiscuitOS，接着使用如下测试命令:
@@ -237,7 +237,7 @@ O_CLOEXEC 标志，看看测试结果，源码修改如下:
 ~ # open_common-0.0.1 -p BiscuitOS_file -f __O_TMPFILE -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000571.png)
+![](/assets/PDB/RPI/RPI000571.png)
 
 从运行结果来看，内核从指定位置报错，这组打开标志也不正确。为了保证
 测试不受上一次测试影响，重新启动 BiscuitOS，接着使用如下测试命令:
@@ -246,7 +246,7 @@ O_CLOEXEC 标志，看看测试结果，源码修改如下:
 ~ # open_common-0.0.1 -p BiscuitOS_file -f __O_TMPFILE,O_CREAT,O_DIRECTORY -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000572.png)
+![](/assets/PDB/RPI/RPI000572.png)
 
 从运行结果看出，内核从指定的位置报错了，这组标志也不正确，因此结合上面几组
 测试结果，可以得知，当打开标志包含 __O_TMPFILE 标志的时候，组合情况如下:
@@ -267,7 +267,7 @@ ACC_MODE() 宏处理打开标志中，需要包含可写权限，从 ACC_MODE �
 因此在使用 \_\_O_TMPFILE 标志的时候，需要加上 O_RDWR 和 O_DIRECTORY 标志，
 接下来在 BiscuitOS 上进行调试，源码中添加如下调试信息:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000573.png)
+![](/assets/PDB/RPI/RPI000573.png)
 
 重新编译内核，运行 BiscuitOS 并使用如下测试命令:
 
@@ -275,7 +275,7 @@ ACC_MODE() 宏处理打开标志中，需要包含可写权限，从 ACC_MODE �
 ~ # open_common-0.0.1 -p BiscuitOS_file -f __O_TMPFILE,O_RDWR,O_DIRECTORY -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000574.png)
+![](/assets/PDB/RPI/RPI000574.png)
 
 从运行的结果可以看出，虽然没有正确创建文件，但使用上面的命令之后，这段代码
 是可以正确执行。如果此时不给 O_RDWR 标志，那么重新启动 BiscuitOS，运行如下
@@ -285,7 +285,7 @@ ACC_MODE() 宏处理打开标志中，需要包含可写权限，从 ACC_MODE �
 ~ # open_common-0.0.1 -p BiscuitOS_file -f __O_TMPFILE,O_DIRECTORY -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000575.png)
+![](/assets/PDB/RPI/RPI000575.png)
 
 从运行的结果可以看出，如果此时不包含 O_RDWR 命令，那么内核就返回 EINVAL 错误。
 
@@ -304,7 +304,7 @@ O_NOFOLLOW、O_PATH 中的一个或者多个标志。并且将 acc_mode 设置�
 开发者可以在 BiscuitOS 上测试但包含 O_PATH flags 的时候，是否不能包含上面
 的三个标志之外的其他标志，添加测试代码如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000576.png)
+![](/assets/PDB/RPI/RPI000576.png)
 
 重新编译内核，运行 BiscuitOS 并使用如下命令:
 
@@ -312,7 +312,7 @@ O_NOFOLLOW、O_PATH 中的一个或者多个标志。并且将 acc_mode 设置�
 ~ # open_common-0.0.1 -p BiscuitOS_file -f O_PATH,O_RDWR -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000577.png)
+![](/assets/PDB/RPI/RPI000577.png)
 
 从上图的运行情况可以看出，O_RDWR 标志已经从 flags 变量中移除。重启 BiscuitOS，
 再使用如下命令:
@@ -321,14 +321,14 @@ O_NOFOLLOW、O_PATH 中的一个或者多个标志。并且将 acc_mode 设置�
 ~ # open_common-0.0.1 -p BiscuitOS_file -f O_PATH,O_RDWR,O_DIRECTORY -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000578.png)
+![](/assets/PDB/RPI/RPI000578.png)
 
 从上图可以看出，O_RDWR 标志从 flags 变量中移除，但 O_DIRECTORY 标志和 O_PATH
 标志都保留在 flags 变量中。
 
 ###### 源码 4
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000579.png)
+![](/assets/PDB/RPI/RPI000579.png)
 
 函数将处理完的 flags 变量存储在 struct open_flags 的 open_flags 成员里。
 如果此时打开标志中包含了 O_TRUNC 标志，该标志如果文件已经存在且为普通文件，
@@ -340,7 +340,7 @@ O_NOFOLLOW、O_PATH 中的一个或者多个标志。并且将 acc_mode 设置�
 如果 O_TRUNC 标志存在，那么也就以为了会对打开的文件执行写操作，因此将 acc_mode
 变量增加 MAY_WRITE 权限。在 BiscuitOS 中实践这段代码，添加如下调试信息:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000582.png)
+![](/assets/PDB/RPI/RPI000582.png)
 
 重新编译内核，运行 BiscuitOS，使用如下测试命令:
 
@@ -348,7 +348,7 @@ O_NOFOLLOW、O_PATH 中的一个或者多个标志。并且将 acc_mode 设置�
 ~ # open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT,O_TRUNC -m S_IRUSR
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000581.png)
+![](/assets/PDB/RPI/RPI000581.png)
 
 从上图的运行情况来看，由于起初 open 只传递了 S_IRUSR 的读权限，经过上面
 代码处理之后，acc_mode 中增加了 MAY_WRITE 的权限. 
@@ -362,7 +362,7 @@ O_NOFOLLOW、O_PATH 中的一个或者多个标志。并且将 acc_mode 设置�
 如果此时打开标志中包含了 O_APPEND, 那么函数中就让 acc_mode 变量增加
 MAY_APPEND 标志。同理在 BiscuitOs 上实践这段代码，在源码做如下修改:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000580.png)
+![](/assets/PDB/RPI/RPI000580.png)
 
 重新编译源码，运行 BiscuitOS，并使用如下调试命令:
 
@@ -370,7 +370,7 @@ MAY_APPEND 标志。同理在 BiscuitOs 上实践这段代码，在源码做如�
 ~ # open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT,O_APPEND -m S_IRUSR,S_IWUSR
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000583.png)
+![](/assets/PDB/RPI/RPI000583.png)
 
 从运行结果可以看出，acc_mode 中添加了 MAY_APPEND 的支持. 回到源码，处理
 完上面的代码之后，函数将 acc_mode 变量存储到 struct open_flags 的 acc_mode
@@ -378,7 +378,7 @@ MAY_APPEND 标志。同理在 BiscuitOs 上实践这段代码，在源码做如�
 
 ###### 源码 5
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000584.png)
+![](/assets/PDB/RPI/RPI000584.png)
 
 函数再次判断此时 flags 变量中是否包含 O_PATH 标志，该标志用于获得一个能表
 示文件在文件系统中位置的文件描述符. 具体含义参考如下:
@@ -398,7 +398,7 @@ MAY_APPEND 标志。同理在 BiscuitOs 上实践这段代码，在源码做如�
 intent 成员增加 LOOKUP_EXCL 标志。开发者可以在 BiscuitOS 上实践上面的代码，
 添加源码修改如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000585.png)
+![](/assets/PDB/RPI/RPI000585.png)
 
 重新编译内核源码，运行 BiscuitOS，使用如下调试命令:
 
@@ -406,14 +406,14 @@ intent 成员增加 LOOKUP_EXCL 标志。开发者可以在 BiscuitOS 上实践�
 ~ # open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT,O_EXCL -m S_IRUSR,S_IWUSR
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000586.png)
+![](/assets/PDB/RPI/RPI000586.png)
 
 从上面的运行结果可以看出，使用上面的标志，struct open_flags 的 intent 成员
 已经包含了 LOOKUP_CREATE、LOOKUP_OPEN 和 LOOKUP_EXCL 标志。
 
 ###### 源码 6
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000587.png)
+![](/assets/PDB/RPI/RPI000587.png)
 
 函数检查 flags 变量此时是否包含 O_DIRECTORY 即这是与目录有关的操作，那么
 函数将 LOOKUP_DIRECTORY 标志加入到 lookup_flags 变量里。接着函数检查
@@ -424,7 +424,7 @@ build_open_flags() 函数分析完毕。总结该函数对打开标志和权限�
 各种处理之后，将结果存储在 struct open_flags 结果里面，以供接下来的函数
 使用。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
@@ -442,19 +442,19 @@ ACC_MODE 宏定义如下:
 则返回 "06"; 值为 3，则返回 "06". ACC_MODE() 的返回值代表的含义与内核可能
 的访问权限有关，其具体含义如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000558.png)
+![](/assets/PDB/RPI/RPI000558.png)
 
 MAY 标志的具体含义可以参考如下文档:
 
 > - [MAY 标志解析]()
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000002">gename/getname_flags</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000542.png)
+![](/assets/PDB/RPI/RPI000542.png)
 
 getname()/getname_flags() 函数用于从用户空间拷贝字符串到内核空间作为
 文件在内核中的名字 (源码较长分段解析). 开发者如果需要在 BiscuitOS
@@ -472,7 +472,7 @@ getname_flags() 函数，getname_flags() 函数就是文件名处理的第一个
 
 ###### 源码 1
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000543.png)
+![](/assets/PDB/RPI/RPI000543.png)
 
 函数首先包含三个参数，第一个参数使用指向用户空间的文件名; 第二个参数是
 文件打开的标志; 第三个参数是 empty。函数首先定义了一个 struct filename
@@ -484,7 +484,7 @@ getname_flags() 函数，getname_flags() 函数就是文件名处理的第一个
 "BUILD_BUG_ON()" 宏配合 offsetof() 函数确认 struct filename 结构体中，
 iname 之前的数据是否按 long 对齐，如果没有对齐，那么就报错.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000021.png)
+![](/assets/PDB/HK/HK000021.png)
 
 从上面的定义可以看出 struct filename 结构 name 成员到 aname 成员占用了
 16 个字节，16 正好按 long 对齐，因此此时不会报错。函数接着调用
@@ -493,9 +493,9 @@ audit_reusename() 函数对打开文件名进行检测，但由于当前内核�
 该函数用于从 names_cachep 缓存中为 result 分配内存，接着对分配的结果做了
 简单的检查。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000544.png)
+![](/assets/PDB/RPI/RPI000544.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000546.png)
+![](/assets/PDB/RPI/RPI000546.png)
 
 从 names_cachep 缓存中分配内存之后，struct filename 的内存布局如上，
 "iname[]" 是一个零长数组，不占用 struct filename 的空间，因此 iname
@@ -503,12 +503,12 @@ audit_reusename() 函数对打开文件名进行检测，但由于当前内核�
 
 ###### 源码 2
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000545.png)
+![](/assets/PDB/RPI/RPI000545.png)
 
 函数将 kname 指针指向了 struct filename 的 iname 成员，接着让 struct filename
 的 name 成员指向了 kname 成员，这样就会出现下图的效果:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000547.png)
+![](/assets/PDB/RPI/RPI000547.png)
 
 函数调用 strncpy_from_user() 函数从 filename 参数指向用户空间内存拷贝
 长度为 EMBEDDED_NAME_MAX 的数据到 kname 指向的内核空间。并将最终拷贝的字
@@ -517,7 +517,7 @@ audit_reusename() 函数对打开文件名进行检测，但由于当前内核�
 话，打开的文件名将被存储到 struct filename 的 iname 区域，此时开发者可以
 添加打印函数进行查看文件名, 如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000548.png)
+![](/assets/PDB/RPI/RPI000548.png)
 
 开发者可以参考上面的代码进行打印，但要注意两种打印方式，第二种是错误的，
 这会引起非法访问，在用户空间使用如下命令进行测试:
@@ -526,7 +526,7 @@ audit_reusename() 函数对打开文件名进行检测，但由于当前内核�
 ~ # getname_common-0.0.1 -l 10 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000549.png)
+![](/assets/PDB/RPI/RPI000549.png)
 
 第一个函数正确的打印了一个长度为 10，名字为 "BBBBBBBBBB" 的文件名。而
 第二个函数则直接导致系统挂住死机。因此开发者要非常注意不能在内核中使用
@@ -534,7 +534,7 @@ audit_reusename() 函数对打开文件名进行检测，但由于当前内核�
 
 ###### 源码 3
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000550.png)
+![](/assets/PDB/RPI/RPI000550.png)
 
 但打开文件名的长度为 EMBEDDED_NAME_MAX, 其定义如下:
 
@@ -543,19 +543,19 @@ audit_reusename() 函数对打开文件名进行检测，但由于当前内核�
 #define EMBEDDED_NAME_MAX       (PATH_MAX - offsetof(struct filename, iname))
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000551.png)
+![](/assets/PDB/RPI/RPI000551.png)
 
 从上图可以看出 EMBEDDED_NAME_MAX 的长度，如果此时打开文件名字长度正好为
 EMBEDDED_ANME_MAX, 那么函数就首先使用 "offsetof(struct filename, iname[1])"
 计算其长度，iname[1] 指向 iname[0] 的下一个地址，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000552.png)
+![](/assets/PDB/RPI/RPI000552.png)
 
 函数将 kname 指向了 result 指向的内存空间，接着调用 kzalloc() 函数分配
 长度为 size 的空间，并使用 result 指向其起始地址。接着对分配的内存检测。
 然后将 result 的 name 成员指向 kname，此时内存布局如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000553.png)
+![](/assets/PDB/RPI/RPI000553.png)
 
 此时从 kmalloc 内存分配的新 struct filename 的 name 成员指向了原先从
 names_cachep 分配的内存，此时原先的内存用于存储从用户空间拷贝的打开文件
@@ -567,7 +567,7 @@ names_cachep 缓存。如果拷贝成功，但拷贝长度为 PATH_MAX, 那么�
 名长度大于或等于 EMBEDDED_NAME_MAX 且小于 PATH_MAX, 那么算合法文件名。
 接下来复现上面的问题, 在对应代码添加代码如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000554.png)
+![](/assets/PDB/RPI/RPI000554.png)
 
 在做好打印消息只有，然后分别对 4080、4090、4096、4097 长度的文件名:
 
@@ -575,7 +575,7 @@ names_cachep 缓存。如果拷贝成功，但拷贝长度为 PATH_MAX, 那么�
 ~ # getname_common-0.0.1 -l 4080 -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000589.png)
+![](/assets/PDB/RPI/RPI000589.png)
 
 从上图运行的情况来看，文件名长度为 4080 能正确拷贝和存储到指定位置。接着
 重启 BiscuitOS，使用如下命令:
@@ -584,7 +584,7 @@ names_cachep 缓存。如果拷贝成功，但拷贝长度为 PATH_MAX, 那么�
 ~ # getname_common-0.0.1 -l 4090 -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000590.png)
+![](/assets/PDB/RPI/RPI000590.png)
 
 从上图运行的情况来看，文件名长度为 4090 的时候能正常拷贝和存储到指定位置。
 接着重启 BiscuitOS, 然后使用如下命令:
@@ -593,14 +593,14 @@ names_cachep 缓存。如果拷贝成功，但拷贝长度为 PATH_MAX, 那么�
 ~ # getname_common-0.0.1 -l 4096 -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000591.png)
+![](/assets/PDB/RPI/RPI000591.png)
 
 从运行的情况来看，系统可以正常从用户空间拷贝长度为 PATH_MAX 的字符串，
 但由于长度等于 PATH_MAX, 那么函数判断名字太长, 函数直接返回 ENAMETOOLONG.
 
 ###### 源码 4
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000592.png)
+![](/assets/PDB/RPI/RPI000592.png)
 
 如果上面的代码执行成功，函数将 struct filename 的 refcnt 成员设置为 1，
 以此代表该数据结构已经开始维护一个文件名字，可以供其他函数使用。如果此时
@@ -620,13 +620,13 @@ names_cachep 缓存。如果拷贝成功，但拷贝长度为 PATH_MAX, 那么�
 到内核空间，并将其存储在 struct filename 结构中。内核只要访问 struct filename
 的 name 成员就可以获得打开文件的文件名.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000003">\_\_alloc_fd</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000593.png)
+![](/assets/PDB/RPI/RPI000593.png)
 
 \_\_alloc_fd() 函数用于从当前进程中分配一个可用文件描述符. (源码较长分段
 解析). 开发者如果需要在 BiscuitOS 上实践这段代码请参考下面文档，源码分析
@@ -642,7 +642,7 @@ names_cachep 缓存。如果拷贝成功，但拷贝长度为 PATH_MAX, 那么�
 
 ###### 源码 1
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000594.png)
+![](/assets/PDB/RPI/RPI000594.png)
 
 \_\_alloc_fd() 函数的第一个参数一个 struct files_struct 结构指针, 用于指向
 当前进程的文件描述结构; 第二个参数是 start，用于指向用于分配文件描述符的起始
@@ -651,7 +651,7 @@ names_cachep 缓存。如果拷贝成功，但拷贝长度为 PATH_MAX, 那么�
 以及 struct fdtable 结构体指针 fdt. 对于上面的参数中，struct files_struct 
 的定义如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000595.png)
+![](/assets/PDB/RPI/RPI000595.png)
 
 每个进程维护一个 struct files_struct 结构，用户管理当前进程所有打开文件
 的信息，因此可以通过:
@@ -668,7 +668,7 @@ current->files
 在 struct files_struct 结构中比较重要的成员是 struct fdtbale 结构体类型
 的 fdt 和 fdtab 两个成员。struct fdtable 的定义如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000596.png)
+![](/assets/PDB/RPI/RPI000596.png)
 
 struct fdtable 数据结构用于管理和维护当前进程的文件描述符。在 Linux 内核
 中，使用一个整数表示文件描述符，对于同一个进程，进程可以使用唯一的文件描
@@ -694,7 +694,7 @@ full_fds_bits 的每个 bit 指代 open_fds 中的 32 个 bit，即 full_fds_bit
 bit0 代表了 open_fds 的 0 到 31 bit, full_fds_bits 的 bit-1 代表了 open_fds 
 的 32 到 63 bit, 如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000025.png)
+![](/assets/PDB/HK/HK000025.png)
 
 fd 是 struct file 的二级指针，用于指向当前进程所有打开文件的文件结构指针
 数组。每个打开的文件都会使用一个 struct file 进行管理，并将这个 struct file
@@ -705,7 +705,7 @@ fd 是 struct file 的二级指针，用于指向当前进程所有打开文件�
 
 ###### 源码 2
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000597.png)
+![](/assets/PDB/RPI/RPI000597.png)
 
 函数首先对 files 结构上自旋锁，然后调用 files_fdtable() 函数从 files 中
 获得当前进程的文件描述符表，函数定义如下:
@@ -727,7 +727,7 @@ next_fd 成员存储着当前进程下一个可用的文件描述符。如果此
 
 ###### 源码 3
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000622.png)
+![](/assets/PDB/RPI/RPI000622.png)
 
 如果此时函数将 error 变量设置为 -EMFILE, 如果此时获得文件描述符大于或
 等于函数限定的最大文件描述符，那么函数跳转到 out 处继续执行。函数接着
@@ -741,13 +741,13 @@ next_fd 成员存储着当前进程下一个可用的文件描述符。如果此
 
 ###### 源码 4
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000661.png)
+![](/assets/PDB/RPI/RPI000661.png)
 
 如果此时进程已经将其文件描述表进行了扩容，那么 error 的值不为零，函数将
 跳转到 repeat 处，在新的文件描述符表下再做一次分配。开发者可以在 BiscuitOS
 跟踪该过程，修改源码如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000662.png)
+![](/assets/PDB/RPI/RPI000662.png)
 
 重新编译源码并运行 BiscuitOS，使用如下命令:
 
@@ -755,7 +755,7 @@ next_fd 成员存储着当前进程下一个可用的文件描述符。如果此
 number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000663.png)
+![](/assets/PDB/RPI/RPI000663.png)
 
 从上图可以看出，进程原始最大文件打开数是 32，函数对进程的最大文件打开数
 进行扩容，扩容后的最大文件打开数是 256，此时函数跳转到 repeat 处重新分配
@@ -782,13 +782,13 @@ O_CLOEXEC 标志。具体函数实现可以参考如下:
 
 函数处理完上面的操作之后，再进行一些检测之后，将获得的文件描述符返回。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000004">find_next_fd</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000598.png)
+![](/assets/PDB/RPI/RPI000598.png)
 
 函数的作用是在 struct fdtable 结构的 full_fds_bits 和 open_fds 成员中
 找到一个可用的文件描述符，struct fdtable 结构的详细分析如下:
@@ -797,7 +797,7 @@ O_CLOEXEC 标志。具体函数实现可以参考如下:
 
 由 struct fdtable 的 full_fds_bits 和 open_fds 成员可以得到如下关系:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000025.png)
+![](/assets/PDB/HK/HK000025.png)
 
 open_fds 是一个 unsigned long 的 bitmap，其总长度由 struct fdtbale 的
 max_fds 决定，struct fdtable 的 open_fds 成员的每个 bit 代表一个文件描
@@ -824,13 +824,13 @@ bitmap bitbit 开始处第一个清零的 bit 位置，然后将该偏移乘以 
 > - [find_next_zero_bit 函数解析](https://biscuitos.github.io/blog/BITMAP_find_next_zero_bit/)
 
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000005">expand_files</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000623.png)
+![](/assets/PDB/RPI/RPI000623.png)
 
 expand_files() 函数用于在满足特定条件下，扩充进程最大文件打开数。
 参数 files 用于指向进程的 struct file_struct 结构，nr 用于指向一个待分配
@@ -843,7 +843,7 @@ expand_files() 函数用于在满足特定条件下，扩充进程最大文件�
 
 ###### 源码 1
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000624.png)
+![](/assets/PDB/RPI/RPI000624.png)
 
 函数首先获得进程的 struct files_struct 对应的 fdt 成员，开发者可有先了解
 struct fdtable 结构体的信息，如下:
@@ -871,7 +871,7 @@ resize_in_progress 由真变为假，那么函数就可以进行扩充。
 
 在源码中添加调试信息，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000625.png)
+![](/assets/PDB/RPI/RPI000625.png)
 
 重新编译源码，运行 BiscuitOS，并使用如下命令:
 
@@ -879,7 +879,7 @@ resize_in_progress 由真变为假，那么函数就可以进行扩充。
 number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000626.png)
+![](/assets/PDB/RPI/RPI000626.png)
 
 从上面运行的效果可以看出，number_open_common 工具在当前进行打开了 30 个
 文件，但此时文件最大文件打开数是 32，而此时打开第 30 个文件时候，带分配
@@ -889,7 +889,7 @@ number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 
 ###### 源码 2
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000627.png)
+![](/assets/PDB/RPI/RPI000627.png)
 
 一切准备之后，函数将 struct files_struct 的 resize_in_progress 设置为 
 true，以此告诉其他需要修改进程 struct files_struct 的 fdt 成员，现在正在修改，
@@ -903,7 +903,7 @@ true，以此告诉其他需要修改进程 struct files_struct 的 fdt 成员�
 
 开发者也可以在 BiscuitOS 实践，以此来跟踪该过程，修改源码如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000628.png)
+![](/assets/PDB/RPI/RPI000628.png)
 
 重新编译原理，运行 BiscuitOS，并使用如下命令:
 
@@ -911,7 +911,7 @@ true，以此告诉其他需要修改进程 struct files_struct 的 fdt 成员�
 number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000629.png)
+![](/assets/PDB/RPI/RPI000629.png)
 
 从上图可以看出 struct files_struct 的 fdt 成员，其 max_fds 由原先的 32
 变成了 256, 因此可以确定函数确实将当前进程的最大打开文件数从 32 扩大
@@ -921,7 +921,7 @@ number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 number_open_common-0.0.1 -n 254 -d 253 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000630.png)
+![](/assets/PDB/RPI/RPI000630.png)
 
 从上图可以看出 struct files_struct 的 fdt 成员，其 max_fds 由原先的 256
 变成了 512, 因此可以确定函数确实将当前进程的最大打开文件数从 256 扩大
@@ -931,7 +931,7 @@ number_open_common-0.0.1 -n 254 -d 253 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 number_open_common-0.0.1 -n 510 -d 509 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000631.png)
+![](/assets/PDB/RPI/RPI000631.png)
 
 从上图可以看出 struct files_struct 的 fdt 成员，其 max_fds 由原先的 512
 变成了 1024, 因此可以确定函数确实将当前进程的最大打开文件数从 512 扩大
@@ -941,18 +941,18 @@ number_open_common-0.0.1 -n 510 -d 509 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 number_open_common-0.0.1 -n 1022 -d 1021 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000632.png)
+![](/assets/PDB/RPI/RPI000632.png)
 
 从上图的运行结果可以看出，当待分配的文件描述符是 1024 的时候，分配失败，
 函数直接返回错误码 EMFILE, 表示太多文件，这与具体的文件系统有关。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000006">expand_fdtable</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000633.png)
+![](/assets/PDB/RPI/RPI000633.png)
 
 expand_fdtable() 函数的作用是扩充进程最大打开文件数。struct files_struct
 参数是特定进程的打开文件信息，参数 nr 用于指明待分配的文件描述符。函数
@@ -965,7 +965,7 @@ expand_fdtable() 函数的作用是扩充进程最大打开文件数。struct fi
 
 ###### 源码 1
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000634.png)
+![](/assets/PDB/RPI/RPI000634.png)
 
 函数先将进程 struct files_struct 的 file_lock 锁解锁，然后调用 
 alloc_fdtable() 函数根据 nr 指向的文件描述符大小，分配一个新的
@@ -978,7 +978,7 @@ struct fdtable 结构。如果此时通过原子读发现进程 struct files_str
 
 ###### 源码 2
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000651.png)
+![](/assets/PDB/RPI/RPI000651.png)
 
 新分配的 struct fdtable 之后，函数检测新扩容的最大文件打开数是否小于
 或等于待分配的文件描述符，如果小于，那么函数认为扩容是失败的，那么函数
@@ -997,18 +997,18 @@ copy_fdtable() 函数将当前进程的 struct fdtable 拷贝到新的 struct fd
 
 ###### 源码 3
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000660.png)
+![](/assets/PDB/RPI/RPI000660.png)
 
 新的 struct fdtable 已经初始化完毕，函数将其设置为进程正在使用的文件描述
 符表。最后添加相应的同步机制使上面的机制有效。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000007">alloc_fdtable</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000635.png)
+![](/assets/PDB/RPI/RPI000635.png)
 
 alloc_fdtable() 函数用于分配一个 struct fdtable 结构, 并根据 nr 参数的需求
 初始化新 struct fdtable 中的每个成员。参数 nr 用于指定当前
@@ -1018,12 +1018,12 @@ void 类型的指针。
 
 ###### 源码 1
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000636.png)
+![](/assets/PDB/RPI/RPI000636.png)
 
 通过注释可以知道，函数规划每次增加 1024 Bytes 的空间给 struct fdtable 的
 fdarray, 如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000637.png)
+![](/assets/PDB/RPI/RPI000637.png)
 
 struct fdtable 的 fd 成员就是一个 struct file 的指针数组，每个指针占用 
 "sizeof(struct file *)" 个字节，然后函数规划每次扩充 fdtable 的时候，第一次
@@ -1064,7 +1064,7 @@ nr = nr * (1024 / sizeof(struct file *))
 
 开发者也可以在 BiscuitOS 上实践这部分内容，在源码中添加如下内容:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000638.png)
+![](/assets/PDB/RPI/RPI000638.png)
 
 重新编译源码并运行 BiscuitOS，使用如下测试命令:
 
@@ -1072,7 +1072,7 @@ nr = nr * (1024 / sizeof(struct file *))
 number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000639.png)
+![](/assets/PDB/RPI/RPI000639.png)
 
 从上图的运行情况可以看出，struct fdtable 从 32 扩容到 256. 也可以使用
 如下命令:
@@ -1081,7 +1081,7 @@ number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 number_open_common-0.0.1 -n 254 -d 253 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000640.png)
+![](/assets/PDB/RPI/RPI000640.png)
 
 从上图的运行情况可以看出，struct fdtable 从 256 扩容到 512. 也可以使用
 如下命令:
@@ -1090,13 +1090,13 @@ number_open_common-0.0.1 -n 254 -d 253 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 number_open_common-0.0.1 -n 510 -d 509 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000641.png)
+![](/assets/PDB/RPI/RPI000641.png)
 
 从上图的运行情况可以看出，struct fdtable 从 512 扩容到 1024.
 
 ###### 源码 2
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000642.png)
+![](/assets/PDB/RPI/RPI000642.png)
 
 函数检测扩容后的最大文件打开数是否超过 sysctl_nr_open, 如果超过，那么
 函数将 nr 设置为:
@@ -1108,7 +1108,7 @@ nr = ((sysctl_nr_open - 1) | (BITS_PER_LONG - 1)) + 1;
 sysctl_nr_open 可以动态修改，开发者可以在 BiscuitOS 上实践上面代码，通过
 动态修改 sysctl_nr_open 的大小，让上面的代码执行，修改代码如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000643.png)
+![](/assets/PDB/RPI/RPI000643.png)
 
 重新编译源码并运行 BiscuitOS，使用如下命令:
 
@@ -1118,7 +1118,7 @@ number_open_common-0.0.1 -n 510 -d 509 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 cat /proc/sys/fs/nr_open
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000644.png)
+![](/assets/PDB/RPI/RPI000644.png)
 
 从上面的命令可以知道，通过设置 sysctl_nr_open 为 513，然后打开第 509 个
 文件的时候，待分配的文件描述符是 512， 此时当前进程最大文件打开数是 512，
@@ -1127,7 +1127,7 @@ sysctl_nr_open 的值是 513，此时 nr 大于 sysctl_nr_open 的值，那么�
 当前最大文件打开数不能扩容到 1024, 需要重新计算。由于最大打开文件数使用
 bitmap 进行管理，其管理逻辑如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000025.png)
+![](/assets/PDB/HK/HK000025.png)
 
 struct fdtable 的 open_fds 成员的 bitmap 每个 bit 代表一个文件，而 
 full_fds_bits 的每一个 bit 指向 BIT_PER_LONG 个文件，因此 open_fds
@@ -1148,7 +1148,7 @@ number_open_common-0.0.1 -n 541 -d 540 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 cat /proc/sys/fs/nr_open
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000645.png)
+![](/assets/PDB/RPI/RPI000645.png)
 
 从上图可以看出，虽然 sysctl_nr_open 设置为 513，但文件描述符 543 是合法的。
 
@@ -1158,13 +1158,13 @@ number_open_common-0.0.1 -n 542 -d 541 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 cat /proc/sys/fs/nr_open
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000646.png)
+![](/assets/PDB/RPI/RPI000646.png)
 
 从上图可以知道，sysctl_nr_open 设置为 513，但文件描述符 544 是不合法的，
 正好符合之前的设计。因此 sysctl_nr_open 并不能准确的控制进程的最大打开文件
 数。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000642.png)
+![](/assets/PDB/RPI/RPI000642.png)
 
 回到源码，函数使用 kmalloc() 函数为新的 struct fdtable 分配了内存空间，
 并检测了分配的结果。接着将更新后的最大文件打开数存储在新 struct fdtable
@@ -1183,14 +1183,14 @@ nr = current->files->fdtab.max_fds
 
 ###### 源码 3
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000647.png)
+![](/assets/PDB/RPI/RPI000647.png)
 
 接下来函数初始化新的 struct fdtable 剩下的成员。回到 struct fdtable 剩下
 成员的定义:
 
 > - [struct fdtable 结构详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00012D)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000025.png)
+![](/assets/PDB/HK/HK000025.png)
 
 open_fds 是一个 bitmap，每个 bitmap 维护一个打开文件，因此 open_fds 总共
 有 max_fds 个 bit，然后 close_on_exec 成员维护的 bitmap 的长度和 open_fds
@@ -1219,7 +1219,7 @@ size = 2 * max_fds + ((max_fds / BITS_PER_LONG) + (BITS_PER_LONG -1)) / BITS_PER
 函数使用了 kvmalloc() 分配了指定大小的内存，然后存储在 data里面，并对分配的
 结果进行检测。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000648.png)
+![](/assets/PDB/RPI/RPI000648.png)
 
 根据上图结合源码，函数首先将新的 struct fdtable 的 open_fds 成员指向了
 第一块内存区域，以此作为 open_fds 的 bitmap 使用; 同理 close_on_exec
@@ -1228,7 +1228,7 @@ size = 2 * max_fds + ((max_fds / BITS_PER_LONG) + (BITS_PER_LONG -1)) / BITS_PER
 分配了内存。至此新的 struct fdtable 分配和初始化完毕。开发者也可以在
 BiscuitOS 上跟踪上面的分配过程，源码修改如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000649.png)
+![](/assets/PDB/RPI/RPI000649.png)
 
 重新编译内核并运行 BiscuitOS，使用如下测试命令:
 
@@ -1236,7 +1236,7 @@ BiscuitOS 上跟踪上面的分配过程，源码修改如下:
 number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000650.png)
+![](/assets/PDB/RPI/RPI000650.png)
 
 从上图的运行结果可以分析得出，当前最大文件打开数是 256, 因此需要 open_fds
 的 bitmap 需要 256 个 bit 维护这些打开文件，256 个 bit 占用 32 个字节，因此
@@ -1262,13 +1262,13 @@ close_on_exec:
 由于 full_fds_bits 里面的 bitmap 是按 BITS_PER_LONG 对齐，因此 full_fds_bits
 占用 BITS_PER_LONG 个 bit。因此此次分配总共占用了 68 个字节。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000008">\_\_free_fdtable</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000652.png)
+![](/assets/PDB/RPI/RPI000652.png)
 
 \_\_free_fdtable() 函数的作用是释放一个 struct fdtable。函数包含了一个 
 struct fdtable 指针，用于指向即将释放的 struct fdtable. 该函数与之对应的
@@ -1283,13 +1283,13 @@ fd 成员、open_fds 成员、close_on_exec 成员、full_fds_bits 成员分配�
 内存就够了，由于 fdt 参数本身通过 kmalloc() 函数分配，因此需要使用 kfree
 进行释放。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000009">copy_fdtable</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000653.png)
+![](/assets/PDB/RPI/RPI000653.png)
 
 copy_fdtable() 函数用于拷贝一个旧的 struct fdtable 到新的 struct fdtable.
 参数 nfdt 就是新的 struct fdtable, 参数 ofdt 就是旧的 struct fdtable. 
@@ -1309,7 +1309,7 @@ struct fdtable 的 fd 指针数组中需要初始化的字节数。接下来函�
 需要清零的部分清零。至此函数完成了 fd 指针数组的拷贝，开发者也可以跟踪这个
 过程，修改源码如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000654.png)
+![](/assets/PDB/RPI/RPI000654.png)
 
 重新编译内核，运行 BiscuitOS，参考下面的工具，并使用调试命令:
 
@@ -1319,7 +1319,7 @@ struct fdtable 的 fd 指针数组中需要初始化的字节数。接下来函�
 number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000655.png)
+![](/assets/PDB/RPI/RPI000655.png)
 
 从运行的结果可以看出，struct fdtable 的 max_fds 从 32 扩大到 256，那么
 表示需要拷贝的字节数如下 (32bit):
@@ -1339,13 +1339,13 @@ size = (256 - 32) * sizeof(struct file *) = 224 * 4 = 896
 
 > - [copy_fd_bitmaps() 函数解析](#A0000010)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000010">copy_fd_bitmaps</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000656.png)
+![](/assets/PDB/RPI/RPI000656.png)
 
 copy_fd_bitmaps() 函数用于拷贝 struct fdtable 的 bitmap 相关的成员。参数
 nfds 指向新的 struct fdtable, ofdt 参数指向原始的 struct fdtable. count
@@ -1362,7 +1362,7 @@ open_fds 和 close_one_exec 的 bit 数了，然后将这个数除以 BITS_PER_B
 和 memset() 函数对 open_fds 和 close_on_exec 进行拷贝和初始化操作.
 开发者也可以在 BiscuitOS 上跟踪这一过程，修改源码如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000657.png)
+![](/assets/PDB/RPI/RPI000657.png)
 
 重新编译内核，运行 BiscuitOS，参考下面的工具，并使用调试命令:
 
@@ -1372,7 +1372,7 @@ open_fds 和 close_one_exec 的 bit 数了，然后将这个数除以 BITS_PER_B
 number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000658.png)
+![](/assets/PDB/RPI/RPI000658.png)
 
 从上图的运行效果可以看出原始最大文件打开数是 32 个，新的是 256 个，因此
 open_fds 和 close_on_exec 需要拷贝的 bit 数是 32 个，在 32bit 系统上，对应
@@ -1386,11 +1386,11 @@ size = (256 - 32) / 8 = 28
 
 ###### 源码 2
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000659.png)
+![](/assets/PDB/RPI/RPI000659.png)
 
 接下来计算 full_fds_bit 需要拷贝的字节数, 在 struct fdtable 中:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000025.png)
+![](/assets/PDB/HK/HK000025.png)
 
 full_fds_bit 的一个 bit 代表 open_fds 中 BITS_PER_LONG 个 bit，因此可以
 使用内核提供的 BITBIT_SIZE() 宏计算出 open_fds 的 bit 数在 full_fds_bit
@@ -1399,13 +1399,13 @@ full_fds_bit 的一个 bit 代表 open_fds 中 BITS_PER_LONG 个 bit，因此可
 相减就可以计算出需要初始化的字节数，接着就是调用 memcpy() 函数和 memset()
 函数进行拷贝和初始化了。支持 struct fdtable 相关的 bitmap 已经全部拷贝完成。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000011">\_\_set_open_fd</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000664.png)
+![](/assets/PDB/RPI/RPI000664.png)
 
 \_\_set_open_fd() 函数的作用是在 fdt 参数对应的文件描述符表中，将 fd 文件
 描述符对应的 open_fds 和 full_fds_bits bitmap 指定的 bit 上置位。参数
@@ -1416,7 +1416,7 @@ struct fdtable 结构和用于实践的信息:
 >
 > - [BiscuitOS 打开任意个文件工具](https://biscuitos.github.io/blog/SYSCALL_sys_open/#C2) 
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000025.png)
+![](/assets/PDB/HK/HK000025.png)
 
 由 struct fdtable 结构的定义可获得上图的关系，进程将其文件描述符放置在
 struct fdtable 里面，其中 open_fds 成员是一个 bitmap，每个 bit 用于管理
@@ -1428,7 +1428,7 @@ BITS_PER_LONG 个 bit。因此函数首先根据 fd 参数将 open_fds 对应的
 因此，如果此时 fd 所在的 BITS_PER_LONG 已经全置位，那么也将对应的 bit 置位。
 开发者可以在 BiscuitOS 跟踪这个过程，源码修改如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000665.png)
+![](/assets/PDB/RPI/RPI000665.png)
 
 重新编译内核并运行 BiscuitOS，使用如下测试命令:
 
@@ -1436,7 +1436,7 @@ BITS_PER_LONG 个 bit。因此函数首先根据 fd 参数将 open_fds 对应的
 number_open_common-0.0.1 -n 28 -d 27 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000666.png)
+![](/assets/PDB/RPI/RPI000666.png)
 
 从上图的运行结果可以看出，系统之前已经打开了 26 个文件，下一个可用的文件
 描述符是 29，因此此时 open_fds 的第一个 BITS_PER_LONG 的值为 0x3fffffff,
@@ -1448,19 +1448,19 @@ number_open_common-0.0.1 -n 28 -d 27 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 number_open_common-0.0.1 -n 29 -d 28 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000667.png)
+![](/assets/PDB/RPI/RPI000667.png)
 
 从上图的运行结果可以看出，当文件描述符是 31 时候，将 open_fds 对应的 bit
 置位之后，其 BITs_PER_LONG 全为 1，那么此时 full_fds_bits 对应的位可以置位，
 因此 full_fds_bits 的值变为 1.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000012">\_\_set_close_on_exec</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000668.png)
+![](/assets/PDB/RPI/RPI000668.png)
 
 \_\_set_close_on_exec() 函数的作用是将参数 fd 描述符在参数 fdt 的 
 close_on_exec bitmap 中指定的位置上做置位操作。struct fdtable 的 close_on_exec
@@ -1471,13 +1471,13 @@ close_on_exec bitmap 中指定的位置上做置位操作。struct fdtable 的 c
 >
 > - [\_\_set_bit() 函数解析](https://biscuitos.github.io/blog/BITMAP___set_bit/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000013">\_\_clear_close_on_exec</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000669.png)
+![](/assets/PDB/RPI/RPI000669.png)
 
 \_\_clear_close_on_exec() 函数的作用是将参数 fd 描述符在参数 fdt 的
 close_on_exec bitmap 中指定的位置上做清零操作。struct fdtable 的 close_on_exec
@@ -1491,13 +1491,13 @@ close_on_exec bitmap 中指定的位置上做清零操作。struct fdtable 的 c
 >
 > - [\_\_clear_bit() 函数解析](https://biscuitos.github.io/blog/BITMAP_clear_bit/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000014">get_unused_fd_flags</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000670.png)
+![](/assets/PDB/RPI/RPI000670.png)
 
 get_unused_fd_flags() 函数的作用是从当前进程分配一个未使用的文件描述符。
 正如上图所示，执行一次系统调用，open() 库函数将参数传递到内核系统调用
@@ -1505,13 +1505,13 @@ get_unused_fd_flags() 函数的作用是从当前进程分配一个未使用的�
 了 do_sys_open() 执行真正的打开操作，do_sys_open() 函数将用户空间传递
 的文件打开标志传递给了 get_unused_fd_flags() 函数，其定义如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000671.png)
+![](/assets/PDB/RPI/RPI000671.png)
 
 参数 flags 是文件打开标志。与打开文件有关的信息全部存储在进程的 files 成员里，
 "rlimit(RLIMIT_NOFILE)" 和 0 用于限制查找一个可用文件描述符的范围,
 "rlimit(RLIMIT_NOFILE)" 用于限制一个进程最大文件打开数，其定义如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000691.png)
+![](/assets/PDB/RPI/RPI000691.png)
 
 > - [rlimit() 函数解析](#A0000015)
 
@@ -1522,7 +1522,7 @@ ulimit -a
 ulimit -n
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000698.png)
+![](/assets/PDB/RPI/RPI000698.png)
 
 使用 "ulimit -n" 之后可以看出当前进程支持的最大文件打开数是 1024.
 函数将这些参数传递给 "\_\_alloc_fd()" 函数，该函数会从进程的文件描述符表中查看
@@ -1530,18 +1530,18 @@ ulimit -n
 
 > - [\_\_alloc_fd() 函数解析](#A0000003)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000015">rlimit</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000694.png)
+![](/assets/PDB/RPI/RPI000694.png)
 
 rlimit() 函数用于读取当前进程的某个资源限制。参数 limit 就是需要读取的限制
 项。目前支持的限制项目如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000695.png)
+![](/assets/PDB/RPI/RPI000695.png)
 
 函数通过调用 task_rlimit() 函数可以获得当前进程资源的限制信息。其实现如下:
 
@@ -1553,7 +1553,7 @@ rlimit() 函数用于读取当前进程的某个资源限制。参数 limit 就�
 ulimit -a
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000698.png)
+![](/assets/PDB/RPI/RPI000698.png)
 
 开发者也可以动态修改某个限制，例如:
 
@@ -1563,72 +1563,72 @@ ulimit -n 4096
 ulimit -n
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000699.png)
+![](/assets/PDB/RPI/RPI000699.png)
 
 从运行结果可以看出进程最大文件打开数已经被动态修改了。更多 ulimit 信息
 可以查看:
 
 > - [ulimit 工具详解]()
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000016">task_rlimit</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000696.png)
+![](/assets/PDB/RPI/RPI000696.png)
 
 task_rlimit() 函数用于读取进程某个限定的资源信息。资源信息通过 struct rlimit
 结构定义，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000697.png)
+![](/assets/PDB/RPI/RPI000697.png)
 
 从上面的定义可以知道，rlimit 的限制信息包含了当前限制和最大限制两个数据。
 当前进程支持的资源信息如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000695.png)
+![](/assets/PDB/RPI/RPI000695.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
-
------------------------------------------
-
-#### <span id="A0000000"></span>
-
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000000"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000000"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000000"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000000"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000000"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------
 
 #### <span id="A0000000"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------------------
+
+#### <span id="A0000000"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 

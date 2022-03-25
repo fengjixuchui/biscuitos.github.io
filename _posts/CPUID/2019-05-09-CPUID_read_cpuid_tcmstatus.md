@@ -8,7 +8,7 @@ tags:
   - CPUID
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000C.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000C.jpg)
 
 > [Github: read_cpuid_tcmstatus](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/read_cpuid_tcmstatus)
 >
@@ -188,4 +188,4 @@ oprofile: using arm/armv7-ca9
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

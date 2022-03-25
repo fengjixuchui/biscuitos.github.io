@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 > [Github: 红黑树 Red Black Tree](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree)
 >
@@ -68,7 +68,7 @@ tags:
 -----------------------------------
 <span id="原理"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000A.jpg)
 
 ## 红黑树原理
 
@@ -174,7 +174,7 @@ tags:
 --------------------------------------------------
 <span id="实践"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 ## 红黑树实践
 
@@ -185,7 +185,7 @@ tags:
 --------------------------------------
 <span id="红黑树内核中最小实践"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000C.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000C.jpg)
 
 ### 红黑树内核中最小实践
 
@@ -434,7 +434,7 @@ oprofile: using arm/armv7-ca9
 --------------------------------------
 <span id="红黑树在应用程序中最小实践"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 ### 红黑树在应用程序中最小实践
 
@@ -610,7 +610,7 @@ Iterate over by postorder.
 -----------------------------------
 # <span id="操作"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 # 红黑树的操作
 
@@ -645,19 +645,19 @@ Iterate over by postorder.
 
 ###### <span id=" 红黑树左旋">红黑树左旋</span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT100000.gif)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT100000.gif)
 
 对结点 E 做左旋操作时，其右孩子为 S 而不是 T.nil，那么以 E 到 S 的链为
 "支轴" 进行。使 S 成为该子树新的根结点，E 成为 S 的左孩子，E 的左孩子成为 S 的
 右孩子.
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000075.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000075.png)
 
 如上图，当插入 6 之后，红黑树 5 节点需要进行左旋达到平衡，那么以 4 到 5 的链为
 "支轴" 进行。使用 5 节点成为 6 的新的根节点，4 称为 5 的左孩子，6 称为 5 的右
 孩子。如下图：
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000076.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000076.png)
 
 > [红黑树左旋实践](https://biscuitos.github.io/blog/Tree_RBTree_LeftRotate/)
 
@@ -665,18 +665,18 @@ Iterate over by postorder.
 
 ###### <span id="红黑树右旋">红黑树右旋</span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT100001.gif)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT100001.gif)
 
 对结点 S 做右旋操作时，假设其左孩子为 E 而不是T.nil, 以 S 到 E 的链为 “支轴” 进
 行。使 E 成为该子树新的根结点， S 成为 E 的右孩子，E 的右孩子成为 S 的左孩子。
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000077.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000077.png)
 
 如上图，当插入 4 之后，红黑树 5 节点需要进行右旋达到平衡，那么以 5 到 6 的链为
 "支轴" 进行。使用 5 节点成为新的根节点， 6 成为 5 的右孩子，4 称为 5 的左
 孩子。如下图：
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000078.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000078.png)
 
 > [红黑树右旋实践](https://biscuitos.github.io/blog/Tree_RBTree_RightRotate/)
 
@@ -820,7 +820,7 @@ Iterate over by postorder.
 --------------------------------------
 <span id="AAPI"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 ## 红黑树在内核中的应用
 
@@ -988,7 +988,7 @@ Linux 也提供了多个用于遍历红黑树的函数。根据红黑树的遍�
 -----------------------------------
 <span id="LIST"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 ## 红黑树内核接口函数列表
 
@@ -1080,4 +1080,4 @@ Linux 也提供了多个用于遍历红黑树的函数。根据红黑树的遍�
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

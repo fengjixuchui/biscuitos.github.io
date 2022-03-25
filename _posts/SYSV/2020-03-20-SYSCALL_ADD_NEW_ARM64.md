@@ -8,7 +8,7 @@ tags:
   - syscall
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -30,13 +30,13 @@ tags:
 >
 > - [附录/捐赠](#C0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------
 
 # <span id="A0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H0.PNG)
 
 #### 通用原理
 
@@ -63,13 +63,13 @@ tags:
 添加内核系统调用的接口，首先需要确定下一个可用的系统调用号，
 开发者可以参考 "arch/arm64/include/asm/unistd32.h" 文件，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000353.png)
+![](/assets/PDB/RPI/RPI000353.png)
 
 从上图就可以知道，当前系统下一个可用的系统调用号是 400。
 接下来，开发者需要创建一个内核系统调用接口，通过修改文件
 "include/uapi/asm-generic/unistd.h", 参考如下添加:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000354.png)
+![](/assets/PDB/RPI/RPI000354.png)
 
 在该文件中，首先定义了新添加系统调用号的名字为 "\_\_NR_hello_BiscuitOS",
 其具体值为之前查找的下一个可用系统调用号 400. 接着使用宏
@@ -84,15 +84,15 @@ tags:
 实现。例如在源码 "fs" 目录下，创建一个名为 BiscuitOS_syscall.c 
 的文件，文件内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000725.png)
+![](/assets/PDB/RPI/RPI000725.png)
 
 接着修改内核源码 "fs/Kconfig" 文件，添加如下内容:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000333.png)
+![](/assets/PDB/RPI/RPI000333.png)
 
 接着修改内核源码 "fs/Makefile" 文件，添加内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000334.png)
+![](/assets/PDB/RPI/RPI000334.png)
 
 接着是配置内核，将 BiscuitOS_syscall.c 文件加入内核编译树，如下:
 
@@ -101,17 +101,17 @@ cd linux_src/
 make menuconfig ARCH=am64
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000355.png)
+![](/assets/PDB/RPI/RPI000355.png)
 
 选择并进入 "File systems  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000356.png)
+![](/assets/PDB/RPI/RPI000356.png)
 
 选择 "\[*] BiscuitOS syscall hello" 并保存内核配置。
 
 接着重新编译内核。编译内核中会打印相关的信息如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000357.png)
+![](/assets/PDB/RPI/RPI000357.png)
 
 从上面的编译信息可以看出，之前的修改已经生效。编译系统调用相关的脚本
 自动为hello_BiscuitOS 生成了相关的系统调用，
@@ -122,18 +122,18 @@ make menuconfig ARCH=am64
 
 调用新系统调用的最后就是在用户空间添加一个系统调用的函数，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000365.png)
+![](/assets/PDB/RPI/RPI000365.png)
 
 用户空间可以通过 "syscall()" 函数调用系统调用。对用户空间的程序编译之后在
 ARM64 的 Linux 上运行情况如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000360.png)
+![](/assets/PDB/RPI/RPI000360.png)
 
 -----------------------------------
 
 # <span id="B1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### 添加零参数的系统调用
 
@@ -149,7 +149,7 @@ ARM64 的 Linux 上运行情况如下:
 >
 > - [运行系统调用](#B15)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -188,7 +188,7 @@ int main(void)
 对于零参数系统调用的返回值，返回的数据类型与传入参数无关，因此开发者
 可以根据需求自行定义返回的数据。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------------
 
@@ -211,15 +211,15 @@ make linux-5.0-arm64_defconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000358.png)
+![](/assets/PDB/RPI/RPI000358.png)
 
 上图显示了 ARM64 实践环境的位置，以及相关的 README.md 文档，开发者
 可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM64 Linux 开发
 环境:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000359.png)
+![](/assets/PDB/RPI/RPI000359.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -237,19 +237,19 @@ make linux-5.0-arm64_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+![](/assets/PDB/RPI/RPI000341.png)
 
 选择并进入 "[\*] Package  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+![](/assets/PDB/RPI/RPI000342.png)
 
 选择 "[\*]   strace" 和 "[\*]   System Call" 并进入 "[\*]   System Call  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000343.png)
+![](/assets/PDB/RPI/RPI000343.png)
 
 选择并进入 "[\*]   sys_hello_BiscuitOS  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000363.png)
+![](/assets/PDB/RPI/RPI000363.png)
 
 选择 "[\*]   SYSCALL_DEFINE0(): Zero Paramenter --->" 保存配置并退出. 
 接下来执行下面的命令部署用户空间系统调用程序部署:
@@ -259,7 +259,7 @@ cd BiscuitOS
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000358.png)
+![](/assets/PDB/RPI/RPI000358.png)
 
 执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
 
@@ -281,14 +281,14 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000364.png)
+![](/assets/PDB/RPI/RPI000364.png)
 
 上图中，main.c 与用户空间系统调用相关的源码, 
 "SYSCALL_DEFINE0_common-0.0.1/Makefile" 是 main.c 交叉编译的逻辑。
 "SYSCALL_DEFINE0_common-0.0.1/BiscuitOS_syscall.c" 文件是新系统调用
 内核实现。因此对于用户空间的系统调用，开发者只需关注 main.c, 内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000365.png)
+![](/assets/PDB/RPI/RPI000365.png)
 
 根据在内核中创建的入口，这里定义了入口宏的值为 400，一定要与内核定义
 的入口值相呼应。由于是无参数的系统调用，因此直接使用 "syscall()" 函数，
@@ -302,7 +302,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -311,13 +311,13 @@ make pack
 添加内核系统调用的接口，首先需要确定当前系统下一个可用的系统调用号，
 开发者可以参考 "arch/arm64/include/asm/unistd32.h" 文件，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000353.png)
+![](/assets/PDB/RPI/RPI000353.png)
 
 从上图就可以知道，当前系统下一个可用的系统调用号是 400。
 接下来，开发者需要创建一个内核系统调用接口，通过修改文件
 "include/uapi/asm-generic/unistd.h", 参考如下添加:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000354.png)
+![](/assets/PDB/RPI/RPI000354.png)
 
 在该文件中，首先定义了新添加系统调用号的名字为 "\_\_NR_hello_BiscuitOS",
 其具体值为之前查找的下一个可用系统调用号 400. 接着使用宏
@@ -343,7 +343,7 @@ cd BiscuitOS/output/linux-5.0-aarch/linux/linux/fs
 vi BiscuitOS_syscall.c
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000395.png)
+![](/assets/PDB/RPI/RPI000395.png)
 
 接着修改内核源码 "fs/Kconfig" 文件，添加如下内容:
 
@@ -352,7 +352,7 @@ cd BiscuitOS/output/linux-5.0-aarch/linux/linux/fs
 vi Kconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000333.png)
+![](/assets/PDB/RPI/RPI000333.png)
 
 接着修改内核源码 "fs/Makefile" 文件，添加内容如下:
 
@@ -361,7 +361,7 @@ cd BiscuitOS/output/linux-5.0-aarch/linux/linux/fs
 vi Makefile
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000334.png)
+![](/assets/PDB/RPI/RPI000334.png)
 
 接着是配置内核，将 BiscuitOS_syscall.c 文件加入内核编译树，如下:
 
@@ -370,11 +370,11 @@ cd BiscuitOS/output/linux-5.0-aarch/linux/linux/
 make menuconfig ARCH=am64
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000355.png)
+![](/assets/PDB/RPI/RPI000355.png)
 
 选择并进入 "File systems  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000356.png)
+![](/assets/PDB/RPI/RPI000356.png)
 
 选择 "\[*] BiscuitOS syscall hello" 并保存内核配置。
 
@@ -387,12 +387,12 @@ make ARCH=am64 CROSS_COMPILE=BiscuitOS/output/linux-5.0-aarch/arm-linux-gnueabi/
 
 编译内核中会打印相关的信息如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000357.png)
+![](/assets/PDB/RPI/RPI000357.png)
 
 从上面的编译信息可以看出，之前的修改已经生效。编译系统调用相关的脚本
 自动为hello_BiscuitOS 生成了相关的系统调用，
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -406,7 +406,7 @@ cd BiscuitOS/output/linux-5.0-aarch/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000382.png)
+![](/assets/PDB/RPI/RPI000382.png)
 
 从运行结果可以看到，用户空间的程序已经调用到对应的内核系统调用了。此时
 可以使用 strace 工具查看具体的系统调用过程，如下:
@@ -416,17 +416,17 @@ cd BiscuitOS/output/linux-5.0-aarch/
 ~ # strace SYSCALL_DEFINE0_common-0.0.1
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000383.png)
+![](/assets/PDB/RPI/RPI000383.png)
 
 从 strace 打印的消息可以看出 "syscall_0x190()" 正好程序里产生的系统调用.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 # <span id="B2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### 添加一个或多个参数的系统调用
 
@@ -442,7 +442,7 @@ cd BiscuitOS/output/linux-5.0-aarch/
 >
 > - [运行系统调用](#B25)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -539,15 +539,15 @@ make linux-5.0-arm64_defconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000358.png)
+![](/assets/PDB/RPI/RPI000358.png)
 
 上图显示了 ARM64 实践环境的位置，以及相关的 README.md 文档，开发者
 可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM64 Linux 开发
 环境:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000359.png)
+![](/assets/PDB/RPI/RPI000359.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -565,19 +565,19 @@ make linux-5.0-arm64_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+![](/assets/PDB/RPI/RPI000341.png)
 
 选择并进入 "[\*] Package  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+![](/assets/PDB/RPI/RPI000342.png)
 
 选择 "[\*]   strace" 和 "[\*]   System Call" 并进入 "[\*]   System Call  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000343.png)
+![](/assets/PDB/RPI/RPI000343.png)
 
 选择并进入 "[\*]   sys_hello_BiscuitOS  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000366.png)
+![](/assets/PDB/RPI/RPI000366.png)
 
 选择 "[\*]   SYSCALL_DEFINE1(): One Paramenter  --->" 保存配置并退出. 接下
 来执行下面的命令部署用户空间系统调用程序部署:
@@ -587,7 +587,7 @@ cd BiscuitOS
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000358.png)
+![](/assets/PDB/RPI/RPI000358.png)
 
 执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
 
@@ -609,14 +609,14 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000367.png)
+![](/assets/PDB/RPI/RPI000367.png)
 
 上图中，main.c 与用户空间系统调用相关的源码, 
 "SYSCALL_DEFINE1_common-0.0.1/Makefile" 是 main.c 交叉编译的逻辑。
 "SYSCALL_DEFINE1_common-0.0.1/BiscuitOS_syscall.c" 是系统调用的内核实现。
 因此开发者只需关注 main.c, 内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000368.png)
+![](/assets/PDB/RPI/RPI000368.png)
 
 根据在内核中创建的入口，这里定义了入口宏的值为 400，一定要与内核定义
 的入口值相呼应。由于是多个参数的系统调用，因此直接使用 "syscall()" 函数，
@@ -631,7 +631,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -640,13 +640,13 @@ make pack
 添加内核系统调用的接口，首先需要确定当前系统可用的系统调用号，
 开发者可以参考 "arch/arm64/include/asm/unistd32.h" 文件，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000353.png)
+![](/assets/PDB/RPI/RPI000353.png)
 
 从上图就可以知道，当前系统下一个可用的系统调用号是 400。
 接下来，开发者需要创建一个内核系统调用接口，通过修改文件
 "include/uapi/asm-generic/unistd.h", 参考如下添加:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000354.png)
+![](/assets/PDB/RPI/RPI000354.png)
 
 在该文件中，首先定义了新添加系统调用号的名字为 "\_\_NR_hello_BiscuitOS",
 其具体值为之前查找的下一个可用系统调用号 400. 接着使用宏
@@ -672,7 +672,7 @@ cd BiscuitOS/output/linux-5.0-aarch/linux/linux/fs
 vi BiscuitOS_syscall.c
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000369.png)
+![](/assets/PDB/RPI/RPI000369.png)
 
 内核使用 SYSCALL_DEFINE1() 宏定义了内核实现的接口函数，其包含一个
 来自用户空间的字符串参数。内核使用 "copy_from_user()" 将用户空间的
@@ -685,7 +685,7 @@ cd BiscuitOS/output/linux-5.0-aarch/linux/linux/fs
 vi Kconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000333.png)
+![](/assets/PDB/RPI/RPI000333.png)
 
 接着修改内核源码 "fs/Makefile" 文件，添加内容如下:
 
@@ -694,7 +694,7 @@ cd BiscuitOS/output/linux-5.0-aarch/linux/linux/fs
 vi Makefile
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000334.png)
+![](/assets/PDB/RPI/RPI000334.png)
 
 接着是配置内核，将 BiscuitOS_syscall.c 文件加入内核编译树，如下:
 
@@ -703,11 +703,11 @@ cd BiscuitOS/output/linux-5.0-aarch/linux/linux/
 make menuconfig ARCH=am64
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000355.png)
+![](/assets/PDB/RPI/RPI000355.png)
 
 选择并进入 "File systems  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000356.png)
+![](/assets/PDB/RPI/RPI000356.png)
 
 选择 "\[*] BiscuitOS syscall hello" 并保存内核配置。
 
@@ -720,12 +720,12 @@ make ARCH=arm64 CROSS_COMPILE=BiscuitOS/output/linux-5.0-aarch/aarch64-linux-gnu
 
 编译内核中会打印相关的信息如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000357.png)
+![](/assets/PDB/RPI/RPI000357.png)
 
 从上面的编译信息可以看出，之前的修改已经生效。编译系统调用相关的脚本
 自动为hello_BiscuitOS 生成了相关的系统调用，
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -739,7 +739,7 @@ cd BiscuitOS/output/linux-5.0-aarch/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000384.png)
+![](/assets/PDB/RPI/RPI000384.png)
 
 从运行结果可以看到，用户空间的程序已经调用到对应的内核系统调用了。此时
 可以使用 strace 工具查看具体的系统调用过程，如下:
@@ -749,11 +749,11 @@ cd BiscuitOS/output/linux-5.0-aarch/
 ~ # strace SYSCALL_DEFINE1_common-0.0.1
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000385.png)
+![](/assets/PDB/RPI/RPI000385.png)
 
 从 strace 打印的消息可以看出 "syscall_0x190()" 正好程序里产生的系统调用.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -770,4 +770,4 @@ cd BiscuitOS/output/linux-5.0-aarch/
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

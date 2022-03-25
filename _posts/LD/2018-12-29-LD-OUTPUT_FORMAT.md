@@ -95,7 +95,7 @@ ld -static -T Demo.lds DemoA.o DemoB.o DemoC.c -o a.out
 objdump -sSdhx a.out
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000496.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000496.png)
 
 从上面的数据可知，可看到 file format 是 elf32-i386, 所以可以使用 
 OUTPUT_FORMAT 指令来指定输出文件的 BFD 格式。
@@ -116,4 +116,4 @@ OUTPUT_FORMAT 指令来指定输出文件的 BFD 格式。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

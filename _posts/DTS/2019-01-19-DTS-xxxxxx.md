@@ -8,7 +8,7 @@ tags:
   - DTS
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 > [Github: BBBXXX](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/API/BBBXXX)
 >
@@ -145,7 +145,7 @@ node-name@unit-address
 `node-name` 部分指明了节点的名字，其可由 1 到 31 个字符构成，
 字符可以为下面中的任何字符：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000215.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000215.png)
 
 `node-name` 部分以一个小写或大写字符串开始，用于指明节点对应设备
 的类型。`unit-address` 成分用于说明节点与总线的关系，一般为设备
@@ -155,7 +155,7 @@ node-name@unit-address
 通过名字区分开来。当节点绑定到特定总线，可以使用 reg 属性和 `@unit-address`
 进行更具体的指定。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000216.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000216.png)
 
 root 节点没有 `node-name` 和 `unit-address`, 其使用 `/` 代表。
 在上图中，1) 节点名字为 cpu 通过 `unit-address` 进行区分，其值
@@ -279,7 +279,7 @@ wifi
 /cpus/cpu@1
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000216.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000216.png)
 
 根节点的全路径是 `/`。1) 如果一个节点的全路径是明确的，那么可以忽略
 节点的 `unit-address`。 2) 如果一个节点的全路径是不明确的，那么定义
@@ -296,7 +296,7 @@ wifi
 
 属性名字有 1 到 31 个字符构成，字符可以从下表中选取：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000215.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000215.png)
 
 非标准的属性名字应制定唯一的字符串前缀，例如一个 stock ticker 符号，
 识别公司和组织的名字去定义属性名字，例如：
@@ -1009,7 +1009,7 @@ DTB 二进制文件采用一定的标准进行设计规划，开发者只要在�
 中根据 DTB 的标准，就能从 DTB 中获得所需的信息。DTB 的架构
 如下：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000213.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000213.png)
 
 DTB 分作如下几个部分：
 
@@ -1200,7 +1200,7 @@ struct fdt_reserve_entry {
 
 这个段保存全部节点的信息，即包括节点的属性又包括节点的子节点，关系如下图：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000214.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000214.png)
 
 ###### 节点 Node
 
@@ -1348,7 +1348,7 @@ reg 的值是一个整型。
 这样每个节点的属性只需找到属性字符串的位置就可以得到那个属性字符串，
 所以 dtb 把 device-tree strings 单独列出来存储。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000213.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000213.png)
 
 device-tree strings 在 dtb 中的位置由 dtb header 即
 boot_param_header 结构的 off_dt_strings 进行指定。
@@ -1755,4 +1755,4 @@ Please read the FAQ at http://www.tux.org/lkml/
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

@@ -8,7 +8,7 @@ tags:
   - ATOMIC
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000A.jpg)
 
 > [Github: atomic_fetch_inc](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/atomic_fetch_inc)
 >
@@ -208,4 +208,4 @@ aaci-pl041 10004000.aaci: ARM AC'97 Interface PL041 rev0 at 0x10004000, irq 24
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

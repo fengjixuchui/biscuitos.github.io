@@ -8,7 +8,7 @@ tags:
   - DTS
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/DEV000106.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/DEV000106.jpg)
 
 > Github: [of_node_full_name](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/of_node_full_name)
 >

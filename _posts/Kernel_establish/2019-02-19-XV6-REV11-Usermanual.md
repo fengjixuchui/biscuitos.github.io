@@ -8,9 +8,9 @@ tags:
   - xv6
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -168,7 +168,7 @@ cd BiscuitOS/output/xv6-0.11/xv6/xv6
 make qemu
 {% endhighlight %}
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000130.png)
+![LINUXP](/assets/PDB/BiscuitOS/boot/BOOT000130.png)
 
 #### <span id="编译 xv6 内核">编译 xv6 内核</span>
 
@@ -182,7 +182,7 @@ make
 
 编译输出如下 log，以此编译完成
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000129.png)
+![LINUXP](/assets/PDB/BiscuitOS/boot/BOOT000129.png)
 
 至此，一个 xv6 内核已经运行，开发者可以根据自己兴趣和需求对内核进行魔改。
 
@@ -200,7 +200,7 @@ cd BiscuitOS/output/xv6-rev11/xv6/xv6
 make qemu
 {% endhighlight %}
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000131.png)
+![LINUXP](/assets/PDB/BiscuitOS/boot/BOOT000131.png)
 
 
 -----------------------------------------------
@@ -220,4 +220,4 @@ rce)
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

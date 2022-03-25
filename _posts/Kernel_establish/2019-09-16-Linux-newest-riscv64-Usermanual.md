@@ -8,9 +8,9 @@ tags:
   - Linux
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -28,13 +28,13 @@ tags:
 >
 > - [附录/捐赠](#Z)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
 #### BiscuitOS 基础环境部署
 
@@ -44,13 +44,13 @@ tags:
 >
 > - [BiscuitOS 软件准备](#A1)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="A2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
 
 #### BiscuitOS 项目简介
 
@@ -63,30 +63,30 @@ BiscuitOS 项目是一个用于制作 Linux 0.x、1.x、2.x、3.x、4.x、newest
 >
 > - [BiscuitOS 博客](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="A0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 #### BiscuitOS 硬件准备
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000046.JPG)
+![](/assets/PDB/RPI/RPI000046.JPG)
 
 由于项目构建基于 Ubuntu，因此需要准备一台运行
 Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="A1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### BiscuitOS 软件准备
 
@@ -138,13 +138,13 @@ README:
 ***********************************************
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### BiscuitOS 内核部署
 
@@ -157,13 +157,13 @@ BiscuitOS 项目的目标就是为开发者提供一套便捷实践内核的平�
 >
 > - [Busybox/Rootfs 制作](#C3)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="C1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 #### Linux 内核配置
 
@@ -175,13 +175,13 @@ make ARCH=riscv clean
 make ARCH=riscv BiscuitOS_riscv64_defconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="C2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Y.jpg)
 
 #### Linux 内核编译
 
@@ -193,13 +193,13 @@ cd BiscuitOS/output/linux-newest-riscv64/linux/linux
 make ARCH=riscv CROSS_COMPILE=BiscuitOS/output/linux-5.0-riscv64/riscv64-biscuitos-linux-gnu/riscv64-biscuitos-linux-gnu/bin/riscv64-biscuitos-linux-gnu- vmlinux -j4
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="C3"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 #### Busybox/Rootfs 制作
 
@@ -212,15 +212,15 @@ make clean
 make menuconfig
 {% endhighlight %}
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000003.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000003.png)
 
 选择 **Busybox Settings --->**
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000004.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000004.png)
 
 选择 **Build Options --->**
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000533.png)
+![](/assets/PDB/RPI/RPI000533.png)
 
 选中 **Build BusyBox as a static binary (no shared libs)**，保存并退出。使用 如下命令编译 BusyBox
 
@@ -238,13 +238,13 @@ cd BiscuitOS/output/linux-newest-riscv64
 ./RunBiscuitOS.sh pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### BiscuitOS 基础使用
 
@@ -259,15 +259,15 @@ cd BiscuitOS/output/linux-newest-riscv64
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000476.png)
+![](/assets/PDB/HK/HK000476.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="E"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 #### BiscuitOS 驱动部署
 
@@ -280,13 +280,13 @@ BiscuitOS 支持 "BiscuitOS 驱动框架部署" 和 "内核驱动部署" 两种�
 >
 > - [BiscuitOS 驱动框架部署](#E0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="E0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### BiscuitOS 驱动框架部署
 
@@ -302,7 +302,7 @@ BiscuitOS 以及完整支持驱动开发体系，并基于 Kbuild 编译系统�
 >
 > - [Platform 模块使用](#E03)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -317,20 +317,20 @@ make linux-newest-riscv64_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000038.png)
+![](/assets/PDB/RPI/RPI000038.png)
 
 选择 "Package --->" 并进入下一级菜单
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000304.png)
+![](/assets/PDB/RPI/RPI000304.png)
 
 选择 "Platform: Device Driver and Application"，并进入下一级菜单
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000305.png)
+![](/assets/PDB/RPI/RPI000305.png)
 
 设置 "platform Core Module --->" 为 "Y"。设置完毕之后，
 保存并退出.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -348,7 +348,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -362,7 +362,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -382,15 +382,15 @@ cd lib/modules/newest.0/extra/
 insmod platform_core_module-0.0.1
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000449.png)
+![](/assets/PDB/HK/HK000449.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="E1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000W.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000W.jpg)
 
 #### 通用驱动开发
 
@@ -409,28 +409,28 @@ insmod platform_core_module-0.0.1
 >
 > - [驱动使用](#E15)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="E10"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000J.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000J.jpg)
 
 #### 驱动源码
 
 开发者首先准备一份驱动源码，可以操作如下源码，本节中使用一份 
 misc 驱动，并命名为 BiscuitOS_drv.c，具体源码如下：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000056.PNG)
+![](/assets/PDB/RPI/RPI000056.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="E11"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 #### 驱动安置
 
@@ -445,11 +445,11 @@ mkdir -p BiscuitOS/output/linux-newest-riscv64/linux/linux/drivers/BiscuitOS
 
 ###### **Kconfig**
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000450.png)
+![](/assets/PDB/HK/HK000450.png)
 
 ###### **Makefile**
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000451.png)
+![](/assets/PDB/HK/HK000451.png)
 
 接着修改内核源码树 drivers 目录下的 Kconfig，在文件的适当位置加上如下代码:
 
@@ -463,13 +463,13 @@ source "drivers/BiscuitOS/Kconfig"
 obj-$(CONFIG_BISCUITOS_DRV)  += BiscuitOS/
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="E12"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Z.jpg)
 
 #### 驱动配置
 
@@ -480,25 +480,25 @@ cd BiscuitOS/output/linux-newest-riscv64/linux/linux
 make ARCH=riscv menuconfig
 {% endhighlight %}
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000337.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000337.png)
 
 首先在目录中找到 **Device Driver --->** 回车并进入其中。
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000338.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000338.png)
 
 接着在目录中找到 **BiscuitOS Driver --->** 按 M 选中并按回车键进入。
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000339.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000339.png)
 
 最后按 M 键选中 **BiscuitOS mis driver**，保存并退出内核配置
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="E13"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Z.jpg)
 
 #### 驱动编译
 
@@ -511,15 +511,15 @@ make ARCH=riscv INSTALL_MOD_PATH=BiscuitOS/output/linux-5.0-riscv64/rootfs/rootf
 
 从编译的 log 可以看出 BiscuitOS_drv.c 已经被编译进内核。
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000100.jpg)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000100.jpg)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="E14"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000X.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000X.jpg)
 
 #### 驱动安装
 
@@ -548,13 +548,13 @@ cd lib/modules/newest.0/kernel/driver/BiscuitOS/
 insmod misc.ko
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="E2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Z.jpg)
 
 #### 驱动实践
 
@@ -564,13 +564,13 @@ BiscuitOS 提供了丰富的驱动开发教程，开发者可以参考如下文�
 > 
 > - [BiscuitOS RaspberryPi 驱动合集](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#RaspberryPi)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="F"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### BiscuitOS 应用程序部署
 
@@ -588,7 +588,7 @@ BiscuitOS 目前提供了一套便捷的应用程序开发框架，开发者可�
 >
 > - [BiscuitOS 应用程序开发合集](https://biscuitos.github.io/blog/APP-Usermanual/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -603,19 +603,19 @@ make linux-newest-riscv64_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000038.png)
+![](/assets/PDB/RPI/RPI000038.png)
 
 选择 "Package --->" 并进入下一级菜单
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000452.png)
+![](/assets/PDB/HK/HK000452.png)
 
 选择 "Module: Linux Device Driver"，并进入下一级菜单
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000453.png)
+![](/assets/PDB/HK/HK000453.png)
 
 设置 "Application Project  --->" 为 "Y"。设置完毕之后，保存并退出.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
@@ -633,7 +633,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -647,7 +647,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -666,15 +666,15 @@ cd BiscuitOS/output/linux-newest-riscv64/
 Application_project-0.0.1
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000454.png)
+![](/assets/PDB/HK/HK000454.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="G"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### BiscuitOS 调试部署
 
@@ -688,7 +688,7 @@ cd BiscuitOS/output/linux-newest-riscv64
 ./RunBiscuitOS.sh debug
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000315.png)
+![](/assets/PDB/BiscuitOS/kernel/BUDX000315.png)
 
 接着在另外一个终端中输入如下命令，作为 gdb server
 
@@ -713,13 +713,13 @@ gdb 挂载：
 (gdb) info reg
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000316.png)
+![](/assets/PDB/BiscuitOS/kernel/BUDX000316.png)
 
 更多内核调试，请查考文档:
 
 > - [BiscuitOS 调试](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#Debug)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -735,4 +735,4 @@ gdb 挂载：
 
 ## 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

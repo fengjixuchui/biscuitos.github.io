@@ -45,7 +45,7 @@ Linux 内核源码经过编译链接生成 ELF 目标文件 vmlinux，vmlinux �
 是带了 bootstrap 的 vmlinux，vmlinux 在经过 OBJCOPY 工具之后，生成二进制文件
 zImage，这个 zImage 是可以直接加载到内存直接运行的。其原理如下图：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000036.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000036.png)
 
 正如上图，Uboot 将 zImage 加载到内存之后，zImage 就开始运行 Linux 早期代码，
 这个阶段，zImage 主要任务就是将压缩的内核解压到制定的位置，然后将运行权转交给
@@ -105,7 +105,7 @@ BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-lin
 
 其中 XXX_bk 是断点的名字。运行如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000066.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000066.png)
 
 #### 打断点
 
@@ -255,7 +255,7 @@ BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-lin
 
 其中 XXX_bk 是断点的名字。运行如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000031.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000031.png)
 
 #### 打断点
 
@@ -308,7 +308,7 @@ ENTRY(BS_debug)
 
 实际运行情况如下图：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000031.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000031.png)
 
 ##### 拓展
 
@@ -477,7 +477,7 @@ BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-lin
 
 其中 BS_debug 是断点的名字。运行如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000037.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000037.png)
 
 #### 打断点
 
@@ -552,7 +552,7 @@ ENTRY(BS_debug)
 
 实际运行情况如下图：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000037.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000037.png)
 
 ##### 拓展
 
@@ -591,7 +591,7 @@ BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-lin
 
 获得数据如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000038.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000038.png)
 
 从上面的数据可知，.head.text Addr 项对应的地址是 80008000, 但由于 Image 开始执行
 地址是 0x60008000, 因此 GDB 使用 add-symbol-file 重定位 vmlinux 的时候，需要使用
@@ -668,7 +668,7 @@ BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-lin
 
 其中 BS_debug 是断点的名字。运行如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000053.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000053.png)
 
 #### 打断点
 
@@ -732,7 +732,7 @@ ENTRY(BS_debug)
 
 实际运行情况如下图：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000053.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000053.png)
 
 ##### 拓展
 
@@ -760,7 +760,7 @@ add-symbol-file /xspace/OpenSource/BiscuitOS/BiscuitOS/output/linux-5.0-arm32/li
 
 获得数据如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000038.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000038.png)
 
 MMU 启用后，内核开始使用虚拟地址。从上面的数据可知，.head.text Addr 项对应的地址
 是 80008000, 因此 GDB 使用 add-symbol-file 重定位 vmlinux 的时候，需要使用
@@ -835,7 +835,7 @@ BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-lin
 
 其中在 start_kernel 处大断点。运行如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000039.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000039.png)
 
 start_kernel 之后的 kernel GDB 调试都可以使用通用的 GDB 进行断点，函数，寄存器等
 调试，开发者可以参考 GDB 手册进行调试。
@@ -860,5 +860,5 @@ start_kernel 之后的 kernel GDB 调试都可以使用通用的 GDB 进行断�
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
 

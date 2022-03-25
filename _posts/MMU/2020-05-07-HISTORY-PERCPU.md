@@ -8,9 +8,9 @@ tags:
   - MMU
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -34,17 +34,17 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### PERCPU 分配器原理
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000236.png)
+![](/assets/PDB/HK/HK000236.png)
 
 PERCPU 机制的存在是用于在 SMP/UP 系统中，系统为了让每个 CPU 都对某个变量具有
 私有副本，因此 PERCPU 变量孕育而生。系统每当定义一个 PERCPU 变量之后，系统
@@ -67,7 +67,7 @@ PERCPU/MEMBLOCK 分配器中分配指定的内存，然后将 .data.percpu secti
 的内存。但由于不同的 Linux 版本，实现也不尽相同。对于 Linux 2.6.x 系列，
 静态 PERCPU 布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 在 Linux 2.6.x 版本中，Linux 内核在 PERCPU 初始化完毕之后，buddy 初始化
 之前，从可用物理内存中分配了一段可用的物理内存，然后将 ".data.percpu" section
@@ -76,7 +76,7 @@ PERCPU/MEMBLOCK 分配器中分配指定的内存，然后将 .data.percpu secti
 \_\_per_cpu_offset 标示每个变量新内存地址与 .data.percpu 之间的位移，再通过相关
 函数进行读取和修改。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000223.png)
+![](/assets/PDB/HK/HK000223.png)
 
 对于 Linux 5.x 系列，静态 PERCPU 在编译和链接阶段也是全部存储在 ".data.percpu"
 section 内，同样 Linux 在 MEMBLOCK 分配器初始化完毕之后，且 Buddy 分配器
@@ -132,7 +132,7 @@ PERCPU 内存分配器初始化完毕后，系统可以动态申请并使用 PER
 CPU 分配足够副本空间，以便每个 CPU 独立使用自己的副本。但由于不同 Linux
 版本 PERCPU 分配器的实现逻辑不一样，大概可以分为以下几个版本.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000811.png)
+![](/assets/PDB/RPI/RPI000811.png)
 
 在 Linux 2.6.x 中，内核提供了 "alloc_percpu()" 和 "free_percpu()" 
 两个函数实现了 PERCPU 变量的动态申请和释放。该版本内核使用以下结构维护
@@ -152,7 +152,7 @@ PERCPU 变量对应结构大小的内存，最后将副本对应的内存清零�
 变量，首先将释放该结构每个 CPU 的副本申请的内存，最后在释放 "struct percpu_data"
 本身占用的内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000223.png)
+![](/assets/PDB/HK/HK000223.png)
 
 在 Linux 5.x 中，内核也同样提供了 alloc_percpu() 和 free_percpu() 函数进行
 PERCPU 的动态申请和回收，与 Linux 2.6.x 版本不同的是 PERCPU 分配器初始化
@@ -214,13 +214,13 @@ PERCPU 内存分配器可以动态分配 PERCPU 变量，每个 CPU 可以使用
 对于 Linux 2.6.x 版本的静态 PERCPU 变量，如果当前系统在模块中未使用静态
 的 PERCPU 变量，那么系统为静态 PERCPU 变量新分配的内存将会造成大量的浪费。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------
 
 <span id="B"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### PERCPU 分配器使用
 
@@ -266,7 +266,7 @@ put_cpu_var()
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### PERCPU 分配器实践
 
@@ -280,7 +280,7 @@ put_cpu_var()
 >
 > - [测试建议](#C0004)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -305,19 +305,19 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000746.png)
+![](/assets/PDB/RPI/RPI000746.png)
 
 选择并进入 "[\*] Package  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000747.png)
+![](/assets/PDB/RPI/RPI000747.png)
 
 选择并进入 "[\*]   Memory Development History  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000812.png)
+![](/assets/PDB/RPI/RPI000812.png)
 
 选择并进入 "[\*]   PERCPU(UP/SMP) Allocator  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000813.png)
+![](/assets/PDB/RPI/RPI000813.png)
 
 选择 "[\*]   PERCPU on linux 2.6.12  --->" 目录，保存并退出。接着执行如下命令:
 
@@ -325,7 +325,7 @@ make menuconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000750.png)
+![](/assets/PDB/RPI/RPI000750.png)
 
 成功之后将出现上图的内容，接下来开发者执行如下命令以便切换到项目的路径:
 
@@ -334,11 +334,11 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_PERCPU-2.6.12
 make download
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000814.png)
+![](/assets/PDB/RPI/RPI000814.png)
 
 至此源码已经下载完成，开发者可以使用 tree 等工具查看源码:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000815.png)
+![](/assets/PDB/RPI/RPI000815.png)
 
 arch 目录下包含内存初始化早期，与体系结构相关的处理部分。mm 目录下面包含
 了与各个内存分配器和内存管理行为相关的代码。init 目录下是整个模块的初始化
@@ -351,7 +351,7 @@ start_kernel()。
 到系统的 DTS 里面，"BiscuitOS.dts" 里的内容用来从系统中预留 100MB 的物理
 内存供项目使用，具体如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000738.png)
+![](/assets/PDB/RPI/RPI000738.png)
 
 开发者将 "BiscuitOS.dts" 的内容添加到:
 
@@ -366,7 +366,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_PERCPU-2.6.12
 make kernel
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000816.png)
+![](/assets/PDB/RPI/RPI000816.png)
 
 --------------------------------------------
 
@@ -380,7 +380,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_PERCPU-2.6.12
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000817.png)
+![](/assets/PDB/RPI/RPI000817.png)
 
 以上就是模块成功编译，接下来将 ko 模块安装到 BiscuitOS 中，使用如下命令:
 
@@ -397,7 +397,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_PERCPU-2.6.12
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000818.png)
+![](/assets/PDB/RPI/RPI000818.png)
 
 在 BiscuitOS 中插入了模块 "BiscuitOS_PERCPU-2.6.12.ko"，打印如上信息，那么
 BiscuitOS Memory Manager Unit History 项目的内存管理子系统已经可以使用，
@@ -408,7 +408,7 @@ cat /proc/buddyinfo_bs
 cat /proc/vmstat_bs
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000756.png)
+![](/assets/PDB/RPI/RPI000756.png)
 
 --------------------------------------
 
@@ -427,7 +427,7 @@ BiscuitOS Memory Manager Unit History 项目提供了大量的测试用例用于
 /xspace/OpenSource/BiscuitOS/BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_PERCPU-2.6.12/BiscuitOS_PERCPU-2.6.12/Makefile
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000771.png)
+![](/assets/PDB/RPI/RPI000771.png)
 
 Makefile 内提供了两种方案的编译开关，例如需要使用打开 buddy 内存管理器的
 源码树内部调试功能，需要保证 Makefile 内下面语句不被注释:
@@ -459,17 +459,17 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 在上面的例子中，例如打开了 buddy 的模块调试功能，重新编译模块并在 BiscuitOS
 上运行，如下图，可以在 "lib/module/5.0.0/extra/" 目录下看到两个模块:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000772.png)
+![](/assets/PDB/RPI/RPI000772.png)
 
 然后先向 BiscuitOS 中插入 "BiscuitOS_PERCPU-2.6.12.ko" 模块，然后再插入
 "BiscuitOS_PERCPU-2.6.12-buddy.ko" 模块。如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000773.png)
+![](/assets/PDB/RPI/RPI000773.png)
 
 以上便是测试代码的使用办法。开发者如果想在源码中启用或关闭某些宏，可以
 修改 Makefile 中内容:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000774.png)
+![](/assets/PDB/RPI/RPI000774.png)
 
 从上图可以知道，如果要启用某些宏，可以在 ccflags-y 中添加 "-D" 选项进行
 启用，源码的编译参数也可以添加到 ccflags-y 中去。开发者除了使用上面的办法
@@ -498,13 +498,13 @@ BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_PERCPU-2.6.12/BiscuitOS_PERCP
 $(MODULE_NAME)-m                += modules/percpu/main.o
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### PERCPU 历史补丁
 
@@ -530,20 +530,20 @@ $(MODULE_NAME)-m                += modules/percpu/main.o
 >
 > - [PERCPU Linux 2.6.15](#H-linux-2.6.15)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000785.JPG)
+![](/assets/PDB/RPI/RPI000785.JPG)
 
 #### PERCPU Linux 2.6.12
 
 Linux 2.6.12 依旧采用 PERCPU 作为其早期的内存管理器。采用 bitmap 管理所有
 的可用物理内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 ###### PERCPU 变量定义
 
@@ -584,7 +584,7 @@ put_cpu_var()
 
 PERCPU 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000819.png)
+![](/assets/PDB/RPI/RPI000819.png)
 
 ###### 补丁
 
@@ -593,20 +593,20 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000786.JPG)
+![](/assets/PDB/RPI/RPI000786.JPG)
 
 #### PERCPU Linux 2.6.12.1
 
 Linux 2.6.12.1 依旧采用 PERCPU 作为其早期的内存管理器。采用 bitmap 管理所有
 的可用物理内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 向外提供了用于分配内存的接口:
 
@@ -647,7 +647,7 @@ put_cpu_var()
 
 PERCPU 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000819.png)
+![](/assets/PDB/RPI/RPI000819.png)
 
 ###### 补丁
 
@@ -656,20 +656,20 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000787.JPG)
+![](/assets/PDB/RPI/RPI000787.JPG)
 
 #### PERCPU Linux 2.6.12.2
 
 Linux 2.6.12.2 依旧采用 PERCPU 作为其早期的内存管理器。采用 bitmap 管理所有
 的可用物理内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 ###### PERCPU 变量定义
 
@@ -710,7 +710,7 @@ put_cpu_var()
 
 PERCPU 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000819.png)
+![](/assets/PDB/RPI/RPI000819.png)
 
 ###### 补丁
 
@@ -719,20 +719,20 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.3"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000788.JPG)
+![](/assets/PDB/RPI/RPI000788.JPG)
 
 #### PERCPU Linux 2.6.12.3
 
 Linux 2.6.12.3 依旧采用 PERCPU 作为其早期的内存管理器。采用 bitmap 管理所有
 的可用物理内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 ###### PERCPU 变量定义
 
@@ -773,7 +773,7 @@ put_cpu_var()
 
 PERCPU 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000819.png)
+![](/assets/PDB/RPI/RPI000819.png)
 
 ###### 补丁
 
@@ -782,20 +782,20 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.4"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000789.JPG)
+![](/assets/PDB/RPI/RPI000789.JPG)
 
 #### PERCPU Linux 2.6.12.4
 
 Linux 2.6.12.4 依旧采用 PERCPU 作为其早期的内存管理器。采用 bitmap 管理所有
 的可用物理内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 ###### PERCPU 变量定义
 
@@ -836,7 +836,7 @@ put_cpu_var()
 
 PERCPU 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000819.png)
+![](/assets/PDB/RPI/RPI000819.png)
 
 ###### 补丁
 
@@ -845,20 +845,20 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.5"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000790.JPG)
+![](/assets/PDB/RPI/RPI000790.JPG)
 
 #### PERCPU Linux 2.6.12.5
 
 Linux 2.6.12.5 依旧采用 PERCPU 作为其早期的内存管理器。采用 bitmap 管理所有
 的可用物理内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 ###### PERCPU 变量定义
 
@@ -899,7 +899,7 @@ put_cpu_var()
 
 PERCPU 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000819.png)
+![](/assets/PDB/RPI/RPI000819.png)
 
 ###### 补丁
 
@@ -908,20 +908,20 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.12.6"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000791.JPG)
+![](/assets/PDB/RPI/RPI000791.JPG)
 
 #### PERCPU Linux 2.6.12.6
 
 Linux 2.6.12.6 依旧采用 PERCPU 作为其早期的内存管理器。采用 bitmap 管理所有
 的可用物理内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 ###### PERCPU 变量定义
 
@@ -962,7 +962,7 @@ put_cpu_var()
 
 PERCPU 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000819.png)
+![](/assets/PDB/RPI/RPI000819.png)
 
 ###### 补丁
 
@@ -971,20 +971,20 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.13"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000792.JPG)
+![](/assets/PDB/RPI/RPI000792.JPG)
 
 #### PERCPU Linux 2.6.13
 
 Linux 2.6.13 依旧采用 PERCPU 作为其早期的内存管理器。采用 bitmap 管理所有
 的可用物理内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 ###### PERCPU 变量定义
 
@@ -1025,7 +1025,7 @@ put_cpu_var()
 
 PERCPU 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000819.png)
+![](/assets/PDB/RPI/RPI000819.png)
 
 ###### 补丁
 
@@ -1038,14 +1038,14 @@ tig include/linux/percpu.h init/main.c
                                      [main] a940199f206dcf51c65fae27e2ce412f2c5a2b22 - commit 1 of 4
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000820.png)
+![](/assets/PDB/RPI/RPI000820.png)
 
 {% highlight bash %}
 git format-patch -1 a940199f206dcf51c65fae27e2ce412f2c5a
 vi 0001-PATCH-sparsemem-base-simple-NUMA-remap-space-allocat.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000821.png)
+![](/assets/PDB/RPI/RPI000821.png)
 
 该补丁将 PERCPU 静态变量所在的 .data..percpu section 的起始地址 
 "\_\_per_cpu_start" 和终止地址 "\_\_per_cpu_end" 从 "init/main.c" 中移除并
@@ -1053,20 +1053,20 @@ vi 0001-PATCH-sparsemem-base-simple-NUMA-remap-space-allocat.patch
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.13.1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000793.JPG)
+![](/assets/PDB/RPI/RPI000793.JPG)
 
 #### PERCPU Linux 2.6.13.1
 
 Linux 2.6.13.1 依旧采用 PERCPU 作为其早期的内存管理器。采用 bitmap 管理所有
 的可用物理内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 ###### PERCPU 变量定义
 
@@ -1107,7 +1107,7 @@ put_cpu_var()
 
 PERCPU 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000819.png)
+![](/assets/PDB/RPI/RPI000819.png)
 
 ###### 补丁
 
@@ -1116,20 +1116,20 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.14"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000794.JPG)
+![](/assets/PDB/RPI/RPI000794.JPG)
 
 #### PERCPU Linux 2.6.14
 
 Linux 2.6.14 依旧采用 PERCPU 作为其早期的内存管理器。采用 bitmap 管理所有
 的可用物理内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 ###### PERCPU 变量定义
 
@@ -1170,7 +1170,7 @@ put_cpu_var()
 
 PERCPU 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000819.png)
+![](/assets/PDB/RPI/RPI000819.png)
 
 ###### 补丁
 
@@ -1183,14 +1183,14 @@ tig mm/slab.c
                                             [main] 97e2bde47f886a317909c8a8f9bd2fcd8ce2f0b0 - commit 22 of 23 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000823.png)
+![](/assets/PDB/RPI/RPI000823.png)
 
 {% highlight bash %}
 git format-patch -1 97e2bde47f886a317909c8a8f9bd2fcd8ce2f0b0
 vi 0001-PATCH-add-kmalloc_node-inline-cleanup.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000822.png)
+![](/assets/PDB/RPI/RPI000822.png)
 
 该补丁将 PERCPU 内存分配器每个 CPU 副本分配函数从 kmem_cache_alloc_node()
 替换成了 kmalloc_node() 函数，从补丁描述来看，替换成新的分配函数之后，性能
@@ -1198,20 +1198,20 @@ vi 0001-PATCH-add-kmalloc_node-inline-cleanup.patch
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
 
 <span id="H-linux-2.6.15"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000795.JPG)
+![](/assets/PDB/RPI/RPI000795.JPG)
 
 #### PERCPU Linux 2.6.15
 
 Linux 2.6.15 依旧采用 PERCPU 作为其早期的内存管理器。采用 bitmap 管理所有
 的可用物理内存。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000810.png)
+![](/assets/PDB/RPI/RPI000810.png)
 
 ###### PERCPU 变量定义
 
@@ -1252,7 +1252,7 @@ put_cpu_var()
 
 PERCPU 内存分配器与本项目相关的调用顺序如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000819.png)
+![](/assets/PDB/RPI/RPI000819.png)
 
 ###### 补丁
 
@@ -1265,39 +1265,39 @@ tig include/linux/percpu.h
                                   [main] 66341a905ef5b3e7aea65b5d9bd1b0361b0ccc61 - commit 1 of 2
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000824.png)
+![](/assets/PDB/RPI/RPI000824.png)
 
 {% highlight bash %}
 git format-patch -1 66341a905ef5b3e7aea65b5d9bd1b0361b0ccc61
 vi 0001-PATCH-Shut-up-per_cpu_ptr-on-UP.patch
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000825.png)
+![](/assets/PDB/RPI/RPI000825.png)
 
 该补丁对 UP 架构的 PERCPU 变量访问时，由原先的对变量直接访问，增加了
 对 cpu 的访问。更多补丁的使用请参考:
 
 > - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="G"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### PERCPU 历史时间轴
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000826.png)
+![](/assets/PDB/RPI/RPI000826.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="K"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 #### PERCPU API
 
@@ -1391,13 +1391,13 @@ static void __init setup_per_cpu_areas(void)
   作用: 初始化 PERCPU 管理器相关的静态 PERCPU 变量内存区域.
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="F"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### PERCPU 进阶研究
 
@@ -1405,7 +1405,7 @@ static void __init setup_per_cpu_areas(void)
 >
 > - [PERCPU(SMP) Memory Allocator On Userspace](https://biscuitos.github.io/blog/Memory-Userspace/#D)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -1422,4 +1422,4 @@ static void __init setup_per_cpu_areas(void)
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

@@ -8,7 +8,7 @@ tags:
   - Kernel
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -22,13 +22,13 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### 问题简介
 
@@ -41,13 +41,13 @@ tags:
 这一过程在 BiscuitOS 上实践，这样的学习过程对学习某个子系统来说是一个不错
 的选择。因此本文用于介绍如何在 BiscuitOS 上部署和实践这个项目。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="B0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### 项目部署
 
@@ -59,7 +59,7 @@ tags:
 >
 > - [内核实统调用调试](#B22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------------
 
@@ -80,7 +80,7 @@ cd BiscuitOS
 
 至此，BiscuitOS 已经部署完毕.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------------
 
@@ -99,9 +99,9 @@ make
 源码开发工具，接下来就是漫长的等待。等所有的内容下载完毕之后，BiscuitOS
 会输出如下信息:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000726.png)
+![](/assets/PDB/RPI/RPI000726.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------------
 
@@ -117,26 +117,26 @@ make linux-history_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000727.png)
+![](/assets/PDB/RPI/RPI000727.png)
 
 勾选并进入 "[\*]  kernel history  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000728.png)
+![](/assets/PDB/RPI/RPI000728.png)
 
 选中 "[\*]   Build new split subdir (NEW)", 此时会出现:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000729.png)
+![](/assets/PDB/RPI/RPI000729.png)
 
 此时出现三个新的选项，第一个选项 "Build new split subdir" 用于指定需要
 分离的子系统所在的目录，例如选中该选项，然后输入 "virt/kvm":
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000730.png)
+![](/assets/PDB/RPI/RPI000730.png)
 
 选中 "OK" 保存，第二个选项是 "The new directory/branch name" 用于指定
 独立之后在指定的目录下创建新的文件夹存储子系统的源码，此时该名字就是新
 文件夹的名字。例如选中该选项，然后配置新的文件夹名字也是 "virt/kvm":
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000731.png)
+![](/assets/PDB/RPI/RPI000731.png)
 
 设置完毕选中 "OK" 保存。最后一个选项 "Kernel tag" 用于指定从具体的 Kernel
 版本中分离出子系统，开发者可以设置过个选项，其中 normal 代表当前源码树上获得
@@ -160,7 +160,7 @@ ls
 此时可以看到之前设置的 "virt/kvm" 代码目录，接着进入到 "virt/kvm" 源码树下
 查看:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000732.png)
+![](/assets/PDB/RPI/RPI000732.png)
 
 可以看出独立出来的 kvm 源码，接着可以使用 gitk、gitkraken 等工具查看所有
 patch:
@@ -170,11 +170,11 @@ cd BiscuitOS/output/linux-history/History/virt/kvm
 gitk .
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000733.png)
+![](/assets/PDB/RPI/RPI000733.png)
 
 从上图可以看到历史提交记录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000734.png)
+![](/assets/PDB/RPI/RPI000734.png)
 
 gitkraken 查看效果，开发者也可以使用其他工具查看。
 
@@ -203,4 +203,4 @@ gitkraken 查看效果，开发者也可以使用其他工具查看。
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

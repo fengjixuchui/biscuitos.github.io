@@ -8,7 +8,7 @@ tags:
   - Bidirect-list
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 > [Github: list_bulk_move_tail](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_bulk_move_tail)
 >
@@ -265,4 +265,4 @@ list_bulk_move_tail() 函数可以移动多个连续的节点块。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

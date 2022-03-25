@@ -95,7 +95,7 @@ ELF 文件，会发现它包含了 4 个段：.text, .rodata, .data 和 .comment
 objdump -sSdhx a.out
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000486.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000486.png)
 
 > 1. .text 用于保存的是程序的指令，它是只读的
 >
@@ -167,7 +167,7 @@ ld -static -T hello.lds -o a.out hello.o
 objdump -sSdhx a.out
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000487.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000487.png)
 
 通过对比使用默认链接脚本的 objdump 结果，可以看出：a.out 文件中只有 hellotext 
 段，并且原先 .rodata 段的 “Hello World”内容都被放置到 hellotext 段里面了；
@@ -190,4 +190,4 @@ objdump -sSdhx a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

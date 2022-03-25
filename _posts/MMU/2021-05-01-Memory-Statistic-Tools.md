@@ -8,9 +8,9 @@ tags:
   - Tools
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -68,13 +68,13 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="T0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 > - [cgroup 简介](#T00)
 >
@@ -96,7 +96,7 @@ cgroup 与 namespace 类似，也是对进程进行分组控制，但与 namespa
 
 一个 hierarchy 可以理解为一棵 cgroup 树，树的每个节点就是一个进程组，每棵树都会与零到多个 subsystem 关联。在一颗树里面，会包含 Linux 系统中的所有进程，但每个进程只能属于一个节点(进程组)。系统中可以有很多颗 cgroup 树，每棵树都和不同的 subsystem 关联，一个进程可以属于多颗树，即一个进程可以属于多个进程组，只是这些进程组和不同的 subsystem 关联。目前 Linux 支持 12 种 subsystem，如果不考虑不与任何 subsystem 关联的情况 (systemd 就属于这种情况），Linux 里面最多可以建 12 颗 cgroup 树，每棵树关联一个 subsystem，当然也可以只建一棵树，然后让这棵树关联所有的 subsystem。当一颗 cgroup 树不和任何 subsystem 关联的时候，意味着这棵树只是将进程进行分组，至于要在分组的基础上做些什么，将由应用程序自己决定.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
@@ -108,7 +108,7 @@ cgroup 与 namespace 类似，也是对进程进行分组控制，但与 namespa
 * 限制 cgroup 中所有进程所能使用的物理内存与交换空间总量(CONFIG_MEMCG_SWAP)
 * 限制 cgroup 中所有进程所能使用的内核内存总量及其它一些内核资源.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------------------
 
@@ -125,11 +125,11 @@ make menuconfig ARCH=x86_64
 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000301.png)
+![](/assets/PDB/HK/TH000301.png)
 
 重新编译内核之后，可以在系统 "/proc/cgroup" 中查看 Cgroup subsystem 的支持信息:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000304.png)
+![](/assets/PDB/HK/TH000304.png)
 
 由于当前系统只启用了 memory subsystem, 因此只看到 memory susbsystem.
 
@@ -179,7 +179,7 @@ Prompt: Memory controller
 
 CONFIG_MEMCG 宏用于打开 Cgroupp 的 memory subsystem. 如果要使用 Cgroup 控制进程组的内存资源，那么该宏一定要启用. 当启用该宏之后创建一颗 Cgroup 树的时候，其挂载点下的布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000302.png)
+![](/assets/PDB/HK/TH000302.png)
 
 从上图可以看出，当系统启用 CONFIG_MEMCG 宏之后，挂载一颗 cgroup 树之后，在树的目录下会自动生成多个与内存相关的文件节点，系统可以通过提供的文件节点对进程组的内存资源进行控制。
 
@@ -196,7 +196,7 @@ Type  : bool
 
 CONFIG_MEMCG_KMEM 宏用于 Cgroup memory subsystem 对 KMEM 内存资源的控制，该宏由 CONFIG_MEMCG 自动选择，因此 KMEM 内存资源称为 Cgroup memory 默认管理的资源，当挂载一颗 Cgroup 树的时候，其挂载点布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000302.png)
+![](/assets/PDB/HK/TH000302.png)
 
 从上图可以看出，当系统挂载一颗 Cgroup 树之后，在树的目录下就存在多个与 KMEM 内存相关的文件节点，系统可以通过控制 KMEM 文件节点来控制 KMEM 内存资源.
 
@@ -246,17 +246,17 @@ Prompt: Swap controller enabled by default
 
 CONFIG_MEMCG_SWAP_ENABLED (3.6 以后的内核新加的参数) 控制默认情况下是否使用 Swap Extension，由于 Swap Extension 比较耗资源，所以很多发行版 (比如 Ubuntu) 默认情况下会禁用该功能，当然用户也可以根据实际情况，通过设置内核参数 "swapaccount=0" 或者 1 来手动禁用和启用 Swap Extension. 当挂载一颗 Cgroup 树的时候，其挂载点布局如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000303.png)
+![](/assets/PDB/HK/TH000303.png)
 
 正如上面的布局，当挂载一颗 Cgroup 树之后，在树目录下多了 "memory.memsw" 相关文件节点，系统可以通过控制这些文件节点来控制 SWAP 相关的内存资源.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="T3"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### cgroup memory 基础使用
 
@@ -277,18 +277,18 @@ mount -t cgroup -o memory BiscuitOS /Cgroup_memory
 
 在挂载之前确认已经创建好挂载点，挂载点为一个目录，可以使用 mkdir 命令进行创建。使用 mount 命令进行挂载，将挂载的文件系统类型设置为 cgroup, 然后通过 "-o" 指定 subsystem 的类型，这里选择 subsystem, NAME 字段则是私有名字，可以任意，Mount_dir 字段则是挂载点的路径。在挂载完毕之后，可以查看 memory cgroup 提供的文件节点:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000335.png)
+![](/assets/PDB/HK/TH000335.png)
 
 
 ----------------------------------
 
 <span id="T1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 #### /proc/meminfo
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000882.png)
+![](/assets/PDB/HK/TH000882.png)
 
 "/proc/meminfo" 是了解 Linux 系统内存使用状态的主要接口，与常用的 "free"、"vmstat" 等命令通过它获得数据。"/proc/meminfo" 的源码来自 "fs/proc/meminfo.c" 的 "meminfo_proc_show()" 函数，那么各字段的含义如下:
 
@@ -382,7 +382,7 @@ mount -t cgroup -o memory BiscuitOS /Cgroup_memory
 >
 > - [DirectMap1G](#T10)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 
 ###### <span id="T101">MemTotal</span>
@@ -417,4 +417,4 @@ mount -t cgroup -o memory BiscuitOS /Cgroup_memory
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 > [Github: AVL 树](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/binary-tree/Class/AVL)
 >
@@ -27,7 +27,7 @@ tags:
 
 # <span id="原理">AVL 树原理</span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000074.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000074.png)
 
 平衡二叉搜索树，又被称为 AVL 树，且具有以下性质：它是一棵空树或它的左右两个子树的高度
 差的绝对值不超过 1，并且左右两个子树都是一棵平衡二叉树。由于普通的二叉查找树会容易失去
@@ -216,4 +216,4 @@ Middorder Traverse Binary-Tree:
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

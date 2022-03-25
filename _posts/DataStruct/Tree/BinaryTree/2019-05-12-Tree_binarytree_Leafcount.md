@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 > [Github: 统计二叉树叶子数](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/binary-tree/Leaf)
 >
@@ -27,7 +27,7 @@ tags:
 
 # <span id="原理分析">原理分析</span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000071.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000071.png)
 
 上图是一棵完美的二叉树，树中非叶子节点的度都是 2 (即每个非叶子的节点都有两个孩子)。
 叶子节点的度都是 0，因此可以遍历节点中所有度为 0 的节点数。因此，如果使用递归的办法
@@ -248,4 +248,4 @@ The Binary-Tree leaf: 8
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

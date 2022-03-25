@@ -8,7 +8,7 @@ tags:
   - Application
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -40,7 +40,7 @@ tags:
 
 <span id="A00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000G.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000G.jpg)
 
 ## automake 简介
 
@@ -55,7 +55,7 @@ Makefile.in 文件的工具。生成的 Makefile.in 符合 GNU Makefile 标准�
 
 <span id="B00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Y.jpg)
 
 ## 实践准备
 
@@ -67,7 +67,7 @@ Makefile.in 文件的工具。生成的 Makefile.in 符合 GNU Makefile 标准�
 
 <span id="B000"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
 
 ## 硬件准备
 
@@ -89,7 +89,7 @@ TTL 转 USB 串口一个。
 
 > - [RaspberryPi 官网](https://www.raspberrypi.org/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000016.png)
+![](/assets/PDB/RPI/RPI000016.png)
 
 ------------------------------------------
 
@@ -99,15 +99,15 @@ TTL 转 USB 串口一个。
 大量数据采样等。逻辑分析仪不是必须的，这里推荐使用 DreamSourceLab
 开发的 DSLogic:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000012.jpg)
+![](/assets/PDB/RPI/RPI000012.jpg)
 
 DSLogic 逻辑分析仪数据工具：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000062.png)
+![](/assets/PDB/RPI/RPI000062.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000063.png)
+![](/assets/PDB/RPI/RPI000063.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000066.png)
+![](/assets/PDB/RPI/RPI000066.png)
 
 > - [DreamSourceLab: DSLogic 官网](https://dreamsourcelab.cn/product/dslogic-plus/)
 
@@ -119,15 +119,15 @@ DSLogic 逻辑分析仪数据工具：
 的数据具有可靠性高，精度高的特定，是分析 I2C 问题不可或缺的
 工具。示波器建议准备，这里推荐使用 DreamSourceLab 开发的 DsCope:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000013.jpg)
+![](/assets/PDB/RPI/RPI000013.jpg)
 
 DSCope 示波器采用样图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000006.png)
+![](/assets/PDB/RPI/RPI000006.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000057.png)
+![](/assets/PDB/RPI/RPI000057.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000069.png)
+![](/assets/PDB/RPI/RPI000069.png)
 
 > - [DreamSourceLab: DSLogic 官网](https://dreamsourcelab.cn/product/dscope-u2p20/)
 
@@ -135,7 +135,7 @@ DSCope 示波器采用样图:
 
 <span id="B001"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 ## 软件准备
 
@@ -150,7 +150,7 @@ DSCope 示波器采用样图:
 
 <span id="C00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 ## automake 部署
 
@@ -165,7 +165,7 @@ automake 可以在 BiscuitOS 上实践，也可以在实际的工程实践
 
 <span id="C0000"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 ## BiscuitOS 部署
 
@@ -192,11 +192,11 @@ make RaspberryPi_4B_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000038.png)
+![](/assets/PDB/RPI/RPI000038.png)
 
 选择 "Package --->" 并进入下一级菜单
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPIALL.png)
+![](/assets/PDB/RPI/RPIALL.png)
 
 设置 "automake --->" 为 "Y"。设置完毕之后，
 保存并退出.
@@ -249,7 +249,7 @@ make pack
 
 <span id="C0001"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000U.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000U.jpg)
 
 ## 工程实践部署
 
@@ -275,20 +275,20 @@ make download
 
 <span id="D00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000D.jpg)
 
 ## automake 使用
 
 automake 安装完毕之后，启动 BiscuitOS，在 BiscuitOS 上
 使用 automake 如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000106.png)
+![](/assets/PDB/RPI/RPI000106.png)
 
 ------------------------------------------
 
 <span id="E00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 ## automake 测试
 
@@ -298,7 +298,7 @@ automake 安装完毕之后，启动 BiscuitOS，在 BiscuitOS 上
 
 <span id="F00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 ## automake 进阶研究
 
@@ -308,7 +308,7 @@ automake 安装完毕之后，启动 BiscuitOS，在 BiscuitOS 上
 
 <span id="Donate"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 ## 附录
 
@@ -324,4 +324,4 @@ automake 安装完毕之后，启动 BiscuitOS，在 BiscuitOS 上
 
 ## 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

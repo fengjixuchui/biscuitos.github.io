@@ -8,7 +8,7 @@ tags:
   - Bidirect-list
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 > [Github: list_for_each_entry_reverse](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_for_each_entry_reverse)
 >
@@ -236,4 +236,4 @@ list_for_each_entry_reverse() 函数用于倒叙遍历内嵌双链表的结构�
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

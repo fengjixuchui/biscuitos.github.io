@@ -8,9 +8,9 @@ tags:
   - HKC
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -135,13 +135,13 @@ tags:
 >
 > - [附录](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000V.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000V.jpg)
 
 #### HKC 计划介绍
 
@@ -157,15 +157,15 @@ tags:
 
 项目捐赠，捐赠资金将捐赠给我的一位患白血病的小学同学. (下图是微信支付和支付宝支付)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="B"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 #### HKC 计划使用
 
@@ -196,13 +196,13 @@ tags:
 
 > - [独立 Application 代码 -- 独立程序开发办法](#B2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="B0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### 编译进内核源码树研究
 
@@ -221,7 +221,7 @@ make
 cd BiscuitOS/output/linux-5.0-i386/package/BiscuitOS-kernel-0.0.1/
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000477.png)
+![](/assets/PDB/HK/HK000477.png)
 
 开发者使用如下命令部署所需的环境，正如上图，选择 "Kernel Demo Code on  BiscuitOS" 选项，保存并退出配置，接着使用 make 进行部署，部署成功之后，进入部署的目录, 接着获取 Demo 源码使用如下命令:
 
@@ -231,11 +231,11 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000478.png)
+![](/assets/PDB/HK/HK000478.png)
 
 通过上面的命令之后，BiscuitOS 会自动部署一个 Demo 程序，其中 BiscuitOS-kernel-0.0.1 目录下的 main.c 函数就是源码的位置，同级的 Makefile 就是源码编译描述。Demo 中的 main.c 源码很简单，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000479.png)
+![](/assets/PDB/HK/HK000479.png)
 
 Demo 源码很简单，就是在 "device_initcall" 阶段调用 "BiscuitOS_init()" 函数，并打印 "Hello BiscuitOS on  kernel." 字符串。开发者使用如下命令进行源码编译，并在 BiscuitOS 上运行:
  
@@ -246,7 +246,7 @@ make pack
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000480.png)
+![](/assets/PDB/HK/HK000480.png)
 
 从内核启动 log 中看到打印的 "Hello BiscuitOS on  kernel", 至此 Demo 程序演示完毕，接下来讲解开发者如何将 "独立代码" 添加到 BiscuitOS 机制。 开发者可以将自己的 "独立程序" 替换 Demo 程序中的 main.c 函数，并提供对应的 Makefile 文件，例如开发者的独立程序包含了一个源文件 "usage.c", 那么可以基于 Demo 程序，将 main.c 函数移除并添加 "usage.c" 文件到该目录下，并修改 Makefile 文件，如下:
 
@@ -265,15 +265,15 @@ obj-y += usage.o
 
 开发者准备好如上内容发送至 "buddy.zhang@aliyun.com" 邮箱，并微信通知我。待我审批通过之后合入 BiscuitOS 并进行发布.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="B3"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### 编译进内核源码树，任意位置运行
 
@@ -292,7 +292,7 @@ make
 cd BiscuitOS/output/linux-5.0-i386/package/BiscuitOS-kernel-any-0.0.1/
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000701.png)
+![](/assets/PDB/HK/HK000701.png)
 
 开发者使用如下命令部署所需的环境，正如上图，选择 "Kernel Anywhere Demo Code on BiscuitOS" 选项，保存并退出配置，接着使用 make 进行部署，部署成功之后，进入部署的目录, 接着获取 Demo 源码使用如下命令:
 
@@ -302,15 +302,15 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000702.png)
+![](/assets/PDB/HK/HK000702.png)
 
 通过上面的命令之后，BiscuitOS 会自动部署一个 Demo 程序，其中 BiscuitOS-kernel-any-0.0.1 目录下的 main.c 函数就是源码的位置，同级的 Makefile 就是源码编译描述。Demo 中的 main.c 源码很简单，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000703.png)
+![](/assets/PDB/HK/HK000703.png)
 
 Demo 源码很简单，定义了一个函数，函数不能是 static，返回值必须是 int，参数必须是 void。函数的功能很简单，打印 "Hello BiscuitOS anywhere on kernel." 字符串。源码中还有一个比较重要的文件 "BiscuitOS_insert.bs", 该文件用于描述 main.c 中函数运行的位置，如图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000704.png)
+![](/assets/PDB/HK/HK000704.png)
 
 "[File]" 下一行用于配置函数插入的文件在内核源码树的位置，例如图中插在内核 "init/main.c" 函数里。"[Func]" 下一行的内容用于说明插入在某个函数的前一行，例如上面的例子中插入在 "setup_arch()" 函数的前一行。"[Content]" 下一行用于说明插入的内容，例如上图中，将 main.c 函数的 BiscuitOS_Running() 函数插入到了 "setup_arch()" 函数之前运行. 开发者使用如下命令进行源码编译，并在 BiscuitOS 上运行:
  
@@ -321,7 +321,7 @@ make pack
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000705.png)
+![](/assets/PDB/HK/HK000705.png)
 
 从内核启动 log 中看到打印的 "Hello BiscuitOS anywhere on kernel", 至此 Demo 程序演示完毕，接下来讲解开发者如何将 "独立代码" 添加到 BiscuitOS 机制。 开发者可以将自己的 "独立程序" 替换 Demo 程序中的 main.c 函数即可，当函数定义时不能为 static,返回值一定是 int, 参数必须是 void, 例如:
 
@@ -340,12 +340,12 @@ int BiscuitOS_Demo(void) {}
 
 开发者准备好如上内容发送至 "buddy.zhang@aliyun.com" 邮箱，并微信通知我。待我审批通过之后合入 BiscuitOS 并进行发布.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 ----------------------------------
 
 <span id="B1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 #### 独立内核模块研究
 
@@ -363,7 +363,7 @@ make menuconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000477.png)
+![](/assets/PDB/HK/HK000477.png)
 
 开发者使用如下命令部署所需的环境，正如上图，选择 "Module Demo Code on BiscuitOS" 选项和 "Module Project Demo on BiscuitOS"，保存并退出配置，"Module Demo Code on BiscuitOS" 选项是一个简单的模块 Demo，如果开发者的 "独立程序" 只是一个简单的功能，那么可以参考这个 Demo 进行部署; 如果开发者的 "独立程序" 是一个复杂多层的项目，那么开发者可以参考 "Module Project Demo on BiscuitOS"，其是一个简单的多层源码 Demo. 接着以 "Module Demo Code on BiscuitOS" Demo 进行讲解，其他 Demo 类似. 使用 make 进行部署，部署成功之后，进入部署的目录, 接着获取 Demo 源码使用如下命令:
 
@@ -373,11 +373,11 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000481.png)
+![](/assets/PDB/HK/HK000481.png)
 
 通过上面的命令之后，BiscuitOS 会自动部署一个 Demo 程序，其中 BiscuitOS-modules-0.0.1 目录下的 main.c 函数就是源码的位置，同级的 Makefile 就是源码编译描述。Demo 中的 main.c 源码很简单，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000482.png)
+![](/assets/PDB/HK/HK000482.png)
 
 Demo 源码很简单，就是在 KO 加载的时候打印 "Hello modules on BiscuitOS" 字符串。开发者使用如下命令进行源码编译，并在 BiscuitOS 上运行:
 
@@ -388,7 +388,7 @@ make pack
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000483.png)
+![](/assets/PDB/HK/HK000483.png)
 
 BiscuitOS 启动之后，动态加载模块后看到打印相应的字符串, 至此 Demo 程序演示完毕，接下来讲解开发者如何将 "独立代码" 添加到 BiscuitOS 机制。 开发者可以将自己的 "独立程序" 替换 Demo 程序中的 main.c 函数，并提供对应的 Makefile 文件，例如开发者的独立程序包含了一个源文件 "usage.c", 那么可以基于 Demo 程序，将 main.c 函数移除并添加 "usage.c" 文件到该目录下，并其 Makefile 文件如下:
 
@@ -497,15 +497,15 @@ endif
 
 开发者准备好如上内容发送至 "buddy.zhang@aliyun.com" 邮箱，并微信通知我。待我审批通过之后合入 BiscuitOS 并进行发布.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="B2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### 应用程序研究
 
@@ -523,7 +523,7 @@ make menuconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000477.png)
+![](/assets/PDB/HK/HK000477.png)
 
 开发者使用如下命令部署所需的环境，正如上图，选择 "Application Demo Code on BiscuitOS" 选项和 "Application Project Demo on BiscuitOS"，保存并退出配置，"Application Demo Code on BiscuitOS" 选项是一个简单的应用程序 Demo，如果开发者的 "独立程序" 只是一个简单的功能，那么可以参考这个 Demo 进行部署; 如果开发者的 "独立程序" 是一个复杂多层的项目，那么开发者可以参考 "Application Project Demo on BiscuitOS"，其是一个简单的多层源码 Demo. 接着以 "Application Demo Code on BiscuitOS" Demo 进行讲解，其他 Demo 类似. 使用 make 进行部署，部署成功之后，进入部署的目录, 接着获取 Demo 源码使用如下命令:
 
@@ -533,11 +533,11 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000484.png)
+![](/assets/PDB/HK/HK000484.png)
 
 通过上面的命令之后，BiscuitOS 会自动部署一个 Demo 程序，其中 BiscuitOS-Application-0.0.1 目录下的 main.c 函数就是源码的位置，同级的 Makefile 就是源码编译描述。Demo 中的 main.c 源码很简单，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000485.png)
+![](/assets/PDB/HK/HK000485.png)
 
 Demo 源码很简单，就是应用程序运行的时候打印 "Hello Application Demo on BiscuitOS" 字符串。开发者使用如下命令进行源码编译，并在 BiscuitOS 上运行:
 
@@ -548,7 +548,7 @@ make pack
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000486.png)
+![](/assets/PDB/HK/HK000486.png)
 
 BiscuitOS 启动之后，运行应用程序后看到打印相应的字符串, 至此 Demo 程序演示完毕，接下来讲解开发者如何将 "独立代码" 添加到 BiscuitOS 机制。 开发者可以将自己的 "独立程序" 替换 Demo 程序中的 main.c 函数，并提供对应的 Makefile 文件，例如开发者的独立程序包含了一个源文件 "usage.c", 那么可以基于 Demo 程序，将 main.c 函数移除并添加 "usage.c" 文件到该目录下，并其 Makefile 文件如下:
 
@@ -627,15 +627,15 @@ clean:
 
 开发者准备好如上内容发送至 "buddy.zhang@aliyun.com" 邮箱，并微信通知我。待我审批通过之后合入 BiscuitOS 并进行发布.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 #### HKC 计划实践
 
@@ -645,13 +645,13 @@ clean:
 >
 > - [HKC 计划实践 -- 应用程序](#C2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 #### HKC 计划实践 -- 独立模块
 
@@ -661,7 +661,7 @@ clean:
 >
 > - [实践执行](#C0002)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -691,7 +691,7 @@ make menuconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000477.png)
+![](/assets/PDB/HK/HK000477.png)
 
 开发者使用如下命令部署所需的环境，正如上图，选择 "Module Demo Code on BiscuitOS" 选项和 "Module Project Demo on BiscuitOS"，保存并退出配置，"Module Demo Code on BiscuitOS" 选项是一个简单的模块 Demo，接着运行 make 进行部署，部署成功之后，进入部署的目录, 接着获取 Demo 源码使用如下命令:
 
@@ -701,11 +701,11 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000481.png)
+![](/assets/PDB/HK/HK000481.png)
 
 通过上面的命令之后，BiscuitOS 会自动部署一个 Demo 程序，其中 BiscuitOS-modules-0.0.1 目录下的 main.c 函数就是源码的位置，同级的 Makefile 就是源码编译描述。Demo 中的 main.c 源码很简单，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000482.png)
+![](/assets/PDB/HK/HK000482.png)
 
 Demo 源码很简单，就是在 KO 加载的时候打印 "Hello modules on BiscuitOS" 字符串。开发者使用如下命令进行源码编译，并在 BiscuitOS 上运行:
 
@@ -716,17 +716,17 @@ make pack
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000483.png)
+![](/assets/PDB/HK/HK000483.png)
 
 以上便是一个最基础的 "人类知识共同体" 计划实践.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 #### HKC 计划实践 -- 内核源码树
 
@@ -736,7 +736,7 @@ make run
 >
 > - [实践执行](#C1002)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -769,7 +769,7 @@ make
 cd BiscuitOS/output/linux-5.0-i386/package/BiscuitOS-kernel-0.0.1/
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000477.png)
+![](/assets/PDB/HK/HK000477.png)
 
 开发者使用如下命令部署所需的环境，正如上图，选择 "Kernel Demo Code on  BiscuitOS" 选项，保存并退出配置，接着使用 make 进行部署，部署成功之后，进入部署的目录, 接着获取 Demo 源码使用如下命令:
 
@@ -779,11 +779,11 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000478.png)
+![](/assets/PDB/HK/HK000478.png)
 
 通过上面的命令之后，BiscuitOS 会自动部署一个 Demo 程序，其中 BiscuitOS-kernel-0.0.1 目录下的 main.c 函数就是源码的位置，同级的 Makefile 就是源码编译描述。Demo 中的 main.c 源码很简单，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000479.png)
+![](/assets/PDB/HK/HK000479.png)
 
 Demo 源码很简单，就是在 "device_initcall" 阶段调用 "BiscuitOS_init()" 函数，并打印 "Hello Biscui
 tOS on  kernel." 字符串。开发者使用如下命令进行源码编译，并在 BiscuitOS 上运行:
@@ -795,17 +795,17 @@ make pack
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000480.png)
+![](/assets/PDB/HK/HK000480.png)
 
 从内核启动 log 中看到打印的 "Hello BiscuitOS on  kernel", 至此 Demo 程序演示完毕.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 #### HKC 计划实践 -- 应用程序
 
@@ -815,7 +815,7 @@ make run
 >
 > - [实践执行](#C2002)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -847,7 +847,7 @@ make menuconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000477.png)
+![](/assets/PDB/HK/HK000477.png)
 
 开发者使用如下命令部署所需的环境，正如上图，选择 "Application Demo Code on BiscuitOS" 选项和 "Application Project Demo on BiscuitOS"，保存并退出配置，"Application Demo Code on BiscuitOS" 选项是一个简单的应用程序 Demo，使用 make 进行部署，部署成功之后，进入部署的目录, 接着获取 Demo 源码使用如下命令:
 
@@ -857,11 +857,11 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000484.png)
+![](/assets/PDB/HK/HK000484.png)
 
 通过上面的命令之后，BiscuitOS 会自动部署一个 Demo 程序，其中 BiscuitOS-Application-0.0.1 目录下的 main.c 函数就是源码的位置，同级的 Makefile 就是源码编译描述。Demo 中的 main.c 源码很简单，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000485.png)
+![](/assets/PDB/HK/HK000485.png)
 
 Demo 源码很简单，就是应用程序运行的时候打印 "Hello Application Demo on BiscuitOS" 字符串。开发者使用如下命令进行源码编译，并在 BiscuitOS 上运行:
 
@@ -872,17 +872,17 @@ make pack
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000486.png)
+![](/assets/PDB/HK/HK000486.png)
 
 BiscuitOS 启动之后，运行应用程序后看到打印相应的字符串, 至此 Demo 程序演示完毕。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000001"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### register_shrinker/unregister_shrinker
 
@@ -994,13 +994,13 @@ Linux agpgart interface v0.103
 
 从内核启动的信息来看，当调用 drop_slab 的时候，mmu_shrinker_bs 接收到了消息，并调用 mmu_shrink_count_bs() 函数执行相关的操作.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000002"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### RDMSR
 
@@ -1121,13 +1121,13 @@ MSR_IA32_SYSENTER_CS: 0x60-0
 
 > [Intel Development Manual](https://gitee.com/BiscuitOS_team/Documentation/blob/master/Datasheet/Intel/Intel-IA32_DevelopmentManual.pdf)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000003"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### WRMSR
 
@@ -1260,7 +1260,7 @@ Segmentation fault
 
 <span id="H000004"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Kernel notifier Demo
 
@@ -1381,13 +1381,13 @@ BiscuitOS notifier event A [Buddy]
 
 在 BiscuitOS 运行模块之后，可以看到 "BiscuitOS_chain" 消息链接受到了 "BISCUITOS_EVENT_A" 和 "BISCUITOS_EVENT_B" 消息，并打印伴随消息传递过来的内容，对于 "BISCUITOS_EVENT_C" 则选择忽略.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000005"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Kernel cpumask Demo
 
@@ -1489,13 +1489,13 @@ CPUMASK clear cpu 0
 
 从运行的结果可以看出，当前 CPU ID 是 0，第一次检测的时候，CPU 没有在 BiscuitOS_cpumask 中置位，那么将其置位。第二次检测的时候，CPU 已经在 BiscuitOS_cpumask 中置位，那么将其清零.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000006"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### smp_call_function_single
 
@@ -1598,13 +1598,13 @@ Hello modules on BiscuitOS
 
 函数运行在 CPU 1 上，然后调用 smp_call_function_single() 函数让 BiscuitOS_smp() 函数运行在 CPU 0 上.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000007"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### on_each_cpu
 
@@ -1704,13 +1704,13 @@ Hello modules on BiscuitOS
 
 从运行的结果可以看出 BiscuitOS_smp() 函数在所有的 CPU 上都运行了一次.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000008"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### reboot-notifier
 
@@ -1819,13 +1819,13 @@ reboot: machine restart
 
 在 BiscuitOS 上安装上模块之后，执行 reboot 命令，系统在准备 reboot 过程中调用了 BiscuitOS_reboot_notifier() 函数，并打印了字符串 "Trigger reboot on BiscuitOS.".
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000009"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Trigger suspend notifier
 
@@ -1982,13 +1982,13 @@ echo disk > /sys/power/state
 4. disk    将运行状态数据存到硬盘, 然后关机, 唤醒最慢
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000010"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Trigger resume notifier
 
@@ -2145,13 +2145,13 @@ echo disk > /sys/power/state
 4. disk    将运行状态数据存到硬盘, 然后关机, 唤醒最慢
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000011"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### RDTSC
 
@@ -2390,13 +2390,13 @@ model name	: Intel(R) Core(TM) i5-4590 CPU @ 3.30GHz
 
 从计算的结果来看非常接近 CPUINFO 提供的主频，因此计算有效.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000012"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### MMU notifier
 
@@ -2678,13 +2678,13 @@ BiscuitOS notifier: release
 
 从运行的结果可以看出，指定的消息已经传递成功. 开发者可以利用该机制进行页表操作时候通知进程内的其他功能模块.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000013"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Platform Simple Device Driver
 
@@ -2812,13 +2812,13 @@ driver_override  power            uevent
 
 当驱动加载的时候，驱动的 probe 函数就会被调用，并且在 /sys/bus/platform/devices 目录下创建了 BiscuitOS.1 的节点，该节点下还包含了与 BiscuitOS.1 设备相关的信息.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000014"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Emulate PID Allocating and Releasing
 
@@ -3004,13 +3004,13 @@ threadid 1138 create  pid: 4061
 threadid 1140 remove  pid: 2294
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000015"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### LC-trie Protocol
 
@@ -3126,7 +3126,7 @@ insmod (1137) used greatest stack depth: 6300 bytes left
 /lib/modules/5.0.0/extra # 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000571.png)
+![](/assets/PDB/HK/HK000571.png)
 
 {% highlight bash %}
              bit31  ->                      bit0
@@ -3191,13 +3191,13 @@ insmod (1137) used greatest stack depth: 6300 bytes left
      (00010001 00010001 00010001 00010001)    (00010010 00110100 01010110 01111000)
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000016"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Anonymous mmap on Userpsace
 
@@ -3279,13 +3279,13 @@ int main()
 
 BiscuitOS 运行之后，在用户空间直接运行 BiscuitOS-Anonymous-mmap-Userspace-0.0.1 应用程序，运行之后打印一段字符串并打印字符串的地址。结果符合预期.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000017"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Anonymous mmap on kernel
 
@@ -3384,13 +3384,13 @@ BiscuitOS_Anonymous_mmap_Kernel_0.0.1: loading out-of-tree module taints kernel.
 
 加载模块之后，模块初始化是调用匿名映射相关的函数，然后在匿名映射的内存上写入一段字符串，并打印这段字符串和匿名映射内存的地址. 结果符合预期.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000018"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Anonymous File
 
@@ -3607,13 +3607,13 @@ Anonymous file-FD: 4
 
 模块安装完毕之后，运行对应的应用程序，此时获得的匿名文件句柄为 4. 文件句柄 0,1,2 分别为标志输入/输出/错误, 句柄 3 为当前打开的文件，那么匿名文件句柄为 4 符合预期.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000019"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Kernel Read from Userspace file
 
@@ -3728,13 +3728,13 @@ Active(anon):        136 kB
 
 BiscuitOS 运行之后，安装对应的模块，模块运行之后将从 "/proc/meminfo" 中读取指定长度的内容，并输出这些内容。运行的结果与预期一致.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000020"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Kernel write to Userspace file
 
@@ -3843,13 +3843,13 @@ BiscuitOS
 
 BiscuitOS 运行之后，将模块进行安装，安装过程中实例将字符串 "BiscuitOS" 写入到用户空间 "/tmp/BiscuitOS.info" 文件中，模块安装完毕之后，查看 "/tmp/BiscuitOS.info" 文件的内容，内容为 "BiscuitOS", 结果与预期一致.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000021"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Memory Hotplug in Code
 
@@ -4006,13 +4006,13 @@ MemFree:          447520 kB
 
 BiscuitOS 运行之后，首先查看 IORESOURCE 上的内存设备信息，发现系统此时看不到 0x50000000 到 58000000 的内存信息，并且 "/sys/devices/system/memory/" 目录下并没有 memory10 的目录. 接下来插入模块，查看模块之后可以在 IORESOURCE 下看到 0x50000000 到 58000000 的内存信息，并且 "/sys/devices/system/memory/" 目录可以看到 memory10 的目录。此时查看系统可以物理内存信息，显示为 355284 KiB。接着进入 memory10 目录，查看 state 的信息，显示为 offline，那么表示这块物理内存虽然已经硬件上热插入系统了，但软件上没有，因此将 "online" 字符串发送给 state，让系统将该内存插入。最后查看系统可用内存信息，已经变成了 486356 KiB, 增加的量正好是 128 MiB. 运行的结果符合预期.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000022"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Memory Hotplug auto
 
@@ -4199,13 +4199,13 @@ online
 
 BiscuitOS 运行之后，首先查看 IORESOURCE 上的内存设备信息，发现系统此时看不到 0x50000000 到 58000000 的内存信息，并且 "/sys/devices/system/memory/" 目录下并没有 memory10 的目录. 此时查看系统可以物理内存信息，显示为 355284 KiB。接下来插入模块，查看模块之后可以在 IORESOURCE 下看到 0x50000000 到 58000000 的内存信息，并且 "/sys/devices/system/memory/" 目录可以看到 memory10 的目录。此时查看系统可以物理内存信息，显示为 486356 KiB。接着进入 memory10 目录，查看 state 的信息，显示为 online，那么表示内存已经在模块插入时自动热插拔到系统了。运行的结>果符合预期.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000023"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Anonymous Share mmap on Userspace
 
@@ -4281,17 +4281,17 @@ int main()
 
 例子很精简，首先通过 mmap() 函数进行映射，在映射的时候传入参数 MAP_SHARED 和 MAP_ANONYMOUS 标志就可以映射一段匿名共享的虚拟内存。当对分配的虚拟内存进行读或者写操作的时候，就会触发缺页异常。当不再使用这段虚拟内核时，可以使用 munmap() 函数进行释放. 例子在 BiscuitOS 中运行的情况如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000889.png)
+![](/assets/PDB/HK/TH000889.png)
 
 BiscuitOS 运行之后，在用户空间直接运行 BiscuitOS-anonymous-share-mmap-userspace-default 引用程序即可，运行之后打印虚拟内存的地址以及虚拟内存的值.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000024"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Anonymous Private mmap on Userspace
 
@@ -4367,17 +4367,17 @@ int main()
 
 例子很精简，首先通过 mmap() 函数进行映射，在映射的时候传入参数 MAP_PRIVATE 和 MAP_ANONYMOUS 标志就可以映射一段匿名私有的虚拟内存。当对分配的虚拟内存进行读或者写操作的时候，就会触发缺页异常。当不再使用这段虚拟内核时，可以使用 munmap() 函数进行释放. 例子在 BiscuitOS 中运行的情况如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000890.png)
+![](/assets/PDB/HK/TH000890.png)
 
 BiscuitOS 运行之后，在用户空间直接运行 BiscuitOS-anonymous-private-mmap-userspace-default 引用程序即可，运行之后打印虚拟内存的地址以及虚拟内存的值.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="H000025"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### File Share mmap on Userspace
 
@@ -4464,22 +4464,22 @@ int main()
 
 例子很精简，首先通过 open() 函数打开一个文件，然后通过 mmap() 函数进行映射，在映射的时候传入参数 MAP_SHARED 标志, 并传入打开文件的 fd，这样就可以将文件以 "共享" 方式映射到虚拟内存。当对分配的虚拟内存进行读或者写操作的时候，就会触发缺页异常，这个时候就会建立虚拟内存到文件的映射关系。当不再使用这段虚拟内核时，可以使用 munmap() 函数进行释放，最后关闭打开的文件。例子在 BiscuitOS 中运行的情况如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000891.png)
+![](/assets/PDB/HK/TH000891.png)
 
 BiscuitOS 运行之后，直接运行 RunBiscuitOS.sh 脚本，脚本首先在当前目录下创建一个文件并写入 "BiscuitOS" 内容，然后在用户空间直接运行 BiscuitOS-file-share-mmap-userspace-default 调用程序，最后使用 hexdump 工具对虚拟内存写入的值是否与文件中的内容一致。通过实践发现结果与预期一致。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 
 ----------------------------------
 
 <span id="H000000"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Hello BiscuitOS Application
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 功能介绍
 
@@ -4510,13 +4510,13 @@ BiscuitOS/output/linux-XXX-YYY/package/
 
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 #### HKC 贡献者名单
 
@@ -4526,4 +4526,4 @@ BiscuitOS/output/linux-XXX-YYY/package/
 >
 > Shaobin <shaobin.huang@kernelworker.net>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)

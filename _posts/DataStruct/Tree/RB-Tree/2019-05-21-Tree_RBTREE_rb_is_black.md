@@ -8,7 +8,7 @@ tags:
   - RBTREE
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 > [Github: rb_is_black](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/API/rb_is_black)
 >
@@ -306,4 +306,4 @@ oprofile: using arm/armv7-ca9
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

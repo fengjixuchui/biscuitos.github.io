@@ -8,9 +8,9 @@ tags:
   - BIOS
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -26,13 +26,13 @@ tags:
 >
 > - [附录/捐赠](#Z)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
 #### BiscuitOS 基础环境部署
 
@@ -42,13 +42,13 @@ tags:
 >
 > - [BiscuitOS 软件准备](#A1)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="A2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
 
 #### BiscuitOS 项目简介
 
@@ -61,30 +61,30 @@ BiscuitOS 项目是一个用于制作 Linux 0.x、1.x、2.x、3.x、4.x、5.x
 >
 > - [BiscuitOS 博客](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="A0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 #### BiscuitOS 硬件准备
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000046.JPG)
+![](/assets/PDB/RPI/RPI000046.JPG)
 
 由于项目构建基于 Ubuntu，因此需要准备一台运行
 Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="A1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### BiscuitOS 软件准备
 
@@ -136,13 +136,13 @@ README:
 ***********************************************
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### BiscuitOS 内核部署
 
@@ -155,13 +155,13 @@ BiscuitOS 项目的目标就是为开发者提供一套便捷实践内核的平�
 >
 > - [Busybox/Rootfs 制作](#C3)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="C1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 #### Linux 内核配置
 
@@ -182,13 +182,13 @@ make ARCH=i386 menuconfig
               (153600) Default RAM disk size
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="C2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Y.jpg)
 
 #### Linux 内核编译
 
@@ -201,13 +201,13 @@ make ARCH=i386 bzImage -j4
 make ARCH=i386 modules -j4
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="C3"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 #### Busybox/Rootfs 制作
 
@@ -220,15 +220,15 @@ make clean
 make menuconfig
 {% endhighlight %}
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000003.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000003.png)
 
 选择 **Busybox Settings --->**
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000004.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000004.png)
 
 选择 **Build Options --->**
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000531.png)
+![](/assets/PDB/RPI/RPI000531.png)
 
 选中 **Build BusyBox as a static binary (no shared libs)**，添加
 "-m32 -march=i386 -mtune=i386" 到 Additional CFLAGS, 添加 "-m32" 
@@ -247,13 +247,13 @@ cd BiscuitOS/output/BiscuitOS-seaBIOS
 ./RunBiscuitOS.sh pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="E"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 #### seaBIOS 部署
 
@@ -277,7 +277,7 @@ make
 
 <span id="D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### seaBIOS 基础使用
 
@@ -292,15 +292,15 @@ cd BiscuitOS/output/BiscuitOS-seaBIOS
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000532.png)
+![](/assets/PDB/RPI/RPI000532.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="G"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### seaBIOS 调试部署
 
@@ -312,7 +312,7 @@ eaBIOS 信息 输出，开发者可以参考在 Linux 开始 boot 阶段就 hook
 BiscuitOS/output/BiscuitOS-seaBIOS/linux/linux/arch/x86/boot/main.c
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000418.png)
+![](/assets/PDB/HK/HK000418.png)
 
 修改完上面的配置之后并编译内核，接下来就是运行带 seaBIOS 的 BiscuitOS 了，开发者使用如下 命令:
 
@@ -321,7 +321,7 @@ cd BiscuitOS/output/BiscuitOS-seaBIOS
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000417.png)
+![](/assets/PDB/HK/HK000417.png)
 
 seaBIOS 的调试方法很多，这里介绍最便捷的方法，即使用 “printf” 函数打印信息， 开发者可以在 seaBIOS 初始化完串口函数之后调用 “printf” 函数输出相关信息，例如 在 maininit() 函数中输出信息:
 
@@ -329,16 +329,16 @@ seaBIOS 的调试方法很多，这里介绍最便捷的方法，即使用 “pr
 vi BiscuitOS/output/BiscuitOS-seaBIOS/bootloader/seaBIOS/src/post.c
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000419.png)
+![](/assets/PDB/HK/HK000419.png)
 
 编译 seaBIOS 并运行 BiscuitOS, 如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000420.png)
+![](/assets/PDB/HK/HK000420.png)
 
 从上图看到 seaBIOS 中新增的打印信息在运行正常输出, 开发者可以根据自己情况采用 更
 多的调试方法. 
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -354,4 +354,4 @@ vi BiscuitOS/output/BiscuitOS-seaBIOS/bootloader/seaBIOS/src/post.c
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

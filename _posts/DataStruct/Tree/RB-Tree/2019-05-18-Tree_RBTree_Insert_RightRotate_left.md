@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
 
 > [Github: 插入一个红节点引起右旋转](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Insert/Case7)
 >
@@ -27,22 +27,22 @@ tags:
 -----------------------------------
 <span id="原理分析"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000Y.jpg)
 
 # 红黑树插入一个红节点引起右旋转原理
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT100001.gif)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT100001.gif)
 
 对结点 S 做右旋操作时，假设其左孩子为 E 而不是T.nil, 以 S 到 E 的链为 “支轴” 进
 行。使 E 成为该子树新的根结点， S 成为 E 的右孩子，E 的右孩子成为 S 的左孩子。
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000077.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000077.png)
 
 如上图，当插入 4 之后，红黑树 5 节点需要进行右旋达到平衡，那么以 5 到 6 的链为
 "支轴" 进行。使用 5 节点成为新的根节点， 6 成为 5 的右孩子，4 称为 5 的左
 孩子。如下图：
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000078.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000078.png)
 
 ##### 核心代码实现
 
@@ -84,7 +84,7 @@ node 节点设置为红节点，以此向上融合。进过上面的操作，只
 -----------------------------------
 <span id="23Tree"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 ### 红黑树插入一个红节点引起右旋转与 2-3 树的关系
 
@@ -94,7 +94,7 @@ node 节点设置为红节点，以此向上融合。进过上面的操作，只
 对此处进行分裂，分裂的逻辑就是提起左孩子作为父节点，右边的节点成为父节点的右孩子，从红黑树
 角度来看，就是一次右旋操作。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000094.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000094.png)
 
 如上图，在 2-3 树中，祖父节点 p0 是一个黑节点，n0 是其右孩子，且是一个红孩子，此时插入 n1
 节点，此时 n1 也是一个红孩子，那么 n1 和 n0 构成一个零时的节点，这个节点都是红色，不符合
@@ -109,7 +109,7 @@ node 节点设置为红节点，以此向上融合。进过上面的操作，只
 --------------------------------------------------
 <span id="实践"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000D.jpg)
 
 # 红黑树插入一个红节点引起右旋转实践
 
@@ -284,4 +284,4 @@ rb-tree/Insert/Case0$ ./rbtree
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

@@ -8,7 +8,7 @@ tags:
   - syscall
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -26,7 +26,7 @@ tags:
 >
 > - [运行系统调用](#B15)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -111,7 +111,7 @@ SYSCALL_DEFINE3(hello_BiscuitOS,
 对于系统调用的返回值，内核会返回一个整形值，至于整形值的含义，开发者
 可以根据需求进行返回.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------------
 
@@ -149,15 +149,15 @@ make linux-5.0-arm32_defconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 上图显示了 ARM32 实践环境的位置，以及相关的 README.md 文档，开发者
 可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM32 Linux 开发
 环境:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000340.png)
+![](/assets/PDB/RPI/RPI000340.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -175,19 +175,19 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+![](/assets/PDB/RPI/RPI000341.png)
 
 选择并进入 "[\*] Package  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+![](/assets/PDB/RPI/RPI000342.png)
 
 选择 "[\*]   strace" 和 "[\*]   System Call" 并进入 "[\*]   System Call  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000343.png)
+![](/assets/PDB/RPI/RPI000343.png)
 
 选择并进入 "[\*]   sys_hello_BiscuitOS  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000484.png)
+![](/assets/PDB/RPI/RPI000484.png)
 
 选择 "[\*]   Syscall paramenter: Array  --->" 保存配置并退出. 
 接下来执行下面的命令部署用户空间系统调用程序部署:
@@ -197,7 +197,7 @@ cd BiscuitOS
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
 
@@ -219,14 +219,14 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000485.png)
+![](/assets/PDB/RPI/RPI000485.png)
 
 上图中，main.c 与用户空间系统调用相关的源码,
 "SYSCALL_Array_common-0.0.1/Makefile" 是 main.c 交叉编译的逻辑。
 "SYSCALL_Array_common-0.0.1/BiscuitOS_syscall.c" 文件是新系统调用
 内核实现。因此对于用户空间的系统调用，开发者只需关注 main.c, 内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000486.png)
+![](/assets/PDB/RPI/RPI000486.png)
 
 根据在内核中创建的入口，这里定义了入口宏的值为 400，一定要与内核定义
 的入口值相呼应. 在上图的程序中，定义了多个类型的字符串变量。然后将这些
@@ -244,7 +244,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -254,14 +254,14 @@ ARM32 架构提供了便捷的方法在内核中添加一个新的系统调用�
 开发者修改内核源码下 "arch/arm/tools/syscall.tbl" 文件，在
 该文件的底部添加信息如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000310.png)
+![](/assets/PDB/RPI/RPI000310.png)
 
 如上面内容所示，在文件最后一行添加了名为 hello_BiscuitOS 的
 系统调用，400 代表系统调用号，hello_BiscuitOS 为系统调用的
 名字，sys_hello_BiscuitOS 为系统调用在内核的实现。至此系统
 号已经添加完毕。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -277,7 +277,7 @@ cd BiscuitOS/output/linux-5.0-arm32/linux/linux/fs
 vi BiscuitOS_syscall.c
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000487.png)
+![](/assets/PDB/RPI/RPI000487.png)
 
 由于要介绍从用户空间传递的 3 个参数，因此使用 SYSCALL_DEFINE3 宏来定义，
 与用户空间相对应，第一个参数是系统调用的名字 "hello_BiscuitOS"。第二个
@@ -293,7 +293,7 @@ cd BiscuitOS/output/linux-5.0-arm32/linux/linux/fs
 vi Kconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000333.png)
+![](/assets/PDB/RPI/RPI000333.png)
 
 接着修改内核源码 "fs/Makefile" 文件，添加内容如下:
 
@@ -302,7 +302,7 @@ cd BiscuitOS/output/linux-5.0-arm32/linux/linux/fs
 vi Makefile
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000334.png)
+![](/assets/PDB/RPI/RPI000334.png)
 
 接着是配置内核，将 BiscuitOS_syscall.c 文件加入内核编译树，如下:
 
@@ -311,11 +311,11 @@ cd BiscuitOS/output/linux-5.0-arm32/linux/linux/
 make menuconfig ARCH=arm
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000335.png)
+![](/assets/PDB/RPI/RPI000335.png)
 
 选择并进入 "File systems  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000336.png)
+![](/assets/PDB/RPI/RPI000336.png)
 
 选择 "\[*] BiscuitOS syscall hello" 并保存内核配置。
 
@@ -328,12 +328,12 @@ make ARCH=arm CROSS_COMPILE=BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/a
 
 编译内核中会打印相关的信息如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000306.png)
+![](/assets/PDB/RPI/RPI000306.png)
 
 从上面的编译信息可以看出，之前的修改已经生效。编译系统调用相关的脚本
 自动为hello_BiscuitOS 生成了相关的系统调用，
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -347,7 +347,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000489.png)
+![](/assets/PDB/RPI/RPI000489.png)
 
 从运行结果可以看出，内核接收到用户空间传递下来数组，用户空间也成功接收
 到来自内核的数组，并打印出来。可以使用 strace 工具查看具体的系统调用过
@@ -358,11 +358,11 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ~ # strace SYSCALL_Array_common-0.0.1
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000490.png)
+![](/assets/PDB/RPI/RPI000490.png)
 
 从 strace 打印的消息可以看出 "syscall_0x190()" 正好程序里产生的系统调用.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -379,4 +379,4 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

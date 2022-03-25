@@ -8,9 +8,9 @@ tags:
   - KVM
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -22,13 +22,13 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### kvmtool 项目介绍
 
@@ -36,19 +36,19 @@ kvmtool 是一个轻量级的 KVM guest 工具，可以轻量级的实现虚拟�
 
 > [Native Linux KVM tool on github](https://github.com/kvmtool/kvmtool)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000763.png)
+![](/assets/PDB/HK/HK000763.png)
 
 BiscuitOS 为 kvmtool 提供了一套完成的开发实践环境，开发者可以利用 BiscuitOS 快速部署 kvmtool 开发环境，并在 BiscuitOS 上使用 kvmtool 启动一个虚拟机。
 
 > [kvmtool 项目实践](#C)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### kvmtool 项目实践
 
@@ -58,7 +58,7 @@ BiscuitOS 为 kvmtool 提供了一套完成的开发实践环境，开发者可�
 >
 > - [实践执行](#C0002)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -68,7 +68,7 @@ kvmtool 项目目前只支持 x86_64，本文以 x86_64 架构进行讲解，并
 
 > - [BiscuitOS Linux 5.0 X86_64 环境部署](https://biscuitos.github.io/blog/Linux-5.0-x86_64-Usermanual/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -90,7 +90,7 @@ cd BiscuitOS/output/linux-5.0-x86_64
 vi RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000746.png)
+![](/assets/PDB/HK/HK000746.png)
 
 正如上图所示，在 RunBiscuitOS.sh 脚本中找到 BiscuitOS 内存配置，其通过变量 "RAM_SIZE" 进行配置，另外 BiscuitOS 使用的 CMDLINE 存储在变量 "CMDLINE" 中，为了支持 1Gig 映射实践，所以将 BiscuitOS 的物理内存修改为 4Gig，并且在 CMDLINE 中添加 1Gig HugePage 的设置 "default_hugepagesz", 如下:
 
@@ -121,7 +121,7 @@ make ARCH=x86_64 bzImage -j4
 
 重新编译内核，内核编译完毕并重新运行 BiscuitOS，可以在 "/dev/" 目录下看到 kvm 节点:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000587.png)
+![](/assets/PDB/HK/HK000587.png)
 
 接下来是安装 kvmtool 源码，开发者可以参考如下命令进行部署:
 
@@ -147,11 +147,11 @@ make tar
 
 执行完上面的命令之后，BiscuitOS 会自动部署所需的源码文件，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000768.png)
+![](/assets/PDB/HK/HK000768.png)
 
 "BiscuitOS-kvmtool-1G-github" 目录为 qemu-kvm 的源代码，目前采用 github 提供的版本; Makefile 为编译源码相关的脚本; RunBiscuitOS.sh 是在 BiscuitOS 是运行一个虚拟机的相关配置.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -167,7 +167,7 @@ make pack
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000763.png)
+![](/assets/PDB/HK/HK000763.png)
 
 如上图在 BiscuitOS 运行之后，可以查看 kvmtool 使用说明，以此确认软件已经可以使用.确认完毕之后，开发者可以使用两种办法启动一台虚拟机，默认使用 BiscuitOS 提供的脚本，也就是源码目录下的 RunBiscuitOS.sh, 其在 BiscuitOS 中使用如下:
 
@@ -175,7 +175,7 @@ make run
 RunBsicuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000765.png)
+![](/assets/PDB/HK/HK000765.png)
 
 脚本运行完毕之后，BiscuitOS 根据 RunBiscuitOS.sh 的工作流启动一个虚拟机，虚拟机运行如上。当想退出虚拟机的话，使用 Ctrl-C 即可. 开发者也可以采用第二种方式启动虚拟机，第二种方式也就是命令行方式，但有一个需要开发者注意的是，命令行必须在 BiscuitOS 的 "/mnt/Freeze/BiscuitOS-kvmtool" 目录下执行，具体命令参考如下:
 
@@ -188,24 +188,24 @@ cd /mnt/Freeze/BiscuitOS-kvmtool
 lkvm run --name BiscuitOS-kvm --cpus 2 --mem 128 --disk BiscuitOS.img --kernel bzImage --params "loglevel=3" --hugetlbfs /mnt/Freeze/BiscuitOS-kvmtool/hugetlb-1G/
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000766.png)
+![](/assets/PDB/HK/HK000766.png)
 
 在 BiscuitOS 中当想退出虚拟机的话，使用 Ctrl-c 即可. 如果想退出 BiscuitOS 则使用 Ctrl-a x.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### kvmtool 项目调试
 
 kvmtool 的调试有很多种方法，这里主要介绍通过 LOG 日志的办法。kvmtool 的源码位于:
 由于 kvmtool 是一个应用成员，因此可以使用调试应用程序的办法进行调试，最简单的办法就是 kvmtool 源码中使用 printf 进行打印调试.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -222,4 +222,4 @@ kvmtool 的调试有很多种方法，这里主要介绍通过 LOG 日志的办�
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

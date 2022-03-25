@@ -8,7 +8,7 @@ tags:
   - Radix-Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 > [Github: Radix Tree](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree/API)
 >
@@ -1215,4 +1215,4 @@ radix_tree_next_chunk() 函数获得下一个 chunk 的节点，也就是可用 
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

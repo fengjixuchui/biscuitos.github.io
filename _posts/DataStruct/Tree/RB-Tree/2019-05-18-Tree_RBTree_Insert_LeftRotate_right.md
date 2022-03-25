@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
 
 > [Github: 插入一个红节点引起左旋转](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Insert/Case5)
 >
@@ -27,19 +27,19 @@ tags:
 -----------------------------------
 <span id="原理分析"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT100000.gif)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT100000.gif)
 
 对结点 E 做左旋操作时，其右孩子为 S 而不是 T.nil，那么以 E 到 S 的链为
 "支轴" 进行。使 S 成为该子树新的根结点，E 成为 S 的左孩子，E 的左孩子成为 S 的
 右孩子.
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000075.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000075.png)
 
 如上图，当插入 6 之后，红黑树 5 节点需要进行左旋达到平衡，那么以 4 到 5 的链为
 "支轴" 进行。使用 5 节点称为 6 的新的根节点，4 称为 5 的左孩子，6 称为 5 的右
 孩子。如下图：
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000076.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000076.png)
 
 ##### 核心代码实现
 
@@ -109,7 +109,7 @@ root 节点，那么就将 root 节点指向 parent 节点。
 -----------------------------------
 <span id="23Tree"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 ### 红黑树插入一个红节点引起右旋转与 2-3 树的关系
 
@@ -120,7 +120,7 @@ root 节点，那么就将 root 节点指向 parent 节点。
 分裂成三个 2- 节点，由于提取的节点 n1 需要向上融合，所以需要将其设置为红色，但如果 n1 已经
 是根节点，那么 n1 设置为黑色，形成一个 2- 节点，从红黑树角度来看就是一次左旋，如下图。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000095.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000095.png)
 
 更多红黑树与 2-3 树的关系请看文档：
 
@@ -129,7 +129,7 @@ root 节点，那么就将 root 节点指向 parent 节点。
 --------------------------------------------------
 <span id="实践"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000D.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000D.jpg)
 
 # 红黑树插入一个红节点引起右旋转实践
 
@@ -304,4 +304,4 @@ rb-tree/Insert$ ./rbtree
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

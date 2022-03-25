@@ -33,7 +33,7 @@ tags:
 ---------------------------------------------------
 <span id="CTAG+CSCOPE"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 # 内核源码辅助工具 Ctag + Cscope
 
@@ -94,7 +94,7 @@ cscope 工具会在按下 **Ctrl+]** 之后，在底部打印出函数所有的�
 位置。例如查找 early_fixmap_init() 函数的定义, 将光标移动到 early_fixmap_init()
 函数处，之后自动打印如下信息：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000008.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000008.png)
 
 输入 2 并按回车，vim 就跳转到 arch/arm/mm/mmu.c 第 387 行。
 
@@ -119,7 +119,7 @@ cscope 工具会在按下 **Ctrl+]** 之后，在底部打印出函数所有的�
 :cs find c adjust_lowmem_bounds
 {% endhighlight %}
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000009.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000009.png)
 
 但查看完一个函数的引用之后，需要返回上一次光标位置，可以使用 **Ctrl+T** 组合命令进行
 返回
@@ -137,7 +137,7 @@ cscope 工具会在按下 **Ctrl+]** 之后，在底部打印出函数所有的�
 ---------------------------------------------------
 <span id="二进制文件编辑工具"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 # 二进制文件编辑工具
 
@@ -199,7 +199,7 @@ hexdump [选项] [文件]…
 hexdump zImage
 {% endhighlight %}
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000002.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000002.png)
 
 ### <span id="hexedit">hexedit</span>
 
@@ -249,7 +249,7 @@ Ctrl+R      向上查找(search forward)
 hexedit zImage
 {% endhighlight %}
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000003.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000003.png)
 
 ### <span id="bless">bless</span>
 
@@ -277,12 +277,12 @@ bless <filename>
 bless zImage
 {% endhighlight %}
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000004.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000004.png)
 
 ---------------------------------------------------
 <span id="程序员计算器"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 # 程序员计算器
 
@@ -295,19 +295,19 @@ bless zImage
 程序开发过程中，经常会遇到各种进制的数学运算，这里推荐一款程序员专用的计算器,
 Ubuntu 自带的 Calculator 就能切换成程序员模式进行各种进制的计算，如下图：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000005.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000005.png)
 
 ### <span id="Windows Calculator">Windows Calculator</span>
 
 程序开发过程中，经常会遇到各种进制的数学运算，这里推荐一款程序员专用的计算器,
 Windows 自带的 Calculator 就能切换成程序员模式进行各种进制的计算，如下图：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000006.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000006.png)
 
 ---------------------------------------------------
 <span id="源码对比工具"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 # 源码对比工具
 
@@ -335,7 +335,7 @@ meld 可以对比两个或者三个对象，可以使用命令行的方式启动
 meld file0 file1
 {% endhighlight %}
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000010.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000010.png)
 
 -----------------------------------------------
 
@@ -353,4 +353,4 @@ meld file0 file1
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

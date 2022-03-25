@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 > [Github: __rcu](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/sparse/API/__rcu)
 >
@@ -204,4 +204,4 @@ RCU 变量检查。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

@@ -8,9 +8,9 @@ tags:
   - Apollo
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -40,7 +40,7 @@ tags:
 采集了土壤和岩石样本、留下了纪念阿波罗 11 号宇航员的奖章和写着 “我们
 为全世界和平而来” 的牌匾。那是真正的 “人类群星闪耀时”！
 
-![Apollo-11](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000212.jpeg)
+![Apollo-11](/assets/PDB/BiscuitOS/boot/BOOT000212.jpeg)
 
 从缺乏飞行经验到第一次在月球上迈出人类探索的脚步，Apollo-11 记录的是
 从 0 到 1 的重大转折。而现在，完成这场宏大登月计划的制导计算机（AGC）
@@ -49,7 +49,7 @@ tags:
 
 ### 虚拟AGC：重现阿波罗登月制导指挥场景
 
-![Apollo-11](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000221.jpg)
+![Apollo-11](/assets/PDB/BiscuitOS/boot/BOOT000221.jpg)
 
 由 NASA 联合 The Instrumentation Laboratory、MIT、剑桥以及
 MASS 共同资助的一个项目，为了给阿波罗计划登月任务中使用的机载制导
@@ -200,12 +200,12 @@ cd BiscuitOS/output/Apollo-11
 ./RunBiscuitOS.sh launch
 {% endhighlight %}
 
-![Apollo-11](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000209.png)
+![Apollo-11](/assets/PDB/BiscuitOS/boot/BOOT000209.png)
 
 Apollo-11 制导系统 (简称 AGC) 分为两部分，一个用于指挥，如上图；
 一个用于登录舱，如下图：
 
-![Apollo-11](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000210.png)
+![Apollo-11](/assets/PDB/BiscuitOS/boot/BOOT000210.png)
 
 官方提供的 AGC 模拟器使用文档如下：
 
@@ -262,13 +262,13 @@ by reading the file Validation/Validation.agc.
 
 AGC 模拟器提供 Apollo-11 汇编源码在线浏览功能，如下图：
 
-![Apollo-11](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000209.png)
+![Apollo-11](/assets/PDB/BiscuitOS/boot/BOOT000209.png)
 
 首先在 AGC Simulate Type 栏目上选在 Apollo-11，然后在
 Browse Source Code 栏点击 AGC 按钮，此时浏览器就会弹出
 Apollo-11 使用的汇编，如下图：
 
-![Apollo-11](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000211.png)
+![Apollo-11](/assets/PDB/BiscuitOS/boot/BOOT000211.png)
 
 如果想了解更多 Apollo-11 源码的开发者，可以参考
 `BiscuitOS/output/Apollo-11/Apollo/Apollo`
@@ -290,5 +290,5 @@ rce)
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
 

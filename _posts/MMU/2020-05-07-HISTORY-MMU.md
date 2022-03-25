@@ -8,9 +8,9 @@ tags:
   - MMU
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -70,17 +70,17 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### 项目介绍
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001042.png)
+![](/assets/PDB/RPI/RPI001042.png)
 
 BiscuitOS Memory Manager Unit History 项目是使用内核模块的方式，从系统预留的
 物理内存上构建一个早期的 Linux 内核管理子系统，并在上面实现多个内存管理器
@@ -136,7 +136,7 @@ Linux 2.6.14
 Linux 2.6.15
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------------------
 
@@ -159,7 +159,7 @@ Linux 早期的内存管理子系统版本，开发者可以选择相对简单�
 浅入深，最后掌握内存管理子系统。因此高版本的 linux 内存管理太难深入的话，
 可以考虑使用这个项目。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------
 
@@ -169,7 +169,7 @@ Linux 早期的内存管理子系统版本，开发者可以选择相对简单�
 内存管理器，然后基于 Patchwork 或者 tig 等工具，在当前版本上打上特定的
 的补丁，然后研究补丁的作用，或者复现特定的问题。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000744.png)
+![](/assets/PDB/RPI/RPI000744.png)
 
 开发者可以通过 PatchWork 的官网上获得指定的补丁，或者通过 linux 源码树
 上获得补丁信息:
@@ -182,7 +182,7 @@ Linux 早期的内存管理子系统版本，开发者可以选择相对简单�
 >
 > - [Linux on Github(torvalds)](https://github.com/torvalds/linux)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
@@ -206,7 +206,7 @@ Linux 早期的内存管理子系统版本，开发者可以选择相对简单�
 
 > - [动手构建一个内存管理子系统](https://biscuitos.github.io/blog/Design-MMU/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------------------
 
@@ -217,9 +217,9 @@ Linux 早期的内存管理子系统版本，开发者可以选择相对简单�
 代码都是从 Linux 中获得，并非自己编写，并遵循原始代码对应的开源许可权限。对
 于我独立开发的代码，均遵循 GPL 开源权限。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000745.jpeg)
+![](/assets/PDB/RPI/RPI000745.jpeg)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------------------
 
@@ -237,7 +237,7 @@ BiscuitOS Memory Manager Unit History 项目是一个开源的项目，欢迎各
 
 <span id="B"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### 项目实现
 
@@ -249,7 +249,7 @@ BiscuitOS Memory Manager Unit History 项目是一个开源的项目，欢迎各
 >
 > - [项目运行](#A0000004)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------------
 
@@ -262,7 +262,7 @@ BiscuitOS Memory Manager Unit History 项目通过独立模块的方式，从内
 的模式，将物理内存划分成不同的区间. 项目中定义了物理地址的起始地址是 
 "0x70000000", 终止物理地址是 "0x76400000", 总长度为 100MB. 如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000736.png)
+![](/assets/PDB/RPI/RPI000736.png)
 
 在有的 Linux 版本中支持 ZONE_DMA, ZONE_NORMAL 和 ZONE_HIGHMEM, 如上图所示:
 ZONE_DMA 区域是为 GFP_DMA 分配的物理内存，该区域位于物理内存的最前端，
@@ -273,7 +273,7 @@ ZONE_HIGHMEM 区域是高端内存物理区域，这个区域的物理页主要�
 和 FIXMAP 内存分配器使用，并动态的与这些区域的虚拟地址建立页表，该区域的
 起始地址是 "0x74400000" 终止地址是 "0x76400000"， 长度为 32M Bytes 空间.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000735.png)
+![](/assets/PDB/RPI/RPI000735.png)
 
 在有的 Linux 版本中开始支持 ZONE_DMA32 区域，在这种情况下，物理内存布局如上图:
 ZONE_DMA32 是 32 位系统上预留给特定硬件设备使用的物理区域，该区域的
@@ -286,13 +286,13 @@ ZONE_HIGHMEM 区域是高端内存物理区域，这个区域的物理页主要�
 和 FIXMAP 内存分配器使用，并动态的与这些区域的虚拟地址建立页表，该区域的
 起始地址是 "0x74400000" 终止地址是 "0x76400000"， 长度为 32M Bytes 空间.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------
 
 ###### <span id="A0000002">虚拟地址布局</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000737.png)
+![](/assets/PDB/RPI/RPI000737.png)
 
 BiscuitOS Memory Manager Unit History 项目的虚拟地址布局如上图。项目中定义
 了虚拟地址的起始地址即 PAGE_OFFSET 的值为 "0x90000000"。首先是一段长度为
@@ -318,7 +318,7 @@ FIXMAP 区域包含了一个页对应的虚拟地址空间，因此每一个虚�
 动态与 ZONE_HIGHMEM 的物理页进行零时映射，映射完毕之后在调用指定的函数解除
 映射关系。除以上定义的区域之外，其他虚拟地址区域均称为 "Hole".
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------------
 
@@ -329,7 +329,7 @@ BiscuitOS Memory Manager Unit History 项目基于模块实现。寄主机器是
 的物理内存，然后基于这段物理内存和真实的 TLB/CACHE 和页表建立了上述说描述
 的内存管理子系统，DTS 配置如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000738.png)
+![](/assets/PDB/RPI/RPI000738.png)
 
 从上图可以看出，项目在 DTS 中定义了一个名为 BiscuitOS 的节点，节点的 ram
 属性用来描述整个规划的物理内存和虚拟内存。ram 属性指向了 BiscuitOS_memory
@@ -341,7 +341,7 @@ BiscuitOS Memory Manager Unit History 项目基于模块实现。寄主机器是
 模块是一个标准的 Platform 驱动，驱动也包含了独立的链接脚本，该脚本也是项目
 内存规划的重要组成部分，其内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000739.png)
+![](/assets/PDB/RPI/RPI000739.png)
 
 链接脚本中定义了很多 section，以便实现内存管理子系统中所需的特定功能。
 ".early_param_bs" section 主要用来模拟从 Uboot 的 ATAG 中解析内存信息参数
@@ -370,7 +370,7 @@ module_initcall_bs();
 login_initcall_bs();
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000740.png)
+![](/assets/PDB/RPI/RPI000740.png)
 
 arch 目录下包含内存初始化早期，与体系结构相关的处理部分。mm 目录下面包含
 了与各个内存分配器和内存管理行为相关的代码。init 目录下是整个模块的初始化
@@ -387,7 +387,7 @@ arch 目录下包含内存初始化早期，与体系结构相关的处理部分
 >
 > - [Cortex_A9_Technical_Reference_Manual](https://gitee.com/BiscuitOS_team/Documentation/blob/master/Datasheet/ARM/Cortex_A9_Technical_Reference_Manual.pdf)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------------
 
@@ -396,16 +396,16 @@ arch 目录下包含内存初始化早期，与体系结构相关的处理部分
 由于 BiscuitOS Memory Manager Unit History 项目是由模块实现，因此可以向通用
 的模块方式进行编译和安装，具体情况如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000741.png)
+![](/assets/PDB/RPI/RPI000741.png)
 
 编译完毕之后，在目标机上运行模块:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000742.png)
+![](/assets/PDB/RPI/RPI000742.png)
 
 当插入模块之后，系统成功的构建了一个 linux 2.6.15 的内存管理子系统，此时
 可以使用如下命令查看该子系统的内存信息:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000743.png)
+![](/assets/PDB/RPI/RPI000743.png)
 
 从上面获得信息中完整描述了该内存管理子系统的使用情况。
 
@@ -413,7 +413,7 @@ arch 目录下包含内存初始化早期，与体系结构相关的处理部分
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### 项目实践
 
@@ -427,7 +427,7 @@ arch 目录下包含内存初始化早期，与体系结构相关的处理部分
 >
 > - [测试建议](#C0004)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -452,19 +452,19 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000746.png)
+![](/assets/PDB/RPI/RPI000746.png)
 
 选择并进入 "[\*] Package  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000747.png)
+![](/assets/PDB/RPI/RPI000747.png)
 
 选择并进入 "[\*]   Memory Development History  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000748.png)
+![](/assets/PDB/RPI/RPI000748.png)
 
 选择并进入 "[\*]   MMU: Memory Manager Unit  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000749.png)
+![](/assets/PDB/RPI/RPI000749.png)
 
 选择 "[\*]   MMU on linux 2.6.12  --->" 目录，保存并退出。接着执行如下命令:
 
@@ -472,7 +472,7 @@ make menuconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000750.png)
+![](/assets/PDB/RPI/RPI000750.png)
 
 成功之后将出现上图的内容，接下来开发者执行如下命令以便切换到项目的路径:
 
@@ -481,11 +481,11 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_MMU-2.6.12
 make download
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000751.png)
+![](/assets/PDB/RPI/RPI000751.png)
 
 至此源码已经下载完成，开发者可以使用 tree 等工具查看源码:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000752.png)
+![](/assets/PDB/RPI/RPI000752.png)
 
 arch 目录下包含内存初始化早期，与体系结构相关的处理部分。mm 目录下面包含
 了与各个内存分配器和内存管理行为相关的代码。init 目录下是整个模块的初始化
@@ -497,7 +497,7 @@ arch 目录下包含内存初始化早期，与体系结构相关的处理部分
 到系统的 DTS 里面，"BiscuitOS.dts" 里的内容用来从系统中预留 100MB 的物理
 内存供项目使用，具体如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000738.png)
+![](/assets/PDB/RPI/RPI000738.png)
 
 开发者将 "BiscuitOS.dts" 的内容添加到:
 
@@ -512,7 +512,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_MMU-2.6.12
 make kernel
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000753.png)
+![](/assets/PDB/RPI/RPI000753.png)
 
 --------------------------------------------
 
@@ -526,7 +526,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_MMU-2.6.12
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000754.png)
+![](/assets/PDB/RPI/RPI000754.png)
 
 以上就是模块成功编译，接下来将 ko 模块安装到 BiscuitOS 中，使用如下命令:
 
@@ -543,7 +543,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_MMU-2.6.12
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000755.png)
+![](/assets/PDB/RPI/RPI000755.png)
 
 在 BiscuitOS 中插入了模块 "BiscuitOS_MMU-2.6.12.ko"，打印如上信息，那么
 BiscuitOS Memory Manager Unit History 项目的内存管理子系统已经可以使用，
@@ -554,13 +554,13 @@ cat /proc/buddyinfo_bs
 cat /proc/vmstat_bs
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000756.png)
+![](/assets/PDB/RPI/RPI000756.png)
 
 ------------------------------------------------
 
 <span id="C0003"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 #### 实践建议
 
@@ -593,7 +593,7 @@ ctags -R
 vi ~/.vimrc
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000757.png)
+![](/assets/PDB/RPI/RPI000757.png)
 
 有了上面的工具之后，可以在要跳转的函数处使用 "Ctrl ]" 组合键进行跳转，返回
 跳转点可以使用 "Ctrl t" 的组合键进行跳转。
@@ -618,9 +618,9 @@ bs_debug(...)
 开关，然后使用 bs_debug() 函数打印相关的信息。在代码块结尾使用
 "bs_debug_disable()" 函数关闭。这套函数将解决大部分的混乱打印问题。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000758.png)
+![](/assets/PDB/RPI/RPI000758.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------
 
@@ -638,7 +638,7 @@ bootmem_initcall_bs();
      函数。使用如下图:
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000759.png)
+![](/assets/PDB/RPI/RPI000759.png)
 
 {% highlight bash %}
 #include "biscuitos/init.h"
@@ -649,7 +649,7 @@ percpu_initcall_bs();
      函数。使用如下图:
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000760.png)
+![](/assets/PDB/RPI/RPI000760.png)
 
 {% highlight bash %}
 #include "biscuitos/init.h"
@@ -660,7 +660,7 @@ buddy_initcall_bs();
      函数。使用如下图:
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000761.png)
+![](/assets/PDB/RPI/RPI000761.png)
 
 {% highlight bash %}
 #include "biscuitos/init.h"
@@ -671,7 +671,7 @@ pcp_initcall_bs();
      函数。使用如下图:
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000762.png)
+![](/assets/PDB/RPI/RPI000762.png)
 
 {% highlight bash %}
 #include "biscuitos/init.h"
@@ -682,7 +682,7 @@ slab_initcall_bs();
      函数。使用如下图:
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000763.png)
+![](/assets/PDB/RPI/RPI000763.png)
 
 {% highlight bash %}
 #include "biscuitos/init.h"
@@ -693,7 +693,7 @@ vmalloc_initcall_bs();
      函数。使用如下图:
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000763.png)
+![](/assets/PDB/RPI/RPI000763.png)
 
 {% highlight bash %}
 #include "biscuitos/init.h"
@@ -704,7 +704,7 @@ kmap_initcall_bs();
      函数。使用如下图:
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000764.png)
+![](/assets/PDB/RPI/RPI000764.png)
 
 {% highlight bash %}
 #include "biscuitos/init.h"
@@ -715,7 +715,7 @@ fixmap_initcall_bs();
      函数。使用如下图:
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000765.png)
+![](/assets/PDB/RPI/RPI000765.png)
 
 {% highlight bash %}
 #include "biscuitos/init.h"
@@ -726,7 +726,7 @@ login_initcall_bs();
      函数。使用如下图:
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000766.png)
+![](/assets/PDB/RPI/RPI000766.png)
 
 ----------------------------------------
 
@@ -747,9 +747,9 @@ login_initcall_bs();
 meld linux-2.6.14 linux-2.6.15
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000767.png)
+![](/assets/PDB/RPI/RPI000767.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000768.png)
+![](/assets/PDB/RPI/RPI000768.png)
 
 通过上面提示的差异进行代码合入。该方法适用与对原始版本的 MMU 细节特别了解，
 知道合入之后的差异和引起的问题，不建议新手使用。
@@ -790,7 +790,7 @@ cd BiscuitOS/output/linux-newest-arm32/linux/linux
 tig mm/
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000769.png)
+![](/assets/PDB/RPI/RPI000769.png)
 
 从上图可以获得 mm 目录下提交的相关补丁，可以查看补丁的描述。如果觉得
 补丁可用，那么开发者可以独立出上图的补丁，例如在上图中，选中了一个补丁，
@@ -810,11 +810,11 @@ git format-patch -1 66d43e98ea6ff291cd4e524386bfb99105feb180
 
 于是就可以获得一个 patch:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000770.png)
+![](/assets/PDB/RPI/RPI000770.png)
 
 开发者可以利用这个补丁进行合入到当前内存管理子系统。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------
 
@@ -833,7 +833,7 @@ BiscuitOS Memory Manager Unit History 项目提供了大量的测试用例用于
 /xspace/OpenSource/BiscuitOS/BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_MMU-2.6.12/BiscuitOS_MMU-2.6.12/Makefile
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000771.png)
+![](/assets/PDB/RPI/RPI000771.png)
 
 Makefile 内提供了两种方案的编译开关，例如需要使用打开 buddy 内存管理器的
 源码树内部调试功能，需要保证 Makefile 内下面语句不被注释:
@@ -865,17 +865,17 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 在上面的例子中，例如打开了 buddy 的模块调试功能，重新编译模块并在 BiscuitOS
 上运行，如下图，可以在 "lib/module/5.0.0/extra/" 目录下看到两个模块:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000772.png)
+![](/assets/PDB/RPI/RPI000772.png)
 
 然后先向 BiscuitOS 中插入 "BiscuitOS_MMU-2.6.12.ko" 模块，然后再插入
 "BiscuitOS_MMU-2.6.12-buddy.ko" 模块。如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000773.png)
+![](/assets/PDB/RPI/RPI000773.png)
 
 以上便是测试代码的使用办法。开发者如果想在源码中启用或关闭某些宏，可以
 修改 Makefile 中内容:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000774.png)
+![](/assets/PDB/RPI/RPI000774.png)
 
 从上图可以知道，如果要启用某些宏，可以在 ccflags-y 中添加 "-D" 选项进行
 启用，源码的编译参数也可以添加到 ccflags-y 中去。开发者除了使用上面的办法
@@ -883,13 +883,13 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 
 > - [Initcall 机制调试说明](#C00032)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="T"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 #### MMU 历史版本
 
@@ -919,31 +919,31 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 >
 > - [CMA 内存分配器历史版本](https://biscuitos.github.io/blog/HISTORY-CMA/#H)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="R"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### MMU 时间轴
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000999.png)
+![](/assets/PDB/RPI/RPI000999.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### MMU 进阶研究
 
 > - [动手构建一个内存管理子系统](https://biscuitos.github.io/blog/Design-MMU/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------
 
@@ -960,4 +960,4 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

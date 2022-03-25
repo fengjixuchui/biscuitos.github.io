@@ -8,9 +8,9 @@ tags:
   - Linux
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 ## 目录
 
@@ -30,7 +30,7 @@ tags:
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
 ## 开发环境部署
 
@@ -44,7 +44,7 @@ tags:
 
 <span id="A2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
 
 ## 项目简介
 
@@ -63,11 +63,11 @@ BiscuitOS 项目是一个用于制作 Linux 0.x、1.x、2.x、3.x、4.x、5.3
 
 <span id="A0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 ## 硬件准备
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000046.JPG)
+![](/assets/PDB/RPI/RPI000046.JPG)
 
 由于项目构建基于 Ubuntu，因此需要准备一台运行
 Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
@@ -76,7 +76,7 @@ Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
 
 <span id="A1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 ## 软件准备
 
@@ -162,7 +162,7 @@ Blog:
 
 > - [BiscuitOS-Desktop GOKU Download](https://biscuitos.github.io/#projects)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000302.png)
+![](/assets/PDB/RPI/RPI000302.png)
 
 从网上下载最新的 GOKU 镜像，下载完毕之后开发者会获得
 BiscuitOS-Desktop-GOKU.tar.gz 压缩包。将压缩包拷贝到
@@ -181,7 +181,7 @@ tar -xvf BiscuitOS-Desktop-GOKU.tar.gz
 
 <span id="Y"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 ## BiscuitOS-Desktop GOKU 使用
 
@@ -202,7 +202,7 @@ cd BiscuitOS/output/BiscuitOS-Desktop-GOKU
 
 运行上面的命令之后，BiscuitOS-Desktop-GOKU 将会运行，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000300.png)
+![](/assets/PDB/RPI/RPI000300.png)
 
 默认登录账号 "biscuitos", 默认密码 "root".
 
@@ -210,7 +210,7 @@ cd BiscuitOS/output/BiscuitOS-Desktop-GOKU
 BiscuitOS-Desktop-GOKU 里面使用鼠标，如果想从 BiscuitOS-Desktop-GOKU
 中回复鼠标，可以使用 "Ctrl+Alt+G"。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000301.png)
+![](/assets/PDB/RPI/RPI000301.png)
 
 BiscuitOS-Desktop-GOKU 给予 Xfce4 构建，开发者可以给予 xfce4
 对 BiscuitOS-Desktop-GOKU 进行使用和二次开发，更多
@@ -230,4 +230,4 @@ BiscuitOS-Desktop-GOKU 的使用可以参考附录链接.
 
 ## 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

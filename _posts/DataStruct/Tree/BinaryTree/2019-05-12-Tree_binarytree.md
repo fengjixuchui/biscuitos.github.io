@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 > [Github: 二叉树](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/API/BBBXXX)
 >
@@ -52,7 +52,7 @@ tags:
 -----------------------------------
 # <span id="二叉树原理"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 # 二叉树原理
 
@@ -71,7 +71,7 @@ tags:
 二叉树 (Binary tree) 是一棵树，每个结点至多拥有两棵子树, 即二叉树中不存在度大于 2 的节点。
 二叉树的子树有左右之分，其次序不能任意颠倒。
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000071.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000071.png)
 
 ###  <span id="二叉树专业术语">二叉树专业术语</span>
 
@@ -167,7 +167,7 @@ tags:
 -----------------------------------
 # <span id="二叉树最小实践"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 # 二叉树最小实践
 
@@ -407,7 +407,7 @@ The Binary-Tree leaf: 8
 -----------------------------------
 # <span id="二叉树的实现"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000C.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000C.jpg)
 
 # 二叉树的实现
 
@@ -427,7 +427,7 @@ The Binary-Tree leaf: 8
 
 ### <span id="二叉树先中后线序">二二叉树的先、中、后、层序</span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000071.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000071.png)
 
 上述的实践代码已经运行了最小的二叉树，本节用于讲解上述源码的实现原理。首先需要了解
 一下树的先序遍历，中序遍历，后序遍历, 以及线序遍历。
@@ -523,7 +523,7 @@ struct binary_node {
 -----------------------------------
 # <span id="二叉树的分类"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 # 二叉树的分类
 
@@ -557,4 +557,4 @@ struct binary_node {
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

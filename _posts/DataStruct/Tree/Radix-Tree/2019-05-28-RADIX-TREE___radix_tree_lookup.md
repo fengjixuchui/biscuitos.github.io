@@ -8,7 +8,7 @@ tags:
   - Radix-Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 > [Github: __radix_tree_lookup](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/radix-tree/API/__radix_tree_lookup)
 >
@@ -317,4 +317,4 @@ oprofile: using arm/armv7-ca9
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

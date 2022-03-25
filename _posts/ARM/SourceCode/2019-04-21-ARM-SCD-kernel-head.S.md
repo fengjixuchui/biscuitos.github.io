@@ -25,7 +25,7 @@ tags:
 --------------------------------------------------------------
 <span id="简介"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/IND00000A.jpg)
 
 # 简介
 
@@ -33,7 +33,7 @@ tags:
 --------------------------------------------------------------
 <span id="实践"></span>
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/IND00000A.jpg)
 
 # 实践
 
@@ -527,11 +527,11 @@ bl      __lookup_processor_type         @ r5=procinfo r9=cpuid
 
 接下来通过 mrc 指令从 cp15 c0 中获得体系相关的 ID 信息，此时 CP15 C0 的布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOTCP15C0.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOTCP15C0.png)
 
 此时选中了 MIDR (Main ID Register) 寄存器，此时 MIDR 的布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000025.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000025.png)
 
 此时 r9 寄存器存储这体系相关 ID 信息，并调用 __lookup_processor_type, 该函数源码如下：
 
@@ -1060,11 +1060,11 @@ __fixup_smp:
 
 代码首先检查 r9 是否支持，这里先看一下 ARMv7 的 MIDR 寄存器，其布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000025.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000025.png)
 
 其中 MDIR[19:16] 对应的是 Architecture 域，其域值定义如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000040.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000040.png)
 
 此时在使用的位置加上断点，使用 GDB 调试这段代码，调试情况如下：
 
@@ -1156,7 +1156,7 @@ bne    __fixup_smp_on_up        @ no, assume UP
 首先调用 mrc 指令读取 MPIDR 寄存器的值，存储到 r0 寄存器中，然后将 r0 的值与 0xc0000000
 相与，结果存储在 r0 寄存器中，这里 MPIDR 寄存器的布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000041.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000041.png)
 
 其中 ARMv7 中不支持 Multiprocessing Extensions,因此 MPIDR[31:28] 对应的域 Reserved。
 因此这里 bne 指令不会跳转。开发者在适当的位置添加断点，然后使用 GDB 进行调试，调试情况
@@ -1254,21 +1254,21 @@ retne   lr
 IMPLEMENTATION DEFINED 寄存器。ARMv7 预留 CP15 c15 为 IMPLEMENTATION DEFINED
 目的用，请具体描述可以查看手册，这里不做过多解释：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000042.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000042.png)
 
 根据 Cortex-A9 手册可以知道 c15 系统控制寄存器布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000043.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000043.png)
 
 通过 "mrc p15, 4, r0, c15, c0" 选中了 Configuration Base Address, 其布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000044.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000044.png)
 
 回到代码，如果 Configuration Base Address 的值为 0，那么这个 CPU 是一个 A9 UP.
 如果 r0 寄存器的值不为 0，那么通过 ldr 指令读取 SCU 的配置。更多 SCU 信息请查看
 Cortex-A9MP 手册。SCU Configuration 寄存器的布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000045.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000045.png)
 
 接着执行代码 "and r0, r0, #0x3", 获得 SCU Configuration 寄存器的 LSB 低 2bits，
 低 2 位用于指定 CPU 的数量。如果此时 r0 寄存器的值为 0，那么代表系统只有一个 Cortex-A9
@@ -1721,13 +1721,13 @@ cmn 和 moveq 两条指令设置 r0 寄存器的值。接下来就是比较重�
 都是 "ADD/SUB" 指令，因此内核通过修改这两条指令的立即数域，以此修改虚拟地址
 和物理地址转换的偏移，如下：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000232.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000232.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000233.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000233.png)
 
 两个指令的机器码格式中，shifter_operand 域都是一致，其定义如下：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000234.png)
+![](/assets/PDB/BiscuitOS/boot/BOOT000234.png)
 
 上面为 ARMv7 中立即数的表示方式，其包含了 rotate_imm 域和 immed_8 域，
 ARMv7 通过将 immed_8 域的值向右循环移动 (2 * rotate_imm 域值)，即：
@@ -2598,18 +2598,18 @@ kernel 之前修正了动作，仅仅执行 invalidate 动作，而不是 clean+
 代码首先将 r0 寄存器，然后执行 "mcr p15, 2, r0, c0, c0, 0" 代码，此时对应
 的 CP15 C0 布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOTCP15C0.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOTCP15C0.png)
 
 此时选中的寄存器是：CSSELR, Cache Size Select Register. 其内存布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000026.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000026.png)
 
 代码先将 0 写入到 CSSELR 寄存器，通过 CSSELR 寄存器的 InD 域写入 0 代表
 数据或一致 cache。CSSELR 寄存器的 Level 域写入 0 代表选择 Level 1 Cache。通过
 这行代码，内核选中了 Level 1 D-cache。接着调用 "mrc p15, 1, r0, c0, c0, 0",
 此时选中的是 CCSIDR, Cache Size ID Register 寄存器，其布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000028.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000028.png)
 
 通过上面的代码，读取了 CCSIDR 寄存器的值到 r0 寄存器。开发者可以在适当的位置添加
 断点，然后使用 GDB 进行调试，调试的情况如下：
@@ -2639,7 +2639,7 @@ r0             0xe00fe019          -535830503
 
 在执行后续代码之前，这里补充一下 Cacahe 基础知识：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000023.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000023.png)
 
 Cache 的最小数据单元称为 cache line；多个连续的 cache line 称为一个 cache set；
 cache 被均分成多个 cache set；每个 cache set 中含有的 cache line 的数量称为
@@ -2651,7 +2651,7 @@ ARMv7 采用的是 Set/Way 方法 flush cache。更多 cache 内容请看：
 
 对于 CCSIDR 寄存器，其布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000028.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000028.png)
 
 通过 CSSELR 选中 cache level 之后，CSSIDR 寄存器里描述了对应 cache level 的信息，
 根据之前的实践可以知道，此时选中的是 Cache level 0，CSSIDR 寄存器的值 0xe00fe019,
@@ -2744,7 +2744,7 @@ r4             0x4                 4
 提供了一个寄存器 DCCISW，只要往 DCCISW 寄存器中写入 Set 和 Way 信息之后，
 CPU 就会根据 DCCISW 中的信息去 flush 指定的 cache。DCCISW 的内存布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000029.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000029.png)
 
 通过寄存器的描述，知道上面的代码为什么要这样处理从 CSSIDR 寄存器中值，从 DCCISW
 的布局可以知道，只要往 DCCISW 最高位往地位写入 way 的信息，因此有了 "clz r1, r3"
@@ -2776,7 +2776,7 @@ r4 寄存器存储着 cache way 的数量，这里可以将 way 理解为 “列
 将 set 和 way 数据构造成 DCCISW 寄存器所需要的格式，然后调用
 "mcr p15, 0, r5, c7, c6, 2" 命令将值写入到 DCCISW 寄存器里，此时 CP15 c7 布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOTCP15C7.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOTCP15C7.png)
 
 通过命令选中了 DCCISW 寄存器，然后通过 mcr 指令将数据写入到 DCCISW 寄存器里。
 以此反复，可以总结为每个 set 一共循环 way 次写 DCCISW 操作，因此总共循环了
@@ -2975,30 +2975,30 @@ __errata_finish:
 接下来这段代码就是 MMU 设置的核心代码，在分析代码之前，先讲解涉及的相关寄存器。
 "mcr p15, 0, r10, c7, c5, 0" 代码中，对 CP15 C7 中的寄存器操作，此时布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOTCP15C7.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOTCP15C7.png)
 
 CP15 C7 是与 Cache 维护和地址转换有关的寄存器，此时选中寄存器：
 ICIALLU, Invalidate all instruction caches to PoU. 对该寄存器执行写操作会引起
 所有指令 cache 无效(PoU)。下一个涉及的寄存器位于 CP15 C8 里，其包含了很多 TLB 相关
 的寄存器，其布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOTCP15C8.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOTCP15C8.png)
 
 "mcr p15, 0, r10, c8, c7, 0" 涉及的寄存器是：TLBIALL, invalidate unified TLB.
 往这个寄存器里面写操作会导致所有的 TLB 无效。下一个涉及的寄存器位于 CP15 c10 里，
 其包含了内存的重映射和 TLB 控制操作，其布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOTCP15C10.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOTCP15C10.png)
 
 "mcr p15, 0, r3, c10, c2, 0" 涉及的寄存器是：PRRR, Primary Region Remap Register,
 其布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000046.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000046.png)
 
 接下来涉及的寄存器也在 CP15 c10 里，"mcr p15, 0, r6, c10, c2, 1" 涉及的寄存器是：
 NMRR, Normal Memory Remap Register, 其内存布局是：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000047.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000047.png)
 
 更多寄存器描述请看 ARMv7 Usermanual。接下来分析代码。首先将 r10 寄存器设置为 0，
 然后执行 "mcr p15, 0, r10, c7, c5, 0" 代码，向 ICIALLU 寄存器，这样会让
@@ -3027,12 +3027,12 @@ v7_ttb_setup 宏主要的作用是：
 v7_ttb_setup 首先执行的代码是 "mcr p15, 0, \zero, c2, c0, 2", 此时涉及 CP15 C2,
 其布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOTCP15C2.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOTCP15C2.png)
 
 代码写入的寄存器是： TTBCR, Translation Table Base Control Register.
 TTBCR 寄存器用于控制地址转换，其布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000015.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000015.png)
 
 由于本实践平台支持 SMP 单核心启动，因此 v7_ttb_setup 宏中 ALT_SMP 代码不执行，只
 执行 ALT_UP 宏包含的代码，因此 v7_ttb_setup 宏首先向 TTBCR 寄存器中写入 0，初始化
@@ -3092,7 +3092,7 @@ __errata_finish，继续分析代码：
 首先解析 PRRR 对于 PRRR 寄存器的设置。每个页表项同包含了 TEX[0],C,B 三个位，这
 三个位按下表的方式组成一个 n 值：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000015.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000015.png)
 
 通过上面的 n 值可以在 PRRR 寄存器中找到对应的 NOSn 域和 TRn 域，这些域都说明了
 不同的内存类型的属性，由于这部分比较复杂，更多细节请看：
@@ -3142,7 +3142,7 @@ NMRR 提供了附加的映射控制域，其也通过页表的 TEX[0],C,B 位决
 TEEHBR 寄存器设置为 0，然后设置 TEECR 寄存器，使 Unprivileged access disabled。
 代码 "mrc p15, 0, r0, c0, c1, 0" 首先读取 ID_PFR0 寄存器，其寄存器布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000051.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000051.png)
 
 其中 State3 域 bits[15:12] 指明系统是否支持 ThumbEE, 该域为 1 代表支持 ThumbEE;
 如果该域为 0， 则代表不支持 ThumbEE。代码中获得该域之后，使用 teq 指令对该域进行对比，
@@ -3150,12 +3150,12 @@ TEEHBR 寄存器设置为 0，然后设置 TEECR 寄存器，使 Unprivileged ac
 那么继续执行下面代码，首先将 r3 寄存器设置为 0， 然后调用 "mcr p14, 6, r3, c1, c0, 0"
 代码将 0 写入到 TEEHBR 寄存器，TEEHBR 寄存器的布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000049.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000049.png)
 
 将 TEEHBR 寄存器设置为了 0 之后，初始化了 TEEHBR 寄存器。接着执行代码
 "mrc p14, 6, r0, c0, c0, 0" 读取 TEECR 寄存器，寄存器布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000050.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000050.png)
 
 接着调用 orr 指令将 TEECR 的 bit0 置位，这样就会使 Unprivileged access disabled.
 最后将 r0 寄存器的写入到 TEECR 寄存器。开发者可以在适当的位置添加断点，然后使用
@@ -3221,7 +3221,7 @@ GDB 实践的结果符合预期，接下来执行的代码如下：
 
 这段代码的主要任务就是构造一段数据，用于设置 SCTLR 寄存器。SCTLR 寄存器的布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000014.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000014.png)
 
 其中，ARMv7 中内核想将 SCTLR 寄存器设置为指定内容，将需要设置的内容存储在 v7_crval,
 其源码如下：
@@ -3410,11 +3410,11 @@ DOMAIN_NOACCESS，DOMAIN_KERNEL，DOMAIN_MANAGER，DOMAIN_IO，DOMAIN_CLIENT，
 DOMAIN_VECTORS，DOMAIN_CLIENT。接着将 r5 寄存器通过代码
 "mcr p15, 0, r5, c3, c0, 0" 写入了到寄存器，这里涉及到 CP15 C3 有关，其布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOTCP15C3.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOTCP15C3.png)
 
 通过代码选中了 DACR, Domain Access Control Register. 其寄存器布局如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000052.png)
+![MMU](/assets/PDB/BiscuitOS/boot/BOOT000052.png)
 
 向每个域中写入了访问权限。接着通过代码 "mcr p15, 0, r4, c2, c0, 0" 将 r4 寄存器
 的值写入到 TTBR0 寄存器，也就是写入页表的基地址。注意此时写入的是物理地址，而不是

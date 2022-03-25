@@ -116,7 +116,7 @@ gcc DemoC.c -c -fno-builtin
 ld -static -T Demo.lds -o a.out -M
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000513.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000513.png)
 
 通过上面的运行数据可知，输出文件的 DemoData section 中已经被放入了指定的数据，
 如 0x08048140 就被放入一个字节的数据。
@@ -137,4 +137,4 @@ ld -static -T Demo.lds -o a.out -M
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

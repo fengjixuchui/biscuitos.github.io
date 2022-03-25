@@ -8,7 +8,7 @@ tags:
   - CPUID
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000C.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000C.jpg)
 
 > [Github: read_cpuid](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/cpuid/API/read_cpuid)
 >
@@ -42,7 +42,7 @@ tags:
 read_cpuid() 函数用于从 CP15 C0 里面读取特定的寄存器。函数使用 MRC 指令从 CP15
 写处理器的 C0 簇里面读取特定的寄存器。CP15 C0 布局如下：
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOTCP15C0.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOTCP15C0.png)
 
 --------------------------------------------------
 
@@ -190,4 +190,4 @@ oprofile: using arm/armv7-ca9
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

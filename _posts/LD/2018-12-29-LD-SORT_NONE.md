@@ -115,12 +115,12 @@ ld -static -T DemoC.lds -o a.out -M
 objdump -x a.out
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000509.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000509.png)
 
 使用了 SORT_NONE 之后，DemoText section 的布局顺序是 DemoA.o, DemoB.o 和 
 DemoC.o。而不使用 SORT_NONE 的情况如下：
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000508.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000508.png)
 
 通过上面数据可知，不使用 SORT_NONE 函数后，DemoText 的链接顺序是 DemoB.o， 
 DemoA.o 和 DemoC.o。所以通过对比，SORT 可以排数输入文件。
@@ -141,4 +141,4 @@ DemoA.o 和 DemoC.o。所以通过对比，SORT 可以排数输入文件。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

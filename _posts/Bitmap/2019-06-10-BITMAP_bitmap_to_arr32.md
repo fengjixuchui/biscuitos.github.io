@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 > [Github: bitmap_to_arr32](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/bitmap/API/bitmap_to_arr32)
 >
@@ -219,4 +219,4 @@ bitmap 转换成 32-bit 数组。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 > [Github: ____atomic_set_bit](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/bitmap/API/____atomic_set_bit)
 >
@@ -203,4 +203,4 @@ bit set
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

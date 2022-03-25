@@ -10,7 +10,7 @@ tags:
 
 ![MMU](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000202.gif)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -37,7 +37,7 @@ tags:
 --------------------------------------------------------------
 <span id="MEMBLOCK 原理"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### MEMBLOCK 内存分配器原理
 
@@ -96,7 +96,7 @@ MEMBLOCK
 
 <span id="MEMBLOCK 内存分配器最小实践"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 #### MEMBLOCK 内存分配器最小实践
 
@@ -112,7 +112,7 @@ MEMBLOCK
 ---------------------------------------------------------------
 <span id="MEMBLOCK 内存分配器的使用"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
 
 #### MEMBLOCK 内存分配器的使用
 
@@ -229,7 +229,7 @@ MEMBLOCK 分配器初始化阶段或正常使用过程中需要往系统添加�
 --------------------------------------------------------------
 <span id="MEMBLOCK 源码分析"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### MEMBLOCK 源码分析
 
@@ -293,7 +293,7 @@ MEMBLOCK
 每层逻辑单元采用不同的数据结构进行维护，每种数据结构的相互配合，共同作为
 MEMBLOCK 内存分配器的基础框架。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------------------
 
@@ -422,7 +422,7 @@ bottom_up 成员的值为 false，那么 MEMBLOCK 分配器默认采用 top-down
 初始化完第一层逻辑之后，MEMBLOCK 分配器对内核初期的物理内存的维护就通过 memblock
 实例展开。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------------------
 
@@ -529,7 +529,7 @@ INIT_MEMBLOCK_RESERVED_REGIONS， total_size 设置为 0. 名字设置为 "reser
 > - 内存区块的合并，插入和移除
 
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------------------
 
@@ -944,7 +944,7 @@ void __init bootmem_init(void)
 -----------------------------------------------------
 # <span id="MEMBLOCK 调试"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### MEMBLOCK 调试
 
@@ -1036,7 +1036,7 @@ memblock_reserve: [0x9e7f2000-0x9eff1fff] memblock_alloc_internal+0x120/0x1a8
 memblock_alloc_try_nid_nopanic: 128 bytes align=0x40 nid=0 from=0x00000000 max_addr=0x00000000 setup_usemap.constprop.14+0x5c/0x68
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
@@ -1127,7 +1127,7 @@ cat /proc/iomem
 -----------------------------------------------------
 # <span id="内存分配器进阶实践"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### MEMBLOCK 进阶研究
 
@@ -1139,7 +1139,7 @@ cat /proc/iomem
 
 <span id="MEMBLOCK 内存块合并的分析与实践"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 #### MEMBLOCK 内存块合并的分析与实践
 
@@ -1238,7 +1238,7 @@ enum memblock_flags {
 
 <span id="MEMBLOCK 内存块拆分的分析与实践"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### MEMBLOCK 内存块拆分的分析与实践
 
@@ -1255,13 +1255,13 @@ MEMBLOCK 分配器的拆分问题。
 
 > - [MEMBLOCK 内存块拆分的分析与实践之 memblock_remove](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_remove/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------------
 
 <span id="MEMBLOCK_API-LIST"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### MEMBLOCK API List
 
@@ -1359,5 +1359,5 @@ MEMBLOCK 分配器的拆分问题。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
 

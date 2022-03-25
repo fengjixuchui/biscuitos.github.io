@@ -81,7 +81,7 @@ ld -static -T Demo.lds DemoA.o DemoB.o DemoC.c -o a.out
 readelf -Sl a.out
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000502.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000502.png)
 
 通过上面的例子可知，可以通过这个方法来指定输出段的名字。
 
@@ -101,4 +101,4 @@ readelf -Sl a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

@@ -172,7 +172,7 @@ ld -static -T Demo.lds -o a.out
 objdump -xSsdh a.out
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000522.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000522.png)
 
 通过上面的运行数据可知，DemoText 和 DemoData 的 VMA 地址是相同的，但 LVM 地址
 是不同的。
@@ -193,4 +193,4 @@ objdump -xSsdh a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

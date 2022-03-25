@@ -8,9 +8,9 @@ tags:
   - [MMU]
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 ## 目录
 
@@ -48,7 +48,7 @@ tags:
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### 项目介绍
 
@@ -65,7 +65,7 @@ PERCPU、NAME 内存分配器。
 BiscuitOS Open-Memory 项目根据各个内存分配器在 Linux 的生命周期，编写
 了相互独立或者相互依赖的内存分配器，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000225.png)
+![](/assets/PDB/HK/HK000225.png)
 
 从上图可以看出，第一个内存分配器是 MEMBLOCK 分配器，项目中提供了一个独立
 的用户空间 MEMBLOCK 内存分配器项目。第二个内存分配器是 PERCPU 内存分配器，
@@ -80,7 +80,7 @@ MEMBLOCK 内存分配器实现的项目。第三个内存分配器是 Buddy 内�
 
 BiscuitOS Open-Memory 项目构建的用户空间分配器基于上图的虚拟地址布局:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000226.png)
+![](/assets/PDB/HK/HK000226.png)
 
 ERROR_AREA 是内核的错误处理区域; Userspace 代表应用程序运行的虚拟地址
 空间;  TASK_SIZE 是用户空间应用程序堆栈的最大地址; PKMAP_BASE 到 
@@ -108,11 +108,11 @@ Linux 5.x，原理根据经典书籍 《深入理解 Linux 虚拟内存管理》
 
 <span id="B"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### MEMBLOCAK Memory Allocator
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000227.png)
+![](/assets/PDB/HK/HK000227.png)
 
 > - [MEMBLOCK 内存分配器简介](#B0)
 >
@@ -120,7 +120,7 @@ Linux 5.x，原理根据经典书籍 《深入理解 Linux 虚拟内存管理》
 >
 > - [用户空间 MEMBLOCK 内存分配器 BiscuitOS 实践](#B2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -147,7 +147,7 @@ CMA 占用的物理页作为临时预留，直到 CMA 内存管理器初始化�
 
 > - [MEMBLOCK 内存分配器原理及实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/#header)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000225.png) 
+![](/assets/PDB/HK/HK000225.png) 
 
 上图是 MEMBLOCK 与其他内存分配器的生命周期，可以看出 MEMBLOCK 通常
 完成使命之后，内核就放弃使用 MEMBLOCK 管理物理内存。不过内存也支持
@@ -157,7 +157,7 @@ MEMBLOCK 长期维护物理内存，需要进行相应的内核配置。
 
 <span id="B1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 #### 用户空间 MEMBLOCK 内存分配器实践
 
@@ -167,7 +167,7 @@ MEMBLOCK 长期维护物理内存，需要进行相应的内核配置。
 >
 > - [实践分析](#B12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -196,7 +196,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 MEMBLOCK 内存分配器，这里输入 1 并回车，如果
@@ -204,7 +204,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "MEMBLOCK" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000229.png)
+![](/assets/PDB/HK/HK000229.png)
 
 用户空间 MEMBLOCK 内存分配器包含了 7 个文件，"mian.c" 文件包含了用户空间
 MEMBLOCK 内存分配器的使用例子，开发者可以参考这些例子对 MEMBLOCK 内存
@@ -219,7 +219,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000230.png)
+![](/assets/PDB/HK/HK000230.png)
 
 以上就是用户空间 MEMBLOCK 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 MEMBLOCK 的实现过程。
@@ -243,7 +243,7 @@ MEMBLOCK 内存管理器基于以上信息进行初始化，初始化完毕之�
 
 <span id="B2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### 用户空间 MEMBLOCK 内存分配器 BiscuitOS 实践
 
@@ -253,7 +253,7 @@ MEMBLOCK 内存管理器基于以上信息进行初始化，初始化完毕之�
 >
 > - [实践分析](#B22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -277,15 +277,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000232.png)
+![](/assets/PDB/HK/HK000232.png)
 
 选择并进入 "MEMBLOCK Memory Allocator  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000233.png)
+![](/assets/PDB/HK/HK000233.png)
 
 选择 "MEMBLOCK Allocator on Userspace  --->", 保存并退出.
 
@@ -308,7 +308,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000235.png)
+![](/assets/PDB/HK/HK000235.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 MEMBLOCK 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -319,7 +319,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000234.png)
+![](/assets/PDB/HK/HK000234.png)
 
 上图就是用户空间 MEMBLOCK 在 BiscuitOS 运行的效果。
 
@@ -343,11 +343,11 @@ MEMBLOCK 内存管理器基于以上信息进行初始化，初始化完毕之�
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### PERCPU(UP) Memory Allocator
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000236.png)
+![](/assets/PDB/HK/HK000236.png)
 
 > - [PERCPU(UP) 内存分配器简介](#C0)
 >
@@ -355,7 +355,7 @@ MEMBLOCK 内存管理器基于以上信息进行初始化，初始化完毕之�
 >
 > - [用户空间 PERCPU(UP) 内存分配器 BiscuitOS 实践](#C2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -377,7 +377,7 @@ PERCPU 内存分配的建立在 MEMBLOCK 内存分配器之后，Buddy 内存分
 一个 CPU 使用的内存，其实现逻辑相对于 SMP 架构简单很多，因此对开发者
 来说，研究 PERCPU(UP) 内存分配器相对友好。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000225.png) 
+![](/assets/PDB/HK/HK000225.png) 
 
 上图是 PERCPU(UP) 与其他内存分配器的生命周期，PERCPU(UP) 在 Linux 
 初始阶段依赖 MEMBLOCK 阶段，当系统初始化完毕之后，如果 PERCPU 内存分配
@@ -390,7 +390,7 @@ PERCPU 内存分配的建立在 MEMBLOCK 内存分配器之后，Buddy 内存分
 
 <span id="C1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000B.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
 
 #### 用户空间 PERCPU(UP) 内存分配器实践
 
@@ -400,7 +400,7 @@ PERCPU 内存分配的建立在 MEMBLOCK 内存分配器之后，Buddy 内存分
 >
 > - [实践分析](#C12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -429,7 +429,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 PERCPU(UP) 内存分配器，这里输入 2 并回车，如果
@@ -437,7 +437,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "PERCPU-UP" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000237.png)
+![](/assets/PDB/HK/HK000237.png)
 
 用户空间 PERCPU(UP) 内存分配器包含了 14 个文件，"mian.c" 文件包含了用户空间
 PERCPU(UP) 内存分配器的使用例子，开发者可以参考这些例子对 PERCPU(UP) 内存
@@ -452,7 +452,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000238.png)
+![](/assets/PDB/HK/HK000238.png)
 
 以上就是用户空间 PERCPU(UP) 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 PERCPU(UP) 的实现过程。
@@ -465,7 +465,7 @@ make
 分配指定大小的内存，然后将这些内存分成指定大小的内存块，每个内存块
 通过 BITMAP 进行管理，其实现如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000223.png)
+![](/assets/PDB/HK/HK000223.png)
 
 如上图，map_size 指向的空间就是 PERPCU(UP) 维护的内存，PERCPU(UP) 内存
 内存管理器通过 alloc_BITMAP 和 pcpu_block_md 对所有的可用内存进行分配
@@ -476,7 +476,7 @@ make
 
 <span id="C2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Q.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
 #### 用户空间 PERCPU(UP) 内存分配器 BiscuitOS 实践
 
@@ -486,7 +486,7 @@ make
 >
 > - [实践分析](#C22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -510,15 +510,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000239.png)
+![](/assets/PDB/HK/HK000239.png)
 
 选择并进入 "percpu  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000240.png)
+![](/assets/PDB/HK/HK000240.png)
 
 选择 "PERCPU(UP) Memory Allocator on Userspace  --->", 保存并退出.
 
@@ -541,7 +541,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000241.png)
+![](/assets/PDB/HK/HK000241.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 PERCPU(UP) 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -552,7 +552,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000242.png)
+![](/assets/PDB/HK/HK000242.png)
 
 上图就是用户空间 PERCPU(UP) 在 BiscuitOS 运行的效果。
 
@@ -564,7 +564,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 分配指定大小的内存，然后将这些内存分成指定大小的内存块，每个内存块
 通过 BITMAP 进行管理，其实现如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000223.png)
+![](/assets/PDB/HK/HK000223.png)
 
 如上图，map_size 指向的空间就是 PERPCU(UP) 维护的内存，PERCPU(UP) 内存
 内存管理器通过 alloc_BITMAP 和 pcpu_block_md 对所有的可用内存进行分配
@@ -575,11 +575,11 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 <span id="D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000A.jpg)
 
 #### PERCPU(SMP) Memory Allocator
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000236.png)
+![](/assets/PDB/HK/HK000236.png)
 
 > - [PERCPU(SMP) 内存分配器简介](#D0)
 >
@@ -587,7 +587,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 >
 > - [用户空间 PERCPU(SMP) 内存分配器 BiscuitOS 实践](#D2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -609,7 +609,7 @@ PERCPU 内存分配的建立在 MEMBLOCK 内存分配器之后，Buddy 内存分
 维护其本地内存，其实现逻辑相对于 UP 架构复杂很多，因此对开发者
 来说，研究 PERCPU(SMP) 内存分配器相对不友好。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000225.png) 
+![](/assets/PDB/HK/HK000225.png) 
 
 上图是 PERCPU(SMP) 与其他内存分配器的生命周期，PERCPU(SMP) 在 Linux 
 初始阶段依赖 MEMBLOCK 阶段，当系统初始化完毕之后，如果 PERCPU 内存分配
@@ -622,7 +622,7 @@ PERCPU 内存分配的建立在 MEMBLOCK 内存分配器之后，Buddy 内存分
 
 <span id="D1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### 用户空间 PERCPU(SMP) 内存分配器实践
 
@@ -632,7 +632,7 @@ PERCPU 内存分配的建立在 MEMBLOCK 内存分配器之后，Buddy 内存分
 >
 > - [实践分析](#D12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -661,7 +661,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 PERCPU(SMP) 内存分配器，这里输入 3 并回车，如果
@@ -669,7 +669,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "PERCPU-SMP" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000237.png)
+![](/assets/PDB/HK/HK000237.png)
 
 用户空间 PERCPU(SMP) 内存分配器包含了 14 个文件，"mian.c" 文件包含了用户空间
 PERCPU(SMP) 内存分配器的使用例子，开发者可以参考这些例子对 PERCPU(SMP) 内存
@@ -684,7 +684,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000238.png)
+![](/assets/PDB/HK/HK000238.png)
 
 以上就是用户空间 PERCPU(SMP) 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 PERCPU(SMP) 的实现过程。
@@ -697,7 +697,7 @@ make
 分配指定大小的内存，然后将这些内存分成指定大小的内存块，每个内存块
 通过 BITMAP 进行管理，其实现如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000223.png)
+![](/assets/PDB/HK/HK000223.png)
 
 如上图，map_size 指向的空间就是 PERPCU(UP) 维护的内存，PERCPU(SMP) 内存
 内存管理器通过 alloc_BITMAP 和 pcpu_block_md 对所有的可用内存进行分配
@@ -716,7 +716,7 @@ make CPUS=8
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000243.png)
+![](/assets/PDB/HK/HK000243.png)
 
 上图是 8 核模式下用户空间 PERCPU(SMP) 内存分配器的运行效果.
 
@@ -729,7 +729,7 @@ make CPUS=32
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000244.png)
+![](/assets/PDB/HK/HK000244.png)
 
 上图是 32 核模式下用户空间 PERCPU(SMP) 内存分配器的运行效果.
 
@@ -742,7 +742,7 @@ make CPUS=128
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000245.png)
+![](/assets/PDB/HK/HK000245.png)
 
 上图是 128 核模式下用户空间 PERCPU(SMP) 内存分配器的运行效果.
 
@@ -755,7 +755,7 @@ make CPUS=256
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000246.png)
+![](/assets/PDB/HK/HK000246.png)
 
 上图是 256 核模式下用户空间 PERCPU(SMP) 内存分配器的运行效果.
 
@@ -763,7 +763,7 @@ make CPUS=256
 
 <span id="D2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000J.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000J.jpg)
 
 #### 用户空间 PERCPU(SMP) 内存分配器 BiscuitOS 实践
 
@@ -773,7 +773,7 @@ make CPUS=256
 >
 > - [实践分析](#D22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -797,15 +797,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000239.png)
+![](/assets/PDB/HK/HK000239.png)
 
 选择并进入 "percpu  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000247.png)
+![](/assets/PDB/HK/HK000247.png)
 
 选择 "PERCPU(UP) Memory Allocator on Userspace  --->", 保存并退出.
 
@@ -828,7 +828,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000248.png)
+![](/assets/PDB/HK/HK000248.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 PERCPU(SMP) 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -839,7 +839,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000249.png)
+![](/assets/PDB/HK/HK000249.png)
 
 上图就是用户空间 PERCPU(SMP) 在 BiscuitOS 运行的效果。
 
@@ -851,7 +851,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 分配指定大小的内存，然后将这些内存分成指定大小的内存块，每个内存块
 通过 BITMAP 进行管理，其实现如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000223.png)
+![](/assets/PDB/HK/HK000223.png)
 
 如上图，map_size 指向的空间就是 PERPCU(UP) 维护的内存，PERCPU(SMP) 内存
 内存管理器通过 alloc_BITMAP 和 pcpu_block_md 对所有的可用内存进行分配
@@ -863,11 +863,11 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 <span id="E"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000C.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000C.jpg)
 
 #### Buddy-Normal Memory Allocator
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000250.png)
+![](/assets/PDB/HK/HK000250.png)
 
 > - [Buddy-Normal 内存分配器简介](#E0)
 >
@@ -875,7 +875,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 >
 > - [用户空间 Buddy-Normal 内存分配器 BiscuitOS 实践](#E2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -896,7 +896,7 @@ freelist 链表，这个链表含有多个成员，每个成员是 2 的阶乘�
 2^2 .... 2^10、2^11 的顺序排列。每个成员由各自维护一个链表，链表中的成员
 即一个可用的物理页，页的大小正好是 2^n. 如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000250.png)
+![](/assets/PDB/HK/HK000250.png)
 
 Buddy 内存分配器就负责管理每个 zone 上面的 freelist，当系统需要指定大小
 的内存时候，Buddy 内存分配器就去 freelist 对应的节点上找，看这个节点对应
@@ -929,7 +929,7 @@ Buddy 内存管理器就将两个物理页块合并成一个物理页块，并�
 
 <span id="E1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### 用户空间 Buddy-Normal 内存分配器实践
 
@@ -939,7 +939,7 @@ Buddy 内存管理器就将两个物理页块合并成一个物理页块，并�
 >
 > - [实践分析](#E12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -968,7 +968,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 Buddy-Normal 内存分配器，这里输入 4 并回车，如果
@@ -976,7 +976,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "Buddy-Normal" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000251.png)
+![](/assets/PDB/HK/HK000251.png)
 
 用户空间 Buddy-Normal 内存分配器包含了 7 个文件，"mian.c" 文件包含了用户空间
 Buddy-Normal 内存分配器的使用例子，开发者可以参考这些例子对 Buddy-Normal 内存
@@ -991,7 +991,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000252.png)
+![](/assets/PDB/HK/HK000252.png)
 
 以上就是用户空间 Buddy-Normal 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 Buddy-Normal 的实现过程。
@@ -1006,7 +1006,7 @@ make
 向这段虚拟内存的起始地址，这个指针是一个 struct page 的数组，数组的长度
 正好是 "页的总数 * struct page" 的总长度，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000253.png)
+![](/assets/PDB/HK/HK000253.png)
 
 用户空间的 Buddy-Normal 内存管理器就是基于 mem_map[] 数组，将所有的物理
 页加入到 Buddy-Normal 内存分配器里。接着可以使用用户空间 Buddy-Normal 
@@ -1017,7 +1017,7 @@ make
 
 <span id="E2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
 
 #### 用户空间 Buddy-Normal 内存分配器 BiscuitOS 实践
 
@@ -1027,7 +1027,7 @@ make
 >
 > - [实践分析](#E22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -1051,15 +1051,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000254.png)
+![](/assets/PDB/HK/HK000254.png)
 
 选择并进入 "Buddy Physical Memory Allocator  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000255.png)
+![](/assets/PDB/HK/HK000255.png)
 
 选择 "Buddy Allocator on Userspace  --->", 保存并退出.
 
@@ -1082,7 +1082,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000256.png)
+![](/assets/PDB/HK/HK000256.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 Buddy-Normal 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -1093,7 +1093,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000257.png)
+![](/assets/PDB/HK/HK000257.png)
 
 上图就是用户空间 Buddy-Normal 在 BiscuitOS 运行的效果。
 
@@ -1107,7 +1107,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 向这段虚拟内存的起始地址，这个指针是一个 struct page 的数组，数组的长度
 正好是 "页的总数 * struct page" 的总长度，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000253.png)
+![](/assets/PDB/HK/HK000253.png)
 
 用户空间的 Buddy-Normal 内存管理器就是基于 mem_map[] 数组，将所有的物理
 页加入到 Buddy-Normal 内存分配器里。接着可以使用用户空间 Buddy-Normal
@@ -1119,11 +1119,11 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 <span id="F"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
 
 #### Buddy-HighMEM Memory Allocator
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000250.png)
+![](/assets/PDB/HK/HK000250.png)
 
 > - [Buddy-HighMEM 内存分配器简介](#F0)
 >
@@ -1131,7 +1131,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 >
 > - [用户空间 Buddy-HighMEM 内存分配器 BiscuitOS 实践](#F2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -1152,7 +1152,7 @@ freelist 链表，这个链表含有多个成员，每个成员是 2 的阶乘�
 2^2 .... 2^10、2^11 的顺序排列。每个成员由各自维护一个链表，链表中的成员
 即一个可用的物理页，页的大小正好是 2^n. 如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000250.png)
+![](/assets/PDB/HK/HK000250.png)
 
 Buddy 内存分配器就负责管理每个 zone 上面的 freelist，当系统需要指定大小
 的内存时候，Buddy 内存分配器就去 freelist 对应的节点上找，看这个节点对应
@@ -1185,7 +1185,7 @@ Zone-HighMEM 的物理页块。其余逻辑与 Buddy 内存分配器一致。
 
 <span id="F1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### 用户空间 Buddy-HighMEM 内存分配器实践
 
@@ -1195,7 +1195,7 @@ Zone-HighMEM 的物理页块。其余逻辑与 Buddy 内存分配器一致。
 >
 > - [实践分析](#F12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -1224,7 +1224,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 Buddy-HighMEM 内存分配器，这里输入 5 并回车，如果
@@ -1232,7 +1232,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "Buddy-HighMEM" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000251.png)
+![](/assets/PDB/HK/HK000251.png)
 
 用户空间 Buddy-HighMEM 内存分配器包含了 7 个文件，"mian.c" 文件包含了用户空间
 Buddy-HighMEM 内存分配器的使用例子，开发者可以参考这些例子对 Buddy-HighMEM 内存
@@ -1247,7 +1247,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000258.png)
+![](/assets/PDB/HK/HK000258.png)
 
 以上就是用户空间 Buddy-HighMEM 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 Buddy-HighMEM 的实现过程。
@@ -1262,7 +1262,7 @@ PAGE_SZIE 的大小计算出每段虚拟内存可以分成的页的总数，然�
 mem_map 指向这段虚拟内存的起始地址，这个指针是一个 struct page 的数组，
 数组的长度正好是 "两段页的总数 * struct page" 的总长度，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000259.png)
+![](/assets/PDB/HK/HK000259.png)
 
 用户空间的 Buddy-HighMEM 内存管理器就是基于 mem_map[] 数组，将所有的物理
 页加入到 Buddy-HighMEM 内存分配器里。其中 MEMORY_SIZE 区域的物理页加入到
@@ -1275,7 +1275,7 @@ freelist 里面。接着可以使用用户空间 Buddy-HighMEM 内存分配器�
 
 <span id="F2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000O.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000O.jpg)
 
 #### 用户空间 Buddy-HighMEM 内存分配器 BiscuitOS 实践
 
@@ -1285,7 +1285,7 @@ freelist 里面。接着可以使用用户空间 Buddy-HighMEM 内存分配器�
 >
 > - [实践分析](#F22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -1309,15 +1309,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000254.png)
+![](/assets/PDB/HK/HK000254.png)
 
 选择并进入 "Buddy Physical Memory Allocator  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000260.png)
+![](/assets/PDB/HK/HK000260.png)
 
 选择 "Buddy Allocator (Highmem) on Userspace  --->", 保存并退出.
 
@@ -1340,7 +1340,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000261.png)
+![](/assets/PDB/HK/HK000261.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 Buddy-HighMEM 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -1351,7 +1351,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000262.png)
+![](/assets/PDB/HK/HK000262.png)
 
 上图就是用户空间 Buddy-HighMEM 在 BiscuitOS 运行的效果。
 
@@ -1365,7 +1365,7 @@ PAGE_SZIE 的大小计算出每段虚拟内存可以分成的页的总数，然�
 mem_map 指向这段虚拟内存的起始地址，这个指针是一个 struct page 的数组，
 数组的长度正好是 "两段页的总数 * struct page" 的总长度，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000259.png)
+![](/assets/PDB/HK/HK000259.png)
 
 用户空间的 Buddy-HighMEM 内存管理器就是基于 mem_map[] 数组，将所有的物理
 页加入到 Buddy-HighMEM 内存分配器里。其中 MEMORY_SIZE 区域的物理页加入到
@@ -1379,11 +1379,11 @@ freelist 里面。接着可以使用用户空间 Buddy-HighMEM 内存分配器�
 
 <span id="G"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 #### PCP Memory Allocator
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000263.png)
+![](/assets/PDB/HK/HK000263.png)
 
 > - [PCP 内存分配器简介](#G0)
 >
@@ -1391,7 +1391,7 @@ freelist 里面。接着可以使用用户空间 Buddy-HighMEM 内存分配器�
 >
 > - [用户空间 PCP 内存分配器 BiscuitOS 实践](#G2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -1409,7 +1409,7 @@ PCP 内存分配器用来分配和回收一个物理页。在内核中分配和�
 物理页释放回去给 Buddy 内存管理器，以此保证系统能高效使用一个物理页。
 其逻辑如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000263.png)
+![](/assets/PDB/HK/HK000263.png)
 
 以上便是 PCP 内存管理器的基本逻辑。在用户空间的 PCP 分配器
 项目中，PCP 维护这冷热页表，极大提高了一个物理页的分配效率。
@@ -1418,7 +1418,7 @@ PCP 内存分配器用来分配和回收一个物理页。在内核中分配和�
 
 <span id="G1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### 用户空间 PCP 内存分配器实践
 
@@ -1428,7 +1428,7 @@ PCP 内存分配器用来分配和回收一个物理页。在内核中分配和�
 >
 > - [实践分析](#G12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -1457,7 +1457,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 PCP 内存分配器，这里输入 6 并回车，如果
@@ -1465,7 +1465,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "PCP" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000251.png)
+![](/assets/PDB/HK/HK000251.png)
 
 用户空间 PCP 内存分配器包含了 7 个文件，"mian.c" 文件包含了用户空间
 PCP 内存分配器的使用例子，开发者可以参考这些例子对 PCP 内存
@@ -1480,7 +1480,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000264.png)
+![](/assets/PDB/HK/HK000264.png)
 
 以上就是用户空间 PCP 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 PCP 的实现过程。
@@ -1496,7 +1496,7 @@ PCP 主要是为 Zone_Normal 创建了一个 PCP 热页链表。每当调用者�
 Buddy-Normal 内存分配器中分配一定数量的单个物理页到 PCP 的热页链表
 中维护，最后在从 PCP 热页链表中返回一个物理物理页给调用者。如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000263.png)
+![](/assets/PDB/HK/HK000263.png)
 
 当调用者返回一个物理页给用户空间的 PCP 内存分配器，此时用户空间
 PCP 内存分配器维护的热页链表的数量已经超过一定数量，那么用户空间
@@ -1507,7 +1507,7 @@ PCP 内存分配器维护的热页链表的数量已经超过一定数量，那�
 
 <span id="G2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 #### 用户空间 PCP 内存分配器 BiscuitOS 实践
 
@@ -1517,7 +1517,7 @@ PCP 内存分配器维护的热页链表的数量已经超过一定数量，那�
 >
 > - [实践分析](#G22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -1541,15 +1541,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000254.png)
+![](/assets/PDB/HK/HK000254.png)
 
 选择并进入 "Buddy Physical Memory Allocator  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000265.png)
+![](/assets/PDB/HK/HK000265.png)
 
 选择 "PCP Allocator on Userspace  --->", 保存并退出.
 
@@ -1572,7 +1572,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000266.png)
+![](/assets/PDB/HK/HK000266.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 PCP 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -1583,7 +1583,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000267.png)
+![](/assets/PDB/HK/HK000267.png)
 
 上图就是用户空间 PCP 在 BiscuitOS 运行的效果。
 
@@ -1598,7 +1598,7 @@ PCP 主要是为 Zone_Normal 创建了一个 PCP 热页链表。每当调用者�
 Buddy-Normal 内存分配器中分配一定数量的单个物理页到 PCP 的热页链表
 中维护，最后在从 PCP 热页链表中返回一个物理物理页给调用者。如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000263.png)
+![](/assets/PDB/HK/HK000263.png)
 
 当调用者返回一个物理页给用户空间的 PCP 内存分配器，此时用户空间
 PCP 内存分配器维护的热页链表的数量已经超过一定数量，那么用户空间
@@ -1609,11 +1609,11 @@ PCP 内存分配器维护的热页链表的数量已经超过一定数量，那�
 
 <span id="H"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
 
 #### Slub Memory Allocator
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000268.png)
+![](/assets/PDB/HK/HK000268.png)
 
 > - [Slub 内存分配器简介](#H0)
 >
@@ -1621,7 +1621,7 @@ PCP 内存分配器维护的热页链表的数量已经超过一定数量，那�
 >
 > - [用户空间 Slub 内存分配器 BiscuitOS 实践](#H2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -1644,7 +1644,7 @@ Slub 内存分配器是基于 Buddy 内存分配器，Slub 内存分配器从 Bu
 以上提到的多个内存分配器都是基于 Slub 内存分配器构建的，其目的都是满足
 内核对小粒度内存的不同需求。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000268.png)
+![](/assets/PDB/HK/HK000268.png)
 
 Slub 内存分配器的工作原理就是从 Buddy 内存分配器中获得一些物理页，将这些
 物理页称为 slab_page，然后将这些 slab_page 对应的内存空间划分为指定大小
@@ -1661,7 +1661,7 @@ CPU 迁移到另外一个 CPU 之后，任务还能继续从之前的 freelist �
 
 <span id="H1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Y.jpg)
 
 #### 用户空间 Slub 内存分配器实践
 
@@ -1671,7 +1671,7 @@ CPU 迁移到另外一个 CPU 之后，任务还能继续从之前的 freelist �
 >
 > - [实践分析](#H12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -1700,7 +1700,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 Slub 内存分配器，这里输入 7 并回车，如果
@@ -1708,7 +1708,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "Slub" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000269.png)
+![](/assets/PDB/HK/HK000269.png)
 
 用户空间 Slub 内存分配器包含了 14 个文件，"mian.c" 文件包含了用户空间
 Slub 内存分配器的使用例子，开发者可以参考这些例子对 Slub 内存
@@ -1723,7 +1723,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000270.png)
+![](/assets/PDB/HK/HK000270.png)
 
 以上就是用户空间 Slub 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 Slub 的实现过程。
@@ -1737,7 +1737,7 @@ make
 将这些物理页分成指定长度的内存块，再将内存块作为一个指针指向下一个
 内存区块，以此形成下面的逻辑结构:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000268.png)
+![](/assets/PDB/HK/HK000268.png)
 
 freelist 形成之后，由于只模拟了一个 CPU，因此用户空间的 Slub 内存分配器
 做了相应的 CPU 迁移处理，让 freelist 都是在同一个 CPU 上，不会迁移到其他
@@ -1749,7 +1749,7 @@ CPU 上，这样处理之后，每个缓存通过 "kmem_cache" 进行管理，�
 
 <span id="H2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000V.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000V.jpg)
 
 #### 用户空间 Slub 内存分配器 BiscuitOS 实践
 
@@ -1759,7 +1759,7 @@ CPU 上，这样处理之后，每个缓存通过 "kmem_cache" 进行管理，�
 >
 > - [实践分析](#H22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -1783,15 +1783,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000271.png)
+![](/assets/PDB/HK/HK000271.png)
 
 选择并进入 "Slab/Slub/Slob Memory Allocator  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000272.png)
+![](/assets/PDB/HK/HK000272.png)
 
 选择 "SLUB Allocator on Userspace  --->", 保存并退出.
 
@@ -1814,7 +1814,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000273.png)
+![](/assets/PDB/HK/HK000273.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 Slub 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -1825,7 +1825,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000274.png)
+![](/assets/PDB/HK/HK000274.png)
 
 上图就是用户空间 Slub 在 BiscuitOS 运行的效果。
 
@@ -1838,7 +1838,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 将这些物理页分成指定长度的内存块，再将内存块作为一个指针指向下一个
 内存区块，以此形成下面的逻辑结构:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000268.png)
+![](/assets/PDB/HK/HK000268.png)
 
 freelist 形成之后，由于只模拟了一个 CPU，因此用户空间的 Slub 内存分配器
 做了相应的 CPU 迁移处理，让 freelist 都是在同一个 CPU 上，不会迁移到其他
@@ -1850,11 +1850,11 @@ CPU 上，这样处理之后，每个缓存通过 "kmem_cache" 进行管理，�
 
 <span id="J"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### Kmem_cache Memory Allocator
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000268.png)
+![](/assets/PDB/HK/HK000268.png)
 
 > - [Kmem_cache 内存分配器简介](#J0)
 >
@@ -1862,7 +1862,7 @@ CPU 上，这样处理之后，每个缓存通过 "kmem_cache" 进行管理，�
 >
 > - [用户空间 Kmem_cache 内存分配器 BiscuitOS 实践](#J2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -1876,7 +1876,7 @@ Kmem_cache 分配器用于给系统经常使用变量或结构分配缓存。内
 可用的内存给调用者，但调用者返回这块内存时，Kmem_cache 又将内存块插入到
 freelist 的链表上，以便调用者下次使用，其实现如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000268.png)
+![](/assets/PDB/HK/HK000268.png)
 
 Kmem_cache 分配器基于 Slub 内存分配器，从原理上讲 Kmem_cache 是 slub
 内存分配器的重要功能。Kmem_cache 经常为 Linux 经常给文件系统，任务调到
@@ -1886,7 +1886,7 @@ Kmem_cache 分配器基于 Slub 内存分配器，从原理上讲 Kmem_cache 是
 
 <span id="J1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 #### 用户空间 Kmem_cache 内存分配器实践
 
@@ -1896,7 +1896,7 @@ Kmem_cache 分配器基于 Slub 内存分配器，从原理上讲 Kmem_cache 是
 >
 > - [实践分析](#J12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -1925,7 +1925,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 Kmem_cache 内存分配器，这里输入 8 并回车，如果
@@ -1933,7 +1933,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "Kmem_cache" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000275.png)
+![](/assets/PDB/HK/HK000275.png)
 
 用户空间 Kmem_cache 内存分配器包含了 13 个文件，"mian.c" 文件包含了用户空间
 Kmem_cache 内存分配器的使用例子，开发者可以参考这些例子对 Kmem_cache 内存
@@ -1948,7 +1948,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000276.png)
+![](/assets/PDB/HK/HK000276.png)
 
 以上就是用户空间 Kmem_cache 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 Kmem_cache 的实现过程。
@@ -1960,7 +1960,7 @@ make
 用户空间的 Kmem_cache 内存分配器基于用户空间的 Slub 内存分配器，其目的
 主要是为系统提供小粒度内存的高速缓存。其实现如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000268.png)
+![](/assets/PDB/HK/HK000268.png)
 
 用户空间的 Kmem_cache 内存分配器为调用者提供了 "kmem_cache_create()"、
 "kmem_cache_zalloc()" 以及 "kmem_cache_free()" 等接口。这些接口满足了
@@ -1970,7 +1970,7 @@ make
 
 <span id="J2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000C.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000C.jpg)
 
 #### 用户空间 Kmem_cache 内存分配器 BiscuitOS 实践
 
@@ -1980,7 +1980,7 @@ make
 >
 > - [实践分析](#J22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -2004,15 +2004,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000271.png)
+![](/assets/PDB/HK/HK000271.png)
 
 选择并进入 "Slab/Kmem_cache/Slob Memory Allocator  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000277.png)
+![](/assets/PDB/HK/HK000277.png)
 
 选择 "Kmem_cache Allocator on Userspace  --->", 保存并退出.
 
@@ -2035,7 +2035,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000278.png)
+![](/assets/PDB/HK/HK000278.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 Kmem_cache 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -2046,7 +2046,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000279.png)
+![](/assets/PDB/HK/HK000279.png)
 
 上图就是用户空间 Kmem_cache 在 BiscuitOS 运行的效果。
 
@@ -2057,7 +2057,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 用户空间的 Kmem_cache 内存分配器基于用户空间的 Slub 内存分配器，其目的
 主要是为系统提供小粒度内存的高速缓存。其实现如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000268.png)
+![](/assets/PDB/HK/HK000268.png)
 
 用户空间的 Kmem_cache 内存分配器为调用者提供了 "kmem_cache_create()"、
 "kmem_cache_zalloc()" 以及 "kmem_cache_free()" 等接口。这些接口满足了
@@ -2067,11 +2067,11 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 <span id="K"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### Kmalloc Memory Allocator
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000280.png)
+![](/assets/PDB/HK/HK000280.png)
 
 > - [Kmalloc 内存分配器简介](#K0)
 >
@@ -2079,7 +2079,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 >
 > - [用户空间 Kmalloc 内存分配器 BiscuitOS 实践](#K2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -2096,7 +2096,7 @@ Kmalloc 内存分配器是用于分配第频率的的小粒度内存分配器。
 的内存少很多。因此 Kmalloc() 内存分配器称为了 Linux 不可或缺的一个内存
 分配器，其工作原理如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000280.png)
+![](/assets/PDB/HK/HK000280.png)
 
 Kmalloc 内存分配器为内核提供了 "kmalloc()/kfree" 以及 "kzalloc()" 等函数，
 通过这些函数，调用者可以快速的获得所需的小粒度内存。其很好的平衡了小粒度
@@ -2106,7 +2106,7 @@ Kmalloc 内存分配器为内核提供了 "kmalloc()/kfree" 以及 "kzalloc()" �
 
 <span id="K1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
 
 #### 用户空间 Kmalloc 内存分配器实践
 
@@ -2116,7 +2116,7 @@ Kmalloc 内存分配器为内核提供了 "kmalloc()/kfree" 以及 "kzalloc()" �
 >
 > - [实践分析](#K12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -2145,7 +2145,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 Kmalloc 内存分配器，这里输入 9 并回车，如果
@@ -2153,7 +2153,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "Kmalloc" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000269.png)
+![](/assets/PDB/HK/HK000269.png)
 
 用户空间 Kmalloc 内存分配器包含了 14 个文件，"mian.c" 文件包含了用户空间
 Kmalloc 内存分配器的使用例子，开发者可以参考这些例子对 Kmalloc 内存
@@ -2168,7 +2168,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000281.png)
+![](/assets/PDB/HK/HK000281.png)
 
 以上就是用户空间 Kmalloc 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 Kmalloc 的实现过程。
@@ -2182,7 +2182,7 @@ kmalloc 内存分配器按照 kmalloc 内存分配器的实现逻辑，创建 km
 数组，该数组就是用于维护 2^n 长度的缓存，这些缓存只有在调用者分配的时候
 才会实际去用户空间的 Slub 内存分配器上分配 slab page 作为缓存。其实现如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000280.png)
+![](/assets/PDB/HK/HK000280.png)
 
 用户空间的 Kmalloc 内存分配器对于调用者分配不是 2^n 阶乘的长度内存，Kmalloc
 内存分配器会多分配一部分内存，但使用者不应该去使用多的这部分内存。
@@ -2191,7 +2191,7 @@ kmalloc 内存分配器按照 kmalloc 内存分配器的实现逻辑，创建 km
 
 <span id="K2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Z.jpg)
 
 #### 用户空间 Kmalloc 内存分配器 BiscuitOS 实践
 
@@ -2201,7 +2201,7 @@ kmalloc 内存分配器按照 kmalloc 内存分配器的实现逻辑，创建 km
 >
 > - [实践分析](#K22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -2225,15 +2225,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000271.png)
+![](/assets/PDB/HK/HK000271.png)
 
 选择并进入 "Slab/Kmalloc/Slob Memory Allocator  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000282.png)
+![](/assets/PDB/HK/HK000282.png)
 
 选择 "Kmalloc Allocator on Userspace  --->", 保存并退出.
 
@@ -2256,7 +2256,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000283.png)
+![](/assets/PDB/HK/HK000283.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 Kmalloc 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -2267,7 +2267,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000284.png)
+![](/assets/PDB/HK/HK000284.png)
 
 上图就是用户空间 Kmalloc 在 BiscuitOS 运行的效果。
 
@@ -2280,7 +2280,7 @@ kmalloc 内存分配器按照 kmalloc 内存分配器的实现逻辑，创建 km
 数组，该数组就是用于维护 2^n 长度的缓存，这些缓存只有在调用者分配的时候
 才会实际去用户空间的 Slub 内存分配器上分配 slab page 作为缓存。其实现如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000280.png)
+![](/assets/PDB/HK/HK000280.png)
 
 用户空间的 Kmalloc 内存分配器对于调用者分配不是 2^n 阶乘的长度内存，Kmalloc
 内存分配器会多分配一部分内存，但使用者不应该去使用多的这部分内存。
@@ -2289,7 +2289,7 @@ kmalloc 内存分配器按照 kmalloc 内存分配器的实现逻辑，创建 km
 
 <span id="L"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000W.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000W.jpg)
 
 #### NAME Memory Allocator
 
@@ -2299,7 +2299,7 @@ kmalloc 内存分配器按照 kmalloc 内存分配器的实现逻辑，创建 km
 >
 > - [用户空间 NAME 内存分配器 BiscuitOS 实践](#L2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -2322,7 +2322,7 @@ NAME 分配器通过提供 "kstrdup()" 内存分配并拷贝字符串的功能�
 
 <span id="L1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
 
 #### 用户空间 NAME 内存分配器实践
 
@@ -2332,7 +2332,7 @@ NAME 分配器通过提供 "kstrdup()" 内存分配并拷贝字符串的功能�
 >
 > - [实践分析](#L12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -2361,7 +2361,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 NAME 内存分配器，这里输入 a 并回车，如果
@@ -2369,7 +2369,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "NAME_ALLOC" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000269.png)
+![](/assets/PDB/HK/HK000269.png)
 
 用户空间 NAME 内存分配器包含了 14 个文件，"mian.c" 文件包含了用户空间
 NAME 内存分配器的使用例子，开发者可以参考这些例子对 NAME 内存
@@ -2384,7 +2384,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000285.png)
+![](/assets/PDB/HK/HK000285.png)
 
 以上就是用户空间 NAME 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 NAME 的实现过程。
@@ -2402,7 +2402,7 @@ make
 
 <span id="L2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### 用户空间 NAME 内存分配器 BiscuitOS 实践
 
@@ -2412,7 +2412,7 @@ make
 >
 > - [实践分析](#L22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -2436,15 +2436,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000271.png)
+![](/assets/PDB/HK/HK000271.png)
 
 选择并进入 "Slab/NAME/Slob Memory Allocator  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000286.png)
+![](/assets/PDB/HK/HK000286.png)
 
 选择 "Name Allocator on Userspace  --->", 保存并退出.
 
@@ -2467,7 +2467,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000287.png)
+![](/assets/PDB/HK/HK000287.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 NAME 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -2478,7 +2478,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000288.png)
+![](/assets/PDB/HK/HK000288.png)
 
 上图就是用户空间 NAME 在 BiscuitOS 运行的效果。
 
@@ -2495,11 +2495,11 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 <span id="M"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000G.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000G.jpg)
 
 #### VMALLOC Memory Allocator
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000289.png)
+![](/assets/PDB/HK/HK000289.png)
 
 > - [VMALLOC 内存分配器简介](#M0)
 >
@@ -2507,7 +2507,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 >
 > - [用户空间 VMALLOC 内存分配器 BiscuitOS 实践](#M2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -2528,7 +2528,7 @@ VMALLOC 内存分配通过页表和一颗红黑树实现，红黑树用户实现
 红黑树中找到一块未使用的连续物理内存，接着将这块物理内存和虚拟内存之间
 建立相应的页表。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000226.png)
+![](/assets/PDB/HK/HK000226.png)
 
 VMALLOC 内存分配器分配的虚拟地址位于 VMALLOC_START 到 VMALLOC_END 之间，
 低端物理内存固定映射到虚拟地址后，在映射的末端 VMALLOC_OFFSET 之后便是
@@ -2539,7 +2539,7 @@ VMALLOC 内存分配区域。VMALLOC 内存分配器为内核提供了 "vmalloc(
 
 <span id="M1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### 用户空间 VMALLOC 内存分配器实践
 
@@ -2549,7 +2549,7 @@ VMALLOC 内存分配区域。VMALLOC 内存分配器为内核提供了 "vmalloc(
 >
 > - [实践分析](#M12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -2578,7 +2578,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 VMALLOC 内存分配器，这里输入 b 并回车，如果
@@ -2586,7 +2586,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "VMALLOC" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000290.png)
+![](/assets/PDB/HK/HK000290.png)
 
 用户空间 VMALLOC 内存分配器包含了 17 个文件，"mian.c" 文件包含了用户空间
 VMALLOC 内存分配器的使用例子，开发者可以参考这些例子对 VMALLOC 内存
@@ -2601,7 +2601,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000291.png)
+![](/assets/PDB/HK/HK000291.png)
 
 以上就是用户空间 VMALLOC 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 VMALLOC 的实现过程。
@@ -2626,7 +2626,7 @@ VMALLOC 虚拟地址转换为可用的虚拟地址。
 
 <span id="M2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000X.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000X.jpg)
 
 #### 用户空间 VMALLOC 内存分配器 BiscuitOS 实践
 
@@ -2636,7 +2636,7 @@ VMALLOC 虚拟地址转换为可用的虚拟地址。
 >
 > - [实践分析](#M22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -2660,15 +2660,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000292.png)
+![](/assets/PDB/HK/HK000292.png)
 
 选择并进入 "Vmalloc Memory Allocator  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000293.png)
+![](/assets/PDB/HK/HK000293.png)
 
 选择 "VMALLOC Allocator on Userspace  --->", 保存并退出.
 
@@ -2691,7 +2691,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000294.png)
+![](/assets/PDB/HK/HK000294.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 VMALLOC 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -2702,7 +2702,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000295.png)
+![](/assets/PDB/HK/HK000295.png)
 
 上图就是用户空间 VMALLOC 在 BiscuitOS 运行的效果。
 
@@ -2726,7 +2726,7 @@ VMALLOC 虚拟地址转换为可用的虚拟地址。
 
 <span id="N"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### KMAP Memory Allocator
 
@@ -2736,7 +2736,7 @@ VMALLOC 虚拟地址转换为可用的虚拟地址。
 >
 > - [用户空间 KMAP 内存分配器 BiscuitOS 实践](#N2)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ----------------------------------------------------------
 
@@ -2755,7 +2755,7 @@ Zone-HighMEM。如果调用者的物理页来自 Zone-Normal, 那么 KMAP 不做
 页表操作; 如果物理页来自 Zone-HighMEM, 那么 KMAP 才会对这里物理页进行页表
 的创建和摧毁操作。KMAP 虚拟内存区域如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000226.png)
+![](/assets/PDB/HK/HK000226.png)
 
 不同架构对 KMAP 区域的布局有所不同，但不影响其工作逻辑的一致性。KMAP 内存
 分配器为内核提供了 "kamp()/kunmap()" 函数对，也提供了 
@@ -2766,7 +2766,7 @@ Zone-HighMEM。如果调用者的物理页来自 Zone-Normal, 那么 KMAP 不做
 
 <span id="N1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000J.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000J.jpg)
 
 #### 用户空间 KMAP 内存分配器实践
 
@@ -2776,7 +2776,7 @@ Zone-HighMEM。如果调用者的物理页来自 Zone-Normal, 那么 KMAP 不做
 >
 > - [实践分析](#N12)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -2805,7 +2805,7 @@ chmod 755 BiscuitOS_MM.sh
 ./BiscuitOS_MM.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000228.png)
+![](/assets/PDB/HK/HK000228.png)
 
 执行完上面的命令会出现上图的对话框，该对话框用于部署不同内存分配器的
 源码项目。对于用户空间的 KMAP 内存分配器，这里输入 c 并回车，如果
@@ -2813,7 +2813,7 @@ chmod 755 BiscuitOS_MM.sh
 部署完毕之后，可以在当前目录获得名为 "KMAP" 的目录，此时进入该目录，
 查看源码如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000296.png)
+![](/assets/PDB/HK/HK000296.png)
 
 用户空间 KMAP 内存分配器包含了 17 个文件，"mian.c" 文件包含了用户空间
 KMAP 内存分配器的使用例子，开发者可以参考这些例子对 KMAP 内存
@@ -2828,7 +2828,7 @@ make
 ./biscuitos
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000297.png)
+![](/assets/PDB/HK/HK000297.png)
 
 以上就是用户空间 KMAP 运行情况，开发者可以从 "main.c" 文件的 "main()"
 函数作为入口来实践 KMAP 的实现过程。
@@ -2846,7 +2846,7 @@ make
 
 <span id="N2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### 用户空间 KMAP 内存分配器 BiscuitOS 实践
 
@@ -2856,7 +2856,7 @@ make
 >
 > - [实践分析](#N22)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 -----------------------------------------------
 
@@ -2880,15 +2880,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000231.png)
+![](/assets/PDB/HK/HK000231.png)
 
 选择并进入 "Package  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000298.png)
+![](/assets/PDB/HK/HK000298.png)
 
 选择并进入 "Kmap Memory Allocator  --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000299.png)
+![](/assets/PDB/HK/HK000299.png)
 
 选择 "Kmap Memory Allocator on Userspace  --->", 保存并退出.
 
@@ -2911,7 +2911,7 @@ make pack
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000300.png)
+![](/assets/PDB/HK/HK000300.png)
 
 执行完上面的代码之后，BiscuitOS 自动部署用户空间 KMAP 内存分配器
 项目的源码，并将目标文件安装到 BiscuitOS，接下来在 BiscuitOS 上运行
@@ -2922,7 +2922,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000301.png)
+![](/assets/PDB/HK/HK000301.png)
 
 上图就是用户空间 KMAP 在 BiscuitOS 运行的效果。
 
@@ -2949,4 +2949,4 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 ## 赞赏一下吧 🙂
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

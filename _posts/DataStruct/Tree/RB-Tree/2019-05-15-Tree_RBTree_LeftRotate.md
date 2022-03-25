@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 > [Github: 红黑树左旋实践](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/tree/rb-tree/Rotate/Left_Rotate)
 >
@@ -29,19 +29,19 @@ tags:
 
 # <span id="原理分析">红黑树左旋</span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT100000.gif)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT100000.gif)
 
 对结点 E 做左旋操作时，其右孩子为 S 而不是 T.nil，那么以 E 到 S 的链为
 "支轴" 进行。使 S 成为该子树新的根结点，E 成为 S 的左孩子，E 的左孩子成为 S 的
 右孩子.
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000075.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000075.png)
 
 如上图，当插入 6 之后，红黑树 5 节点需要进行左旋达到平衡，那么以 4 到 5 的链为
 "支轴" 进行。使用 5 节点称为 6 的新的根节点，4 称为 5 的左孩子，6 称为 5 的右
 孩子。如下图：
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/BOOT000076.png)
+![DTS](/assets/PDB/BiscuitOS/boot/BOOT000076.png)
 
 ##### 核心代码实现
 
@@ -263,7 +263,7 @@ rb-tree/Rotate/Left_Rotate$ ./rbtree
 --------------------------------------
 <span id="RB23"></span>
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
 
 # 红黑树与 2-3 树的关系
 
@@ -308,4 +308,4 @@ rb-tree/Rotate/Left_Rotate$ ./rbtree
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

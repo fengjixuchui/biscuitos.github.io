@@ -95,7 +95,7 @@ ld -static -T Demo.lds DemoA.o DemoB.o DemoC.o -o a.out
 objdump -sSdhx a.out
 {% endhighlight %}
 
-![LD](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000501.png)
+![LD](/assets/PDB/BiscuitOS/kernel/MMU000501.png)
 
 从上面的数据可以看出，a.out 可执行文件中 architecture 为 i386。
 
@@ -115,4 +115,4 @@ objdump -sSdhx a.out
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

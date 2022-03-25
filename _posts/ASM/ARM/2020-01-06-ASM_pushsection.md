@@ -8,7 +8,7 @@ tags:
   - ASM
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -24,7 +24,7 @@ tags:
 
 <span id="A0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### 指令分析
 
@@ -32,13 +32,13 @@ tags:
 >
 > - [指令使用](#A01)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ------------------------------------------------------
 
 #### <span id="A00">指令介绍</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000204.png)
+![](/assets/PDB/HK/HK000204.png)
 
 .pushsection 与 .popsection 成对使用，用于在当前目标文件中插入一个 section。
 .pushsection 的使用方法如上图所示
@@ -65,7 +65,7 @@ instruction 部分用于 section 内部的代码，这里可以放入插入的�
 当需要在目标文件中加入一个 section，可以使用 .pushsection 添加，
 接下来以一个实际例子分析指令如何使用:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000205.png)
+![](/assets/PDB/HK/HK000205.png)
 
 这里使用内嵌汇编的方法使用 .pushsection, 开发者可以参考在汇编中
 直接使用 .pushsection. 在上面的例子中，在文件对应的目标文件中定义
@@ -87,7 +87,7 @@ or
 BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gcc -E pushsection.c -o pushsection.i
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000206.png)
+![](/assets/PDB/HK/HK000206.png)
 
 从上图看出，预处理阶段并为对 .pushsection 有过任何处理.
 
@@ -103,7 +103,7 @@ or
 BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-gcc -S pushsection.c
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000207.png)
+![](/assets/PDB/HK/HK000207.png)
 
 从上面的汇编结果可以看出，在源文件中的内嵌汇编被原封不动的搬到了
 汇编文件中，这得力于 volatile 关键字，阻止了编译器对函数的优化。
@@ -122,14 +122,14 @@ BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-lin
 BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-linux-gnueabi-objdump -sSdhx pushsection.o > output.file
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000208.png)
+![](/assets/PDB/HK/HK000208.png)
 
 目标文件的 SECTION 中可以看出 .biscuitos section 的存在，section 的属性
 包含了 ALLOC、LOAD、RELOC、READONLY、CODE，符合 .pushection 添加的 section
 的属性。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000209.png)
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000210.png)
+![](/assets/PDB/HK/HK000209.png)
+![](/assets/PDB/HK/HK000210.png)
 
 在目标文件中, .biscuitos section 只包含了之前添加的代码，不包含其他
 代码，这里值得注意的是 .biscuitos 虽然是代码段，但不属于 .text section。
@@ -141,7 +141,7 @@ BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-lin
 
 <span id="B0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### 指令实践
 
@@ -155,7 +155,7 @@ BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/arm-linux-gnueabi/bin/arm-lin
 >
 > - [实践总结](#B04)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ------------------------------------------------
 
@@ -179,15 +179,15 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000170.png)
+![](/assets/PDB/HK/HK000170.png)
 
 进入 Kbuild 的配置界面之后，选择并进入 "Package --->",
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000211.png)
+![](/assets/PDB/HK/HK000211.png)
 
 接着选择并进入 "ARM Assembly Instruction Sets  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000212.png)
+![](/assets/PDB/HK/HK000212.png)
 
 接着选择 ".pushsection  --->" 选项和，此时已经选择完毕，保存并退出。
 配置完毕之后，使用接下来的命令进行项目安装.
@@ -197,7 +197,7 @@ cd BiscuitOS
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000173.png)
+![](/assets/PDB/HK/HK000173.png)
 
 通过上图可以看到实践所需的项目已经安装到指定位置，从图中可以看出
 源码位于 "BiscuitOS/output/linux-5.0-arm32/package" 目录下，如下:
@@ -232,7 +232,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000213.png)
+![](/assets/PDB/HK/HK000213.png)
 
 运行 BiscuitOS 之后，安装对应的驱动文件，参考使用如下命令:
 
@@ -257,12 +257,12 @@ lsmod
 BiscuitOS/output/linux-5.0-arm32/package/pushsection-0.0.1/pushsection-0.0.1/asm.c
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000214.png)
+![](/assets/PDB/HK/HK000214.png)
 
 驱动的基础逻辑是向系统注册一个设备，设备在 "/sys/devices/platform/pushsection.1" 目录下创建两个文件节点 "aligned" 和 "unaligned", 当使用 cat 命令读取
 "aligned" 节点的时候，函数会调用驱动程序中的 "aligned_show()" 函数:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000215.png) 
+![](/assets/PDB/HK/HK000215.png) 
 
 aligned_show() 函数的实现很简单，调用 kzalloc() 创建一个 unsigned long
 的内存给名为 addr 的 unsigned long 指针。函数并将 addr 指向的内容赋值为
@@ -273,14 +273,14 @@ aligned_show() 函数的实现很简单，调用 kzalloc() 创建一个 unsigned
 当使用 cat 命令读取 "unaligned" 节点的时候，函数会调用驱动程序中的
 "unaligned_show()" 函数:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000216.png)
+![](/assets/PDB/HK/HK000216.png)
 
 "unaligned_show()" 函数的实现与 "aligned_show()" 函数大体一致，只是
 当向 load_unaligned() 函数传递参数的时候，"unaligned_show()" 函数传递
 了 "addr" 指针地址加 1 的值给函数，这个值也就是一个未对齐的地址。其他
 函数实现一致。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000217.png)
+![](/assets/PDB/HK/HK000217.png)
 
 load_unaligned() 函数是驱动的核心实现，其实现逻辑是使用一个内嵌汇编，
 在内嵌汇编的 1 处定义了一条指令 "ldr %0, [%1]", 这条指令的意思是从
@@ -297,7 +297,7 @@ long 变量，分别存储 1b 和 3b 的地址。
 如果只从代码表面是很难理解这么做的理由，这里简要介绍一些额外的内容。
 在 arm 中，使用 struct exception_table_entry 结构，其定义如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000218.png)
+![](/assets/PDB/HK/HK000218.png)
 
 struct exception_table_entry 结构定义了一个异常入口表，insn
 指向一条指令地址，fixup 指向另外一条指令。系统将内核所有的
@@ -347,4 +347,4 @@ section 之后，然后在特殊时候使用。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

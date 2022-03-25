@@ -194,38 +194,38 @@ make menuconfig
 由于 BiscuitOS 的内核使用 Kbuild 构建起来的，在执行完 make menuconfig 之后，系
 统会弹出内核配置的界面，开发者根据如下步骤进行配置：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000003.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000003.png)
 
 选择 kernel hacking，回车
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000004.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000004.png)
 
 选择 Demo Code for variable subsystem mechanism, 回车
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000005.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000005.png)
 
 选择 MMU(Memory Manager Unit) on X86 Architecture, 回车
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000433.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000433.png)
 
 选择 Debug MMU(Memory Manager Unit) mechanism on X86 Architecture 之后选择 
 Addressing Mechanism  回车
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000434.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000434.png)
 
 选择 Virtual address, 回车
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000525.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000525.png)
 
 选择 Virtual address and Virtual space 之后，接着选择 Choice Kernel/User 
 Virtual Address Space, 回车。
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000526.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000526.png)
 
 该选项用于选择程序运行在用户空间还是内核空间，这里选择内核空间。选择 Kernel 
 Virtual Address Space. 回车之后按 Esc 退出。
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000530.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000530.png)
 
 最后开发者选择 .data segment,下拉菜单打开后，选择 Normal Virtual Space 
 (kmalloc: GFP_KERNEL) 选项，回车保存并退出。
@@ -262,7 +262,7 @@ make install
 
 源码如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000532.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000532.png)
 
 Makefile
 
@@ -295,7 +295,7 @@ CFLAGS_kern_data.o += -DCONFIG_DEBUG_VA_KERNEL_NORMAL -fno-common
 
 运行结果如图：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000531.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000531.png)
 
 从上面数据可知，kmalloc() 函数使用 GFP_KERNEL 标志之后，所分配的内存位于 
 0xC1000000 到 0xF7BFE000 之间，所以分配成功。
@@ -321,4 +321,4 @@ Normal 虚拟内存区域被称为 Linux 内核的低端内存，用于 Linux �
 
 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

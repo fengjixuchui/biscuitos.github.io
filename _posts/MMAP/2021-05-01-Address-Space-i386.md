@@ -8,9 +8,9 @@ tags:
   - MMU
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -24,13 +24,13 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### Text Segment (ELF)
 
@@ -70,7 +70,7 @@ tags:
 >
 >   - [I386 Arichitecture LD Scripts](#A002)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------
 
@@ -93,15 +93,15 @@ BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-text-segment-default
 >
 > [BiscuitOS 独立程序实践教程](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000527.png)
+![](/assets/PDB/HK/TH000527.png)
 
 在上面的实践程序中，通过在 17 行到 20 行引用了链接器提供的几个变量，其中 \_\_executable_start 指向了进程的程序段入口地址，也就是进程开始执行的地址; etext 变量则表示进程程序段的结束地址; edata 变量表示进程数据段的结束地址; end 变量则表示 BSS 段的结束地址。通过上面几个变量可以知道进程的代码段的范围是 "\_\_executable_start" 到 "etext"，而进程的数据段的范围则是 "etext" 到 "edata", 最后进程的 BSS 段则是 "edata" 到 "end". 接下来在 BiscuitOS 上运行该实例 (注意! 此时 BiscuitOS 的架构是 i386):
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000528.png)
+![](/assets/PDB/HK/TH000528.png)
 
 从 BiscuitOS 上的运行可以看出每个段的具体范围，那么进程的代码段的加载地址是通过什么规则进行设置的? 或者 \_\_executable_start 的值此时为什么是 0x4fc000? 那么接下来来找出其中的原因. 通过上面的描述可以知道 \_\_executable_start 是由链接器提供的变量，那么接下来看一下链接的过程。首先一个程序从编写到运行需要经历如下几个过程:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000529.png)
+![](/assets/PDB/HK/TH000529.png)
 
 当开发者们基于编程工具使用 C/CPP 编写的程序称为源程序，源程序包含了头文件、main() 函数和其他子函数、以及其他局部或全局变量，此时的源程序是易于开发者阅读的代码。由于源程序中定义或者头文件引用了很多宏等代码，此时需要将源程序进行**预处理**，将一些宏等代码进行替换，使其更易于编译器处理. 编译器将预处理之后的文件进行**汇编**，汇编的结果就是将高级语言转换成计算机更容易理解的低级语言，不同架构会对应不同的汇编。编译器继续将汇编程序进行编译成了**目标文件**, 当有了目标文件之后，链接器会采用动态链接或静态链接的方式，将程序所需的静态库和动态库进行**链接**, 此时链接器会基于**链接脚本**定义的规则来进行链接，链接最终生成了可执行文件. 以上便是一个简单的编译过程，实际过程会比这个复杂的多。
 
@@ -120,7 +120,7 @@ cd BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-text-segment-defa
 vi BiscuitOS-address-space-text-segment-default/Makefile
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000535.png)
+![](/assets/PDB/HK/TH000535.png)
 
 在实践例子的 Makfile 中确保 59 行包含 "-static" 选项，接下来编译源程序并查看可执行文件的大小:
 
@@ -131,11 +131,11 @@ make
 ls -l BiscuitOS-address-space-text-segment-default
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000536.png)
+![](/assets/PDB/HK/TH000536.png)
 
 当采用静态链接之后，可执行文件的大小为 657712，接着在 BiscuitOS 中实际运行如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000528.png)
+![](/assets/PDB/HK/TH000528.png)
 
 从上图可以看出，程序的入口地址是 0x8048000, 并且每次运行都是该地址. 接着基于该实践例子查看采用动态链接方式时，可执行文件的不同之处，在实践例子中，确保 Makefile 中采用动态链接:
 
@@ -145,7 +145,7 @@ cd BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-text-segment-defa
 vi BiscuitOS-address-space-text-segment-default/Makefile
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000537.png)
+![](/assets/PDB/HK/TH000537.png)
 
 在实践例子中将 Makefile 中 59 行的 "-static" 选项移除，接下来编译源程序并查看可执行文件的大小:
 
@@ -156,17 +156,17 @@ make
 ls -l BiscuitOS-address-space-text-segment-default
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000538.png)
+![](/assets/PDB/HK/TH000538.png)
 
 当采用动态链接的时候，可执行文件的大小只有 7300，基本为动态链接时的 "1%" 多一点，差异确实巨大，那么接下来看看其在 BiscuitOS 上的运行情况:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000539.png)
+![](/assets/PDB/HK/TH000539.png)
 
 从上图可以看出，程序的入口是一个大于 0x400000 的值，且每次运行的时候程序入口地址的值都不是固定的。从实际的实践来看，动态链接在可执行文件占用内存大小方面确实比静态链接有很大优势，当动态链接的程序入口地址确实不一定，其根本原因是动态链接的时候程序的入口地址是动态调整的，也成为重定位，因此动态链接的可执行文件每次运行的入口地址都不一样，为了方面研究，接下来将采用静态链接的方式继续讨论其他问题。
 
 ###### <span id="A02">代码段的入口地址</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000529.png)
+![](/assets/PDB/HK/TH000529.png)
 
 在 i386 架构上，为什么进程的入口地址都是 0x08048000? 由源码的编译链接过程可以知道，当源码经过编译汇编之后生成目标文件，链接器基于链接脚本将目标文件和动态库/静态库，通过静态链接或者动态链接的方式进行链接生成可知文件，可执行文件最终在目标环境中运行. 链接的决定了可执行程序运行时的入口地址，其根据链接脚本进行链接，那么接下来研究一下链接脚本是如何影响链接以及代码段的. 在研究链接脚本之前需要准备一些链接脚本的语法，开发者可以参考下文:
 
@@ -194,15 +194,15 @@ ld -static -T BiscuitOS.lds -o a.out
 
 > [I386 Arichitecture LD Scripts](#A002)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000540.png)
+![](/assets/PDB/HK/TH000540.png)
 
 在 i386 架构的链接脚本中定义了一个全局变量 \_\_executable_start, 链接脚本使用 SEGMENT_START() 函数将程序的入口地址定义在 0x08048000 的位置上，同理查看一下 AMD64 上的链接脚本对程序入口地址的定义:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000541.png)
+![](/assets/PDB/HK/TH000541.png)
 
 在 AMD64 架构上，链接脚本将程序的入口地址 \_\_executable_start 定义在 0x00400000 的位置上。因此可以知道为什么有的时候程序的入口地址是 0x08048000, 而有的时候时候是 0x00400000 了，这与链接时采用的链接脚本有直接关系。接下来查看代码段的构建逻辑:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000542.png)
+![](/assets/PDB/HK/TH000542.png)
 
 上图是链接脚本中 ".text" section 的链接规则，根据链接规则，链接器将所有目标文件中符合要求的 section 全部放入到 ".text" section 中。链接脚本还定义了三个全局变量用于指示 ".text" section 的结束地址, 分别是 "\_\_etext"、"\_etext" 和 "etext". 那么接下来看看链接之后生成可执行文件中的代码段，此时基于实践例子进行讲解，在实践例子中才看可执行文件的代码段:
 
@@ -214,7 +214,7 @@ cd BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-text-segment-defa
 vi BiscuitOS-address-space-text-segment-default.ebs
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000543.png)
+![](/assets/PDB/HK/TH000543.png)
 
 从可执行文件的 Program Headers Table 可以看出，代码段位于第一个表项，其在 ELF 文件正文中的偏移为 0，代码段加载进程地址空间的 0x08048000 处，代码段的大小为 0x8e438, 代码段具有可执行和可读权限，代码段并该 0x1000 进行对齐. 可执行文件中代码段包含了很多 section, 其中有我们熟悉的 ".text"、".rodata" 、".init" section 等。
 
@@ -246,7 +246,7 @@ vi BiscuitOS-address-space-text-segment-default.ebs
 
 ###### <span id="A030">.text segment</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000542.png)
+![](/assets/PDB/HK/TH000542.png)
 
 
 ------------------------------------------
@@ -258,13 +258,13 @@ vi BiscuitOS-address-space-text-segment-default.ebs
 > [进程代码段创建过程](https://biscuitos.github.io/blog/Process-Address-Space/#A4)
 
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="B0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### Data Segment (ELF)
 
@@ -274,7 +274,7 @@ vi BiscuitOS-address-space-text-segment-default.ebs
 >
 > - [全局变量](#B01)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------
 
@@ -297,7 +297,7 @@ BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-data-segment-default
 >
 > [BiscuitOS 独立程序实践教程](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000544.png)
+![](/assets/PDB/HK/TH000544.png)
 
 在上面的实践例子中，提供了一个源文件 "main.c". 虽然代码很长，但其逻辑很简单。程序一共定义了 8 大块数据区:
 
@@ -321,14 +321,14 @@ BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-data-segment-default
 
 除了上面的数据种类之外，程序在 66 行定义了宏，以及在 114 行定义了寄存器变量，最后还在 206 行对字符串常量的引用. 因此程序已经包含了常见的数据种类。程序在 70 行引用链接器定义的变量 \_\_executable_start[]，以此获得程序运行时进程的开始执行的地址. 函数接着引用链接器定义的变量 edata[]、etext[] 以及 end[], 以此获得进程运行时代码段和数据段在进程地址空间的范围。函数在 77 行通过内嵌汇编获得进程调用 main() 函数时堆栈栈顶位置，函数又在 116 行通过内嵌汇编获得 main() 函数定义完局部变量之后堆栈栈顶的位置。程序接在在 120 行到 136 行打印了进程代码段、数据段、BSS 段以及堆栈在进程地址空间的范围。程序从 139 行到 206 行将各个数据区的不同数据种类的地址打印出来。接下来在 BiscuitOS 上运行该实践例子 (实践基于 i386 架构)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000545.png)
+![](/assets/PDB/HK/TH000545.png)
 
 从 BiscuitOS 上的运行可以看出，同样的数据种类位于不同的数据区内，其落在进程的不同段，有的数据区落在进程的数据段，有的数据区落在进程的 BSS 段，有的数据区落在了堆 heap 上，有的数据区落在了 MMAP 映射区，而有的数据区则落在进程的堆栈上。不过从运行的结果可以初步得出，数据位于进程的哪个段与数据的种类无关，而与数据定义的位置有关，那么接下来具体分析每种位置对数据落在进程段的影响。
 
 --------------------------------------------
 <span id="B01"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000581.png)
+![](/assets/PDB/HK/TH000581.png)
 
 #### 全局变量
 
@@ -349,17 +349,17 @@ BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-data-segment-global-
 >
 > [BiscuitOS 独立程序实践教程](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000546.png)
+![](/assets/PDB/HK/TH000546.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000547.png)
+![](/assets/PDB/HK/TH000547.png)
 
 在实践例子中包含了两个源文件，其中在源文件 BiscuitOs.c 中定义了两个全局变量，其中 BiscuitOS_other_global_uninit_variable 全局变量是未初始化的，而全局变量 BiscuitOS_other_global_init_variable 是初始化为 88520。在另外一个源文件 main.c 中，函数在 16 行和 17 行通过 extern 引用了 BiscuitOS.c 中的两个全局变量，程序继续在 20 行和 21 行也定义了两个全局变量，其中全局变量 BiscuitOS_current_global_uninit_variable 未初始化，而全局变量 BiscuitOS_current_global_init_variable 初始化为 88520. 在 main() 函数中，函数通过 extern 引用了链接器定义的 \_\_executable_start 等多个变量，其中 \_\_executable_start 指向了进程开始执行的虚拟地址，edata 指明了进程运行时数据段的结束地址，etext 指明了进程运行时代码段结束地址，end 则指明进程运行时 BSS 段结束的地址。函数在 30 行到 44 行打印了进程代码段、数据段、BSS 段在进程地址空间的范围。最后函数分别打印了四个全局变量的地址和值。将实践例子在 BiscuitOS 运行:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000548.png)
+![](/assets/PDB/HK/TH000548.png)
 
 实践例子在 BiscuitOS 上运行的结果可以看出进程可以跨文件引用全局变量，然而全局变量如果没有被初始化，其被放在了 BSS 段，而被初始化的全局变量别放在了进程的数据段。那么为什么会出现这样的结果呢? 接下来从全局变量的生命周期中找找答案，依旧基于该实践例子进行分析.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000529.png)
+![](/assets/PDB/HK/TH000529.png)
 
 全局变量的生命周期如上图，全局变量从源码阶段经过预处理、编译、汇编、链接阶段，最终进程通过加载器加载运行，直到进程结束退出，这些便是一个全局变量的完整生命周期。那么从全局变量生命周期的不同阶段来进行研究。
 
@@ -369,7 +369,7 @@ BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-data-segment-global-
 
 全局变量是被定义为 extern 属性的变量，与 static 属性的静态变量和局部变量不同，全局变量不止可以被当前文件引用，其他文件也可以引用该全局变量，因此全局变量对进程所包含的源文件都是可见的。全局变量定义在函数之外，并不使用 static 关键字进行定义，如果要在文件中使用其他文件中定义的全局变量，可以使用 "extern" 关键字在引用的文件中进行申明，那么该文件内的函数就可以使用全局变量了，如实践例子中:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000549.png)
+![](/assets/PDB/HK/TH000549.png)
 
 全局变量如果未初始化，那么系统会将其自动初始化为 0; 而对于定义时初始化的全局变量，系统运行时为初始化的值。全局变量的种类包括:
 
@@ -393,23 +393,23 @@ vi BiscuitOS-address-space-data-segment-global-default/BiscuitOS-address-space-d
 vi BiscuitOS-address-space-data-segment-global-default/BiscuitOS-address-space-data-segment-global-default_1.s
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000550.png)
+![](/assets/PDB/HK/TH000550.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000551.png)
+![](/assets/PDB/HK/TH000551.png)
 
 在 BiscuitOS.c 对应的汇编文件中，可以看到未初始化的全局变量 BiscuitOS_other_global_uninit_variable 加入到了汇编的 ".comm" section 中, 并指明了其长度为 4 字节并按 4 字节对齐; 而 BiscuitOS_other_global_init_variable 则使用 .global 关键字申明为一个全局变量。汇编程序的 5 行定义了 ".data" section 的起始位置，c程序在 9 行在汇编代码的 ".data" section 中定义了一个标号，该标号就是全局变量 BiscuitOS_other_global_init_variable，程序并在 7 行定义了 BiscuitOS_other_global_init_variable 的类型是 object，并指定了 object 的长度是 4 字节，最后程序在 10 行将 BiscuitOS_other_global_init_variable 标号对应的 ".data" section 设置值为 88520. 以上便可以看出初始化的全局变量和未初始化的全局变量在汇编阶段存在很大的差异。同理在 main.c 对应的汇编文件中，汇编源程序采用同样的方法定义了 BiscuitOS_current_global_uninit_variable，并将其加入到 ".comm" section 内; 而 BiscuitOS_current_global_init_variable 全局变量则通过 .global 关键字定义为全局变量，并加入到 ".data" section 内。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000552.png)
+![](/assets/PDB/HK/TH000552.png)
 
 如上图所示，汇编源码在对全局变量的访问均通过 GOT 或者 GOTOFF 函数、ebx 寄存器，以及全局变量名字的方式进行。在汇编语言中，GOT 全称 "Global Offset Table" 全局偏移表，GOT 与 PLT 搭配使用，PLT 全称 Procedure Linker Table. GOT 和 PLT 是 Linux 系统下 ELF 可执行文件用于定位全局变量和过程的数据信息。在汇编程序中 "symbol@GOTOFF" 与 "symbol@GOT" 在 "System V I386 ABI" 中的解释如下:
 
 > [SYSTEM V Application Binary Interface for I386 PDF](https://gitee.com/BiscuitOS_team/Documentation/blob/master/Tools-Book/SYSTEM_V_ABI_I386.pdf)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000559.png)
+![](/assets/PDB/HK/TH000559.png)
 
 "symbol@GOTOFF" 表示 symbol 相对于 GOT (.got.plt) 的偏移。而 "symbol@GOT" 表示 symbol 在 GOT (.got.plt section) 中的 entry。为了更加深入理解这两个命令，接下来从 "\_GLOBAL_OFFSET_TABLE\_" 入手进行研究:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000560.png)
+![](/assets/PDB/HK/TH000560.png)
 
 汇编语言中的 "\_GLOBAL_OFFSET_TABLE\_" 用于表示当前地址到 GOT (.got.plt section) 的偏移，也就是 "\_GLOBAL_OFFSET_TABLE\_" 所在代码段的位置到 GOT (.got.plt section) 的偏移，因此可以使用如下公式表示:
 
@@ -418,7 +418,7 @@ vi BiscuitOS-address-space-data-segment-global-default/BiscuitOS-address-space-d
 _GLOBAL_OFFSET_TABLE = .got.plt - eip
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000553.png)
+![](/assets/PDB/HK/TH000553.png)
 
 回到汇编源代码，其中存在上图的代码。函数在 63 行调用 \_\_x86.get_pc_thunk.bx 函数将当前进程运行的地址存储到 EBX 寄存器中，然后在 64 行将 \_GLOBAL_OFFSET_TABLE\_ 的地址加上当前进程运行的地址，那么此时 EBX 寄存器存储着 GOT (.got.plt) 的地址. 那么此时存在两个问题 \_\_x86.get_pc_thunk.bx 如果获得进程当前运行的地址? 以及如何验证上面解释的正确的? 那么 接下来结合 GDB 工具和反汇编内容边实践边研究，相关文件已经准备好，开发者可以参考下面的命令进行调试:
 
@@ -431,36 +431,36 @@ vi BiscuitOS-address-space-data-segment-global-default/BiscuitOS-address-space-d
 gdb BiscuitOS-address-space-data-segment-global-default/BiscuitOS-address-space-data-segment-global-default
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000555.png)
+![](/assets/PDB/HK/TH000555.png)
 
 在反汇编文件 BiscuitOS-address-space-data-segment-global-default.bs 中查找 main() 函数的反汇编代码. 上图便是 main() 函数反汇编的结果，最左边是每行代码运行时的地址，中间部分是汇编代码对应的机器码，右侧部分则是 C 代码对应的汇编代码。反汇编的结果与体系架构有关，本文基于 i386 架构进行讲解，其他架构类似. 回到上面的反汇编代码，在地址 "0x80488b4" 处执行了汇编 "call 8048780 <\_\_x86.get_pc_thunk.bx>" 代码，那么可以从此处进行 GDB 调试，此时在另外一个窗口使用命令启动 GDB，并输入如下命令:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000556.png)
+![](/assets/PDB/HK/TH000556.png)
 
 在 GDB 中使用 "b" 命令程序的 0x80488b4 打断点，当程序运行到 0x80488b4 的时候就会自动停止。当打完断点之后，使用 "r" 命令开始运行程序，程序运行之后会自动停止在 0x80488b4 的位置，此时使用 "layout asm" 边查看汇编边调试.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000557.png)
+![](/assets/PDB/HK/TH000557.png)
 
 当程序停止在 0x80488b4 的位置，使用 "info reg" 命令查看此时 EIP 和 EBX 寄存器的值，此时 EIP 的值为 0x80488b4, 也就是断点的位置，EBX 的值则指向了 0x80d9000. 接着使用 "si" 命令而不是 "n" 或者 "ni" 命令，"si" 命令的作用是下一步进入函数内部，此时进入到 "\_\_x86.get_pc_thunk.bx" 函数.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000558.png)
+![](/assets/PDB/HK/TH000558.png)
 
 执行 "si" 命令之后，此时进入到 "\_\_x86.get_pc_thunk.bx" 函数内部，此时通过 "info reg esp" 获得堆栈栈顶的位置，此时堆栈的栈顶为 0xffffcdec, 接着使用 "x/x 0xffffcdec" 命令查看栈顶的内容，结果发现堆栈存储的内容是 "0x80488b9", 也就是调用 "\_\_x86.get_pc_thunk.bx" 下一行指令的地址。函数此时将堆栈栈顶的内容存储到 EBX 寄存器。通过上面的分析可以知道汇编程序通过调用 "\_\_x86.get_pc_thunk.bx" 函数将下一行指令的地址存储到了 EBX 寄存器，当函数调用 ret 返回之后，EBX 寄存器的值和进程当前运行地址是一致的。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000561.png)
+![](/assets/PDB/HK/TH000561.png)
 
 执行 "ni" 命令从 "\_\_x86.get_pc_thunk.bx" 函数返回之后，此时进程运行到 0x80488b9, 此时在 GDB 中使用 "info reg ebx eip" 命令查看 EBX 寄存器和 EIP 寄存器，此时两者都相同，那么为什么通过上面的指令就实现这么神奇的功能? 这里还得从 CALL 和 RET 指令说起:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000562.png)
+![](/assets/PDB/HK/TH000562.png)
 
 在汇编指令中，当执行 CALL 指令的时候，CALL 指令的下一条指令的地址会被压入堆栈，当函数执行完毕调用 RET 指令进行返回是，RET 指令会从 ESP 寄存器的栈顶弹出一个地址作为下一个执行地址。"\_\_x86.get_pc_thunk.bx" 便利用这个原理，当进入 "\_\_x86.get_pc_thunk.bx" 函数之后，此时 ESP 指向的便是执行 CALL 指令的下一行指令，因此将栈顶的值存储到 EBX 寄存器之后 RET 返回，函数返回之后执行下一行代码执行时，此时 EBX 寄存器的值正好是进程当前执行地址.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000563.png)
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000553.png)
+![](/assets/PDB/HK/TH000563.png)
+![](/assets/PDB/HK/TH000553.png)
 
 将汇编代码与 GDB 调试的情况进行对比，发现 \_GLOBAL_OFFSET_TABLE\_ 被替换成一个立即数。之前就说过 \_GLOBAL_OFFSET_TABLE\_ 是 GOT (.got.plt) 相对当前代码地址的偏移，那么接下来分析一下这个立即数是怎么计算出来的，首先结合反汇编文件找到 ".got.plt section" 的地址:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000564.png)
+![](/assets/PDB/HK/TH000564.png)
 
 从反汇编文件中可以知道 ".got.plt section" 在地址是 0x80d9000, 此时 \_GLOBAL_OFFSET_TABLE\_ 所在代码行的地址是 0x80488b9, 带入公式进行计算:
 
@@ -474,7 +474,7 @@ _GLOBAL_OFFSET_TABLE = 0x80d9000 - 0x80488b9
 
 通过上面的计算 \_GLOBAL_OFFSET_TABLE\_ 在运行的时候会被替换成一个立即数，该立即数就是 \_GLOBAL_OFFSET_TABLE\_ 所在代码位置与 GOT (.got.plt section) 的偏移。有了 \_GLOBAL_OFFSET_TABLE\_ 之后，symbol@GOTOFF 是如何定位 symbol 的地址呢? 接下来讨论 "symbol@GOTOFF" 的作用。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000565.png)
+![](/assets/PDB/HK/TH000565.png)
 
 从 "System V I386 ABI" 中对 symbol@GOTOFF 的解释为 symbol 相对于 GOT (.got.plt section) 的偏移。那么反过来理解，symbol@GOTOFF 加上 \_GLOBAL_OFFSET_TABLE\_ 以及 EIP 就可以获得 symbol 的实际地址，那么可以获得下面公式:
 
@@ -493,15 +493,15 @@ symbol        = _GLOBAL_OFFSET_TABLE + symbol@GOTOFF + eip
 
 从上面的公式可以知道一个 symbol 的相对地址是相对于运行时的地址，那么相对地址表示为 "symbol - eip"。由于 symbol@GOTOFF 表示 symbol 在 \_GLOBAL_OFFSET_TABLE\_ 中的偏移，那么 symbol@GOTOFF 等于 ".got.plt - symbol", 最后要计算 symbol 的实际地址就可以通过 "\_GLOBAL_OFFSET_TABLE\_ + symbol@OFFSET + eip" 获得。接下来验证这个猜想:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000566.png)
+![](/assets/PDB/HK/TH000566.png)
 
 在汇编代码中对 BiscuitOS_current_global_init_variable 的引用就采用了 symbol@GOTOFF 的方式，BiscuitOS_current_global_init_variable 定义在 ".data section", 那么首先计算 ".data section" 与 ".got.plt section" 之间的偏移，从反汇编文件中可以得到具体数据:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000567.png)
+![](/assets/PDB/HK/TH000567.png)
 
 从上图可以看出 ".got.plt section" 在 ELF 文件中的偏移是 0x00090000, 而 ".data section" 在 ELF 文件中的偏移是 0x00090060, 那么两个段之间的偏移是 0x60, 接着查看 BiscuitOS_current_global_init_variable 在 ".data section" 的偏移:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000568.png)
+![](/assets/PDB/HK/TH000568.png)
 
 BiscuitOS_current_global_init_variable 的地址是地址是 0x080b09e0, 其相对与 ".data section" 的偏移是 0x8, 那么 BiscuitOS_current_global_init_variable 相对于 ".got.plt section" 的偏移就是 0x68. 那么 BiscuitOS_current_global_init_variable 实际运行地址就是:
 
@@ -514,19 +514,19 @@ address = _GLOBAL_OFFSET_TABLE + 0x68 + eip
 
 这里是不是很熟悉，在 main() 的反汇编里，函数将 \_GLOBAL_OFFSET_TABLE\_ 对应的 GOT (.got.plt) 真实地址存储在 EBX 寄存器里。接下来在汇编文件中查找相应的内容:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000569.png)
+![](/assets/PDB/HK/TH000569.png)
 
 上图代码 0x8048a9c 的位置，调用 movl 指令将立即数 9 直接存储到了 "0x68(%ebx)" 里，这和预期分析的一致，立即数 0x68 的计算即使 BiscuitOS_current_global_init_variable 相对于 GOT (.got.plt section) 的偏移值。接下来使用 GDB 进行实际验证，此时在 0x8048a9c 处打断点:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000570.png)
+![](/assets/PDB/HK/TH000570.png)
 
 当 GDB 停止在 0x8048a9c 处，使用命令 "info reg ebx" 打印 EBX 寄存器的值，此时 EBX 寄存器的指向 GOT (.got.plt section) 实际的地址，那么将该地址加上 0x68, 等到的地址为 0x80d9068, 该地址正好是 BiscuitOS_current_global_init_variable 的地址. 有了 symbol@GOTOFF 功能之后，为什么还需要 symbol@GOT 呢? 开发者可以考虑一个问题，对于 extern 方式引用的全局变量，其被放在 BSS 段内，该段只有加载运行的时候才能知道具体的地址，只当靠 ELF 文件是无法获得其地址或基于 GOT 的偏移地址，那么对于 extern 的变量该怎么处理呢? 这里就引入了 symbol@GOT:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000571.png)
+![](/assets/PDB/HK/TH000571.png)
 
 "symbol@GOT" 在 "System V I386 ABI" 中的定义为 symbol 在 GOT 的 entry。GOT 会为 进程运行时才能确定地址的 symbol 分配一个 entry，由于进程运行时不能去动态修改代码段中 symbol 的地址，因此在为 symbol 重定位时将重定位的地址填入到 symbol 在 GOT 的 entry 里，那么进程在引用 symbol 时先访问 GOT 的 entry 之后获得真实地址，最后在访问真实地址:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000572.png)
+![](/assets/PDB/HK/TH000572.png)
 
 如上图，对一个 symbol 访问的时候，通过 symbol@GOT 找到 symbol 在 GOT (.got.plt) 中的 entry，该 entry 中存储着 symbol 的真实地址，最后进程顺利访问到 symbol. 由于该机制在动态链接和静态链接的场景下策略不同，因此 symbol@GOT 的实践放到链接阶段进行讲解。
 
@@ -534,11 +534,11 @@ address = _GLOBAL_OFFSET_TABLE + 0x68 + eip
 
 通过上面的实践总结可知，全局变量在汇编源程序中引用分为两种，一种是通过 symbol@GOTOFF 进行引用，另外一种是通过 symbol@GOT 进行引用的，那么什么时候使用 symbol@GOT? 那什么时候使用 symbol@GOTOFF 呢? 那么接下来先通过通过实践进行观察两者的不同.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000574.png)
+![](/assets/PDB/HK/TH000574.png)
 
 首先在实践例子的 main.c 函数中添加两组数据，其中第一组是全局初始化的变量 BiscuitOS_init_X, 另外一组是全局未初始化变量 BiscuitOS_uninit_Y, 接着在 main() 函数中分别引用这两组的数据:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000575.png)
+![](/assets/PDB/HK/TH000575.png)
 
 在 main() 函数中对两组数据都赋值，接下来重新编译程序，并查看其汇编代码:
 
@@ -548,13 +548,13 @@ cd BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-data-segment-glob
 gdb BiscuitOS-address-space-data-segment-global-default/BiscuitOS-address-space-data-segment-global-default-0.s
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000576.png)
+![](/assets/PDB/HK/TH000576.png)
 
 从汇编代码可以看出，所有的全局初始化变量都使用 symbol@GOTOFF 的方式访问, 而所有的全局未初始化的全局变量则通过 symbol@GOT 的方式访问。接着继续在实践例子的 BiscuitOS.c 文件中添加代码:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000577.png)
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000578.png)
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000579.png)
+![](/assets/PDB/HK/TH000577.png)
+![](/assets/PDB/HK/TH000578.png)
+![](/assets/PDB/HK/TH000579.png)
 
 在实践例子的 BiscuitOS.c 中添加两组数据，其中第一组是初始化的全局变量，第二组则是未初始化的全局变量。接着在 main.c 函数通过 extern 关键字申明两组数据，最后在 main() 函数中为两组数据赋值。接下来查看对应的汇编文件:
 
@@ -565,7 +565,7 @@ al-default
 gdb BiscuitOS-address-space-data-segment-global-default/BiscuitOS-address-space-data-segment-global-default-0.s
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000580.png)
+![](/assets/PDB/HK/TH000580.png)
 
 查看汇编代码发现只要是 extern 声明的全局变量都使用 symbol@GOT 进行引用，而与全局变量是否初始化无关，为什么会这样呢? 其实这和链接有关系，接下来会在链接章节详细分析。
 
@@ -611,7 +611,7 @@ BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-data-segment-global-
 >
 > [BiscuitOS 独立程序实践教程](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000582.png)
+![](/assets/PDB/HK/TH000582.png)
 
 在 BiscuitOS 中编译实践例子之后，其会生成多个文件，其中 main.c 和 BiscuitOS.c 为源代码，其余文件的对应关系如下:
 
@@ -650,15 +650,15 @@ typedef struct {
 } Elf64_Sym;
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000584.png)
+![](/assets/PDB/HK/TH000584.png)
 
 上表描述了 ELF 文件符号表项中每个成员的含义，其中全局变量比较关心的成员是 st_info, 其中包含了符号绑定信息和符号类型信息，其值含义如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000585.png)
+![](/assets/PDB/HK/TH000585.png)
 
 符号的绑定信息位于 st_info 成员的高 28 位，其字段含义如上，绑定信息包含了三种类型，其中全局变量可能是 STB_GLOBAL 和 STB_WEAK, 但不可能是 STB_LOCAL.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000586.png)
+![](/assets/PDB/HK/TH000586.png)
 
 符号的类型 (Symbol Type) 位于 st_info 成员的低 4 位，其字段含义如上，目前包含了 5 种类型，其中全局变量属于 STT_OBJECT, 即全局变量对于的符号是个数据对象. 
 
@@ -668,25 +668,25 @@ typedef struct {
 * 目标文件中，符号定义在 "COMMON 块"，st_value 表示的对齐属性.
 * 可执行文件中，st_value 表示符号的虚拟地址.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000583.png)
+![](/assets/PDB/HK/TH000583.png)
 
 接下来开始分析目标文件，上图为 BiscuitOS.c 对应的目标文件，该文件定义了两个全局变量，BiscuitOS_other_global_init_variable 是一个初始化的全局变量，因此可以在 28 行看到其存储在目标文件的 .data section 内; BiscuitOS_other_global_uninit_variable 是一个未初始化的全局变量，此时可以在 27 行看到其存储在 "COMMON" 内，接下来对比两个变量的 Symbol Table 的值:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000588.png)
+![](/assets/PDB/HK/TH000588.png)
 
 两种类型的全局变量对比可知: 全局变量的类型都是 STT_OBJECT, 即符号是数据对象; 初始化的全局变量存储在 .data section, 且 st_value 表示全局变量在 .data section 中的偏移，此时可以在图中的 31-32 行查看 .data section 的内容，其内容正好是 BiscuitOS_other_global_init_variable 的初始值 88520; 对于未初始化的全局变量，其被放在 "COMMON" 块里，因此 st_value 则表示 BiscuitOS_other_global_uninit_variable 的对齐属性; 最后对于初始化的全局变量，其包含了 STB_GLOBAL 标志，由于其位于 COMMON 块，因此其属于弱符号. 
 
 在 BiscuitOS.c 对于的目标文件中，一共存在 5 个 section，其中 .data section 的长度为 4，此时对于的 VMA/LMA 地址为 0，其长度为 34. 以上便是可以从目标文件中获得信息，接下来查看 main.c 对于的目标文件:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000587.png)
+![](/assets/PDB/HK/TH000587.png)
 
 在 main.c 中定义了两个全局变量，其中 BiscuitOS_current_global_init_variable 为初始化的全局变量，而 BiscuitOS_current_global_uninit_variable 为未初始化的全局变量. 另外还使用 extern 引用了 BiscuitOs.c 中的两个全局变量。四个全局变量在目标文件的 symbol table 的值:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000589.png)
+![](/assets/PDB/HK/TH000589.png)
 
 在目标文件 BiscuitOS-address-space-data-segment-global-default-0.o 中，BiscuitOS_current_global_init_variable 全局变量存储在 .data section 内，其 st_value 表示其在 .data section 中的偏移，其类型为 STT_OBJECT, 即符号是数据对象，其绑定类型为 STB_GLOBAL, 因此该变量可以被外部看见; BiscuitOS_current_global_uninit_variable 未初始化的全局变量存储在 "COMMON" 里，其 st_value 表示对齐属性，其类型也是 STT_OBJECT, 即符号是数据对象，但其是一个弱符号; 对于 extern 引用 BiscuitOS.c 的全局变量，由于没有被定义，因此其 st_shndx 被设置为 SHN_UNDEF，但其数据类型为 STB_GLOBAL. 之前在汇编阶段已经分析过对四个全局变量的引用通过 symbol@GOT 和 symbol@GOTOFF 的方式，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000590.png)
+![](/assets/PDB/HK/TH000590.png)
 
 在汇编阶段得出了结论，对初始化的全局变量使用 symbol@GOTOFF 进行引用，而对于未初始化全局变量以及 extern 引用的全局变量通过 symbol@GOT 进行引用。但这个结论是存在一定先决条件的，那就是链接时的 "位置无关" 有关，那么接下来为了完善之前的讨论，接下来分别对 "位置无关" 和 非 "位置无关" 的情况分开讨论。所谓 "位置无关" 程序的 Load Address 不是绝对地址，而是意味着程序运行时可以灵活调整 Load Address, 当 Load Address 在运行时发生变化后，进程确保可以正确执行。非 "位置无关" 的情况典型包括 "静态链接"，所谓静态链接就是目标文件在链接成可执行文件时，链接器已经将所有的加载地址都计算好了，程序运行时按原先计算好的地址进行加载和运行。"位置无关" 的情况就是编译是带 "-fpic" 编译的目标文件进行 "动态链接"，所谓动态链接就是程序在运行时才计算加载地址。
 
@@ -694,17 +694,17 @@ typedef struct {
 
 静态链接是链接器在链接的过程中将进程运行时所需的内容全部链接到可执行文件中，并且计算好可执行文件中各个段的加载地址。程序运行的时不进行链接直接加载到执行虚拟地址进行运行，因此静态链接在运行之前就可以知道各个段的加载地址信息。接下来继续上面的实践例子进行讨论:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000590.png)
+![](/assets/PDB/HK/TH000590.png)
 
 实践例子中 main.c 文件中对全局变量进行引用，面对不同类型的全局变量引用，汇编代码提供了 symbol@GOT 和 symbol@GOTOFF 机制对全局变量进行引用，那么在静态链接时如何计算全局变量的地址呢? 接下来先从 main.c 对应的目标文件入手，由于目标文件是二进制文件，不便于阅读，那么使用 objdump 工具解析目标文件，在 BiscuitOS-address-space-data-segment-global-default-0.bs 中关于全局变量的引用如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000591.png)
+![](/assets/PDB/HK/TH000591.png)
 
 从目标文件的反汇编中可以看到，在图中 340/343/346 行对三种全局变量进行访问，其访问方式都是通过 "mov 0x0(%ebx), %eax" 的方式进行的，而且在 349 行对 BiscuitOS_current_global_init_variable 的引用也是通过 "0x0(%ebx)" 进行的，我们会发现在目标文件中，全局变量清一色通过 "0x0(%ebx)" 进行引用。在汇编阶段我们已经分析过，此时 EBX 寄存器存储这 \_GLOBAL_OFFSET_TABLE\_ 的地址，那么链接器如何区分全局变量呢? 这里有个细节不知大家有没有发现: 在 240/343/346 行, MOV 指令对应的机器码是 "8b 83"，而 349 行的 MOV 指令则对应机器码 "c7 83"，接着在联系汇编代码，那么会发现 symbol@GOT 对应 MOV 指令的机器码是 "8b 83", 而 symbol@GOTOFF 对应 MOV 指令的机器码是 "c7 83". 另外还发现 341/344/347 行将全局变量描述为 R_386_GOT32X, 而 350 行则将全局变量描述为 R_386_GOTOFF. 从上面一共发现两处差异处，那么接下来分别对每种差异进行研究，首先对 MOV 机器码的差异进行研究:
 
 > [Intel-IA32 Development Manual: Volume2 - Chapter 4 - 4,3 MOV -- Move](https://gitee.com/BiscuitOS_team/Documentation/blob/master/Datasheet/Intel/Intel-IA32_DevelopmentManual.pdf)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000592.png)
+![](/assets/PDB/HK/TH000592.png)
 
 从 Intel 开发者手册上可以查找到 MOV 指令的机器码信息，对于 "8b 83" 表示将一个 32位寄存器或者 32 位内存地址的值存储到 EAX(83) 寄存器中; "c7 83" 则表示将一个 32 位立即数存储到 EAX(83) 寄存器中。通过之前的分析，两条机器码 "8b 83 00 00 00 00" 和 "c7 83 00 00 00 00" 地址部分都是 0, 因为编译器在编译汇编为目标文件时，有点全局变量定义在其他文件，编译器不知道其的加载地址，因此编译器暂时把全局变量的地址都设置为 0，把真正的地址计算工作留给了链接器。 那么接下里从全局变量引用时的 R_386_GOTOFF 和 R_386_GOT32X 进行分析，这里将设计到链接的重定位表。
 
@@ -716,7 +716,7 @@ cd BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-data-segment-glob
 objdump -r BiscuitOS-address-space-data-segment-global-default/BiscuitOS-address-space-data-segment-global-default-0.o
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000593.png)
+![](/assets/PDB/HK/TH000593.png)
 
 上图便是 main.c 函数对于的目标文件的重定位表。每个表项称为重定位入口 (Relocation Entry)。重定位入口使用 Elf32_Rel 数据结构进行描述，其定义如下:
 
@@ -731,15 +731,15 @@ typedef struct {
 
 **r_info** 重定位入口的类型和符号。这个成员的低 8 位表示重定位入口的类型，高 24 位表示重定位入口的符号表中的下表。通过符号表可以知道重定位入口所在的 section信息。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000594.png)
+![](/assets/PDB/HK/TH000594.png)
 
 接下来以 BiscuitOS_other_global_uninit_variable 为例子讲解如何链接器如何找到要修正的位置。首先从重定位表开始找, 从上图的重定位表中可以知道 BiscuitOS_other_global_uninit_variable 的类型是 R_386_GOT32X, 其相对于 .text section 的起始位置为 0x1d5 处，此时通过反汇编文件查看 main.c 文件的目标文件 0x1df 处的内容:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000595.png)
+![](/assets/PDB/HK/TH000595.png)
 
 上图便是 main() 函数反汇编的代码，其中在 340 行，此处距离 .text section 的偏移是 0x1d3, 接着一个字节一个字节的分析，0x1d3 对应的机器码是 0x8b, 通过前面的讨论可以知道 0x8b 是一个操作码，其对应的 MOV 指令; 0x1d4 对应的机器码是 0x83, 结合 MOV 指令，那么 0x83 对应 EAX 寄存器，那么接下来 0x1d5 到 0x1d8 四个字节正好用于存储全局变量的地址。通过上面的分析，BiscuitOS_other_global_uninit_variable 通过重定位表确实找到了要需要修改指令的地方。在重定位表里也发现同一个符号有多个需要重定位的地方。那么当链接器找到需要修改指令的地方，那么链接器在链接的时候进行修正。在重定位表中，每个重定位入口都有一个类型，该类型会影响地址修正的策略，具体类型修改策略如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000596.png)
+![](/assets/PDB/HK/TH000596.png)
 
 * A 表示用于计算重定位域值的加数.
 * B 表示程序运行时，共享库 ELF 装入内存的基地址.
@@ -769,7 +769,7 @@ typedef struct {
 >
 > [AMD64 LD Scripts](#A002)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000597.png)
+![](/assets/PDB/HK/TH000597.png)
 
 在链接脚本中有上图描述，链接器会将所有输入目标文件的 .data、.data.\*、.gnu.linkonce.d.\* section 全部合并到可知文件的数据段内。并将所有输入目标文件的 .bss section 全部合并到可执行文件的 BSS 段内。由于链接脚本的起始虚拟地址是 0x8048000, 那么接下来链接器基于起始地址地址开始计算合并后各个 symbol 的虚拟地址. 此时可以使用 objdump 工具查看可执行文件的符号表，以此获得链接之后各个符号的虚拟地址，例如 BiscuitOS_other_global_uninit_variable 的地址:
 
@@ -780,48 +780,48 @@ al-default
 vi BiscuitOS-address-space-data-segment-global-default/BiscuitOS-address-space-data-segment-global-default.bs
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000598.png)
+![](/assets/PDB/HK/TH000598.png)
 
 从上图可执行文件的符号表可以知道 BiscuitOS_other_global_uninit_variable 的虚拟地址是 0x080dbcc8, 那么结合 main.o 目标文件的重定位表可知 BiscuitOS_other_global_uninit_variable 的重定位类型是 R_386_GOT32X, 那么链接器会使用绝对地址修正方案来修正地址，即 "S + A": 将 "符号的虚拟地址" 加上 "保存在被修正位置上的值"。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000595.png)
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000598.png)
+![](/assets/PDB/HK/TH000595.png)
+![](/assets/PDB/HK/TH000598.png)
 
 由之前的分析可知知道, 在 main.o 目标文件中，"保存在被修改位置上的值" 为 0，如上上图 340 行 0x1d5-0x1d8 的位置即为 "保存在修改位置上的值"; 上图是符号链接之后地址, 即 "符号的虚拟地址" 0x080dbcc8, 因此修正的地址为:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000599.png)
+![](/assets/PDB/HK/TH000599.png)
 
 通过上面的计算可知需要修正地址值之后，由于修正后的地址是一个绝地址，在汇编中就是一个立即数，因此链接器还需要修正一下指令对应的机器码:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000595.png)
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000600.png)
+![](/assets/PDB/HK/TH000595.png)
+![](/assets/PDB/HK/TH000600.png)
 
 上上图 340 行是修正之前的机器码和汇编指令，上图 40136 行是修正之后的机器码和汇编指令，首先可以看出地址已经修正为 0x080dbcc8. 汇编指令虽然都是 MOV 指令，但对应的机器码已经从 "8b 83" 变成了 "c7 c0", 此时查阅 Intel 开发者手册:
 
 > [Intel-IA32 Development Manual: Volume2 - Chapter 4 - 4,3 MOV -- Move](https://gitee.com/BiscuitOS_team/Documentation/blob/master/Datasheet/Intel/Intel-IA32_DevelopmentManual.pdf)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000592.png)
+![](/assets/PDB/HK/TH000592.png)
 
 MOV 指令的源操作数由寄存器/内存变成了立即数，因此机器码也从 "8b" 变成了 "c7", 至此 BiscuitOS_other_global_uninit_variable 的地址修正和指令修正已经完成。接下来采用同样的方式分析一下 BiscuitOS_current_global_init_variable，其位于 main.o 目标文件的 .data section 内，其地址修正和指令修正如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000594.png)
+![](/assets/PDB/HK/TH000594.png)
 
 使用 "objdump -r XXXXXXXXXXXXXXXXXXX.o" 命令从 main.o 目标文件的重定位表中找了 BiscuitOS_current_global_init_variable 的重定位入口，其需要重定位的位置在 main.o 目标文件 .text section 的 0x1f9，其重定位方式是 R_386_GOTOFF. 那么接下来查看 BiscuitOS_current_global_init_variable 链接之后符号的虚拟地址:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000601.png)
+![](/assets/PDB/HK/TH000601.png)
 
 BiscuitOS_current_global_init_variable 链接之后的地址是 0x080da068, 由于其重定位类型是 R_386_GOTOFF, 因此其修正逻辑是 "S + A + GOT", 即 BiscuitOS_current_global_init_variable 的虚拟地址与全局偏移表之间的差值，在可知文件的符号表中可以知道全局偏移表的虚拟地址是:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000602.png)
+![](/assets/PDB/HK/TH000602.png)
 
 此时可以获得全局偏移表 \_GLOBAL_OFFSET_TABLE\_ 的虚拟地址即使 .got.plt 段的虚拟地址，即 "0x080da000", 那么修正值的计算如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000603.png)
+![](/assets/PDB/HK/TH000603.png)
 
 通过上面的计算可知需要修正的地址，此时 MOV 指令直接将立即数存储到目的段，那么指令不需要修正:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000604.png)
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000605.png)
+![](/assets/PDB/HK/TH000604.png)
+![](/assets/PDB/HK/TH000605.png)
 
 上上图 349 行是修正之前的机器码和汇编指令，上图 40142 行是修正之后的机器码和汇编指令，此时对于本文件已经初始化的全局变量只修正了地址部分，将地址部分由原先的 "0x000000" 修正为 "0x00000068", 正好符合之前的猜想.
 
@@ -843,11 +843,11 @@ BiscuitOS_current_global_init_variable 链接之后的地址是 0x080da068, 由�
 
 对于上面三种情况，第一种不用处理，因为多个强符号定义本身就是非法的，因此链接器只用处理后面两种情况。事实上，现代的编译器和链接器都支持一种叫做 "COMMON" 块 (Common Block) 的机制，这种机制最早出起源于 Fortran, 早期的 Fortran 没有动态分配空间的机制，程序员必须事先声明它所需要的临时空间大小。Fortran 把这种空间叫 COMMON 块，当不同的目标文件需要的 COMMON 块空间大小不一致时，以最大的那块为准. 
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000607.png)
+![](/assets/PDB/HK/TH000607.png)
 
 链接器在处理弱符号的时候，采用了的就是与 COMMON 块一样的机制。编译器将未初始化的全局变量定义为弱符号处理，例如 BiscuitOS_current_global_uninit_variable:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000608.png)
+![](/assets/PDB/HK/TH000608.png)
 
 BiscuitOS_current_global_uninit_variable 是一个全局的数据对象，它的类型为 SHN_COMMON, 因此他是一个弱符号，其长度为 4 个字节，如果此时在其他目标文件中也定义了一个名为 BiscuitOS_current_global_uninit_variable 未初始化的全局变量，其长度为 8 个字节，其类型也是 SHN_COMMON. 按照 COMMON 类型链接规则，原则上在最终输出文件中，BiscuitOS_current_global_uninit_variable 的大小以输入目标文件中最大的那个为准。因此此时 BiscuitOS_current_global_uninit_variable 的长度为 8 字节。
 
@@ -860,11 +860,11 @@ BiscuitOS_current_global_uninit_variable 是一个全局的数据对象，它的
 
 ###### <span id="A001">AMD64 LD Scripts</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000530.png)
+![](/assets/PDB/HK/TH000530.png)
 
 ###### <span id="A002">I386 LD Scripts</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000531.png)
+![](/assets/PDB/HK/TH000531.png)
 
 -----------------------------------------------
 
@@ -881,4 +881,4 @@ BiscuitOS_current_global_uninit_variable 是一个全局的数据对象，它的
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

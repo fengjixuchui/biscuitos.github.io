@@ -8,7 +8,7 @@ tags:
   - DTS
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/DEV000106.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/DEV000106.jpg)
 
 > Github: [of_prop_cmp](https://github.com/BiscuitOS/HardStack/tree/master/Device-Tree/kernel/API/of_prop_cmp)
 >

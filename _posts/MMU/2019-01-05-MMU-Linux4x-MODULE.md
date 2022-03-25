@@ -205,38 +205,38 @@ make menuconfig
 由于 BiscuitOS 的内核使用 Kbuild 构建起来的，在执行完 make menuconfig 之后，系
 统会弹出内核配置的界面，开发者根据如下步骤进行配置：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000003.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000003.png)
 
 选择 kernel hacking，回车
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000004.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000004.png)
 
 选择 Demo Code for variable subsystem mechanism, 回车
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000005.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000005.png)
 
 选择 MMU(Memory Manager Unit) on X86 Architecture, 回车
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000433.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000433.png)
 
 选择 Debug MMU(Memory Manager Unit) mechanism on X86 Architecture 之后选择 
 Addressing Mechanism  回车
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000434.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000434.png)
 
 选择 Virtual address, 回车
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000525.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000525.png)
 
 选择 Virtual address and Virtual space 之后，接着选择 Choice Kernel/User 
 Virtual Address Space, 回车。
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000526.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000526.png)
 
 该选项用于选择程序运行在用户空间还是内核空间，这里选择内核空间。选择 Kernel 
 Virtual Address Space. 回车之后按 Esc 退出。
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000544.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000544.png)
 
 最后开发者选择 .data segment,下拉菜单打开后，选择 Module Virtual Space 
 (module) 选项，回车保存并退出。
@@ -273,7 +273,7 @@ make install
 
 源码如下：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000542.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000542.png)
 
 Makefile
 
@@ -306,7 +306,7 @@ CFLAGS_kern_data.o += -DCONFIG_DEBUG_VA_KERNEL_MODULE -fno-common
 
 运行结果如图：
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/MMU000543.png)
+![MMU](/assets/PDB/BiscuitOS/kernel/MMU000543.png)
 
 从上面数据可知，在模块中定义的静态变量位于 0xF83FE000 到 0xFFBFE000 之间，所以
 从 MODULE 虚拟内存中分配成功。
@@ -328,4 +328,4 @@ MODULE 虚拟内存区在 Linux 的不同版本上位置不同，有的版本上
 
 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

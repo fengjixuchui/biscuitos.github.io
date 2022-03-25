@@ -8,7 +8,7 @@ tags:
   - Bidirect-list
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 > [Github: list_next_entry](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/API/list_next_entry)
 >
@@ -246,4 +246,4 @@ list_next_entry() 函数可以方便获得内嵌双链表的下一个成员指�
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

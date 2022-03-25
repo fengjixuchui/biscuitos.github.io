@@ -8,7 +8,7 @@ tags:
   - syscall
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -19,24 +19,24 @@ tags:
 > - [解决回调函数定位问题](#B2)
 
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------------------------
 
 <span id="B1"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### 解决系统调用函数打印干扰问题
 
 在调试系统调用的时候，需要在内核空间对某个系统调用实现过程添加打印消息，
 例如在 sys_open 系统调用中，添加了一些打印消息，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000512.png)
+![](/assets/PDB/RPI/RPI000512.png)
 
 如上图添加了一行打印在 sys_open 系统调用函数，重编译内核并运行系统，情况:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000513.png)
+![](/assets/PDB/RPI/RPI000513.png)
 
 结果可以看到，只要调用 sys_open 系统调用的都会打印这一行消息，因此
 这给开发者带来了很大的困惑，为了解决这个办法，这里提出一个可行的解决
@@ -45,15 +45,15 @@ tags:
 系统调用用于控制调试信息开关，用户空间需要打开调试信息的时候，就打开，
 不需要的时候就关闭，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000514.png)
+![](/assets/PDB/RPI/RPI000514.png)
 
 而在内核空间则使用如下打印方法:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000515.png)
+![](/assets/PDB/RPI/RPI000515.png)
 
 从新编译内核并运行系统，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000516.png)
+![](/assets/PDB/RPI/RPI000516.png)
 
 从上面的实践结果可以看出，这个办法解决了打印混乱问题，这个系统调用调试
 过程中非常有用。具体实现过程请参考下面内容:
@@ -70,7 +70,7 @@ tags:
 >
 > - [运行系统调用](#B15)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -116,15 +116,15 @@ make linux-5.0-arm32_defconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 上图显示了 ARM32 实践环境的位置，以及相关的 README.md 文档，开发者
 可以参考 README.md 的内容搭建一个运行在 QEMU 上的 ARM32 Linux 开发
 环境:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000340.png)
+![](/assets/PDB/RPI/RPI000340.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -142,19 +142,19 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000341.png)
+![](/assets/PDB/RPI/RPI000341.png)
 
 选择并进入 "[\*] Package  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000342.png)
+![](/assets/PDB/RPI/RPI000342.png)
 
 选择 "[\*]   strace" 和 "[\*]   System Call" 并进入 "[\*]   System Call  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000343.png)
+![](/assets/PDB/RPI/RPI000343.png)
 
 选择并进入 "[\*]   sys_hello_BiscuitOS  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000517.png)
+![](/assets/PDB/RPI/RPI000517.png)
 
 选择 "[\*]   debug_BiscuitOS() in C  --->" 保存配置并退出. 
 接下来执行下面的命令部署用户空间系统调用程序部署:
@@ -164,7 +164,7 @@ cd BiscuitOS
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000339.png)
+![](/assets/PDB/RPI/RPI000339.png)
 
 执行完毕后，终端输出相关的信息, 接下来进入源码位置，使用如下命令:
 
@@ -186,14 +186,14 @@ make download
 tree
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000518.png)
+![](/assets/PDB/RPI/RPI000518.png)
 
 上图中，main.c 与用户空间系统调用相关的源码,
 "debug_BiscuitOS_common-0.0.1/Makefile" 是 main.c 交叉编译的逻辑。
 "debug_BiscuitOS_common-0.0.1/BiscuitOS_debug.c" 文件是新系统调用
 内核实现。因此对于用户空间的系统调用，开发者只需关注 main.c, 内容如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000519.png)
+![](/assets/PDB/RPI/RPI000519.png)
 
 根据在内核中创建的入口，这里定义了入口宏的值为 400，一定要与内核定义
 的入口值相呼应. 如果需要打开打印消息，那么调用:
@@ -218,7 +218,7 @@ make install
 make pack
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -228,14 +228,14 @@ ARM32 架构提供了便捷的方法在内核中添加一个新的系统调用�
 开发者修改内核源码下 "arch/arm/tools/syscall.tbl" 文件，在
 该文件的底部添加信息如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000520.png)
+![](/assets/PDB/RPI/RPI000520.png)
 
 如上面内容所示，在文件最后一行添加了名为 debug_BiscuitOS 的
 系统调用，400 代表系统调用号，debug_BiscuitOS 为系统调用的
 名字，sys_debug_BiscuitOS 为系统调用在内核的实现。至此系统
 号已经添加完毕。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -251,7 +251,7 @@ cd BiscuitOS/output/linux-5.0-arm32/linux/linux/fs
 vi BiscuitOS_debug.c
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000521.png)
+![](/assets/PDB/RPI/RPI000521.png)
 
 文件定义了一个 int 全局变量 bs_debug_enable, 并使用 EXPORT_SYMBOL() 将符号
 导出。文件进行使用 SYSCALL_DEFINE1() 宏定义了一个名为 sys_debug_BiscuitOS
@@ -265,7 +265,7 @@ include/linux/kernel.h
 
 开发者也可以在其他头文件添加如下内容:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000522.png)
+![](/assets/PDB/RPI/RPI000522.png)
 
 准备好源码之后，接着修改内核源码 "fs/Kconfig" 文件，添加如下内容:
 
@@ -274,7 +274,7 @@ cd BiscuitOS/output/linux-5.0-arm32/linux/linux/fs
 vi Kconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000524.png)
+![](/assets/PDB/RPI/RPI000524.png)
 
 接着修改内核源码 "fs/Makefile" 文件，添加内容如下:
 
@@ -283,7 +283,7 @@ cd BiscuitOS/output/linux-5.0-arm32/linux/linux/fs
 vi Makefile
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000525.png)
+![](/assets/PDB/RPI/RPI000525.png)
 
 接着是配置内核，将 BiscuitOS_syscall.c 文件加入内核编译树，如下:
 
@@ -292,11 +292,11 @@ cd BiscuitOS/output/linux-5.0-arm32/linux/linux/
 make menuconfig ARCH=arm
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000335.png)
+![](/assets/PDB/RPI/RPI000335.png)
 
 选择并进入 "File systems  --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000523.png)
+![](/assets/PDB/RPI/RPI000523.png)
 
 选择 "\[*] BiscuitOS syscall debug" 并保存内核配置。
 
@@ -309,12 +309,12 @@ make ARCH=arm CROSS_COMPILE=BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/a
 
 编译内核中会打印相关的信息如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000306.png)
+![](/assets/PDB/RPI/RPI000306.png)
 
 从上面的编译信息可以看出，之前的修改已经生效。编译系统调用相关的脚本
 自动为hello_BiscuitOS 生成了相关的系统调用，
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -323,11 +323,11 @@ make ARCH=arm CROSS_COMPILE=BiscuitOS/output/linux-5.0-arm32/arm-linux-gnueabi/a
 至此一切准备完成，开发者可以尝试在某个系统调用里使用这个功能，例如
 在 sys_open 中使用该功能，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000514.png)
+![](/assets/PDB/RPI/RPI000514.png)
 
 接着在内核 sys_open 系统调用函数中添加信息:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000515.png)
+![](/assets/PDB/RPI/RPI000515.png)
 
 重新编译内核和应用空间程序，最后一步就是在 ARM32 上运行系统调用，参考下面
 命令进行运行:
@@ -337,30 +337,30 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000516.png)
+![](/assets/PDB/RPI/RPI000516.png)
 
 从运行的结果可以看出，当在用户空间单独调用 sys_open 的时候，内核只打印
 一次信息，因此该功能添加成功.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------------------------
 
 <span id="B2"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### 解决回调函数定位问题
 
 在内核调试系统调用的时候，经常遇到如下情况:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000526.png)
+![](/assets/PDB/RPI/RPI000526.png)
 
 从上面的代码开发者很难定位 "dentry->d_op->d_init()" 对应的到底是哪个函数，
 这个源码调试带来了很大的难度，为了解决这个办法，开发者可以按如下办法进行
 解决:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000527.png)
+![](/assets/PDB/RPI/RPI000527.png)
 
 正如上图所示，使用 printk 函数打印 "dentry->d_op->d_init" 的地址，重编译
 内核之后，运行系统，可以获得一个具体的打印值 0x80008144, 然后查看源码目录下的:
@@ -399,4 +399,4 @@ printk("Dentry Function %sP\n", dentry->d_op->d_init);
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

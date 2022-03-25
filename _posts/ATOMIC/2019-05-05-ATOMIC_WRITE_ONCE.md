@@ -8,7 +8,7 @@ tags:
   - ATOMIC
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 > [Github: WRITE_ONCE](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/atomic/API/WRITE_ONCE)
 >
@@ -197,4 +197,4 @@ WRITE_ONCE() 函数可以将数据写入到内存中，防止数据不一致。
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

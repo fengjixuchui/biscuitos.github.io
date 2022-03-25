@@ -10,7 +10,7 @@ tags:
 
 ![](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000210.gif)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -24,13 +24,13 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### 项目介绍
 
@@ -41,7 +41,7 @@ tags:
 最后通过技术推演介绍如何通过这个简单的内存管理子系统如何演变为目前主流的
 Linux 内存管理子系统。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------------------
 
@@ -59,7 +59,7 @@ Linux 内存管理子系统。
 
 <span id="B"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### 项目实现
 
@@ -71,13 +71,13 @@ Linux 内存管理子系统。
 >
 > - [项目运行](#A0000004)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------------
 
 #### <span id="A0000001">基础原理</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001000.png)
+![](/assets/PDB/RPI/RPI001000.png)
 
 对于 "内存管理子系统" 接触和理解最多的应该是 Linux 内核里面的各种内存分配
 器和各种内存管理行为等。回归到最开始的地方，内存管理子系统的出现要解决的问题，
@@ -100,14 +100,14 @@ Linux 内存管理子系统。
 
 ###### 物理地址
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001001.png)
+![](/assets/PDB/RPI/RPI001001.png)
 
 CPU 通过地址总线找到指定内存上的每一个位置，这里称内存在这条地址总线上的
 地址称为物理地址.
 
 ###### 虚拟地址
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001002.png)
+![](/assets/PDB/RPI/RPI001002.png)
 
 当系统的 MMU 开启后，CPU 会根据自己的位数看到一块从地址 0 到 2^32/2^64 的
 地址空间，这块地址空间称为虚拟空间，将这块虚拟地址空间划分为一个字节为内
@@ -119,7 +119,7 @@ CPU 通过地址总线找到指定内存上的每一个位置，这里称内存�
 空间，MMU 根据指定的页表将一个对虚拟地址的访问自动转换成物理地址的访问，如
 下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001003.png)
+![](/assets/PDB/RPI/RPI001003.png)
 
 MMU 开启的时候，CPU 看到一块虚拟空间，当 CPU 访问虚拟地址之后，MMU 自动
 将虚拟地址转换成物理地址. 当 MMU 关闭的时候，CPU 只能看到物理地址空间，
@@ -127,7 +127,7 @@ CPU 可以直接访问物理内存。
 
 ###### 页表
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001004.png)
+![](/assets/PDB/RPI/RPI001004.png)
 
 当 MMU 打开之后，CPU 只能看到和访问虚拟地址空间，不能直接访问物理地址空间，
 因此需要需要 MMU 将虚拟地址转换成物理地址。MMU 根据页表自动进行虚拟地址到
@@ -137,7 +137,7 @@ CPU 可以直接访问物理内存。
 
 ###### 物理页/页帧
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001005.png)
+![](/assets/PDB/RPI/RPI001005.png)
 
 将物理内存划分为 PAGE_SIZE 大小的物理内存块，一个物理内存块称为物理页。
 将物理地址开始，将所有的物理空间划分为多个物理页，将物理页从低物理地址
@@ -150,13 +150,13 @@ TLB 又称为 "块表", TLB 用于存储系统经常使用的虚拟地址和物�
 转换关系，如果找到，那么直接访问物理物理地址; 如果没有找到，那么只能通过
 MMU 查页表进行查找.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------
 
 #### <span id="A0000002">架构内存管理子系统</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001006.png)
+![](/assets/PDB/RPI/RPI001006.png)
 
 内存管理子系统最基础的任务就是管理内存的分配和回收。在多数采用 MMU 的系统
 中，内存管理的无非就是三种成员之间的关系，这三个成员就是: "虚拟内存"、
@@ -165,7 +165,7 @@ MMU 查页表进行查找.
 
 ###### 虚拟内存
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001007.png)
+![](/assets/PDB/RPI/RPI001007.png)
 
 对于虚拟内存，是在 MMU 开启之后，CPU 只能看到 (访问) 一段连续的地址空间，空
 间的长度与系统的位数有关，例如 32 位系统中，虚拟空间为 4GB。为了让系统稳定
@@ -175,13 +175,13 @@ MMU 查页表进行查找.
 具体条件后面章节讨论。为了构建一个最简单的内存管理子系统，这里可以构建一个
 最简单的虚拟内存管理器，其实现如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001008.png)
+![](/assets/PDB/RPI/RPI001008.png)
 
 其设计思路是将虚拟内存空间划分成固定长度的内存块，然后使用一个 bitmap，bitmap
 里面的每个 bit 对应一个虚拟内存块。当虚拟内存初始化阶段，所有虚拟内存还未
 使用，将对应的 bitmap 全部 bit 清零。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001009.png)
+![](/assets/PDB/RPI/RPI001009.png)
 
 当该虚拟内存管理器开始使用的时候，如果需要分配一定数量的虚拟内存区块，那么
 分配器首先计算需要分配的虚拟内存占用了几个虚拟内存块，以此可以知道需要在 
@@ -189,7 +189,7 @@ bitmap 中找到连续几个未置位的 bit 的位置，内存管理器在 bitm
 的位置之后，将对应的 bit 置位后返回 bit 对应的虚拟内存，这样就完成虚拟内存
 的分配。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001010.png)
+![](/assets/PDB/RPI/RPI001010.png)
 
 当系统使用完虚拟内存之后，需要将虚拟内存返回给虚拟内存分配器，分配器收到
 释放的虚拟内存之后，计算需要释放的内存块数量，然后在 bitmap 将对应的 bit
@@ -202,7 +202,7 @@ bitmap 中找到连续几个未置位的 bit 的位置，内存管理器在 bitm
 
 ###### 物理内存
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001001.png)
+![](/assets/PDB/RPI/RPI001001.png)
 
 物理内存就是实际的 RAM 内存，也就是实际存储数据的介质。在 MMU 启用后，CPU
 是不能直接访问物理内存，需要通过访问虚拟地址，再通过 MMU 和页表进行转换后
@@ -211,13 +211,13 @@ bitmap 中找到连续几个未置位的 bit 的位置，内存管理器在 bitm
 中不可获取的一部分。为了保持内存管理子系统最简单，这里采用和虚拟内存分配器
 一样的算法，即采用 bitmap 管理所有的物理内存的分配和回收，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001011.png)
+![](/assets/PDB/RPI/RPI001011.png)
 
 在系统中，将物理内存划分成固定长度的物理内存块，然后使用一个 bitmap，bitmap
 里面的每个 bit 对应一个物理内存块。在系统上电初始化阶段，将 bitmap 中的
 所有 bit 清零。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001012.png)
+![](/assets/PDB/RPI/RPI001012.png)
 
 当该物理内存管理器开始使用的时候，如果需要分配一定数量的物理内存区块，那么
 分配器首先计算需要分配的物理内存占用了几个物理内存块，以此可以知道需要在 
@@ -225,7 +225,7 @@ bitmap 中找到连续几个未置位的 bit 的位置，内存管理器在 bitm
 的位置之后，将对应的 bit 置位后返回 bit 对应的物理内存，这样就完成物理内存
 的分配。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001013.png)
+![](/assets/PDB/RPI/RPI001013.png)
 
 当系统使用完物理内存之后，需要将物理内存返回给物理内存分配器，分配器收到
 释放的物理内存之后，计算需要释放的内存块数量，然后在 bitmap 将对应的 bit
@@ -238,7 +238,7 @@ bitmap 中找到连续几个未置位的 bit 的位置，内存管理器在 bitm
 
 ###### 映射关系
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001004.png)
+![](/assets/PDB/RPI/RPI001004.png)
 
 所谓映射关系就是将虚拟地址与物理地址建立联系，以便系统访问虚拟地址时候，
 MMU 能够将遵循这个映射关系找到对应的物理地址。通常将建立虚拟地址和物理
@@ -246,13 +246,13 @@ MMU 能够将遵循这个映射关系找到对应的物理地址。通常将建�
 的逻辑。MMU 启用之前需要准备好页表，MMU 启用之后根据页表自动将虚拟地址
 转换成物理地址.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001014.png)
+![](/assets/PDB/RPI/RPI001014.png)
 
 映射关系可以是线性映射和随机映射。所谓线性映射就是将整块的虚拟地址和
 整块的物理地址建立页表，因此只要其中虚拟地址或者物理地址就可以通过简单
 的线性关系就可以找到对应的虚拟地址或物理地址。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001015.png)
+![](/assets/PDB/RPI/RPI001015.png)
 
 所谓随机映射就是将虚拟地址与随机的物理地址进行映射。随机映射页包含了动态
 映射。
@@ -277,18 +277,18 @@ MMU 能够将遵循这个映射关系找到对应的物理地址。通常将建�
 访问内存的效率，如果影响不到，使用哪一种都无所谓，只要确保映射建立之后
 就不要改变。这里为了让内存管理子系统足够简单，那么这里采用线性映射，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001017.png)
+![](/assets/PDB/RPI/RPI001017.png)
 
 接下来将剩余的虚拟内核和物理内存分配同样大小的内存块，这里采用大家熟悉的
 PAGE_SIZE，这样方便映射，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001018.png)
+![](/assets/PDB/RPI/RPI001018.png)
 
 从上图可以知道，一般情况下，虚拟内存和物理内存是不相等的，为了充分使用
 物理内存和虚拟内存，那么就要使用随机映射将虚拟内存与物理内存进行映射，
 这里称这个虚拟内存为非线性区.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001019.png)
+![](/assets/PDB/RPI/RPI001019.png)
 
 对于页表的规划，可以采用二级页表，也可以采用四级的页表，只不过这些都是
 软件部分的页表，实际的硬件页表要与具体的平台有关.
@@ -302,7 +302,7 @@ BiscuitOS Design MMU Project 项目基于模块实现。寄主机器是运行
 的物理内存，然后基于这段物理内存和真实的 TLB/CACHE 和页表建立了上述说描述
 的内存管理子系统，DTS 配置如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001016.png)
+![](/assets/PDB/RPI/RPI001016.png)
 
 从上图可以看出，项目在 DTS 中定义了一个名为 BiscuitOS 的节点，节点的 ram
 属性用来描述整个规划的物理内存和虚拟内存。ram 属性指向了 BiscuitOS_memory
@@ -322,13 +322,13 @@ BiscuitOS Design MMU Project 项目基于模块实现。寄主机器是运行
 >
 > - [Cortex_A9_Technical_Reference_Manual](https://gitee.com/BiscuitOS_team/Documentation/blob/master/Datasheet/ARM/Cortex_A9_Technical_Reference_Manual.pdf)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------------
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### 项目实践
 
@@ -342,7 +342,7 @@ BiscuitOS Design MMU Project 项目基于模块实现。寄主机器是运行
 >
 > - [测试建议](#C0004)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -368,19 +368,19 @@ make linux-5.0-arm32_defconfig
 make menuconfig
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000746.png)
+![](/assets/PDB/RPI/RPI000746.png)
 
 选择并进入 "[\*] Package  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000747.png)
+![](/assets/PDB/RPI/RPI000747.png)
 
 选择并进入 "[\*]   Memory Development History  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001020.png)
+![](/assets/PDB/RPI/RPI001020.png)
 
 选择并进入 "[\*]   BiscuitOS MMU Design  --->" 目录。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001021.png)
+![](/assets/PDB/RPI/RPI001021.png)
 
 对于目前支持的版本，"BiscuitOS Memory Design: Base" 对应的是项目处于最基础
 的阶段，未包含任何与内存管理子系统相关的代码，只提供了一个基础运行的环境，
@@ -395,7 +395,7 @@ make menuconfig
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000750.png)
+![](/assets/PDB/RPI/RPI000750.png)
 
 成功之后将出现上图的内容，接下来开发者执行如下命令以便切换到项目的路径:
 
@@ -406,11 +406,11 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_Memory-0.11
 make download
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001022.png)
+![](/assets/PDB/RPI/RPI001022.png)
 
 至此源码已经下载完成，开发者可以使用 tree 等工具查看源码:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001023.png)
+![](/assets/PDB/RPI/RPI001023.png)
 
 BiscuitOS.dts 文件用于修改主机中的 DTS，以此能够预留足够的物理内存给项目
 使用. main.c 函数是驱动入口相关的函数，与本项目没有太大联系，开发者可以忽略.
@@ -418,7 +418,7 @@ Makefile 是模块外部编译的相关规则; "init/main.c" 函数包含了 sta
 是整个项目的入口函数，开发者可以从这个函数开始进行开发. 同理下面是 
 "BiscuitOS_Memory-0.11" 的源码树:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001024.png)
+![](/assets/PDB/RPI/RPI001024.png)
 
 BiscuitOS.dts 文件用于修改主机中的 DTS，以此能够预留足够的物理内存给项目
 使用. main.c 函数是驱动入口相关的函数，与本项目没有太大联系，开发者可以忽略.
@@ -433,7 +433,7 @@ Makefile 是模块外部编译的相关规则; "init/main.c" 函数包含了 sta
 到系统的 DTS 里面，"BiscuitOS.dts" 里的内容用来从系统中预留 100MB 的物理
 内存供项目使用，具体如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001016.png)
+![](/assets/PDB/RPI/RPI001016.png)
 
 开发者将 "BiscuitOS.dts" 的内容添加到:
 
@@ -448,7 +448,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_Memory-Base
 make kernel
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001025.png)
+![](/assets/PDB/RPI/RPI001025.png)
 
 --------------------------------------------
 
@@ -462,7 +462,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_Memory-Base
 make
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001026.png)
+![](/assets/PDB/RPI/RPI001026.png)
 
 以上就是模块成功编译，接下来将 ko 模块安装到 BiscuitOS 中，使用如下命令:
 
@@ -479,7 +479,7 @@ cd BiscuitOS/output/linux-5.0-arm32/package/BiscuitOS_Memory-Base
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001027.png)
+![](/assets/PDB/RPI/RPI001027.png)
 
 在 BiscuitOS 中插入了模块 "BiscuitOS_Memory-Base.ko"，打印如上信息，那么
 BiscuitOS Design MMU Project 项目的基础开发环境搭建完毕。
@@ -488,14 +488,14 @@ BiscuitOS Design MMU Project 项目的基础开发环境搭建完毕。
 
 <span id="C0005"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Z.jpg)
 
 #### 源码开发
 
 本节用于介绍基于 BiscuitOS_Memory-Base 项目进行源码开发，开发者可以参考
 本节教程实际动手写代码吧!
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001006.png)
+![](/assets/PDB/RPI/RPI001006.png)
 
 回忆一下上面章节的讨论，一个内存管理子系统要运作起来，关键是处理好 "虚拟内存"、
 "物理内存" 和 "映射关系" 三者之间的关系. 因此本节就从这三个角度来介绍代码的
@@ -570,14 +570,14 @@ arch/include/asm-generated/memory.h
 物理内存的长度. BISCUITOS_PAGE_OFFSET 宏描述了虚拟内存的起始地址，
 BISCUITOS_MEMORY_SIZE 宏描述虚拟内存的长度，因此可以得到下图的内存布局:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001028.png)
+![](/assets/PDB/RPI/RPI001028.png)
 
 接着规划映射关系，由于内存管理子系统相关数据要让内核能够随时访问，不能被换页
 或者随机映射到不同的物理内存上，因此内存管理子系统相关的数据就放在线性区内，
 其他虚拟内存作为非线性区。至于线性区和非线性区的比例，这里不做讨论，这个需要
 根据实际的需求来决定。那么经过规划出现下图的内存布局:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001029.png)
+![](/assets/PDB/RPI/RPI001029.png)
 
 经过之前讨论可以知道，内存管理子系统的虚拟内存分配器和物理内存分配器都使用
 bitmap 进行管理，那么将 bitmap 规划在线性区。页表使用的内存同样页规划在线性
@@ -606,7 +606,7 @@ bitmap 进行管理，那么将 bitmap 规划在线性区。页表使用的内�
 #define BISCUITOS_BITMAP_VIRT           0x90300000
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001030.png)
+![](/assets/PDB/RPI/RPI001030.png)
 
 宏 BISCUITOS_PGTABLE_BASE 指向内核使用的页表的页目录地址，本项目和内核采用
 同一个页目录. BISCUITOS_LINEAR_BASE 宏指向了线性区的物理地址，宏 
@@ -651,7 +651,7 @@ void setup_mmu_init(void)
 虚拟内存对应的页表清除。pmd_clear_bs() 和 pmd_off_k_bs() 函数都是页表操作
 的函数，用于清除找到虚拟地址对应的 PMD 入口。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001031.png)
+![](/assets/PDB/RPI/RPI001031.png)
 
 清除 PMD 入口之后，对应的虚拟地址将不能映射物理地址，那么对应的虚拟地址就
 无法访问. 接着第二步操作是为线性区建立页表，从之前的规划了，线性区的起始虚拟
@@ -661,7 +661,7 @@ void setup_mmu_init(void)
 可以直接使用 BISCUITOS_PAGE_OFFSET 开始，长度 BISCUITOS_LINEAR_SIZE 的虚拟
 内核，与之映射的物理内存的起始地址是 BISCUITOS_LINEAR_BASE. 如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001032.png)
+![](/assets/PDB/RPI/RPI001032.png)
 
 在映射区内物理地址和虚拟地址可以通过简单的线性公式就可以计算，于是在 "memory.h"
 文件中定义线性区地址转换的函数，如下:
@@ -702,11 +702,11 @@ void setup_mmu_init(void)
 内存管理子系统的虚拟内存分配器和物理内存分配器都使用 Bitmap 进行管理，于是
 在线性区建立指定的 bitmap。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001030.png)
+![](/assets/PDB/RPI/RPI001030.png)
 
 首先建立物理内存分配器的 bitmap:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001033.png)
+![](/assets/PDB/RPI/RPI001033.png)
 
 系统非映射的物理内存起始地址是 BISCUITOS_CROSS_BASE_PHYS, 整个非映射区的长度
 是 BISCUITOS_CROSS_SIZE_PHYS, 将该区域划分为为体积相同的物理内存块，这里将每
@@ -723,7 +723,7 @@ BiscuitOS_bitmap_phys, 使用 memset 将对应的 bit 全部清零，这样表�
 非线性区物理内存已经初始化完毕. 接着采用同样的办法建立虚拟内存分配器的
 bitmap:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001034.png)
+![](/assets/PDB/RPI/RPI001034.png)
 
 系统非映射的虚拟内存起始地址是 BISCUITOS_CROSS_BASE_VIRT, 整个非映射区的长度
 是 BISCUITOS_CROSS_SIZE_VIRT, 将该区域划分为为体积相同的虚拟内存块，这里将每
@@ -747,7 +747,7 @@ BiscuitOS_bitmap_virt, 使用 memset 将对应的 bit 全部清零，由于 bitm
 
 ###### 物理内存分配器构建
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001011.png)
+![](/assets/PDB/RPI/RPI001011.png)
 
 上图就是一个初始化完毕的物理内存分配器，bitmap 里所有的 bit 都是清零的，以此
 表示对应的物理内存都是可以分配的。于是在内核源码树下创建一个名为 "mm" 的目录，
@@ -785,7 +785,7 @@ phys_addr_t BiscuitOS_alloc_phys(unsigned long size)
 }
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001012.png)
+![](/assets/PDB/RPI/RPI001012.png)
 
 当物理内存分配器分配内存时候，通过调用 "BiscuitOS_alloc_phys()" 函数，
 函数首先确认 "BiscuitOS_Memory_Done" 是否为 1，以此确认内存管理子系统
@@ -810,7 +810,7 @@ static inline unsigned long BiscuitOS_phys_to_bitmap(phys_addr_t addr)
 }
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001013.png)
+![](/assets/PDB/RPI/RPI001013.png)
 
 {% highlight bash %}
 void BiscuitOS_free_phys(phys_addr_t addr, unsigned long size)
@@ -841,7 +841,7 @@ void BiscuitOS_free_phys(phys_addr_t addr, unsigned long size)
 
 ###### 虚拟内存分配器构建
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001008.png)
+![](/assets/PDB/RPI/RPI001008.png)
 
 上图就是一个初始化完毕的虚拟内存分配器，bitmap 里所有的 bit 都是清零的，以此
 表示对应的虚拟内存都是可以分配的。于是在内核源码树下创建一个名为 "mm" 的目录，
@@ -879,7 +879,7 @@ unsigned long BiscuitOS_alloc_virt(unsigned long size)
 }
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001009.png)
+![](/assets/PDB/RPI/RPI001009.png)
 
 当虚拟内存分配器分配内存时候，通过调用 "BiscuitOS_alloc_virt()" 函数，
 函数首先确认 "BiscuitOS_Memory_Done" 是否为 1，以此确认内存管理子系统
@@ -905,7 +905,7 @@ static inline unsigned long BiscuitOS_virt_to_bitmap(unsigned long addr)
 }
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001010.png)
+![](/assets/PDB/RPI/RPI001010.png)
 
 {% highlight bash %}
 void BiscuitOS_free_virt(unsigned long addr, unsigned long size)
@@ -937,7 +937,7 @@ void BiscuitOS_free_virt(unsigned long addr, unsigned long size)
 
 ###### 映射构建
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001015.png)
+![](/assets/PDB/RPI/RPI001015.png)
 
 映射构建就是将分配的虚拟内存和物理内存建立映射关系，其实现逻辑位于 "mm" 目录
 下的 "BiscuitOS_virt.c" 文件.
@@ -1011,7 +1011,7 @@ static int BiscuitOS_map_area_bs(unsigned long virt, phys_addr_t phys,
 }
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001031.png)
+![](/assets/PDB/RPI/RPI001031.png)
 
 BiscuitOS_map_area_bs() 函数通过虚拟地址，找到虚拟地址对应的 PGD entry,
 然后在通过 PGD entry 找到对应的 PMD entry. 如果此时 PMD entry 为空，即
@@ -1022,7 +1022,7 @@ PTE 页表没有分配，那么函数调用 pte_alloc_bs() 从线性区的 PTE T
 entry 有效，至此虚拟地址和物理地址之间的页表建立完毕. 如果此时虚拟地址大
 于一个 PTE entry，那么循环建立页表. 至此虚拟地址已经可以使用.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001019.png)
+![](/assets/PDB/RPI/RPI001019.png)
 
 映射关系的接触用于调用者将申请的内存返回给内存管理子系统，那么使用函数
 "BiscuitOS_free()", 函数实现如下:
@@ -1051,7 +1051,7 @@ void BiscuitOS_free(unsigned long addr, unsigned long size)
 虚拟地址和物理地址之间的映射关系，最后分别调用 BiscuitOS_free_virt()
 和 BiscuitOS_free_phys() 函数释放对应的虚拟内存和物理内存.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001019.png)
+![](/assets/PDB/RPI/RPI001019.png)
 
 内存管理子系统提供了页表查询功能，可以通过页表查询虚拟地址对应的物理地址，
 实现如下图:
@@ -1169,7 +1169,7 @@ make run
 insmod /lib/modules/5.0.0/extra/BiscuitOS_Memory-0.11.ko
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001036.png)
+![](/assets/PDB/RPI/RPI001036.png)
 
 从上图的测试结果可以看出，物理内存分配器可以正常分配物理内存.接着测试将所有
 的物理内存全部申请完毕，在 init/main.c 函数中添加如下测试函数:
@@ -1215,11 +1215,11 @@ make run
 insmod /lib/modules/5.0.0/extra/BiscuitOS_Memory-0.11.ko
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001035.png)
+![](/assets/PDB/RPI/RPI001035.png)
 
 从运行的结果可以看出，物理内存分配器将所有的物理内存都分配了。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------------------
 
@@ -1270,7 +1270,7 @@ make run
 insmod /lib/modules/5.0.0/extra/BiscuitOS_Memory-0.11.ko
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001037.png)
+![](/assets/PDB/RPI/RPI001037.png)
 
 从运行的结果来看，虚拟内存分配器正常分配和回收虚拟内存. 接着测试将所有
 的虚拟内存全部申请完毕，在 init/main.c 函数中添加如下测试函数:
@@ -1317,11 +1317,11 @@ make run
 insmod /lib/modules/5.0.0/extra/BiscuitOS_Memory-0.11.ko
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001038.png)
+![](/assets/PDB/RPI/RPI001038.png)
 
 从运行的结果可以看出，虚拟内存分配器将所有的虚拟内存都分配了。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ---------------------------------------------
 
@@ -1372,7 +1372,7 @@ make run
 insmod /lib/modules/5.0.0/extra/BiscuitOS_Memory-0.11.ko
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001039.png)
+![](/assets/PDB/RPI/RPI001039.png)
 
 从运行的结果可以看出，内存管理子系统能够正常分配内存给调用者. 接着测试将所有
 的虚拟内存全部申请完毕，在 init/main.c 函数中添加如下测试函数:
@@ -1420,15 +1420,15 @@ make run
 insmod /lib/modules/5.0.0/extra/BiscuitOS_Memory-0.11.ko
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI001040.png)
+![](/assets/PDB/RPI/RPI001040.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### 进阶研究
 
@@ -1444,7 +1444,7 @@ insmod /lib/modules/5.0.0/extra/BiscuitOS_Memory-0.11.ko
 
 ###### Bootmem/MEMBLOCK 分配器演变
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000775.png)
+![](/assets/PDB/RPI/RPI000775.png)
 
 在本文介绍的基础内存管理子系统中，在解决 "鸡和蛋" 的问题时候，通过让体系
 来构建一个基础的可用内容，这时开发者或者可以考虑如何在内存管理子系统初始化
@@ -1455,7 +1455,7 @@ bootmem 和 MEMBLOCK 的演变过程。
 
 ###### Buddy 分配器演变
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000827.png)
+![](/assets/PDB/RPI/RPI000827.png)
 
 在本文介绍的基础内存管理子系统中，使用一个简单的 bitmap 管理物理内存的分配
 和回收，如果把所有的物理内存设置为 PAGE_SIZE 大小，然后使用 struct page 维护
@@ -1478,7 +1478,7 @@ ZONE_NORMAL 与内核虚拟地址空间进行一一映射，因此形成了内�
 
 ###### SLAB/SLUB 分配器演变
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000268.png)
+![](/assets/PDB/HK/HK000268.png)
 
 在本文介绍的基础内存管理子系统中，线性区的虚拟内存分配都是按 PAGE_SIZE
 进行分配的，如果如让虚拟内存分配器可以分更小块的虚拟内存，以及可以根据
@@ -1486,7 +1486,7 @@ ZONE_NORMAL 与内核虚拟地址空间进行一一映射，因此形成了内�
 
 ###### VMALLOC 分配器演变
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000289.png)
+![](/assets/PDB/HK/HK000289.png)
 
 在本文介绍的基础内存管理子系统中，如果将非线性映射的虚拟内存划分一定
 长度的内存区域，并使用红黑树管理虚拟内存的分配，然后将分配的虚拟内存
@@ -1494,7 +1494,7 @@ ZONE_NORMAL 与内核虚拟地址空间进行一一映射，因此形成了内�
 
 ###### KMAP 分配器
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000969.png)
+![](/assets/PDB/RPI/RPI000969.png)
 
 在本文介绍的基础内存管理子系统中，如果将非线性映射的虚拟内存划分一定
 长度的内存区域，并建立这段虚拟内存的固定 PTE 页表，然后从这段虚拟
@@ -1505,7 +1505,7 @@ KMAP 内存分配器。
 
 ###### FIXMAP 分配器
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000984.png)
+![](/assets/PDB/RPI/RPI000984.png)
 
 在本文介绍的基础内存管理子系统中，如果将固定的虚拟地址作为固定任务
 使用，但需要为固定任务分配这段内存之后，可以直接获得虚拟地址，然后
@@ -1528,4 +1528,4 @@ KMAP 内存分配器。
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

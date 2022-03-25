@@ -8,9 +8,9 @@ tags:
   - Linux
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -68,13 +68,13 @@ tags:
 >
 > - [附录/捐赠](#附录)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="A000"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000A.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000A.jpg)
 
 #### 开发环境搭建
 
@@ -88,7 +88,7 @@ tags:
 
 ## <span id="A003">项目简介</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000044.png)
+![](/assets/PDB/RPI/RPI000044.png)
 
 树莓派由注册于英国的慈善组织 "Raspberry Pi 基金会" 开发，
 Eben·Upton/埃·厄普顿为项目带头人。2012 年 3 月，英国剑桥
@@ -118,7 +118,7 @@ C 和Perl等编程语言.
 
 > - [RaspberryPi 官方网站](https://www.raspberrypi.org/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000170.jpg)
+![](/assets/PDB/RPI/RPI000170.jpg)
 
 目前 RaspberryPi 最新的 RaspberryPi 3B 亦是一块受开发者喜爱的开源
 硬件平台，众多的外设以及高性能的 CPU，以及优秀的社区文化，
@@ -127,13 +127,13 @@ RaspberryPi 3B 成为了 BiscuitOS 首推荐的开源实践平台。BiscuitOS
 RaspberryPi 3B 上的 Linux 发行版，将各种有趣的想法带到了这块开源
 硬件平台上。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="A001"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 #### 硬件准备
 
@@ -143,7 +143,7 @@ BiscuitOS 目前支持一个运行运 RaspberryPi 3B 开源平台上的 BiscuitO
 
 ###### 树莓派 3B
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000170.jpg)
+![](/assets/PDB/RPI/RPI000170.jpg)
 
 开发者可以从淘宝或京东上购买一款 RaspberryPi 3B 开发板，
 开发者可以根据自己的需求购买不同的套餐。但至少包含 SD 卡
@@ -152,7 +152,7 @@ BiscuitOS 目前支持一个运行运 RaspberryPi 3B 开源平台上的 BiscuitO
 
 ###### 开发主机
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000046.JPG)
+![](/assets/PDB/RPI/RPI000046.JPG)
 
 由于项目构建基于 Ubuntu，因此需要准备一台运行 
 Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
@@ -162,13 +162,13 @@ Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
 由于后期需要构建基础的开发网络环境，所以开发者需要准备一台
 路由器，家用路由器符合要求。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
 <span id="A002"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 #### 软件准备
 
@@ -208,13 +208,13 @@ BiscuitOS 项目是一个用于制作精简 Linux 发行版，开发者可以使
 以获得最新的 Linux 4.20, Linux 5.0 等等。只需要执行简单的命令，就能构建一个可
 运行可调式的 Linux 开发环境。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="A010"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
 
 #### 开发部署
 
@@ -237,7 +237,7 @@ Linux 可运行系统，开发者参照下面章节一起实践系统制作的�
 
 <span id="A016"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### RaspberryPi 3B 项目部署
 
@@ -257,19 +257,19 @@ Rootfs。编译过程中需要输入 root 密码，请自行输入，不建议�
 make 命令。编译完成之后，在命令行终端会输出多条信息，其中包括 Linux 源码的位
 置，BiscuitOS 的位置，以及 README 位置。如下：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000171.png)
+![](/assets/PDB/RPI/RPI000171.png)
 
 开发者首先查看 README 中的内容，README 中介绍了 Linux 等编译方法，按照 
 README 中的提示命令进行编译。README 使用 Markdown 编写，开发者可以使用
 Markdown 工具查看，例如 README 内容如下：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000172.png)
+![](/assets/PDB/RPI/RPI000172.png)
 
 -------------------------------------------
 
 #### <span id="A012"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000U.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000U.jpg)
 
 #### 内核配置
 
@@ -287,23 +287,23 @@ make ARCH=arm menuconfig
 
 在 RaspberryPi 3B 开启 I2C 总线功能，内核配置如下：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000033.png)
+![](/assets/PDB/RPI/RPI000033.png)
 
 选择并进入 "Device Driver"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000034.png)
+![](/assets/PDB/RPI/RPI000034.png)
 
 选择并进入 "I2C support --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000035.png)
+![](/assets/PDB/RPI/RPI000035.png)
 
 以模块的方式选择 "I2C device interface"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000036.png)
+![](/assets/PDB/RPI/RPI000036.png)
 
 选择并进入 "I2C Hardware Bus support --->"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000037.png)
+![](/assets/PDB/RPI/RPI000037.png)
 
 以模块的形式选择 "Broadcom BCM2835 I2C controller", 最后保存并退出。
 
@@ -311,7 +311,7 @@ make ARCH=arm menuconfig
 
 #### <span id="A013"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Y.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Y.jpg)
 
 #### 内核编译
 
@@ -327,13 +327,13 @@ make ARCH=arm CROSS_COMPILE=BiscuitOS/output/RaspberryPi_3B/arm-linux-gnueabi/ar
 make ARCH=arm INSTALL_MOD_PATH=BiscuitOS/output/RaspberryPi_3B/rootfs/rootfs/ modules_install
 {% endhighlight %}
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000335.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000335.png)
 
 -------------------------------------------
 
 <span id="A017"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000R.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
 
 #### Rootfs 制作
 
@@ -349,15 +349,15 @@ make clean
 make menuconfig
 {% endhighlight %}
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000003.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000003.png)
 
 选择 **Busybox Settings --->**
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000004.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000004.png)
 
 选择 **Build Options --->**
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000005.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000005.png)
 
 选中 **Build BusyBox as a static binary (no shared libs)**，保存并退出。
 使用如下命令编译 BusyBox
@@ -384,7 +384,7 @@ cd BiscuitOS/output/RaspberryPi_3B
 
 <span id="A014"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000E.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
 #### BiscuitOS 安装
 
@@ -408,12 +408,12 @@ sync
 的分区，第一个分区名为 BOOT，BOOT 分区主要存放着内核的镜像、DTB、
 树莓派固件、树莓派配置文件等。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000049.png)
+![](/assets/PDB/RPI/RPI000049.png)
 
 第二个分区名为 "BiscuitOS_rootfs"，这个分区主要存放着 BiscuitOS
 的 rootfs。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000050.png)
+![](/assets/PDB/RPI/RPI000050.png)
 
 接下来将 SD 卡插入到树莓派的 SD 卡槽上。
 
@@ -421,7 +421,7 @@ sync
 
 <span id="A015"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### BiscuitOS 运行
 
@@ -429,7 +429,7 @@ sync
 但在运行前，开发者使用 TTL 转 USB 串口获得 RaspberryPi 3B 的串口数据，
 如下图：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000051.png)
+![](/assets/PDB/RPI/RPI000051.png)
 
 如上图，黑线连接到 TTL 串口的 GND，黄线连接到 TTL 串口的 RX，蓝线
 连接到 TTL 串口的 TX 上，然后将 TTL 插入到主机的 USB 口上，此时主机
@@ -441,16 +441,16 @@ sudo apt-get install -y minicom
 sudo minicom -s
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000052.png)
+![](/assets/PDB/RPI/RPI000052.png)
 
 首先选择 "Serial port setup"
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000053.png)
+![](/assets/PDB/RPI/RPI000053.png)
 
 接着按下 "A" 按键，将值设置为 "/dev/ttyUSB0"，按下回车按钮，接着
 再按下 "F" 关闭流控，按下回车键之后按下 "Esc" 按键退回上一层。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000054.png)
+![](/assets/PDB/RPI/RPI000054.png)
 
 最后选择 "Save setup as dfl" 选项之后，按下 "Esc" 按键，此时
 minicom 配置完成，下次使用 minicom 直接使用命令：
@@ -462,7 +462,7 @@ sudo minicom
 至此一切准备完毕，接下来上电启动，然后使用 minicom 通过串口操作
 RaspberryPi 3B，如下 log 为 RaspberryPi 上电之后的 log:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000055.png)
+![](/assets/PDB/RPI/RPI000055.png)
 
 至此, BiscuitOS 已经在 RaspberryPi 3B 上成功运行，开发者可以根据自己
 兴趣和需求对内核进行魔改。
@@ -472,7 +472,7 @@ RaspberryPi 3B，如下 log 为 RaspberryPi 上电之后的 log:
 
 <span id="A020"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 ## 驱动部署
 
@@ -492,7 +492,7 @@ RaspberryPi 3B，如下 log 为 RaspberryPi 上电之后的 log:
 
 <span id="A0201"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000G.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000G.jpg)
 
 ## BiscuitOS 驱动开发
 
@@ -506,7 +506,7 @@ BiscuitOS 项目提供了一套完整的驱动开发框架，开发者只需简�
 
 <span id="A0202"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000S.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
 
 ## 通用驱动开发
 
@@ -527,20 +527,20 @@ BiscuitOS 项目提供了一套完整的驱动开发框架，开发者只需简�
 
 <span id="A02010"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000J.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000J.jpg)
 
 ## 驱动源码
 
 开发者首先准备一份驱动源码，可以操作如下源码，本节中使用一份 misc 驱动，
 并命名为 BiscuitOS_drv.c，具体源码如下：
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000056.PNG)
+![](/assets/PDB/RPI/RPI000056.PNG)
 
 ------------------------------------------
 
 <span id="A02011"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 ## 驱动安置
 
@@ -585,7 +585,7 @@ obj-$(CONFIG_BISCUITOS_DRV)  += BiscuitOS/
 
 <span id="A02012"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Z.jpg)
 
 ## 驱动配置
 
@@ -596,15 +596,15 @@ cd BiscuitOS/output/RaspberryPi_3B/linux/linux
 make ARCH=arm menuconfig
 {% endhighlight %}
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000337.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000337.png)
 
 首先在目录中找到 **Device Driver --->** 回车并进入其中。
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000338.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000338.png)
 
 接着在目录中找到 **BiscuitOS Driver --->** 按 Y 选中并按回车键进入。
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000339.png)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000339.png)
 
 最后按 Y 键选中 **BiscuitOS mis driver**，保存并退出内核配置
 
@@ -612,7 +612,7 @@ make ARCH=arm menuconfig
 
 <span id="A02013"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Z.jpg)
 
 ## 驱动编译
 
@@ -625,13 +625,13 @@ make ARCH=arm INSTALL_MOD_PATH=BiscuitOS/output/RaspberryPi_3B/rootfs/rootfs/ mo
 
 从编译的 log 可以看出 BiscuitOS_drv.c 已经被编译进内核。
 
-![LINUXP](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/BUDX000100.jpg)
+![LINUXP](/assets/PDB/BiscuitOS/kernel/BUDX000100.jpg)
 
 ------------------------------------------
 
 <span id="A0214"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000X.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000X.jpg)
 
 ## 驱动安装
 
@@ -646,7 +646,7 @@ make ARCH=arm INSTALL_MOD_PATH=BiscuitOS/output/RaspberryPi_3B/rootfs/rootfs/ mo
 
 <span id="A020140"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000C.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000C.jpg)
 
 ## NFS 方式驱动安装
 
@@ -687,7 +687,7 @@ insmod BiscuitOS_drv.ko
 
 <span id="A020141"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000V.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000V.jpg)
 
 ## SD 拷贝驱动安装
 
@@ -695,7 +695,7 @@ insmod BiscuitOS_drv.ko
 读卡器，然后插入主机，此时可以看到 "BiscuitOS_rootfs" 磁盘，
 此时将驱动直接拷贝到 "BiscuitOS_rootfs" 指定目录就行，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI000050.png)
+![](/assets/PDB/RPI/RPI000050.png)
 
 开发者可以参考如下命令, 主机端:
 
@@ -717,7 +717,7 @@ insmod BiscuitOS_drv.ko
 
 <span id="F"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 ## 应用程序部署
 
@@ -769,4 +769,4 @@ BiscuitOS 也支持游戏，开发者可以参考如下文章，为自己的
 
 ## 捐赠支持一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

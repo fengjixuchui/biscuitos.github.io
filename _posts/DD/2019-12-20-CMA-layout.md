@@ -8,7 +8,7 @@ tags:
   - [CMA]
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
 > Email: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -34,17 +34,17 @@ tags:
 >
 > - [附录](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 #### CMA 布局简介
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000169.png)
+![](/assets/PDB/HK/HK000169.png)
 
 随着科技不断的迭代，视频编解码、AI 等热门应用不断应用到 linux 中，
 这类应用有一个共同特点就是需要快速的数据交互过程。Linux 提供了用户
@@ -64,7 +64,7 @@ CMA 基于 buddy 构建，Linux 内核既要确保本身预留合适的物理内
 
 <span id="C0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 #### CMA 内核部署
 
@@ -82,7 +82,7 @@ CMA 基于 buddy 构建，Linux 内核既要确保本身预留合适的物理内
 
 <span id="C01"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000G.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000G.jpg)
 
 ###### CMA 内核宏详解
 
@@ -113,7 +113,7 @@ CMA 基于 buddy 构建，Linux 内核既要确保本身预留合适的物理内
 
 ###### <span id="C010">CONFIG_CMA</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000082.png)
+![](/assets/PDB/HK/HK000082.png)
 
 在内核配置时，将该宏设置为 "Y" 以此在内核运行过程中启用 CMA 内存
 分配器.
@@ -122,7 +122,7 @@ CMA 基于 buddy 构建，Linux 内核既要确保本身预留合适的物理内
 
 ###### <span id="C011">CONFIG_CMA_AREAS</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000083.png)
+![](/assets/PDB/HK/HK000083.png)
 
 该宏用于设置 CMA 支持的区域数。CMA分配器支持多块相互隔离的 CMA
 区域，以便指定驱动使用特定的 CMA 区块。默认值为 7.
@@ -131,7 +131,7 @@ CMA 基于 buddy 构建，Linux 内核既要确保本身预留合适的物理内
 
 ###### <span id="C012">CONFIG_DMA_CMA</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000085.png)
+![](/assets/PDB/HK/HK000085.png)
 
 该宏用于启用 DMA 连续物理内存分配器，其分配的物理内存也是 CMA
 内存。
@@ -140,7 +140,7 @@ CMA 基于 buddy 构建，Linux 内核既要确保本身预留合适的物理内
 
 ###### <span id="C013">CONFIG_CMA_SIZE_MBYTES</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000084.png)
+![](/assets/PDB/HK/HK000084.png)
 
 该宏与 CONFIG_CMA_SIZE_SEL_MBYTES 宏配合使用，但内核启用 
 CONFIG_CMA_SIZE_SEL_MBYTES 宏之后，可以通过配置
@@ -150,7 +150,7 @@ CONFIG_CMA_SIZE_MBYTES 的值来设置 CMA 的大小。
 
 ###### <span id="C014">CONFIG_CMA_SIZE_SEL_MBYTES</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000086.png)
+![](/assets/PDB/HK/HK000086.png)
 
 该宏与 CONFIG_CMA_SIZE_MBYTES 宏配合使用，该宏用于指明 CONFIG_CMA_SIZE_MBYTES
 的粒度大小为 MBytes。当启用该宏之后，内核通过配置 CONFIG_CMA_SIZE_MBYTES 的
@@ -160,7 +160,7 @@ CONFIG_CMA_SIZE_MBYTES 的值来设置 CMA 的大小。
 
 ###### <span id="C015">CONFIG_CMA_SIZE_SEL_PERCENTAGE</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000087.png)
+![](/assets/PDB/HK/HK000087.png)
 
 该宏与 CONFIG_CMA_SIZE_PERCENTAGE 配合使用，用于配置 CMA 占物理内存的百
 分比。当内核启用 CONFIG_CMA_SIZE_SEL_PERCENTAGE 宏之后，就可以通过是
@@ -170,7 +170,7 @@ CONFIG_CMA_SIZE_MBYTES 的值来设置 CMA 的大小。
 
 ###### <span id="C016">CONFIG_CMA_SIZE_PERCENTAGE</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000088.png)
+![](/assets/PDB/HK/HK000088.png)
 
 该宏与 CONFIG_CMA_SIZE_SEL_PERCENTAGE 配合使用，用于设置 CMA 占
 物理内核的百分比。当内核启用 CONFIG_CMA_SIZE_SEL_PERCENTAGE 宏之后，
@@ -181,7 +181,7 @@ CONFIG_CMA_SIZE_MBYTES 的值来设置 CMA 的大小。
 
 ###### <span id="C017">CONFIG_CMA_SIZE_SEL_MIN</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000089.png)
+![](/assets/PDB/HK/HK000089.png)
 
 该宏与 CONFIG_CMA_SIZE_MBYTES、CONFIG_CMA_SIZE_PERCENTAGE 配合使用，
 内核可以同时通过 CONFIG_CMA_SIZE_MBYTES 配置指定大小的 CMA，又可用
@@ -192,7 +192,7 @@ CONFIG_CMA_SIZE_MBYTES 的值来设置 CMA 的大小。
 
 ###### <span id="C018">CONFIG_CMA_SIZE_SEL_MAX</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000090.png)
+![](/assets/PDB/HK/HK000090.png)
 
 该宏与 CONFIG_CMA_SIZE_MBYTES、CONFIG_CMA_SIZE_PERCENTAGE 配合使用，
 内核可以同时通过 CONFIG_CMA_SIZE_MBYTES 配置指定大小的 CMA，又可用
@@ -203,7 +203,7 @@ CONFIG_CMA_SIZE_MBYTES 的值来设置 CMA 的大小。
 
 ###### <span id="C019">CONFIG_CMA_ALIGNMENT</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000091.png)
+![](/assets/PDB/HK/HK000091.png)
 
 该宏用于 DMA 方式申请的连续物理内存的对齐方式。
 
@@ -211,7 +211,7 @@ CONFIG_CMA_SIZE_MBYTES 的值来设置 CMA 的大小。
 
 <span id="C02"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000G.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000G.jpg)
 
 ###### CMA 方案配置之 DTS
 
@@ -240,7 +240,7 @@ CONFIG_OF_KOBJ=y
 CONFIG_OF_ADDRESS=y
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000155.png)
+![](/assets/PDB/HK/HK000155.png)
 
 CMA 相关的配置位于 DTS 的 "/reserved-memory" 节点内，如果需要向系统
 中添加一个 CMA 区域，可以在该节点中创建一个子节点进行描述，子节点的
@@ -307,7 +307,7 @@ address 的值为节点 reg 属性的属性值，并且用 16 进制表示。2)
 至此内核就可以通过 DTS 方案配置 CMA 分配器，DTS 方案源码初始化解析
 请参考下文:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000149.png)
+![](/assets/PDB/HK/HK000149.png)
 
 > - [CMA 方案配置之 DTS 源码解析](https://biscuitos.github.io/blog/CMA/#E0111)
 
@@ -322,7 +322,7 @@ DTS 方案是最灵活的，同时支持名字、起始地址、长度和终止�
 
 DTS 方案的缺点就是在不支持的 DTS 的平台无法使用该方案.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ------------------------------
 
@@ -340,7 +340,7 @@ cd BiscuitOS/output/linux-5.0-arm32/linux/linux/
 vi arch/arm/boot/dts/vexpress-v2p-ca9.dts
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000155.png)
+![](/assets/PDB/HK/HK000155.png)
 
 如上图，在 "/reserved-memory" 中添加了两个节点 "linux,cma" 和 
 "BiscuitOS_CMA", 其大小都是 8MB。其中 CMA 分配器默认使用 "linux,cma"
@@ -353,12 +353,12 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000156.png)
+![](/assets/PDB/HK/HK000156.png)
 
 内核启动过程中，输出 CMA 区域初始化信息，从上图 log 可以看出，内核
 一共新建了两个 CMA 区域，长度都是 8MB。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000157.png)
+![](/assets/PDB/HK/HK000157.png)
 
 BiscuitOS 运行之后，查看 "/proc/meminfo" CMA 统计信息，上图中可以看出
 CMA 总共 16384KB，即 16MB，目前系统可用的 CMA 物理内存为 14592KB. 由
@@ -368,7 +368,7 @@ CMA 总共 16384KB，即 16MB，目前系统可用的 CMA 物理内存为 14592K
 
 <span id="C03"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
 
 ###### CMA 方案配置之 CMDLINE
 
@@ -408,7 +408,7 @@ CMDLINE 中支持使用关键字 "cma=" 来指定 CMA 分区的长度，如果�
 
 CMDLINE 方案内核初始化源码分析请参考下列文档:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000151.png)
+![](/assets/PDB/HK/HK000151.png)
 
 > - [CMA 方案配置之 CMDLINE 源码解析](https://biscuitos.github.io/blog/CMA/#E0112)
 
@@ -425,7 +425,7 @@ CMDLINE 方案内核初始化源码分析请参考下列文档:
 不能设置 CMA 区域的名字，只能创建一个 CMA 区域。不能设置 CMA 区域的对齐
 方式。优先级低于 DTS 方案。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ------------------------------
 
@@ -446,7 +446,7 @@ cd BiscuitOS/output/linux-5.0-arm32
 vi RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000158.png)
+![](/assets/PDB/HK/HK000158.png)
 
 在 RunBiscuitOS.sh 文件中，找到 CMDLINE 变量，向其添加参数
 "cma=4M@0x69000000-0x69800000", 这将模拟 uboot 传递 CMDLINE
@@ -459,14 +459,14 @@ cd BiscuitOS/output/linux-5.0-arm32
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000159.png)
+![](/assets/PDB/HK/HK000159.png)
 
 从上图可以看到系统从 0x69400000 处开始分配一个 4M 的物理内存，
 终止地址是 0x69800000. 从实践可以知道系统会在 0x69000000 到 
 0x69800000 的区域内按 4M 对齐的方式，从末端开始找一块符合要求
 的区域，该性质由 MEMBLOCK 从高向低分配的特点决定。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000160.png)
+![](/assets/PDB/HK/HK000160.png)
 
 BiscuitOS 运行之后，可以通过查看 "/proc/meminfo" 获得 CMA 分配器区域
 的信息，如上图系统 CMA 总内存为 4M, 当前可用的 CMA 内存为 2304KB.
@@ -475,7 +475,7 @@ BiscuitOS 运行之后，可以通过查看 "/proc/meminfo" 获得 CMA 分配器
 
 <span id="C04"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 ###### CMA 方案配置之 Kbuild
 
@@ -519,7 +519,7 @@ Kbuild 通过设置 CMA 大小来配置 CMA，Kbuild 为了提供不同的使用
 在启动过程中，内核都会通过解析相关宏获得一个 CMA 长度，那么系统就
 从 MEMBLOCK 中分配指定长度的区域给 CMA。Kbuild 方案源码分析参考如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000152.png)
+![](/assets/PDB/HK/HK000152.png)
 
 > - [CMA 配置方案之 Kbuild 源码分析](https://biscuitos.github.io/blog/CMA/#E0113)
 
@@ -536,7 +536,7 @@ Kbuild 通过设置 CMA 大小来配置 CMA，Kbuild 为了提供不同的使用
 会被系统自动弃用。不能配置 CMA 区域的名字。只能创建一个 CMA 区域。
 Kbuild 方案优先级最低，容易被其他方案取代。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ------------------------------
 
@@ -554,29 +554,29 @@ cd BiscuitOS/output/linux-5.0-arm32/linux/linux/
 make menuconfig ARCH=arm
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000093.png)
+![](/assets/PDB/HK/HK000093.png)
 
 选择 "Memory Management options --->" 并进入下一级，
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000094.png)
+![](/assets/PDB/HK/HK000094.png)
 
 选择 "Contiguous Memory Allocator", 并确保 "Maximum count of the CMA areas"
 为 7. 返回到上一级。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000095.png)
+![](/assets/PDB/HK/HK000095.png)
 
 选择 "Device Drivers" 并进入下一级菜单。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000096.png)
+![](/assets/PDB/HK/HK000096.png)
 
 选择 "Generic Driver Options" 并进入下一级菜单。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000097.png)
+![](/assets/PDB/HK/HK000097.png)
 
 选择 "DMA Contiguous Memory Allocator", 接下来优先选择 
 "Selected region size" 选项。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000098.png)
+![](/assets/PDB/HK/HK000098.png)
 
 此处开发者可以根据需求进行选择，如果选择 "Use mega bytes value only",
 那么可以按 MBytes 配置 CMA; 如果选择 "Use percentage value only"
@@ -589,7 +589,7 @@ make menuconfig ARCH=arm
 例如选择 "Use mega bytes value only" 之后配置 CMA 为 128MBytes，如
 下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000099.png)
+![](/assets/PDB/HK/HK000099.png)
 
 配置完毕之后保存退出，并重新编译内核和运行 BiscuitOS，开发者
 可以参考如下命令:
@@ -601,12 +601,12 @@ cd BiscuitOS/output/linux-5.0-arm32/
 ./RunBiscuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000161.png)
+![](/assets/PDB/HK/HK000161.png)
 
 BiscuitOS 启动过程中，系统 log 中可以看到内核根据 Kbuild 配置信息
 创建了长度为 128MB 的 CMA 区域。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000162.png)
+![](/assets/PDB/HK/HK000162.png)
 
 #BiscuitOS 运行之后，通过查看 "/proc/meminfo" 查看 CMA 的信息，如上图，
 CMA 总内存数是 131072KB, 当前可用 CMA 为 129280KB.
@@ -615,7 +615,7 @@ CMA 总内存数是 131072KB, 当前可用 CMA 为 129280KB.
 
 <span id="E0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000Z.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000Z.jpg)
 
 #### CMA 布局策略
 
@@ -635,7 +635,7 @@ CMA 分配器用于分配连续的物理内存，CMA 问题的本质就是如何
 cat /proc/iomem
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000163.png)
+![](/assets/PDB/HK/HK000163.png)
 
 执行上面的命令之后，可以看到系统物理地址占用情况，其中找到 "System RAM",
 其代表系统物理内存的起始物理地址和终止物理地址。有的系统包含两块系统 RAM，
@@ -662,7 +662,7 @@ cat /proc/iomem
 cat /sys/kernel/debug/memblock/reserved
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000164.png)
+![](/assets/PDB/HK/HK000164.png)
 
 从上一条可以知道，系统 RAM 的范围是 "60000000-9fffffff", 从上图获得
 的信息可以知道，在系统物理内存中 "0x60004000-0x6800bfd9" 以及
@@ -700,7 +700,7 @@ CMA 分配器可以设置 CMA 区域的起始基地址，名字和长度。综�
 
 <span id="B0"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
 
 #### CMA 布局实践
 
@@ -710,7 +710,7 @@ CMA 分配器可以设置 CMA 区域的起始基地址，名字和长度。综�
 >
 > - [CMA 运行查看](#B02)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000101.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND000101.jpg)
 
 ---------------------------------------
 
@@ -730,7 +730,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 cat /proc/iomem
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000163.png)
+![](/assets/PDB/HK/HK000163.png)
 
 执行上面的命令之后，可以看到系统物理地址占用情况，其中找到 "System RAM",
 其代表系统物理内存的起始物理地址和终止物理地址。有的系统包含两块系统 RAM，
@@ -741,7 +741,7 @@ cat /proc/iomem
 cat /sys/kernel/debug/memblock/reserved
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000164.png)
+![](/assets/PDB/HK/HK000164.png)
 
 从上一条可以知道，系统 RAM 的范围是 "60000000-9fffffff", 从上图获得
 的信息可以知道，在系统物理内存中 "0x60004000-0x6800bfd9" 以及
@@ -765,7 +765,7 @@ cd BiscuitOS/output/linux-5.0-arm32/linux/linux/
 vi arch/arm/boot/dts/vexpress-v2p-ca9.dts
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000165.png)
+![](/assets/PDB/HK/HK000165.png)
 
 在 "/reserved-memory" 节点下创建了 "BiscuitOS_CMA" 子节点，
 采用 reg 属性的节点配置，由于 "/reserved-memory" 节点的 
@@ -790,17 +790,17 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 BiscuitOS 启动时可以从 log 中看到 CMA 区域初始化信息，如下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000166.png)
+![](/assets/PDB/HK/HK000166.png)
 
 系统从 0x69000000 开始，分配了长度为 864MiB 的物理内存作为 CMA 区域。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000167.png)
+![](/assets/PDB/HK/HK000167.png)
 
 BiscuitOS 运行之后，可以查看 "/proc/meminfo" 获得 CMA 的信息，如
 上图所示，系统 CMA 连续物理内存总数为 884736KB, 当前可用 CMA 连续
 物理内存为 884736KB。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000168.png)
+![](/assets/PDB/HK/HK000168.png)
 
 从上图可以看出 0x69000000 到 0x9effffff 已经被加入到 MEMBLOCK 预留区内。
 通过上面的数据可以获得 CMA 分配器的新 CMA 区域已经布局成功。
@@ -817,4 +817,4 @@ BiscuitOS 运行之后，可以查看 "/proc/meminfo" 获得 CMA 的信息，如
 
 ## 赞赏一下吧 🙂
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

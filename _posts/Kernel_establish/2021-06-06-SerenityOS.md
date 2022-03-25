@@ -8,9 +8,9 @@ tags:
   - SerenityOS
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -24,17 +24,17 @@ tags:
 >
 > - [附录](#附录)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000G.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000G.jpg)
 
 #### SerenityOS 介绍
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000625.png)
+![](/assets/PDB/HK/TH000625.png)
 
 SerenityOS 是我无意间看新闻时候刷到一篇名为 [《我决定辞掉工作，全职开发我的操作系统》](https://blog.csdn.net/coderising/article/details/117433248)，当看我这篇文章之后，他的操作系统让我感到很震撼，而且他将他的操作系统开源了，于是我就想在我的 BiscuitOS 环境中玩一下这个奇迹一般的牛人开发出来的操作系统。我将利用这篇文章介绍 SerenityOS，以及如何在 BiscuitOS 上部署其开发环境。那么让我们一起了解一下 SerenityOS:
 
@@ -44,7 +44,7 @@ SerenityOS 是我无意间看新闻时候刷到一篇名为 [《我决定辞掉�
 
 SerenityOS 给我的感觉是他与 Linux 不同，作者用 C++ 编写操作系统，并将系统运行在 GTK 界面上，各种有趣的应用和游戏，大名鼎鼎的 DOOM 也在 SerenityOS 上运行起来了，是不是很 Geek.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000626.png)
+![](/assets/PDB/HK/TH000626.png)
 
 除了上面的功能外，SerenityOS 在操作系统层面还具有以下特点:
 
@@ -70,13 +70,13 @@ SerenityOS 给我的感觉是他与 Linux 不同，作者用 C++ 编写操作系
 * 桌面游戏：扫雷和贪吃蛇
 * 端口系统
  
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ------------------------------------------
 
 <span id="B"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 #### SerenityOS 部署
 
@@ -129,7 +129,7 @@ make
 cd BiscuitOS/output/SerenityOS-on-BiscuitOS
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000627.png)
+![](/assets/PDB/HK/TH000627.png)
 
 以上便是 SerenityOS 开发环境，其中 SerenityOS 包含了 Kernel、应用、游戏等相关的软件源码，RunSerenityOS-on-BiscuitOS.sh 脚本用于 SerenityOS 的编译、打包和运行.
 
@@ -137,7 +137,7 @@ cd BiscuitOS/output/SerenityOS-on-BiscuitOS
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### SerenityOS 运行
 
@@ -148,19 +148,19 @@ cd BiscuitOS/output/SerenityOS-on-BiscuitOS
 ./RunSerenityOS-on-BiscuitOS.sh run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000628.png)
+![](/assets/PDB/HK/TH000628.png)
 
 ------------------------------------------
 
 <span id="D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### SerenityOS 内核编译
 
 SerenityOS 内核源码位于开发环境的 SerenityOS/Kernel 目录下:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/TH000629.png)
+![](/assets/PDB/HK/TH000629.png)
 
 开发者可以根据自己的需求修改内核源码，当修改完毕之后，编译内核请参考如下命令:
 
@@ -170,7 +170,7 @@ cd BiscuitOS/output/SerenityOS-on-BiscuitOS
 ./RunSerenityOS-on-BiscuitOS.sh run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -187,4 +187,4 @@ cd BiscuitOS/output/SerenityOS-on-BiscuitOS
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

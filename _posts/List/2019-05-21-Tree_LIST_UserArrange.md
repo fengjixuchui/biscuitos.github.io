@@ -8,7 +8,7 @@ tags:
   - RBTREE
 ---
 
-![DTS](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000H.jpg)
+![DTS](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
 
 > [Github: 用户空间双链表](https://github.com/BiscuitOS/HardStack/tree/master/Algorithem/list/bindirect-list/Basic)
 >
@@ -25,7 +25,7 @@ tags:
 -----------------------------------
 <span id="双链表部署方法"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 ## 双链表部署方法
 
@@ -45,7 +45,7 @@ wget https://github.com/BiscuitOS/HardStack/blob/master/Algorithem/list/bindirec
 ------------------------------
 <span id="双链表使用方法"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000K.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
 
 ## 双链表使用方法
 
@@ -165,4 +165,4 @@ int main()
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

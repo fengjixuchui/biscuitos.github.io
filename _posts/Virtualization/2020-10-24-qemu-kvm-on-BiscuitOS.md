@@ -8,9 +8,9 @@ tags:
   - KVM
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000L0.PNG)
+![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/RPI/RPI100100.png)
+![](/assets/PDB/RPI/RPI100100.png)
 
 #### 目录
 
@@ -22,13 +22,13 @@ tags:
 >
 > - [附录/捐赠](#Z0)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 #### QKOB 项目介绍
 
@@ -38,19 +38,19 @@ KVM 全称 "Kernel-Based Virtual Machine", 是基于内核的虚拟机，它由�
 
 QEMU 是一个主机上的 VMM (Virtual machine monitor), 通过动态二进制模拟 CPU，并提供一系列的硬件模型，使 Guest OS 能够与 Host 硬件交互。在 QEMU-KVM 中，QEMU 负责模拟 IO 设备 (网卡，磁盘等)。KVM 运行在内核空间，QEMU-KVM 则运行在用户空间，并创建、管理各种虚拟硬件。QEMU-KVM 通过 ioctl 调用 /dev/kvm 与 KVM 进行交互，从而将 CPU 指令的部分交给内核模块来做，KVM 则实现了 CPU 和内存虚拟化，但 KVM 不能虚拟其他硬件设备。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000623.png)
+![](/assets/PDB/HK/HK000623.png)
 
 本文重点介绍如何在 BiscuitOS 快速部署 QEM-KVM 开发环境。BiscuitOS 提供的开发环境包括了一个静态的 qemu-kvm 可执行文件，并通过 qemu-kvm 工具在 BiscuitOS 上启动一个新的 BiscuitOS。具体请参见:
 
 > [QKOB 项目实践](#C)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="C"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000I.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
 #### QKOB 项目实践
 
@@ -60,7 +60,7 @@ QEMU 是一个主机上的 VMM (Virtual machine monitor), 通过动态二进制�
 >
 > - [实践执行](#C0002)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -70,7 +70,7 @@ QKOB 项目目前只支持 x86_64，本文以 x86_64 架构进行讲解，并推
 
 > - [BiscuitOS Linux 5.0 X86_64 环境部署](https://biscuitos.github.io/blog/Linux-5.0-x86_64-Usermanual/)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -100,7 +100,7 @@ make ARCH=x86_64 bzImage -j4
 
 重新编译内核，内核编译完毕并重新运行 BiscuitOS，可以在 "/dev/" 目录下看到 kvm 节点:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000587.png)
+![](/assets/PDB/HK/HK000587.png)
 
 接下来是安装 QEMU-KVM 源码，开发者可以参考如下命令进行部署:
 
@@ -126,7 +126,7 @@ make tar
 
 执行完上面的命令之后，BiscuitOS 会自动部署所需的源码文件，如下图:
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000619.png)
+![](/assets/PDB/HK/HK000619.png)
 
 "BiscuitOS-qemu-kvm-4.0.0" 目录为 qemu-kvm 的源代码，目前采用 4.0.0 版本; Makefile 为编译源码相关的脚本; RunBiscuitOS.sh 是在 BiscuitOS.sh 上运行 qemu-kvm 相关配置.
 
@@ -137,7 +137,7 @@ cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-qemu-kvm-4.0.0
 make configure
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000620.png)
+![](/assets/PDB/HK/HK000620.png)
 
 BiscuitOS 在配置 qemu-kvm 时默认使用的配置如下:
 
@@ -145,7 +145,7 @@ BiscuitOS 在配置 qemu-kvm 时默认使用的配置如下:
 --target-list=x86_64-softmmu --enable-kvm --enable-virtfs --static --disable-libusb --audio-drv-list=oss --disable-werror
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------
 
@@ -161,7 +161,7 @@ make pack
 make run
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000621.png)
+![](/assets/PDB/HK/HK000621.png)
 
 如上图在 BiscuitOS 运行之后，可以查看 qemu-kvm 的版本，以此确认软件已经可以使用.确认完毕之后，开发者可以使用两种办法启动一台虚拟机，默认使用 BiscuitOS 提供的脚本，也就是源码目录下的 RunBiscuitOS.sh, 其在 BiscuitOS 中使用如下:
 
@@ -169,7 +169,7 @@ make run
 RunBsicuitOS.sh
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000622.png)
+![](/assets/PDB/HK/HK000622.png)
 
 脚本运行完毕之后，BiscuitOS 根据 RunBiscuitOS.sh 的工作流启动一个虚拟机，虚拟机运行如上。当想退出虚拟机的话，使用 Ctrl-C 即可. 开发者也可以采用第二种方式启动虚拟机，第二种方式也就是命令行方式，但有一个需要开发者注意的是，命令行必须在 BiscuitOS 的 "/mnt/Freeze/BiscuitOS" 目录下执行，具体命令参考如下:
 
@@ -181,19 +181,19 @@ dev/sda rw rootfstype=ext4 console=ttyS0 init=/linuxrc loglevel=3" -hda BiscuitO
 S.img -serial stdio -nodefaults -D /var/log/BiscuitOS_qemu.log
 {% endhighlight %}
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000623.png)
+![](/assets/PDB/HK/HK000623.png)
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/HK/HK000622.png)
+![](/assets/PDB/HK/HK000622.png)
 
 当想退出虚拟机的话，使用 Ctrl-C 即可.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------
 
 <span id="D"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000F.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
 
 #### QKOB 项目调试
 
@@ -205,7 +205,7 @@ cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-qemu-kvm-4.0.0/BiscuitOS-
 
 开发者可以在源码中使用 "qemu_log()" 函数将 log 信息输出到 BiscuitOS 的 "/var/log/BiscuitOS_qemu.log" 里，或者可以直接在 QEMU-KVM 源码中直接使用 "printf()" 函数将 log 信息输出到控制台.
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -----------------------------------------------
 
@@ -222,4 +222,4 @@ cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-qemu-kvm-4.0.0/BiscuitOS-
 
 #### 捐赠一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)

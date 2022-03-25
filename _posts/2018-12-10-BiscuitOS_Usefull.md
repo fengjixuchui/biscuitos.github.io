@@ -8,7 +8,7 @@ tags:
   - Tree
 ---
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000P.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
 
 # 目录
 
@@ -17,7 +17,7 @@ tags:
 -------------------------------
 <span id="A"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/IND00000T.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
 ## 优秀网站推荐
 
@@ -52,7 +52,7 @@ tags:
 
 ### <span id="A00">Linux Commit History</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000000.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000000.png)
 
 Linux Commit History 网站用于查找 Linux 源码相关的内核版本、提交者、
 特定功能、以及特定函数 git commit 记录，方便开发者查找 commit。
@@ -63,7 +63,7 @@ Linux Commit History 网站用于查找 Linux 源码相关的内核版本、提�
 
 ### <span id="A01">Linux 新手网站</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000001.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000001.png)
 
 很多开发者都想成为一个名 Linux 内核开发者，但对于很多刚接触 Linux 的开发者
 不知道内核开发者如何入手，Linux hacking start 这个网站就是不错的选择，里面
@@ -75,7 +75,7 @@ Linux Commit History 网站用于查找 Linux 源码相关的内核版本、提�
 
 ### <span id="A02">Linux 专业术语</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000002.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000002.png)
 
 在 Linux 内核开发过程中总会遇到各式各样的专业术语，有时百度上查找也很难找到
 关于专业术语在 Linux 上的解释，该网站用于介绍与 Linux 相关的专业术语。
@@ -86,13 +86,13 @@ Linux Commit History 网站用于查找 Linux 源码相关的内核版本、提�
 
 ### <span id="A03">Linux 内核文档</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000003.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000003.png)
 
 内核开发过程中，文档是必不可少的部分，Linux 官网提供了完整的文档，需要
 的童鞋可以看看这个网站。文档的内容真是齐全，但都是英文文档，推荐童鞋们多
 学学英语，多看文档。
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000004.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000004.png)
 
 > [https://kernelnewbies.org/Documents](https://kernelnewbies.org/Documents)
 
@@ -100,7 +100,7 @@ Linux Commit History 网站用于查找 Linux 源码相关的内核版本、提�
 
 ### <span id="A04">Linux 新手论坛</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000005.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000005.png)
 
 新手论坛适合很多刚接触 Linux 的开发者，里面分类详细，开发者可以在里面找到
 想要的帖子，并参与讨论。
@@ -111,7 +111,7 @@ Linux Commit History 网站用于查找 Linux 源码相关的内核版本、提�
 
 ### <span id="A05">Linux 内核邮件订阅</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000006.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000006.png)
 
 想了解最新的内核动态，订阅内核邮件列表再好不过，开发者可以在这个
 网站上订阅自己喜欢的模块。
@@ -122,7 +122,7 @@ Linux Commit History 网站用于查找 Linux 源码相关的内核版本、提�
 
 ### <span id="A06">Linux 提交第一个内核补丁</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000007.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000007.png)
 
 提交内核补丁是内核进阶的必要环节，开发者可以参考这篇文章进行提交。
 
@@ -132,7 +132,7 @@ Linux Commit History 网站用于查找 Linux 源码相关的内核版本、提�
 
 ### <span id="A07">Old-Linux</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000009.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000009.png)
 
 Linux 0.11 是个较早公布的 linux 版本，代码量超少，但操作系统的五脏俱全，
 是新手研究 Linux 的不二之选。该网站是由赵炯博士创建，包含了基于 linux 0.11，
@@ -146,7 +146,7 @@ linux 0.12 等早期版本开发信息。
 
 ### <span id="A08">Linux 早期版本内核源码</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000008.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000008.png)
 
 Linux 0.11 是个较早公布的 linux 版本，代码量超少，但操作系统的五脏俱全，
 是新手研究 Linux 的不二之选。该网站包含了 linux 早期版本的源码，以及每次
@@ -158,7 +158,7 @@ Linux 0.11 是个较早公布的 linux 版本，代码量超少，但操作系�
 
 ### <span id="A09">Linux IBM 社区论坛</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000010.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000010.png)
 
 高质量的 Linux 技术论坛，IBM 开发者论坛之 Linux。
 
@@ -168,7 +168,7 @@ Linux 0.11 是个较早公布的 linux 版本，代码量超少，但操作系�
 
 ### <span id="A10">Linux 内核源码</span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000012.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000012.png)
 
 Linux 内核源码获取可以通过多个途径，可以从官网、github、FTP 服务器等，
 以下网址皆可获得 Linux 源码：
@@ -183,37 +183,37 @@ Linux 内核源码获取可以通过多个途径，可以从官网、github、FT
 
 ### <span id="A00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000000.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000000.png)
 
 ---------------------------
 
 ### <span id="A00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000000.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000000.png)
 
 ---------------------------
 
 ### <span id="A00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000000.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000000.png)
 
 ---------------------------
 
 ### <span id="A00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000000.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000000.png)
 
 ---------------------------
 
 ### <span id="A00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000000.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000000.png)
 
 ---------------------------
 
 ### <span id="A00"></span>
 
-![](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/boot/WEB000000.png)
+![](/assets/PDB/BiscuitOS/boot/WEB000000.png)
 
 
 
@@ -235,4 +235,4 @@ Linux 内核源码获取可以通过多个途径，可以从官网、github、FT
 
 ## 赞赏一下吧 🙂
 
-![MMU](https://gitee.com/BiscuitOS_team/PictureSet/raw/Gitee/BiscuitOS/kernel/HAB000036.jpg)
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
