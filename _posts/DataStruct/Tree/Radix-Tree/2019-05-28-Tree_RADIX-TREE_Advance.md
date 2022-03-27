@@ -17,7 +17,7 @@ tags:
 
 > - [Radix-Tree 应用场景](#Radix-Tree 应用场景)
 >
->  - [IDR 机制](https://biscuitos.github.io/blog/IDR/)
+>  - [IDR 机制](/blog/IDR/)
 >
 > - [内核中 Radix-Tree 应用分析](#内核中 Radix-Tree 应用分析)
 >
@@ -30,7 +30,7 @@ tags:
 
 ## Radix-Tree 应用场景
 
-> - [IDR 机制](https://biscuitos.github.io/blog/IDR/)
+> - [IDR 机制](/blog/IDR/)
 
 -----------------------------------
 <span id="内核中Radix-Tree 应用分析"></span>
@@ -47,19 +47,19 @@ tags:
 
 > [Data Structure Visualizations](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
 >
-> [Radix Tree](https://biscuitos.github.io/blog/RADIX-TREE/)
+> [Radix Tree](/blog/RADIX-TREE/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

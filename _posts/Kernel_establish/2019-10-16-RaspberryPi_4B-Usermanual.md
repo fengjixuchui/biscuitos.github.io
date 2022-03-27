@@ -44,7 +44,7 @@ tags:
 >
 >   - [驱动安装](#A0214)
 >
->   - [驱动实践](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#RaspberryPi)
+>   - [驱动实践](/blog/BiscuitOS_Catalogue/#RaspberryPi)
 >
 > - [应用程序部署](#F)
 >
@@ -505,7 +505,7 @@ RaspberryPi 4B，如下 log 为 RaspberryPi 上电之后的 log:
 >
 > - [驱动安装](#A0214)
 >
-> - [驱动实践](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#RaspberryPi)
+> - [驱动实践](/blog/BiscuitOS_Catalogue/#RaspberryPi)
 
 ------------------------------------------
 
@@ -673,7 +673,7 @@ BiscuitOS 运行在 RaspberryPi 之后，连接网线或者 wifi 之后，Biscui
 就可以使用网络，此时可以使用 NFS 的方式对驱动进行安装，如果开发者
 还未在 BiscuitOS 搭建 NFS，可以参考下面文章:
 
-> - [BiscuitOS NFS 部署方法](https://biscuitos.github.io/blog/Networking-Usermanual/#A01)
+> - [BiscuitOS NFS 部署方法](/blog/Networking-Usermanual/#A01)
 
 NFS 搭建完毕之后，将 rootfs 中的驱动依赖拷贝到 RaspberryPi 4B 上，
 可以参考下列命令, 主机端使用如下命令:
@@ -755,9 +755,9 @@ BiscuitOS 目前提供了一套完整的应用程序开发系统，开发者可�
 BiscuitOS 提供了多种动态库、静态块、GNU 工具、BiscuitOS 应用程序，
 以及各种开源项目，开发者可以参考下文进行使用:
 
-> - [BiscuitOS 上使用 GNU hello 项目](https://biscuitos.github.io/blog/USER_hello/)
+> - [BiscuitOS 上使用 GNU hello 项目](/blog/USER_hello/)
 >
-> - [BiscuitOS 支持应用列表](https://biscuitos.github.io/blog/APP-Usermanual/)
+> - [BiscuitOS 支持应用列表](/blog/APP-Usermanual/)
 
 ----------------------------------
 
@@ -766,11 +766,11 @@ BiscuitOS 提供了多种动态库、静态块、GNU 工具、BiscuitOS 应用�
 BiscuitOS 也支持游戏，开发者可以参考如下文章，为自己的
 开发之旅带来更多的快乐:
 
-> - [Snake 贪吃蛇](https://biscuitos.github.io/blog/USER_snake/)
+> - [Snake 贪吃蛇](/blog/USER_snake/)
 >
-> - [2048](https://biscuitos.github.io/blog/USER_2048/)
+> - [2048](/blog/USER_2048/)
 >
-> - [tetris 俄罗斯方块](https://biscuitos.github.io/blog/USER_tetris/)
+> - [tetris 俄罗斯方块](/blog/USER_tetris/)
 
 -----------------------------------------------
 
@@ -778,9 +778,9 @@ BiscuitOS 也支持游戏，开发者可以参考如下文章，为自己的
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

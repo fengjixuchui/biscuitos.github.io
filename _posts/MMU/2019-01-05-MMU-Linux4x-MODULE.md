@@ -182,12 +182,12 @@ BiscuitOS 提供了相关的实例代码，开发者可以使用如下命令：
 首先，开发者先准备 BiscuitOS 系统，内核版本 linux 1.0.1.2。开发可以参照文档构
 建 BiscuitOS 调试环境：
 
-[Linux 1.0.1.2 内核构建方法](https://biscuitos.github.io/blog/Linux1.0.1.2_ext2fs_Usermanual/)
+[Linux 1.0.1.2 内核构建方法](/blog/Linux1.0.1.2_ext2fs_Usermanual/)
 
 由于代码需要运行在 IA32 系统上，如果开发者的系统不是 IA32，那么可以按照下面的
 教程搭建一个 IA32 虚拟机：
 
-[Ubuntu IA32 虚拟环境build](https://biscuitos.github.io/blog/Linux1.0.1.2_ext2fs_Usermanual/)
+[Ubuntu IA32 虚拟环境build](/blog/Linux1.0.1.2_ext2fs_Usermanual/)
 
 接着，开发者配置内核，使用如下命令：
 

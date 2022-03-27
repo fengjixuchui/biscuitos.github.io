@@ -116,7 +116,7 @@ int fun()
 BiscuitOS 提供了未初始化全局变量相关的实例代码，开发者可以使用如下命令：
 首先，开发者先准备 BiscuitOS 系统，内核版本 linux 1.0.1.2。开发可以参照文档构建 BiscuitOS 调试环境：
 
-[Linux 1.0.1.2 内核构建方法](https://biscuitos.github.io/blog/Linux1.0.1.2_ext2fs_Usermanual/)
+[Linux 1.0.1.2 内核构建方法](/blog/Linux1.0.1.2_ext2fs_Usermanual/)
 
 接着，开发者配置内核，使用如下命令：
 

@@ -490,7 +490,7 @@ flags 所查找内存区块的标志。
 的内存，最后将符合条件的地址返回。for_each_free_mem_range_reverse() 函数
 源码分析请看:
 
-> - [for_each_free_mem_range_reverse() 源码](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/#源码分析)
+> - [for_each_free_mem_range_reverse() 源码](/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/#源码分析)
 
 -------------------------------------------
 
@@ -545,7 +545,7 @@ flags 所查找内存区块的标志。
 返回这个地址；如果没找到，那么继续遍历可用物理内存区块。最后找到符合要求的
 地址，for_each_free_mem_range() 函数源码分析请看:
 
-> - [for_each_free_mem_range() 源码分析](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/#源码分析)
+> - [for_each_free_mem_range() 源码分析](/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/#源码分析)
 
 ----------------------------------------
 
@@ -553,7 +553,7 @@ flags 所查找内存区块的标志。
 
 memblock_reserve() 函数源码分析请看:
 
-> - [memblock_reserve() 源码](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/#源码分析)
+> - [memblock_reserve() 源码](/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/#源码分析)
 
 ---------------------------------------------
 
@@ -598,7 +598,7 @@ memblock_alloc_base() 函数用于从指定地址之前分配物理内存，所�
 开发环境搭建方法以及重点关注驱动实践一节，请参考下例文章，选择一个 linux 5.x
 版本进行实践，后面内容均基于 linux 5.x 继续讲解，文章链接如下:
 
-> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 -----------------------------------------
 
@@ -760,7 +760,7 @@ Device Driver--->
 
 具体过程请参考：
 
-> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 ----------------------------------
 
@@ -804,7 +804,7 @@ ck_add
 
 驱动编译也请参考下面文章关于驱动编译一节：
 
-> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 ---------------------------------------
 
@@ -812,7 +812,7 @@ ck_add
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
-> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 驱动运行的结果如下:
 
@@ -903,11 +903,11 @@ Region: 0x9ff00000 - 0xa0000000
 
 #### <span id="附录">附录</span>
 
-> [MEMBLOCK 内存分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+> [MEMBLOCK 内存分配器](/blog/MMU-ARM32-MEMBLOCK-index/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Blog](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Blog](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

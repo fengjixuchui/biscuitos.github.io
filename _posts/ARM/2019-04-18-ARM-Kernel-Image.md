@@ -657,13 +657,13 @@ mkimage -A arm -O linux -T kernel -C none -a 60008000 -e 60008000 -n linux-5.0 -
 
 # <span id="附录">附录</span>
 
-> [Linux ARM Debugging](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#ARM%20Boot-Stage1)
+> [Linux ARM Debugging](/blog/BOOTASM-debuggingTools/#ARM%20Boot-Stage1)
 >
-> [Debugging ARM Linux from first code](https://biscuitos.github.io/blog/ARM-BOOT/)
+> [Debugging ARM Linux from first code](/blog/ARM-BOOT/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

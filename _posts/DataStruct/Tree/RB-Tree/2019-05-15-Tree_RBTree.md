@@ -55,9 +55,9 @@ tags:
 >
 >   - [内核中遍历红黑树](#内核中遍历红黑树)
 >
-> - [红黑树在应用程序的部署](https://biscuitos.github.io/blog/Tree_RBTREE_UserArrange/)
+> - [红黑树在应用程序的部署](/blog/Tree_RBTREE_UserArrange/)
 >
-> - [红黑树进阶研究](https://biscuitos.github.io/blog/Tree_RBTREE_Advance/)
+> - [红黑树进阶研究](/blog/Tree_RBTREE_Advance/)
 >
 > - [使用 Data Structure Visualizations 动态分析红黑树](https://www.cs.usfca.edu/~galles/visualization/RedBlack.html)
 >
@@ -116,7 +116,7 @@ tags:
 
 更多 2-3 树与红黑树的关系，请查看文档：
 
-> [2-3 树/2-3-4 树 与红黑树的关系分析](https://biscuitos.github.io/blog/Tree_2-3-tree)
+> [2-3 树/2-3-4 树 与红黑树的关系分析](/blog/Tree_2-3-tree)
 
 ------------------------------------------------------
 
@@ -397,19 +397,19 @@ Device Driver--->
 
 具体过程请参考：
 
-> [Linux 5.0 开发环境搭建 -- 驱动配置](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E9%85%8D%E7%BD%AE)
+> [Linux 5.0 开发环境搭建 -- 驱动配置](/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E9%85%8D%E7%BD%AE)
 
 #### <span id="AA驱动编译">驱动编译</span>
 
 驱动编译也请参考下面文章关于驱动编译一节：
 
-> [Linux 5.0 开发环境搭建 -- 驱动编译](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E7%BC%96%E8%AF%91%E9%A9%B1%E5%8A%A8)
+> [Linux 5.0 开发环境搭建 -- 驱动编译](/blog/Linux-5.0-arm32-Usermanual/#%E7%BC%96%E8%AF%91%E9%A9%B1%E5%8A%A8)
 
 #### <span id="AA驱动运行">驱动运行</span>
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
-> [Linux 5.0 开发环境搭建 -- 驱动运行](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E8%BF%90%E8%A1%8C)
+> [Linux 5.0 开发环境搭建 -- 驱动运行](/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E8%BF%90%E8%A1%8C)
 
 启动内核，并打印如下信息：
 
@@ -659,7 +659,7 @@ Iterate over by postorder.
 
 ![DTS](/assets/PDB/BiscuitOS/boot/BOOT000076.png)
 
-> [红黑树左旋实践](https://biscuitos.github.io/blog/Tree_RBTree_LeftRotate/)
+> [红黑树左旋实践](/blog/Tree_RBTree_LeftRotate/)
 
 ------------------------------------
 
@@ -678,7 +678,7 @@ Iterate over by postorder.
 
 ![DTS](/assets/PDB/BiscuitOS/boot/BOOT000078.png)
 
-> [红黑树右旋实践](https://biscuitos.github.io/blog/Tree_RBTree_RightRotate/)
+> [红黑树右旋实践](/blog/Tree_RBTree_RightRotate/)
 
 ------------------------------------
 
@@ -715,9 +715,9 @@ Iterate over by postorder.
 
 更多颜色翻转实践请看：
 
-> [父节点是祖父的右孩子，引起颜色翻转](https://biscuitos.github.io/blog/Tree_RBTree_Insert_ColorFlips_right/)
+> [父节点是祖父的右孩子，引起颜色翻转](/blog/Tree_RBTree_Insert_ColorFlips_right/)
 >
-> [父节点是祖父的左孩子，引起颜色翻转](https://biscuitos.github.io/blog/Tree_RBTree_Insert_ColorFlips_left/)
+> [父节点是祖父的左孩子，引起颜色翻转](/blog/Tree_RBTree_Insert_ColorFlips_left/)
 
 ------------------------------------
 
@@ -763,7 +763,7 @@ Iterate over by postorder.
 
 当红黑树中没有任何节点的时候，插入的节点作为 root 节点。详细插入实践原理请看如下文章
 
-> [红黑树插入操作之：插入根节点](https://biscuitos.github.io/blog/Tree_RBTree_InsertRoot/)
+> [红黑树插入操作之：插入根节点](/blog/Tree_RBTree_InsertRoot/)
 
 --------------------------------
 
@@ -772,7 +772,7 @@ Iterate over by postorder.
 当红黑树中只有根节点，此时根节点称为黑根节点，此时向黑根节点中添加一个红节点 (注意！新
 插入到节点都是红节点)，详细插入实践原理请看如下文章：
 
-> [红黑树插入操作之：插入一个红节点到黑根节点](https://biscuitos.github.io/blog/Tree_RBTree_InsertRoot_RED/)
+> [红黑树插入操作之：插入一个红节点到黑根节点](/blog/Tree_RBTree_InsertRoot_RED/)
 
 --------------------------------
 
@@ -782,12 +782,12 @@ Iterate over by postorder.
 需要进行红黑树的右旋转，以此达到红黑树的平衡 (注意！新插入到节点都是红节点)。此时也会引起
 右旋，详细插入实践原理请看如下文章：
 
-> [父节点是祖父的左孩子，引起的右旋转](https://biscuitos.github.io/blog/Tree_RBTree_Insert_RightRotate/)
+> [父节点是祖父的左孩子，引起的右旋转](/blog/Tree_RBTree_Insert_RightRotate/)
 
 当插入节点的父节点是祖父的右孩子，当添加一个红孩子作为父节点的左孩子，可能引起红黑树部分向左偏移，
 这时需要进行红黑树的右旋转，以此达到红黑树的平衡，详细插入实践原理请看如下文章：
 
-> [父节点是祖父的右孩子，引起的右旋转](https://biscuitos.github.io/blog/Tree_RBTree_Insert_RightRotate/)
+> [父节点是祖父的右孩子，引起的右旋转](/blog/Tree_RBTree_Insert_RightRotate/)
 
 --------------------------------
 
@@ -797,12 +797,12 @@ Iterate over by postorder.
 需要进行红黑树的左旋转，以此达到红黑树的平衡 (注意！新插入到节点都是红节点)。此时也会引起
 左旋，详细插入实践原理请看如下文章：
 
-> [父节点是祖父的右孩子，引起的左旋转](https://biscuitos.github.io/blog/Tree_RBTree_Insert_LeftRotate_right/)
+> [父节点是祖父的右孩子，引起的左旋转](/blog/Tree_RBTree_Insert_LeftRotate_right/)
 
 当插入节点的父节点是祖父的左孩子，当添加一个红孩子作为父节点的右孩子，可能引起红黑树部分向右偏移，
 这时需要进行红黑树的左旋转，以此达到红黑树的平衡，详细插入实践原理请看如下文章：
 
-> [父节点是祖父的左孩子，引起的左旋转](https://biscuitos.github.io/blog/Tree_RBTree_Insert_LeftRotate_left/)
+> [父节点是祖父的左孩子，引起的左旋转](/blog/Tree_RBTree_Insert_LeftRotate_left/)
 
 ##### <span id="插入一个红节点引起红黑树节点颜色翻转">插入一个红节点引起红黑树节点颜色翻转</span>
 
@@ -810,12 +810,12 @@ Iterate over by postorder.
 需要进行红黑树节点颜色翻转，以此达到红黑树的平衡 (注意！新插入到节点都是红节点)。此时也会引起
 颜色翻转，详细插入实践原理请看如下文章：
 
-> [父节点是祖父的右孩子，引起颜色翻转](https://biscuitos.github.io/blog/Tree_RBTree_Insert_ColorFlips_right/)
+> [父节点是祖父的右孩子，引起颜色翻转](/blog/Tree_RBTree_Insert_ColorFlips_right/)
 
 当插入节点的父节点是祖父的左孩子，当添加一个红孩子作为父节点的左孩子，其叔叔是红节点，这是需要进行
 颜色翻转才能再次达到红黑树平衡，详细插入实践原理请看如下文章：
 
-> [父节点是祖父的左孩子，引起颜色翻转](https://biscuitos.github.io/blog/Tree_RBTree_Insert_ColorFlips_left/)
+> [父节点是祖父的左孩子，引起颜色翻转](/blog/Tree_RBTree_Insert_ColorFlips_left/)
 
 --------------------------------------
 <span id="AAPI"></span>
@@ -845,9 +845,9 @@ Linux 使用 struct rb_root 结构定义了一棵红黑树的根节点，开发�
 一个 struct rb_root 结构就可以建立一棵红黑树。内核还提供了一些接口用于
 初始化红黑树，已经和红黑树相关的操作，如下：
 
-> [RB_ROOT: 初始化一棵红黑树](https://biscuitos.github.io/blog/Tree_RBTREE_RB_ROOT/)
+> [RB_ROOT: 初始化一棵红黑树](/blog/Tree_RBTREE_RB_ROOT/)
 >
-> [RB_EMPTY_ROOT: 判断红黑树是否为空](https://biscuitos.github.io/blog/Tree_RBTREE_RB_EMPTY_ROOT/)
+> [RB_EMPTY_ROOT: 判断红黑树是否为空](/blog/Tree_RBTREE_RB_EMPTY_ROOT/)
 
 -------------------------------------
 
@@ -901,7 +901,7 @@ static int rbtree_insert(struct rb_root *root, struct node *node)
 但红黑树未平衡，所以接着调用内核提供的接口函数实现红黑树节点的最终插入操作，
 具体接口如下：
 
-> [rb_insert_color: 将红黑树节点插入到红黑树，并使红黑树平衡](https://biscuitos.github.io/blog/Tree_RBTREE_rb_insert_color/)
+> [rb_insert_color: 将红黑树节点插入到红黑树，并使红黑树平衡](/blog/Tree_RBTREE_rb_insert_color/)
 
 -------------------------------------
 
@@ -912,7 +912,7 @@ Linux 使用 struct rb_node 结构定义了一棵红黑树的根节点，并且 
 结构一般内嵌在更大的数据结构之中。相比插入操作，内核提供了删除操作可以
 简单的删除特定的红黑树节点，并使红黑树再次平衡，如下：
 
-> [rb_erase: 将红黑树节点从红黑树中删除，并使红黑树平衡](https://biscuitos.github.io/blog/Tree_RBTREE_rb_erase/)
+> [rb_erase: 将红黑树节点从红黑树中删除，并使红黑树平衡](/blog/Tree_RBTREE_rb_erase/)
 
 -------------------------------------
 
@@ -924,17 +924,17 @@ Linux 使用 struct rb_node 结构定义了一棵红黑树的根节点，并且 
 简单的修改特定的红黑树节点，但不能确保红黑树再次平衡。内核还提供了修改红黑树
 节点的内容，如下：
 
-> - [rb_replace_node: 替换红黑树中指定的节点](https://biscuitos.github.io/blog/Tree_RBTREE_rb_replace_node/)
+> - [rb_replace_node: 替换红黑树中指定的节点](/blog/Tree_RBTREE_rb_replace_node/)
 >
-> - [\_\_rb_chnage_child: 修改红黑树节点的孩子](https://biscuitos.github.io/blog/Tree_RBTREE___rb_change_child/)
+> - [\_\_rb_chnage_child: 修改红黑树节点的孩子](/blog/Tree_RBTREE___rb_change_child/)
 >
-> - [RB_CLEAR_NODE: 将节点从红黑树中移除](https://biscuitos.github.io/blog/Tree_RBTREE_RB_CLEAR_NODE/)
+> - [RB_CLEAR_NODE: 将节点从红黑树中移除](/blog/Tree_RBTREE_RB_CLEAR_NODE/)
 >
-> - [rb_link_node: 初始化一个红黑树节点](https://biscuitos.github.io/blog/Tree_RBTREE_rb_link_node/)
+> - [rb_link_node: 初始化一个红黑树节点](/blog/Tree_RBTREE_rb_link_node/)
 >
-> - [rb_set_parent: 修改红黑树节点的父节点](https://biscuitos.github.io/blog/Tree_RBTREE_rb_set_parent/)
+> - [rb_set_parent: 修改红黑树节点的父节点](/blog/Tree_RBTREE_rb_set_parent/)
 >
-> - [rb_set_parent_color: 修改红黑树节点的颜色和父节点](https://biscuitos.github.io/blog/Tree_RBTREE_rb_set_parent_color/)
+> - [rb_set_parent_color: 修改红黑树节点的颜色和父节点](/blog/Tree_RBTREE_rb_set_parent_color/)
 
 -------------------------------------
 
@@ -979,11 +979,11 @@ Linux 内核提供了一套完整的红黑树结构，便于开发者在自己�
 Linux 也提供了多个用于遍历红黑树的函数。根据红黑树的遍历可以知道有：
 前序、中序、后序、以及层序遍历的方法，具体如下：
 
-> [中序遍历红黑树](https://biscuitos.github.io/blog/Tree_RBTREE_rb_next/)
+> [中序遍历红黑树](/blog/Tree_RBTREE_rb_next/)
 >
-> [与中序颠倒的方式遍历红黑树](https://biscuitos.github.io/blog/Tree_RBTREE_rb_prev/)
+> [与中序颠倒的方式遍历红黑树](/blog/Tree_RBTREE_rb_prev/)
 >
-> [后序遍历红黑树](https://biscuitos.github.io/blog/Tree_RBTREE_RB_EMPTY_ROOT/)
+> [后序遍历红黑树](/blog/Tree_RBTREE_RB_EMPTY_ROOT/)
 
 -----------------------------------
 <span id="LIST"></span>
@@ -992,59 +992,59 @@ Linux 也提供了多个用于遍历红黑树的函数。根据红黑树的遍�
 
 ## 红黑树内核接口函数列表
 
-> - [\_\_rb_change_child](https://biscuitos.github.io/blog/Tree_RBTREE___rb_change_child)
+> - [\_\_rb_change_child](/blog/Tree_RBTREE___rb_change_child)
 >
-> - [RB_CLEAR_NODE](https://biscuitos.github.io/blog/Tree_RBTREE_RB_CLEAR_NODE)
+> - [RB_CLEAR_NODE](/blog/Tree_RBTREE_RB_CLEAR_NODE)
 >
-> - [\_\_rb_color](https://biscuitos.github.io/blog/Tree_RBTREE___rb_color)
+> - [\_\_rb_color](/blog/Tree_RBTREE___rb_color)
 >
-> - [rb_color](https://biscuitos.github.io/blog/Tree_RBTREE_rb_color)
+> - [rb_color](/blog/Tree_RBTREE_rb_color)
 >
-> - [RB_EMPTY_NODE](https://biscuitos.github.io/blog/Tree_RBTREE_RB_EMPTY_NODE)
+> - [RB_EMPTY_NODE](/blog/Tree_RBTREE_RB_EMPTY_NODE)
 >
-> - [RB_EMPTY_ROOT](https://biscuitos.github.io/blog/Tree_RBTREE_RB_EMPTY_ROOT)
+> - [RB_EMPTY_ROOT](/blog/Tree_RBTREE_RB_EMPTY_ROOT)
 >
-> - [rb_entry](https://biscuitos.github.io/blog/Tree_RBTREE_rb_entry)
+> - [rb_entry](/blog/Tree_RBTREE_rb_entry)
 >
-> - [rb_entry_safe](https://biscuitos.github.io/blog/Tree_RBTREE_rb_entry_safe)
+> - [rb_entry_safe](/blog/Tree_RBTREE_rb_entry_safe)
 >
-> - [rb_erase](https://biscuitos.github.io/blog/Tree_RBTREE_rb_erase)
+> - [rb_erase](/blog/Tree_RBTREE_rb_erase)
 >
-> - [rb_first](https://biscuitos.github.io/blog/Tree_RBTREE_rb_first)
+> - [rb_first](/blog/Tree_RBTREE_rb_first)
 >
-> - [rb_first_postorder](https://biscuitos.github.io/blog/Tree_RBTREE_rb_first_postorder)
+> - [rb_first_postorder](/blog/Tree_RBTREE_rb_first_postorder)
 >
-> - [rb_insert_color](https://biscuitos.github.io/blog/Tree_RBTREE_rb_insert_color)
+> - [rb_insert_color](/blog/Tree_RBTREE_rb_insert_color)
 >
-> - [\_\_rb_is_black](https://biscuitos.github.io/blog/Tree_RBTREE___rb_is_black)
+> - [\_\_rb_is_black](/blog/Tree_RBTREE___rb_is_black)
 >
-> - [rb_is_black](https://biscuitos.github.io/blog/Tree_RBTREE_rb_is_black)
+> - [rb_is_black](/blog/Tree_RBTREE_rb_is_black)
 >
-> - [\_\_rb_is_red](https://biscuitos.github.io/blog/Tree_RBTREE___rb_is_red)
+> - [\_\_rb_is_red](/blog/Tree_RBTREE___rb_is_red)
 >
-> - [rb_is_red](https://biscuitos.github.io/blog/Tree_RBTREE_rb_is_red)
+> - [rb_is_red](/blog/Tree_RBTREE_rb_is_red)
 >
-> - [rb_last](https://biscuitos.github.io/blog/Tree_RBTREE_rb_last)
+> - [rb_last](/blog/Tree_RBTREE_rb_last)
 >
-> - [rb_link_node](https://biscuitos.github.io/blog/Tree_RBTREE_rb_link_node)
+> - [rb_link_node](/blog/Tree_RBTREE_rb_link_node)
 >
-> - [rb_next](https://biscuitos.github.io/blog/Tree_RBTREE_rb_next)
+> - [rb_next](/blog/Tree_RBTREE_rb_next)
 >
-> - [rb_next_postorder](https://biscuitos.github.io/blog/Tree_RBTREE_rb_next_postorder)
+> - [rb_next_postorder](/blog/Tree_RBTREE_rb_next_postorder)
 >
-> - [rb_parent](https://biscuitos.github.io/blog/Tree_RBTREE_rb_parent)
+> - [rb_parent](/blog/Tree_RBTREE_rb_parent)
 >
-> - [rb_prev](https://biscuitos.github.io/blog/Tree_RBTREE_rb_prev)
+> - [rb_prev](/blog/Tree_RBTREE_rb_prev)
 >
-> - [rb_replace_node](https://biscuitos.github.io/blog/Tree_RBTREE_rb_replace_node)
+> - [rb_replace_node](/blog/Tree_RBTREE_rb_replace_node)
 >
-> - [RB_ROOT](https://biscuitos.github.io/blog/Tree_RBTREE_RB_ROOT)
+> - [RB_ROOT](/blog/Tree_RBTREE_RB_ROOT)
 >
-> - [rb_set_parent](https://biscuitos.github.io/blog/Tree_RBTREE_rb_set_parent)
+> - [rb_set_parent](/blog/Tree_RBTREE_rb_set_parent)
 >
-> - [rb_set_parent_color](https://biscuitos.github.io/blog/Tree_RBTREE_rb_set_parent_color)
+> - [rb_set_parent_color](/blog/Tree_RBTREE_rb_set_parent_color)
 >
-> - [rbtree_postorder_for_each_entry_safe](https://biscuitos.github.io/blog/Tree_RBTREE_rbtree_postorder_for_each_entry_safe)
+> - [rbtree_postorder_for_each_entry_safe](/blog/Tree_RBTREE_rbtree_postorder_for_each_entry_safe)
 
 -------------------------------------
 
@@ -1056,15 +1056,15 @@ Linux 也提供了多个用于遍历红黑树的函数。根据红黑树的遍�
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 >
 > [从2-3树理解红黑树](https://www.jianshu.com/p/08024d26c152)
 >

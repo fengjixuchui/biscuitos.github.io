@@ -95,19 +95,19 @@ SYSCALL_DEFINE3(hello_BiscuitOS,
 功能。从上述也看到不论是整形指针，还是数据结构指针都需要指针方式传递。
 对于系统调用传递多个整形参数的方法，开发者可以参考如下文档:
 
-> - [添加零个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_ZERO/)
+> - [添加零个参数的系统调用](/blog/SYSCALL_PARAMENTER_ZERO/)
 >
-> - [添加一个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_ONE/)
+> - [添加一个参数的系统调用](/blog/SYSCALL_PARAMENTER_ONE/)
 >
-> - [添加两个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_TWO/)
+> - [添加两个参数的系统调用](/blog/SYSCALL_PARAMENTER_TWO/)
 >
-> - [添加三个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_THREE/)
+> - [添加三个参数的系统调用](/blog/SYSCALL_PARAMENTER_THREE/)
 >
-> - [添加四个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_FOUR/)
+> - [添加四个参数的系统调用](/blog/SYSCALL_PARAMENTER_FOUR/)
 >
-> - [添加五个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_FIVE/)
+> - [添加五个参数的系统调用](/blog/SYSCALL_PARAMENTER_FIVE/)
 >
-> - [添加六个参数的系统调用](https://biscuitos.github.io/blog/SYSCALL_PARAMENTER_SIX/)
+> - [添加六个参数的系统调用](/blog/SYSCALL_PARAMENTER_SIX/)
 
 对于系统调用的返回值，内核会返回一个整形值，至于整形值的含义，开发者
 可以根据需求进行返回.
@@ -121,23 +121,23 @@ SYSCALL_DEFINE3(hello_BiscuitOS,
 BiscuitOS 目前支持 6 大平台进行实践，本文以 ARM32 为例子进行讲解，如果
 开发者需要在其他平台实践，可以参考下面文档进行实践:
 
-> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+> - [ARM32 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM/)
 >
-> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+> - [ARM64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM64/)
 >
-> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+> - [i386 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_I386/)
 >
-> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+> - [X86_64 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_X86_64/)
 >
-> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+> - [RISCV32 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV32/)
 >
-> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+> - [RISCV64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV64/)
 
 本实践基于 ARM32 架构，因此在实践之前需要准备一个 ARM32 架构的运行
 平台，开发者可以在 BiscuitOS 进行实践，如果还没有搭建 BiscuitOS
 ARM32 实践环境的开发者，可以参考如下文档进行搭建:
 
-> - [BiscuitOS 上搭建 ARM32 实践环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS 上搭建 ARM32 实践环境](/blog/Linux-5.0-arm32-Usermanual/)
 
 开发环境搭建完毕之后，可以继续下面的内容，如果开发者不想采用
 BiscuitOS 提供的开发环境，可以继续参考下面的内容在开发者使用
@@ -371,7 +371,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

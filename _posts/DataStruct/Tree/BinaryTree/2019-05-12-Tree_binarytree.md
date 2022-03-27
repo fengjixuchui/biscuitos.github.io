@@ -37,15 +37,15 @@ tags:
 >
 > - [二叉树的分类](#二叉树的分类)
 >
->   - [完美二叉树: Perfect Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_PerfectBinaryTree/)
+>   - [完美二叉树: Perfect Binary Tree](/blog/Tree_binarytree_PerfectBinaryTree/)
 >
->   - [完全二叉树: Complete Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_CompleteBinaryTree/)
+>   - [完全二叉树: Complete Binary Tree](/blog/Tree_binarytree_CompleteBinaryTree/)
 >
->   - [完满二叉树: Full Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_FullBinaryTree/)
+>   - [完满二叉树: Full Binary Tree](/blog/Tree_binarytree_FullBinaryTree/)
 >
->   - [二叉查找树: Binary Search Tree](https://biscuitos.github.io/blog/Tree_binarytree_Binary_Search_Tree/)
+>   - [二叉查找树: Binary Search Tree](/blog/Tree_binarytree_Binary_Search_Tree/)
 >
->   - [AVL 平衡二叉查找树](https://biscuitos.github.io/blog/Tree_binarytree_AVLTree/)
+>   - [AVL 平衡二叉查找树](/blog/Tree_binarytree_AVLTree/)
 >
 > - [附录](#附录)
 
@@ -480,9 +480,9 @@ struct binary_node {
 先序，层序，后序的介绍，可以使用其中一种规则去创建二叉树。(注意！中序是不能创建一棵
 唯一的二叉树)。
 
-> - [先序创建二叉树](https://biscuitos.github.io/blog/Tree_binarytree_PreCreate/#%E5%AE%9E%E8%B7%B5%E6%BA%90%E7%A0%81)
+> - [先序创建二叉树](/blog/Tree_binarytree_PreCreate/#%E5%AE%9E%E8%B7%B5%E6%BA%90%E7%A0%81)
 >
-> - [后序创建二叉树](https://biscuitos.github.io/blog/Tree_binarytree_PostCreate/)
+> - [后序创建二叉树](/blog/Tree_binarytree_PostCreate/)
 >
 > - [层序创建二叉树](#层序创建二叉树)
 
@@ -493,11 +493,11 @@ struct binary_node {
 二叉树的遍历方式有很多种，包括先序遍历二叉树，中序遍历二叉树，后序遍历二叉树，以及
 层序遍历二叉树。
 
-> - [先序遍历二叉树](https://biscuitos.github.io/blog/Tree_binarytree_PreIterateOver/)
+> - [先序遍历二叉树](/blog/Tree_binarytree_PreIterateOver/)
 >
-> - [中序遍历二叉树](https://biscuitos.github.io/blog/Tree_binarytree_MiddIterateOver/)
+> - [中序遍历二叉树](/blog/Tree_binarytree_MiddIterateOver/)
 >
-> - [后序遍历二叉树](https://biscuitos.github.io/blog/Tree_binarytree_PostIterateOver/)
+> - [后序遍历二叉树](/blog/Tree_binarytree_PostIterateOver/)
 >
 > - [层序遍历二叉树](#二叉树遍历)
 
@@ -509,7 +509,7 @@ struct binary_node {
 遍历二叉树的方法，该方法先遍历孩子，然后才遍历当前节点。后序遍历满足这个要求，因此
 这里使用后序遍历的逻辑去删除所有节点。
 
-> - [后序删除二叉树](https://biscuitos.github.io/blog/Tree_binarytree_PostDelete/)
+> - [后序删除二叉树](/blog/Tree_binarytree_PostDelete/)
 
 -----------------------------------
 
@@ -518,7 +518,7 @@ struct binary_node {
 二叉树中没有孩子的结点 (也就是度为 0 的结点) 称为叶子 (Leaf) 或终端结点。因此只要遍历
 二叉树的所有的节点，只要节点的度为 0，那么这个节点就是叶子。
 
-> - [统计二叉树的叶子数](https://biscuitos.github.io/blog/Tree_binarytree_Leafcount/)
+> - [统计二叉树的叶子数](/blog/Tree_binarytree_Leafcount/)
 
 -----------------------------------
 # <span id="二叉树的分类"></span>
@@ -529,15 +529,15 @@ struct binary_node {
 
 二叉树是节点度不大于 2 的树，根据不同的属性，将二叉树分作不同的类别
 
-> - [完美二叉树: Perfect Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_PerfectBinaryTree/)
+> - [完美二叉树: Perfect Binary Tree](/blog/Tree_binarytree_PerfectBinaryTree/)
 >
-> - [完全二叉树: Complete Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_CompleteBinaryTree/)
+> - [完全二叉树: Complete Binary Tree](/blog/Tree_binarytree_CompleteBinaryTree/)
 >
-> - [完满二叉树: Full Binary Tree](https://biscuitos.github.io/blog/Tree_binarytree_FullBinaryTree/)
+> - [完满二叉树: Full Binary Tree](/blog/Tree_binarytree_FullBinaryTree/)
 >
-> - [二叉查找树: Binary Search Tree](https://biscuitos.github.io/blog/Tree_binarytree_Binary_Search_Tree/)
+> - [二叉查找树: Binary Search Tree](/blog/Tree_binarytree_Binary_Search_Tree/)
 >
-> - [AVL 平衡二叉查找树](https://biscuitos.github.io/blog/Tree_binarytree_AVLTree/)
+> - [AVL 平衡二叉查找树](/blog/Tree_binarytree_AVLTree/)
 
 -----------------------------------------------
 
@@ -545,15 +545,15 @@ struct binary_node {
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

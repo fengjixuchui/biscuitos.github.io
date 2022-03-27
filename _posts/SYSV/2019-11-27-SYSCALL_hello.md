@@ -106,7 +106,7 @@ Linux 5.x arm 内核已经采用比较便捷的方式添加系统调用，
 如果开发者还没有 linux 5.x arm 内核开发环境，请看考
 下面文档:
 
-> - [Linux 5.x arm 内核开发环境部署](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [Linux 5.x arm 内核开发环境部署](/blog/Kernel_Build/#Linux_5X)
 
 准备好开发环境之后，在 linux 内核源码中修改文件 
 "arch/arm/tools/syscall.tbl" 的底部添加如下内容:
@@ -166,7 +166,7 @@ Linux 5.x arm 内核已经采用比较便捷的方式添加系统调用，
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

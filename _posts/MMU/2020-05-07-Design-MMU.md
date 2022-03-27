@@ -351,7 +351,7 @@ BiscuitOS Design MMU Project 项目基于模块实现。寄主机器是运行
 本实践是基于 BiscuitOS Linux 5.0 ARM32 环境进行搭建，因此开发者首先
 准备实践环境，请查看如下文档进行搭建:
 
-> - [BiscuitOS Linux 5.0 ARM32 环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS Linux 5.0 ARM32 环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 --------------------------------------------
 
@@ -1519,7 +1519,7 @@ KMAP 内存分配器。
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

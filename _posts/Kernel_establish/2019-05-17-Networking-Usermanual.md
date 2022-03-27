@@ -38,7 +38,7 @@ telnet, nfs 文件系统等。开发者可以参考如下步骤在 BiscuitOS 使
 
 如果还没有安装 BiscuitOS，请参照如下教程进行安装：
 
-> [基于 Linux 5.0 搭建 BiscuitOS 发行版](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> [基于 Linux 5.0 搭建 BiscuitOS 发行版](/blog/Linux-5.0-arm32-Usermanual/)
 
 如果已经安装 BiscuitOS 项目，请到源码目录下执行如下命令，获得最新源码：
 
@@ -250,15 +250,15 @@ BiscuitOS 端 NFS:
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

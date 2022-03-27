@@ -85,11 +85,11 @@ node_maxindex() 函数获得当前节点对应的最大索引值，并存储在 
 最大的索引偏移；如果此时 radix-tree 是空树，那么将 maxindex 设置为 0，并返回 0，
 告诉当前内部节点的 shift 值。
 
-> [radix_tree_is_internal_node](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_is_internal_node/)
+> [radix_tree_is_internal_node](/blog/RADIX-TREE_radix_tree_is_internal_node/)
 >
-> [entry_to_node](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#entry_to_node)
+> [entry_to_node](/blog/RADIX-TREE_SourceAPI/#entry_to_node)
 >
-> [node_maxindex](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#node_maxindex)
+> [node_maxindex](/blog/RADIX-TREE_SourceAPI/#node_maxindex)
 
 --------------------------------------------------
 
@@ -132,7 +132,7 @@ static inline unsigned long node_maxindex(const struct radix_tree_node *node)
 
 node_maxindex() 函数用于获得当前节点支持的最大索引值。
 
-> - [shift_maxindex](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#shift_maxindex)
+> - [shift_maxindex](/blog/RADIX-TREE_SourceAPI/#shift_maxindex)
 
 --------------------------------------------------
 
@@ -523,19 +523,19 @@ out:
 
 循环完毕之后，将 maxshift + RADIX_TREE_MAP_SHIFT 的值返回。
 
-> - [shift_maxindex](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#shift_maxindex)
+> - [shift_maxindex](/blog/RADIX-TREE_SourceAPI/#shift_maxindex)
 >
-> - [is_idr](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#is_idr)
+> - [is_idr](/blog/RADIX-TREE_SourceAPI/#is_idr)
 >
-> - [root_tag_get](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#root_tag_get)
+> - [root_tag_get](/blog/RADIX-TREE_SourceAPI/#root_tag_get)
 >
-> - [all_tag_set](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#all_tag_set)
+> - [all_tag_set](/blog/RADIX-TREE_SourceAPI/#all_tag_set)
 >
-> - [root_tag_set](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#root_tag_set)
+> - [root_tag_set](/blog/RADIX-TREE_SourceAPI/#root_tag_set)
 >
-> - [radix_tree_is_internal_node](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_is_internal_node/)
+> - [radix_tree_is_internal_node](/blog/RADIX-TREE_radix_tree_is_internal_node/)
 >
-> - [radix_tree_exceptional_entry](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_exceptional_entry/)
+> - [radix_tree_exceptional_entry](/blog/RADIX-TREE_radix_tree_exceptional_entry/)
 
 --------------------------------------------------
 
@@ -669,17 +669,17 @@ return 0;
 
 最后将找到的最后的节点和 slot 存储到 nodep 和 slotp 里面。然后返回。
 
-> - [radix_tree_load_root](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_load_root)
+> - [radix_tree_load_root](/blog/RADIX-TREE_SourceAPI/#radix_tree_load_root)
 >
-> - [radix_tree_node_alloc](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_node_alloc)
+> - [radix_tree_node_alloc](/blog/RADIX-TREE_SourceAPI/#radix_tree_node_alloc)
 >
-> - [radix_tree_extend](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_extend)
+> - [radix_tree_extend](/blog/RADIX-TREE_SourceAPI/#radix_tree_extend)
 >
-> - [radix_tree_is_internal_node](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_is_internal_node/)
+> - [radix_tree_is_internal_node](/blog/RADIX-TREE_radix_tree_is_internal_node/)
 >
-> - [entry_to_node](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#entry_to_node)
+> - [entry_to_node](/blog/RADIX-TREE_SourceAPI/#entry_to_node)
 >
-> - [radix_tree_descend](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_descend)
+> - [radix_tree_descend](/blog/RADIX-TREE_SourceAPI/#radix_tree_descend)
 
 --------------------------------------------------
 
@@ -709,7 +709,7 @@ item 为新添加的节点。函数首先判断 slot 是否存在，如果不存
 是不是一个 exceptional 节点，如果是则同样增加父节点 node 的 exceptional 引用计数。
 最后返回 1.
 
-> - [radix_tree_exceptional_entry](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_exceptional_entry/)
+> - [radix_tree_exceptional_entry](/blog/RADIX-TREE_radix_tree_exceptional_entry/)
 
 --------------------------------------------------
 
@@ -782,7 +782,7 @@ radix_tree_node_free(struct radix_tree_node *node)
 radix_tree_node_free() 函数用于释放一个 radix-tree node. 函数调用 call_rcu()
 函数，最终调用到 radix_tree_node_rcu_free() 函数进行释放。
 
-> - [radix_tree_node_rcu_free](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_node_rcu_free)
+> - [radix_tree_node_rcu_free](/blog/RADIX-TREE_SourceAPI/#radix_tree_node_rcu_free)
 
 --------------------------------------------------
 
@@ -879,11 +879,11 @@ RADIX_TREE_RETRY， 此时如果 update_node 参数存在，那么就调用 upda
 radix_tree_node_free() 函数释放掉当前的节点。自此，以此 shrink 操作就完成，树的
 高度变小。
 
-> - [radix_tree_is_internal_node](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_is_internal_node/)
+> - [radix_tree_is_internal_node](/blog/RADIX-TREE_radix_tree_is_internal_node/)
 >
-> - [radix_tree_node_free](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_node_free)
+> - [radix_tree_node_free](/blog/RADIX-TREE_SourceAPI/#radix_tree_node_free)
 >
-> - [entry_to_node](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#entry_to_node)
+> - [entry_to_node](/blog/RADIX-TREE_SourceAPI/#entry_to_node)
 
 --------------------------------------------------
 
@@ -947,11 +947,11 @@ return deleted;
 父节点的引用计数减一。最后调用 radix_tree_node_free() 释放了节点。最后返回 deleted
 的值。
 
-> - [radix_tree_shrink](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_shrink)
+> - [radix_tree_shrink](/blog/RADIX-TREE_SourceAPI/#radix_tree_shrink)
 >
-> - [is_idr](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#is_idr)
+> - [is_idr](/blog/RADIX-TREE_SourceAPI/#is_idr)
 >
-> - [radix_tree_node_free](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_node_free)
+> - [radix_tree_node_free](/blog/RADIX-TREE_SourceAPI/#radix_tree_node_free)
 
 --------------------------------------------------
 
@@ -984,11 +984,11 @@ tag 域；如果是 IDR，那么调用 node_tag_set() 函数，清除 node 的 t
 调用 replace_slot() 函数将指向 node 的 slot 的值替换成 NULL。最后如果调用
 delete_node() 函数从 radix tree 内删除 node 节点。
 
-> - [radix_tree_exceptional_entry](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_exceptional_entry/)
+> - [radix_tree_exceptional_entry](/blog/RADIX-TREE_radix_tree_exceptional_entry/)
 >
-> - [replace_slot](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#replace_slot)
+> - [replace_slot](/blog/RADIX-TREE_SourceAPI/#replace_slot)
 >
-> - [delete_node](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#delete_node)
+> - [delete_node](/blog/RADIX-TREE_SourceAPI/#delete_node)
 
 --------------------------------------------------
 
@@ -1137,7 +1137,7 @@ radix_tree_iter_replace() 函数用于替换指定 slot 的值；
 指向需要替换的 slot；参数 item 指向需要替换的内容；参数 update_node 指向
 需要更新的函数。函数直接调用 __radix_tree_replace() 进行调换。
 
-> - [\_\_radix_tree_replace](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#__radix_tree_replace)
+> - [\_\_radix_tree_replace](/blog/RADIX-TREE_SourceAPI/#__radix_tree_replace)
 
 --------------------------------------------------
 
@@ -1189,9 +1189,9 @@ radix_tree_iter_find() 用于查找可以插入 slot 的父节点。参数 root 
 调用 radix_tree_iter_init() 函数初始化 iter 结构，然后调用
 radix_tree_next_chunk() 函数获得下一个 chunk 的节点，也就是可用 slot 的父节点。
 
-> - [radix_tree_iter_init](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_iter_init/)
+> - [radix_tree_iter_init](/blog/RADIX-TREE_radix_tree_iter_init/)
 >
-> - [radix_tree_next_chunk](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_next_chunk/)
+> - [radix_tree_next_chunk](/blog/RADIX-TREE_radix_tree_next_chunk/)
 
 -----------------------------------------------
 
@@ -1199,19 +1199,19 @@ radix_tree_next_chunk() 函数获得下一个 chunk 的节点，也就是可用 
 
 > [Data Structure Visualizations](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
 >
-> [Radix Tress](https://biscuitos.github.io/blog/Tree_RADIX_TREE/)
+> [Radix Tress](/blog/Tree_RADIX_TREE/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

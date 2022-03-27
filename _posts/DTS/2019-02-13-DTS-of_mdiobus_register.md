@@ -116,7 +116,7 @@ const struct of_device_id *of_match_node(const struct of_device_id *matches,
 本文实践基于 Linux 4.20.8 arm32 平台，开发者可以参考如下文章快速搭建一个
 调试环境：
 
-> [Establish Linux 4.20.8 on ARM32](https://biscuitos.github.io/blog/Linux-4.20.8-arm32-Usermanual/)
+> [Establish Linux 4.20.8 on ARM32](/blog/Linux-4.20.8-arm32-Usermanual/)
 
 #### DTS 文件
 

@@ -68,7 +68,7 @@ tags:
 开发者首先搭建 BiscuitOS 项目，如果已经搭建了 BiscuitOS 的开发者，可以跳过
 这一节。开发者参考下面文档安装基础开发工具:
 
-> - [BiscuitOS 基础开发工具安装指南](https://biscuitos.github.io/blog/Develop_tools)
+> - [BiscuitOS 基础开发工具安装指南](/blog/Develop_tools)
 
 基础环境搭建完毕之后，开发者从 GitHub 上获取 BiscuitOS 项目源码，
 使用如下命令：
@@ -194,7 +194,7 @@ gitkraken 查看效果，开发者也可以使用其他工具查看。
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

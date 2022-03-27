@@ -80,7 +80,7 @@ task_thread_info() 函数将共用 THREAD_SIZE 空间的下一个 struct thread_
 
 因此堆栈结束地址就如上图，更多关于内核堆栈的信息，请看：
 
-> [Linux init_stack 堆栈](https://biscuitos.github.io/blog/ARM-init_stack/)
+> [Linux init_stack 堆栈](/blog/ARM-init_stack/)
 
 调用完 end_of_stack() 获得了 task_struct 对应的堆栈，然后将 STACK_END_MAGIC 写入
 该地址。开发者可以在 set_task_stack_end_magic() 处加入断点，然后使用 GDB 进行调试，

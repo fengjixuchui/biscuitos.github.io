@@ -187,7 +187,7 @@ static int TestCase_kmap(void)
 >
 > - [实践执行](#C0002)
 >
-> - [实践建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C0003)
+> - [实践建议](/blog/HISTORY-MMU/#C0003)
 >
 > - [测试建议](#C0004)
 
@@ -200,7 +200,7 @@ static int TestCase_kmap(void)
 本实践是基于 BiscuitOS Linux 5.0 ARM32 环境进行搭建，因此开发者首先
 准备实践环境，请查看如下文档进行搭建:
 
-> - [BiscuitOS Linux 5.0 ARM32 环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS Linux 5.0 ARM32 环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 --------------------------------------------
 
@@ -497,7 +497,7 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 对于 Linux 2.6.12 的补丁，Linus 将 Linux 内核源码树加入到 git 中来，因此
 这个版本的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -553,7 +553,7 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 相对于前一个版本 linux 2.6.12, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -609,7 +609,7 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 相对于前一个版本 linux 2.6.12.1, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -665,7 +665,7 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 相对于前一个版本 linux 2.6.12.2, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -721,7 +721,7 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 相对于前一个版本 linux 2.6.12.3, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -777,7 +777,7 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 相对于前一个版本 linux 2.6.12.4, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -833,7 +833,7 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 相对于前一个版本 linux 2.6.12.5, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -910,7 +910,7 @@ vi 0001-PATCH-kdump-Routines-for-copying-dump-pages.patch
 
 更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -966,7 +966,7 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 相对于前一个版本 linux 2.6.13, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1022,7 +1022,7 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
 
 相对于前一个版本 linux 2.6.13.1, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1078,7 +1078,7 @@ KMAP 内存分配器与本项目相关的 kunmap_high() 调用顺序如下:
  
 相对于前一个版本 linux 2.6.13, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1182,7 +1182,7 @@ void set_page_address(struct page *page, void *virtual)
 
 #### KMAP 进阶研究
 
-> - [用户空间实现一个 KMAP 内存分配器](https://biscuitos.github.io/blog/Memory-Userspace/#N)
+> - [用户空间实现一个 KMAP 内存分配器](/blog/Memory-Userspace/#N)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1204,7 +1204,7 @@ void set_page_address(struct page *page, void *virtual)
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

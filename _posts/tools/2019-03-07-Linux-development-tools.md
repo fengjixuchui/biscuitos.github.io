@@ -51,7 +51,7 @@ Linux 内核源码默认就支持 ctags 和 cscope 工具，并根据 Linux 内�
 
 本教程基于 Linux 5.0 讲解，如果还没有搭建开发环境，可以参考文档：
 
-> [搭建基于 ARM 的 Linux 5.0 源码开发环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> [搭建基于 ARM 的 Linux 5.0 源码开发环境](/blog/Linux-5.0-arm32-Usermanual/)
 
 搭建好 Linux 5.0 开发环境后，可以在 Linux 5.0 源码中直接配置 ctags 和 cscope 工具，
 使用如下命令：
@@ -343,13 +343,13 @@ meld file0 file1
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

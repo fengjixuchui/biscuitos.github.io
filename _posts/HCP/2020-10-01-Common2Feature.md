@@ -56,17 +56,17 @@ tags:
 
 第一个必做的课，搭建一个你喜欢架构的 BiscuitOS，以后的课程都要基于 BiscuitOS 进行实践，因此小伙伴请选择一个你喜欢的架构进行搭建，文档如下: 
 
-> [BiscuitOS on ARM](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> [BiscuitOS on ARM](/blog/Linux-5.0-arm32-Usermanual/)
 >
-> [BiscuitOS on ARM64](https://biscuitos.github.io/blog/Linux-5.0-arm64-Usermanual/)
+> [BiscuitOS on ARM64](/blog/Linux-5.0-arm64-Usermanual/)
 >
-> [BiscuitOS on I386](https://biscuitos.github.io/blog/Linux-5.0-i386-Usermanual/)    
+> [BiscuitOS on I386](/blog/Linux-5.0-i386-Usermanual/)    
 >
-> [BiscuitOS on X64](https://biscuitos.github.io/blog/Linux-5.0-x86_64-Usermanual/)
+> [BiscuitOS on X64](/blog/Linux-5.0-x86_64-Usermanual/)
 >
-> [BiscuitOS on RISCV32](https://biscuitos.github.io/blog/Linux-5.0-riscv32-Usermanual/)
+> [BiscuitOS on RISCV32](/blog/Linux-5.0-riscv32-Usermanual/)
 >
-> [BiscuitOS on RISCV64](https://biscuitos.github.io/blog/Linux-5.0-riscv64-Usermanual/)
+> [BiscuitOS on RISCV64](/blog/Linux-5.0-riscv64-Usermanual/)
 
 ###### 作业要求
 
@@ -92,7 +92,7 @@ tags:
 
 第二课我们从 bitmap 中开始，内核中很多概念的核心都是基于 bitmap 构建，例如文件的 fd、cpumask、Bootmem 分配器、以及 CMA 分配器等一些算法中也会经常用到，因此这一课我们学习 bitmap 的原理，实践加使用。小伙伴请参考如下文档进行实践:
 
-> [Linux Bitmap 机制](https://biscuitos.github.io/blog/BITMAP/)
+> [Linux Bitmap 机制](/blog/BITMAP/)
 
 ###### 作业要求
 
@@ -110,13 +110,13 @@ tags:
 
 BiscuitOS 一带一路计划第三个作业是内核双链表，内核双链表可以说是构成内核多种子系统的基础，因此掌握好内核双链表及其必要, 小伙伴参考如下文档进行学习:
 
-> [内核双链表学习](https://biscuitos.github.io/blog/LIST/)
+> [内核双链表学习](/blog/LIST/)
 
 ###### 作业要求
 
 第二个作业完成之后，邀请你参加人类知识共同体计划，详细计划参见 
 
-> [BiscuitOS "人类知识共同体" 计划](https://biscuitos.github.io/blog/Human-Knowledge-Common/)
+> [BiscuitOS "人类知识共同体" 计划](/blog/Human-Knowledge-Common/)
 
 如果你愿意参加，请根据这个计划的提示，提交一份关于双链表的独立程序到 BiscuitOS。如果不参加，也提交一个基于第一个 platform 驱动之上实现的一个双链表逻辑，具体逻辑自行设定，截图提交代码为过，若有问题请直接在一带一路群里提问。
 
@@ -134,7 +134,7 @@ BiscuitOS 一带一路计划第四个作业是二叉树，内核中树的使用�
 
 二叉树作为所有树的基础模型，学习二叉树对理解和认知其他复杂树起到一个很好方向，因此本节课的内容就是学习二叉树，具体课程如下:
 
-> [二叉树学习](https://biscuitos.github.io/blog/Tree_binarytree/)
+> [二叉树学习](/blog/Tree_binarytree/)
 
 作业提交也是提交一份关于二叉树独立代码，代码逻辑自行设计，有问题请在 "BiscuitOS 一带一路" 群讨论.
 
@@ -146,7 +146,7 @@ BiscuitOS 一带一路计划第四个作业是二叉树，内核中树的使用�
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Blog 2.0](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Blog 2.0](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

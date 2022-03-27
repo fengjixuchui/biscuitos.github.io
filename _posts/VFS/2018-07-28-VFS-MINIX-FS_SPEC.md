@@ -394,7 +394,7 @@ BiscuitOS 目前完整支持 MINIX-FS 的所有版本，开发小组也提供了
 以此建立调试基础，请参考上面 Blog 进行创建：
 
 {% highlight ruby %}
-BiscuitOS Linux 1.0.1.1 minix-fs 镜像制作方法： https://biscuitos.github.io/blog/Linux1.0.1.1_minixfs_Usermanual/
+BiscuitOS Linux 1.0.1.1 minix-fs 镜像制作方法： /blog/Linux1.0.1.1_minixfs_Usermanual/
 文件系统基础：
 {% endhighlight %}
 

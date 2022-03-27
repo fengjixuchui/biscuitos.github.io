@@ -43,7 +43,7 @@ find_next_and_bit() 用于在指定的范围内找到第一个置位的 bit 位�
 offset 代表查找的起始位置。函数直接调用 _find_next_bit() 函数去查找一个置位
 的位置，注意 addr2 作为掩码，找到置位之后如果与掩码相与不符合要求也算找不到。
 
-> - [\_find_next_bit](https://biscuitos.github.io/blog/BITMAP_SC/#_find_next_bit)
+> - [\_find_next_bit](/blog/BITMAP_SC/#_find_next_bit)
 
 --------------------------------------------------
 
@@ -148,19 +148,19 @@ Device Driver--->
 
 具体过程请参考：
 
-> [Linux 5.0 开发环境搭建 -- 驱动配置](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E9%85%8D%E7%BD%AE)
+> [Linux 5.0 开发环境搭建 -- 驱动配置](/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E9%85%8D%E7%BD%AE)
 
 #### <span id="驱动编译">驱动编译</span>
 
 驱动编译也请参考下面文章关于驱动编译一节：
 
-> [Linux 5.0 开发环境搭建 -- 驱动编译](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E7%BC%96%E8%AF%91%E9%A9%B1%E5%8A%A8)
+> [Linux 5.0 开发环境搭建 -- 驱动编译](/blog/Linux-5.0-arm32-Usermanual/#%E7%BC%96%E8%AF%91%E9%A9%B1%E5%8A%A8)
 
 #### <span id="驱动运行">驱动运行</span>
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
-> [Linux 5.0 开发环境搭建 -- 驱动运行](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E8%BF%90%E8%A1%8C)
+> [Linux 5.0 开发环境搭建 -- 驱动运行](/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E8%BF%90%E8%A1%8C)
 
 启动内核，并打印如下信息：
 
@@ -183,15 +183,15 @@ oprofile: using arm/armv7-ca9
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

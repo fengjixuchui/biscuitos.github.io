@@ -669,9 +669,9 @@ clean:
 
 BiscuitOS 支持多种架构、多种内核版本的实践，开发者可以根据需要自行选择，这里以 i386 架构的 linxu 5.0 为例子进行讲解，其余开发者可以在如下链接中进行参考:
 
-> - [BiscuitOS linux 5.0 i386 环境部署](https://biscuitos.github.io/blog/Linux-5.0-i386-Usermanual/)
+> - [BiscuitOS linux 5.0 i386 环境部署](/blog/Linux-5.0-i386-Usermanual/)
 >
-> - [BiscuitOS linux 环境部署汇总](https://biscuitos.github.io/blog/Kernel_Build/)
+> - [BiscuitOS linux 环境部署汇总](/blog/Kernel_Build/)
 
 --------------------------------------------
 
@@ -745,10 +745,10 @@ make run
 BiscuitOS 支持多种架构、多种内核版本的实践，开发者可以根据需要自行选择，这里以 i386 架构的 linxu
  5.0 为例子进行讲解，其余开发者可以在如下链接中进行参考:
 
-> - [BiscuitOS linux 5.0 i386 环境部署](https://biscuitos.github.io/blog/Linux-5.0-i386-Usermanu
+> - [BiscuitOS linux 5.0 i386 环境部署](/blog/Linux-5.0-i386-Usermanu
 al/)
 >
-> - [BiscuitOS linux 环境部署汇总](https://biscuitos.github.io/blog/Kernel_Build/)
+> - [BiscuitOS linux 环境部署汇总](/blog/Kernel_Build/)
 
 --------------------------------------------
 
@@ -824,10 +824,10 @@ make run
 BiscuitOS 支持多种架构、多种内核版本的实践，开发者可以根据需要自行选择，这里以 i386 架构的 linxu
  5.0 为例子进行讲解，其余开发者可以在如下链接中进行参考:
 
-> - [BiscuitOS linux 5.0 i386 环境部署](https://biscuitos.github.io/blog/Linux-5.0-i386-Usermanu
+> - [BiscuitOS linux 5.0 i386 环境部署](/blog/Linux-5.0-i386-Usermanu
 al/)
 >
-> - [BiscuitOS linux 环境部署汇总](https://biscuitos.github.io/blog/Kernel_Build/)
+> - [BiscuitOS linux 环境部署汇总](/blog/Kernel_Build/)
 
 --------------------------------------------
 

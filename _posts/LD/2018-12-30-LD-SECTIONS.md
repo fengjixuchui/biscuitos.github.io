@@ -32,9 +32,9 @@ SECTIONS 命令告诉 ld 如何把输入文件的 sections 映射到输出文件
 对于如何将输入 section 合为输出 section；以及如何把输出 section 放入程序地址空
 间 (VMA) 和进程地址空间 (LMA)。使用方式如上。SECTIONS-COMMAND 有四种，分别为：
 
-> 1. [ENTRY 命令](https://biscuitos.github.io/blog/LD-ENTRY/)
+> 1. [ENTRY 命令](/blog/LD-ENTRY/)
 >
-> 2. [符号赋值语句](https://biscuitos.github.io/blog/LD-EXPRESSION/)
+> 2. [符号赋值语句](/blog/LD-EXPRESSION/)
 >
 > 3. [输出 section 的描述](#Output section description)
 >
@@ -146,7 +146,7 @@ SECTIONS
 }
 {% endhighlight %}
 
-实践请看：[《输出 section 名字 (SECTION) 实践》](https://biscuitos.github.io/blog/LD-SECTIONS_NAME/)
+实践请看：[《输出 section 名字 (SECTION) 实践》](/blog/LD-SECTIONS_NAME/)
 
 ### <span id="输出 section VMA 地址 : ADDRESS">输出 section VMA 地址 (ADDRESS)</span>
 
@@ -204,7 +204,7 @@ SECTIONS
 则是设置成定位符的修调值，满足对其要求。注意！设置 ADDRESS 值，将更改定位符号
 的值。
 
-实践请看：[《输出 section VMA 地址 (ADDRESS) 实践》](https://biscuitos.github.io/blog/LD-SECTIONS_VMA/)
+实践请看：[《输出 section VMA 地址 (ADDRESS) 实践》](/blog/LD-SECTIONS_VMA/)
 
 ### <span id="输出 section 类型 : TYPE">输出 section 类型 : TYPE</span>
 
@@ -255,7 +255,7 @@ SECTIONS
 }
 {% endhighlight %}
 
-实践请看：[《输出 section 类型 : TYPE 实践》](https://biscuitos.github.io/blog/LD-SECTIONS_TYPE/)
+实践请看：[《输出 section 类型 : TYPE 实践》](/blog/LD-SECTIONS_TYPE/)
 
 ### <span id="输出 section LMA 地址">输出 section 段 LMA 地址： AT(LMA)</span>
 
@@ -297,7 +297,7 @@ SECTIONS
 }
 {% endhighlight %}
 
-实践请看：[《输出 section 段 LMA 地址： AT(LMA) 实践》](https://biscuitos.github.io/blog/LD-SECTIONS_LMA/) [《MEMORY》](https://biscuitos.github.io/blog/LD-MEMORY/)  [《PHDRS》](https://biscuitos.github.io/blog/LD-PHDRS/)
+实践请看：[《输出 section 段 LMA 地址： AT(LMA) 实践》](/blog/LD-SECTIONS_LMA/) [《MEMORY》](/blog/LD-MEMORY/)  [《PHDRS》](/blog/LD-PHDRS/)
 
 ### <span id="输出 section 所在的程序段">输出 section 所在的程序段</span>
 
@@ -361,7 +361,7 @@ SECTIONS
 }
 {% endhighlight %}
 
-实践请看：[《PHDRS》](https://biscuitos.github.io/blog/LD-PHDRS/)
+实践请看：[《PHDRS》](/blog/LD-PHDRS/)
 
 ### <span id="输出 section 的填充模板">输出 section 的填充模板</span>
 
@@ -401,7 +401,7 @@ SECTIONS
 }
 {% endhighlight %}
 
-实践请看：[《FILL》](https://biscuitos.github.io/blog/LD-FILL/)
+实践请看：[《FILL》](/blog/LD-FILL/)
 
 ### <span id="输出 section 描述命令">输出 section 描述命令</span>
 
@@ -470,7 +470,7 @@ SECTIONS
 
 > (*(EXCLUDE_FILE(*crtend.o *otherfile.o) .ctors)): 表示除 crtend.o 
 > otherfile.o 文件外的所有输入文件的 .ctros section。具体实践请看：
-> [《EXCLUDE_FILE》](https://biscuitos.github.io/blog/LD-EXCLUDE_FILE/)
+> [《EXCLUDE_FILE》](/blog/LD-EXCLUDE_FILE/)
 
 {% highlight ruby %}
 SECTIONS
@@ -570,7 +570,7 @@ SECTIONS
 
 任何一个输入文件的任意 section 只能在 SECTIONS 命令里出现一次。
 
-实践请看：[《字符串模式通配符实践》](https://biscuitos.github.io/blog/LD-STRING_MATCH/)
+实践请看：[《字符串模式通配符实践》](/blog/LD-STRING_MATCH/)
 
 可以使用 SORT() 关键字对满足字符串模式的所有名字进行递增排序，如：
 
@@ -581,7 +581,7 @@ SECTIONS
 }
 {% endhighlight %}
 
-实践请看：[《SORT》](https://biscuitos.github.io/blog/LD-SORT/)
+实践请看：[《SORT》](/blog/LD-SORT/)
 
 通用符号 (common symbol) 的输入 section。 在许多目标文件中，通用符号并没有占用
 一个 section。链接器认为输入文件的所有通用符号在名为 COMMON 的 section 内。例如
@@ -616,7 +616,7 @@ SECTIONS
 }
 {% endhighlight %}
 
-具体实践看：[《KEEP》](https://biscuitos.github.io/blog/LD-KEEP/), [《DISCARD》](https://biscuitos.github.io/blog/LD-DISCARD/)
+具体实践看：[《KEEP》](/blog/LD-KEEP/), [《DISCARD》](/blog/LD-DISCARD/)
 
 #### <span id="输入 section 描述中存放数据命令">输入 section 描述中存放数据命令</span>
 
@@ -658,7 +658,7 @@ SECTIONS
 }
 {% endhighlight %}
 
-具体实践看：[《输入 section 描述中存放数据命令实践》](https://biscuitos.github.io/blog/LD-SECTIONS_DATA/)
+具体实践看：[《输入 section 描述中存放数据命令实践》](/blog/LD-SECTIONS_DATA/)
 
 在当输出 section 可能存在未描述的存储区域 (比如由于对齐造成的空隙)，可以用 
 FILL(EXPRESSION) 命令决定这些存储区域的内容，EXPRESSION 的前两字节有效，这两字
@@ -675,7 +675,7 @@ SECTIONS
 FILL 指令只作用于该 FILL 之后的 section 区域。而 =FILEEXP 属性作用于整个输出 
 section 区域，且 FILL 命令的优先级更高。
 
-具体实践看：[《FILL》](https://biscuitos.github.io/blog/LD-FILL/)
+具体实践看：[《FILL》](/blog/LD-FILL/)
 
 #### <span id="输入 section 描述中的命令关键字">输入 section 描述中的命令关键字</span>
 
@@ -688,7 +688,7 @@ section 区域，且 FILL 命令的优先级更高。
 为每个输入文件建立一个符号，符号名为输入文件的名字。每个符号所在的 section 是
 出现该关键字的 section。
 
-具体实践看：[《CREATE_OBJECT_SYMBOLS》](https://biscuitos.github.io/blog/LD-CREATE_OBJECT_SYMBOLS/)
+具体实践看：[《CREATE_OBJECT_SYMBOLS》](/blog/LD-CREATE_OBJECT_SYMBOLS/)
 
 ##### CONSTRUCTORS
 
@@ -734,7 +734,7 @@ __DTOR_END__ = .;
 有一个特殊的输出 section，名为 /DISCARD/, 该 section 引用的任何输出 section 将
 不会出现在输出文件内，就是 DISCARD 丢弃的意思。
 
-具体实践请看：[《DISCARD》](https://biscuitos.github.io/blog/LD-DISCARD/)
+具体实践请看：[《DISCARD》](/blog/LD-DISCARD/)
 
 ---------------------------------------------------
 
@@ -823,7 +823,7 @@ LMA 地址是 0x4000，DemoData section 的 LMA 地址紧跟其后。可以在 C
 extern char __load_start_DemoText, __load_stop_DemoText;
 {% endhighlight %}
 
-实践请看：[《OVERLAY》](https://biscuitos.github.io/blog/LD-OVERLAY/)
+实践请看：[《OVERLAY》](/blog/LD-OVERLAY/)
 
 -----------------------------------------------
 
@@ -831,9 +831,9 @@ extern char __load_start_DemoText, __load_stop_DemoText;
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

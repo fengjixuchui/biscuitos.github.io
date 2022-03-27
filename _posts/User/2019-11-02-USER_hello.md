@@ -139,9 +139,9 @@ DSCope 示波器采用样图:
 在进行 hello 开发之前，开发者应该准备 BiscuitOS 的开发
 环境，开发者应该根据不同的需求进行准备，如下:
 
-> - [BiscuitOS Qemu 软件方案开发环境部署](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [BiscuitOS Qemu 软件方案开发环境部署](/blog/Kernel_Build/#Linux_5X)
 >
-> - [BiscuitOS RaspberryPi 硬件方案开发环境部署](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#RaspberryPi)
+> - [BiscuitOS RaspberryPi 硬件方案开发环境部署](/blog/BiscuitOS_Catalogue/#RaspberryPi)
 
 ------------------------------------------
 
@@ -238,9 +238,9 @@ make pack
 开发者如果使用是硬件 RaspberryPi 方案，更新的方式多种方式，
 可以参考下面方式:
 
-> - [BiscuitOS NFS 方式更新](https://biscuitos.github.io/blog/RaspberryPi_4B-Usermanual/#A020140)
+> - [BiscuitOS NFS 方式更新](/blog/RaspberryPi_4B-Usermanual/#A020140)
 >
-> - [BiscuitOS SD 卡方式更新](https://biscuitos.github.io/blog/RaspberryPi_4B-Usermanual/#A020141)
+> - [BiscuitOS SD 卡方式更新](/blog/RaspberryPi_4B-Usermanual/#A020141)
 
 ------------------------------------------
 
@@ -311,9 +311,9 @@ hello 安装完毕之后，启动 BiscuitOS，在 BiscuitOS 上
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Catalogue](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Catalogue](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

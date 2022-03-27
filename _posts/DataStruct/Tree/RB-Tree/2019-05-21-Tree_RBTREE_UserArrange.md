@@ -197,7 +197,7 @@ int main()
 
 完整实践例子可以查看下面教程：
 
-> [用户空间红黑树最小实践](https://biscuitos.github.io/blog/Tree_RBTree/#%E7%BA%A2%E9%BB%91%E6%A0%91%E5%9C%A8%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%9C%80%E5%B0%8F%E5%AE%9E%E8%B7%B5)
+> [用户空间红黑树最小实践](/blog/Tree_RBTree/#%E7%BA%A2%E9%BB%91%E6%A0%91%E5%9C%A8%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E4%B8%AD%E6%9C%80%E5%B0%8F%E5%AE%9E%E8%B7%B5)
 
 -----------------------------------------------
 
@@ -205,19 +205,19 @@ int main()
 
 > [Data Structure Visualizations](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
 >
-> [Red Black Tress](https://biscuitos.github.io/blog/Tree_RBTree/)
+> [Red Black Tress](/blog/Tree_RBTree/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

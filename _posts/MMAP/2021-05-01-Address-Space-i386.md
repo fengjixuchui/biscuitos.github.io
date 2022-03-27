@@ -91,7 +91,7 @@ BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-text-segment-default
 
 > [Text Segment Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/Address-Space/BiscuitOS-address-space-text-segment)
 >
-> [BiscuitOS 独立程序实践教程](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C)
+> [BiscuitOS 独立程序实践教程](/blog/Human-Knowledge-Common/#C)
 
 ![](/assets/PDB/HK/TH000527.png)
 
@@ -170,7 +170,7 @@ ls -l BiscuitOS-address-space-text-segment-default
 
 在 i386 架构上，为什么进程的入口地址都是 0x08048000? 由源码的编译链接过程可以知道，当源码经过编译汇编之后生成目标文件，链接器基于链接脚本将目标文件和动态库/静态库，通过静态链接或者动态链接的方式进行链接生成可知文件，可执行文件最终在目标环境中运行. 链接的决定了可执行程序运行时的入口地址，其根据链接脚本进行链接，那么接下来研究一下链接脚本是如何影响链接以及代码段的. 在研究链接脚本之前需要准备一些链接脚本的语法，开发者可以参考下文:
 
-> [GNU 链接脚本详解](https://biscuitos.github.io/blog/LD/)
+> [GNU 链接脚本详解](/blog/LD/)
 
 {% highlight bash %}
 # Host I386 Targe I386
@@ -255,7 +255,7 @@ vi BiscuitOS-address-space-text-segment-default.ebs
 
 当一个进程创建的时候，其对应的代码段和数据段等会在进程的地址空间进行创建。代码段的创建与数据段一样，进程在其地址空间中为代码段分配一段虚拟内存，此时代码段只分配的虚拟地址，真正的代码段内容还存储在磁盘中。当进程初始化到一定阶段，CPU 开始执行进程的代码段时，首先将 CPU 指向了程序的入口地址，其位于代码段中。由于正在的代码段内容还在磁盘中，此时系统会通过缺页中断为代码段分配物理内存，并建立代码段的虚拟地址到物理内存的页表，最后再将磁盘中的代码段拷贝到指定的物理内存上，那么代码才真正被加载到代码段的虚拟内存上，待缺页中断返回，CPU 继续访问代码段的内容，并执行相应的代码逻辑。由于本文重点不再研究进程代码段的创建过程，感兴趣的童鞋请移步:
 
-> [进程代码段创建过程](https://biscuitos.github.io/blog/Process-Address-Space/#A4)
+> [进程代码段创建过程](/blog/Process-Address-Space/#A4)
 
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
@@ -295,7 +295,7 @@ BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-data-segment-default
 
 > [Data Segment Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/Address-Space/BiscuitOS-address-space-data-segment)
 >
-> [BiscuitOS 独立程序实践教程](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C)
+> [BiscuitOS 独立程序实践教程](/blog/Human-Knowledge-Common/#C)
 
 ![](/assets/PDB/HK/TH000544.png)
 
@@ -347,7 +347,7 @@ BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-data-segment-global-
 
 > [Data Segment with Global Variable Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/Address-Space/BiscuitOS-address-space-data-segment-global)
 >
-> [BiscuitOS 独立程序实践教程](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C)
+> [BiscuitOS 独立程序实践教程](/blog/Human-Knowledge-Common/#C)
 
 ![](/assets/PDB/HK/TH000546.png)
 
@@ -609,7 +609,7 @@ BiscuitOS/output/linux-XXXX/package/BiscuitOS-address-space-data-segment-global-
 
 > [Data Segment with Global Variable Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/Address-Space/BiscuitOS-address-space-data-segment-global)
 >
-> [BiscuitOS 独立程序实践教程](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C)
+> [BiscuitOS 独立程序实践教程](/blog/Human-Knowledge-Common/#C)
 
 ![](/assets/PDB/HK/TH000582.png)
 
@@ -872,7 +872,7 @@ BiscuitOS_current_global_uninit_variable 是一个全局的数据对象，它的
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Blog 2.0](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Blog 2.0](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

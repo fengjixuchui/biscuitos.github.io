@@ -238,7 +238,7 @@ static int TestCase_vmalloc(void)
 >
 > - [实践执行](#C0002)
 >
-> - [实践建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C0003)
+> - [实践建议](/blog/HISTORY-MMU/#C0003)
 >
 > - [测试建议](#C0004)
 
@@ -251,7 +251,7 @@ static int TestCase_vmalloc(void)
 本实践是基于 BiscuitOS Linux 5.0 ARM32 环境进行搭建，因此开发者首先
 准备实践环境，请查看如下文档进行搭建:
 
-> - [BiscuitOS Linux 5.0 ARM32 环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS Linux 5.0 ARM32 环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 --------------------------------------------
 
@@ -548,7 +548,7 @@ VMALLOC 内存分配器与本项目相关的 vfree() 调用顺序如下:
 对于 Linux 2.6.12 的补丁，Linus 将 Linux 内核源码树加入到 git 中来，因此
 这个版本的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -604,7 +604,7 @@ VMALLOC 内存分配器与本项目相关的 vfree() 调用顺序如下:
 
 与 Linux 2.6.12 的相比，VMALLOC 并为产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -660,7 +660,7 @@ VMALLOC 内存分配器与本项目相关的 vfree() 调用顺序如下:
  
 与 Linux 2.6.12.1 的相比，VMALLOC 并为产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -717,7 +717,7 @@ VMALLOC 内存分配器与本项目相关的 vfree() 调用顺序如下:
 与 Linux 2.6.12.2 的相比，VMALLOC 并为产生补丁。更多补丁的使用请参考:
 
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -773,7 +773,7 @@ VMALLOC 内存分配器与本项目相关的 vfree() 调用顺序如下:
  
 与 Linux 2.6.12.3 的相比，VMALLOC 并为产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -830,7 +830,7 @@ VMALLOC 内存分配器与本项目相关的 vfree() 调用顺序如下:
 与 Linux 2.6.12.4 的相比，VMALLOC 并为产生补丁。更多补丁的使用请参考:
 
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -886,7 +886,7 @@ VMALLOC 内存分配器与本项目相关的 vfree() 调用顺序如下:
  
 与 Linux 2.6.12.5 的相比，VMALLOC 并为产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -972,7 +972,7 @@ vi 0001-PATCH-x86_64-Fixed-guard-page-handling-again-in-ioun.patch
 该补丁新增了 \_\_remove_vm_area() 函数并更新了 remove_vm_area() 函数实现.
 更多补丁使用方法请参考下面文章:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1028,7 +1028,7 @@ VMALLOC 内存分配器与本项目相关的 vfree() 调用顺序如下:
  
 与 Linux 2.6.13 的相比，VMALLOC 并为产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1124,7 +1124,7 @@ vi 0001-PATCH-gfp-flags-annotations-part-1.patch
 
 该补丁将 VMALLOC 分配器中 gfp 标志的类型替换成 gfp_t. 更多不行请参考下文:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1221,7 +1221,7 @@ vi 0001-PATCH-kernel-doc-fix-warnings-in-vmalloc.c.patch
 
 该补丁在 VMALLOC 分配器中添加了 node 相关的注释. 更多补丁使用请参考下文:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1448,7 +1448,7 @@ static inline void vunmap_pud_range(pgd_t *pgd, unsigned long addr,
 
 #### VMALLOC 进阶研究
 
-> - [用户空间实现一个 VMALLOC 内存分配器](https://biscuitos.github.io/blog/Memory-Userspace/#M)
+> - [用户空间实现一个 VMALLOC 内存分配器](/blog/Memory-Userspace/#M)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1470,7 +1470,7 @@ static inline void vunmap_pud_range(pgd_t *pgd, unsigned long addr,
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

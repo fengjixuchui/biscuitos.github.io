@@ -436,7 +436,7 @@ __next_mem_range() 函数的作用是在指定的可用物理内存区中找到�
 开发环境搭建方法以及重点关注驱动实践一节，请参考下例文章，选择一个 linux 5.x
 版本进行实践，后面内容均基于 linux 5.x 继续讲解，文章链接如下：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+[基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 #### <span id="驱动源码">驱动源码</span>
 
@@ -651,7 +651,7 @@ Device Driver--->
 
 具体过程请参考：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+[基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 #### <span id="驱动增加调试点">增加调试点</span>
 
@@ -690,13 +690,13 @@ index 375b13f7e..5e172f0bc 100644
 
 驱动编译也请参考下面文章关于驱动编译一节：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+[基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 #### <span id="驱动运行">驱动运行</span>
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+[基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 驱动运行的结果如下：
 
@@ -916,19 +916,19 @@ Valid memory behind special index:  [0x64100000 - 0x64300000]
 
 # <span id="附录">附录</span>
 
-> [MEMBLOCK 内存分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+> [MEMBLOCK 内存分配器](/blog/MMU-ARM32-MEMBLOCK-index/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

@@ -238,7 +238,7 @@ BiscuitOS/output/linux-5.x-arm32/linux/linux/.config 中查看当前内核配置
 HEAD_TEXT 的定义使用了 KEEP 关键字，其作用就是保留所有输入文件的 .head.text 段。
 更多 KEEP 使用方法，请看：
 
-> [LD scripts 关键字 -- KEEP](https://biscuitos.github.io/blog/LD-KEEP/)
+> [LD scripts 关键字 -- KEEP](/blog/LD-KEEP/)
 
 从上面的定义可以知道，输出文件的 .head.text 段包含了所有输入文件的 .head.text 段，
 因此可以知道内核镜像文件中，最前面位置的代码位于 .head.text 段中，vmlinux 的入口

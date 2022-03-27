@@ -42,31 +42,31 @@ tags:
 >
 > - 内存分配器
 >
->   - [Bootmem 分配器](https://biscuitos.github.io/blog/HISTORY-bootmem/)
+>   - [Bootmem 分配器](/blog/HISTORY-bootmem/)
 >  
->   - [MEMBLOCK 分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index)
+>   - [MEMBLOCK 分配器](/blog/MMU-ARM32-MEMBLOCK-index)
 >  
->   - [PERCPU 分配器](https://biscuitos.github.io/blog/HISTORY-PERCPU)
+>   - [PERCPU 分配器](/blog/HISTORY-PERCPU)
 >  
->   - [Buddy 分配器](https://biscuitos.github.io/blog/HISTORY-buddy)
+>   - [Buddy 分配器](/blog/HISTORY-buddy)
 >  
->   - [PCP 分配器](https://biscuitos.github.io/blog/HISTORY-PCP)
+>   - [PCP 分配器](/blog/HISTORY-PCP)
 >  
->   - [SLAB 分配器](https://biscuitos.github.io/blog/HISTORY-SLAB/)
+>   - [SLAB 分配器](/blog/HISTORY-SLAB/)
 >  
->   - [SLUB 分配器](https://biscuitos.github.io/blog/HISTORY-SLUB)
+>   - [SLUB 分配器](/blog/HISTORY-SLUB)
 >  
->   - [SLOB 分配器](https://biscuitos.github.io/blog/HISTORY-SLOB)
+>   - [SLOB 分配器](/blog/HISTORY-SLOB)
 >  
->   - [VMALLOC 分配器](https://biscuitos.github.io/blog/HISTORY-VMALLOC)
+>   - [VMALLOC 分配器](/blog/HISTORY-VMALLOC)
 >  
->   - [KMAP 分配器](https://biscuitos.github.io/blog/HISTORY-KMAP)
+>   - [KMAP 分配器](/blog/HISTORY-KMAP)
 >  
->   - [FIXMAP 分配器](https://biscuitos.github.io/blog/HISTORY-FIXMAP)
+>   - [FIXMAP 分配器](/blog/HISTORY-FIXMAP)
 >  
->   - [DMA 内存分配器](https://biscuitos.github.io/blog/HISTORY-DMA)
+>   - [DMA 内存分配器](/blog/HISTORY-DMA)
 >  
->   - [CMA 内存分配器](https://biscuitos.github.io/blog/CMA)
+>   - [CMA 内存分配器](/blog/CMA)
 >
 > - [附录/捐赠](#Z0)
 
@@ -204,7 +204,7 @@ Linux 早期的内存管理子系统版本，开发者可以选择相对简单�
 用途。不仅可以锻炼完整项目开发经验，并且可以通过解决开发过程中遇到的 bug
 来增加自己解决问题的能力。具体过程可以参考:
 
-> - [动手构建一个内存管理子系统](https://biscuitos.github.io/blog/Design-MMU/)
+> - [动手构建一个内存管理子系统](/blog/Design-MMU/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -436,7 +436,7 @@ arch 目录下包含内存初始化早期，与体系结构相关的处理部分
 本实践是基于 BiscuitOS Linux 5.0 ARM32 环境进行搭建，因此开发者首先
 准备实践环境，请查看如下文档进行搭建:
 
-> - [BiscuitOS Linux 5.0 ARM32 环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS Linux 5.0 ARM32 环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 --------------------------------------------
 
@@ -757,7 +757,7 @@ meld linux-2.6.14 linux-2.6.15
 第二种方式就是合入标准补丁的方式。这种方式首先需要获得 Linux 源码树完整
 补丁树，开发者可以参考 BiscuitOS 提供的方案，如下:
 
-> - [Linux newest arm32 Usermanual](https://biscuitos.github.io/blog/Linux-newest-arm32-Usermanual/)
+> - [Linux newest arm32 Usermanual](/blog/Linux-newest-arm32-Usermanual/)
 
 通过上面的文档，可以在下面的路径中获得最新的源码数:
 
@@ -893,31 +893,31 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 
 #### MMU 历史版本
 
-> - [Bootmem 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-bootmem/#H)
+> - [Bootmem 分配器历史版本](/blog/HISTORY-bootmem/#H)
 >
-> - [MEMBLOCK 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-MEMBLOCK/#H)
+> - [MEMBLOCK 分配器历史版本](/blog/HISTORY-MEMBLOCK/#H)
 >
-> - [PERCPU 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-PERCPU/#H)
+> - [PERCPU 分配器历史版本](/blog/HISTORY-PERCPU/#H)
 >
-> - [Buddy 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-buddy/#H)
+> - [Buddy 分配器历史版本](/blog/HISTORY-buddy/#H)
 >
-> - [PCP 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-PCP/#H)
+> - [PCP 分配器历史版本](/blog/HISTORY-PCP/#H)
 >
-> - [SLAB 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-SLAB/#H)
+> - [SLAB 分配器历史版本](/blog/HISTORY-SLAB/#H)
 >
-> - [SLUB 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-SLUB/#H)
+> - [SLUB 分配器历史版本](/blog/HISTORY-SLUB/#H)
 >
-> - [SLOB 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-SLOB/#H)
+> - [SLOB 分配器历史版本](/blog/HISTORY-SLOB/#H)
 >
-> - [VMALLOC 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-VMALLOC/#H)
+> - [VMALLOC 分配器历史版本](/blog/HISTORY-VMALLOC/#H)
 >
-> - [KMAP 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-KMAP/#H)
+> - [KMAP 分配器历史版本](/blog/HISTORY-KMAP/#H)
 >
-> - [FIXMAP 分配器历史版本](https://biscuitos.github.io/blog/HISTORY-FIXMAP/#H)
+> - [FIXMAP 分配器历史版本](/blog/HISTORY-FIXMAP/#H)
 >
-> - [DMA 内存分配器历史版本](https://biscuitos.github.io/blog/HISTORY-DMA/#H)
+> - [DMA 内存分配器历史版本](/blog/HISTORY-DMA/#H)
 >
-> - [CMA 内存分配器历史版本](https://biscuitos.github.io/blog/HISTORY-CMA/#H)
+> - [CMA 内存分配器历史版本](/blog/HISTORY-CMA/#H)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -941,7 +941,7 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 
 #### MMU 进阶研究
 
-> - [动手构建一个内存管理子系统](https://biscuitos.github.io/blog/Design-MMU/)
+> - [动手构建一个内存管理子系统](/blog/Design-MMU/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -951,7 +951,7 @@ $(MODULE_NAME)-buddy-m            := modules/buddy/module.o
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

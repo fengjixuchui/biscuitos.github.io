@@ -93,7 +93,7 @@ VFS 规定文件名最大长度不要超过 PATH_MAX. 对于这个错误可能�
 为了让开发者能够实践这个问题，BiscuitOS 提供了相关的实践工具和环境，
 开发者可以参考下面文档查看工具的具体使用:
 
-> - [BiscuitOS 打开任意长度文件名工具](https://biscuitos.github.io/blog/SYSCALL_sys_open/#C1)
+> - [BiscuitOS 打开任意长度文件名工具](/blog/SYSCALL_sys_open/#C1)
 
 部署好环境和工具之后，运行 BiscuitOS 并使用如下测试命令:
 
@@ -203,7 +203,7 @@ VFS 提供的最大文件名为 PATH_MAX, 此时 128 小于 PATH_MAX, 因此可�
 为了让开发者能够实践这个问题，BiscuitOS 提供了相关的实践工具和环境，
 开发者可以参考下面文档查看工具的具体使用:
 
-> - [BiscuitOS 打开任意长度文件名工具](https://biscuitos.github.io/blog/SYSCALL_sys_open/#C1)
+> - [BiscuitOS 打开任意长度文件名工具](/blog/SYSCALL_sys_open/#C1)
 
 部署好环境和工具之后，运行 BiscuitOS 并使用如下测试命令:
 
@@ -230,7 +230,7 @@ ENOENT, 表示文件或目录不存在。以上便是问题的复现。
 函数中进行文件名的处理，这里的处理是 VFS 层的处理，还为下沉到具体的文件系统
 上处理。在 getname_flags() 函数中有管文件名长度为 0 的处理如下:
 
-> - [getname_flags() 函数解析](https://biscuitos.github.io/blog/OPEN_SOURCE_CODE/#A0000002)
+> - [getname_flags() 函数解析](/blog/OPEN_SOURCE_CODE/#A0000002)
 
 ![](/assets/PDB/RPI/RPI000679.png)
 
@@ -260,7 +260,7 @@ getname_common-0.0.1 -l 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

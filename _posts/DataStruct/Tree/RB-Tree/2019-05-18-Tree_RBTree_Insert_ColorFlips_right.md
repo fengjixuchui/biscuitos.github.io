@@ -117,7 +117,7 @@ n1、p0、n2 节点构成了一个零时的 4- 节点，需要分裂和提取操
 2- 节点，因此将 n1 与 n2 节点设置为黑色节点，由于 p0 节点需要继续向上融合，因此
 需要将 p0 设置为红色。此时颜色翻转完成。更多红黑树与 2-3 树的关系请看文档：
 
-> [红黑树与 2-3 树的关系分析](https://biscuitos.github.io/blog/Tree_2-3-tree/)
+> [红黑树与 2-3 树的关系分析](/blog/Tree_2-3-tree/)
 
 --------------------------------------------------
 <span id="实践"></span>
@@ -287,15 +287,15 @@ rb-tree/Insert$ ./rbtree
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

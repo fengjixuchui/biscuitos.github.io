@@ -50,7 +50,7 @@ tags:
 >
 >     - [struct open_flags](#A00017D)
 >
->   - [源码解析](https://biscuitos.github.io/blog/OPEN_SOURCE_CODE/)
+>   - [源码解析](/blog/OPEN_SOURCE_CODE/)
 >
 > - 实践部署
 >
@@ -74,17 +74,17 @@ tags:
 > <span id="HHH"></span>
 > - 进阶研究
 >
->   - [文件名太长导致文件打开失败](https://biscuitos.github.io/blog/OPEN_MAX_LEN/#B250)
+>   - [文件名太长导致文件打开失败](/blog/OPEN_MAX_LEN/#B250)
 >
->   - [文件名为空导致文件打开失败](https://biscuitos.github.io/blog/OPEN_MAX_LEN/#B251)
+>   - [文件名为空导致文件打开失败](/blog/OPEN_MAX_LEN/#B251)
 >
->   - [进程打开文件数太多导致失败问题](https://biscuitos.github.io/blog/OPEN_NR/#B250)
+>   - [进程打开文件数太多导致失败问题](/blog/OPEN_NR/#B250)
 >
->   - [进程文件描述符超过 sysctl_nr_open 导致打开失败问题](https://biscuitos.github.io/blog/OPEN_NR/#B251)
+>   - [进程文件描述符超过 sysctl_nr_open 导致打开失败问题](/blog/OPEN_NR/#B251)
 >
->   - [sysctl_nr_open 不能够准确控制打开文件的数量问题](https://biscuitos.github.io/blog/OPEN_NR/#B252)
+>   - [sysctl_nr_open 不能够准确控制打开文件的数量问题](/blog/OPEN_NR/#B252)
 >
->   - [不同文件系统支持进程最大文件打开数问题](https://biscuitos.github.io/blog/OPEN_NR/#B253)
+>   - [不同文件系统支持进程最大文件打开数问题](/blog/OPEN_NR/#B253)
 >
 > - [附录/捐赠](#Z0)
 
@@ -1178,7 +1178,7 @@ open_flag 成员用于存储合法有效的文件打开标志。更多有效文�
 
 ![](/assets/PDB/RPI/RPI000559.png)
 
-> - [文件打开标示详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A10)
+> - [文件打开标示详解](/blog/SYSCALL_sys_open/#A10)
 
 ###### mode
 
@@ -1186,7 +1186,7 @@ mode 成员由于存储文件的访问权限和文件类型信息。更多标志
 
 ![](/assets/PDB/HK/HK000035.png)
 
-> - [文件权限标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
+> - [文件权限标志详解](/blog/SYSCALL_sys_open/#A11)
 
 ###### acc_mode
 
@@ -1204,7 +1204,7 @@ intent 成员用于辅助 open 系统调用在查找过程中使用的标志信�
 lookup_flags 成员用于存储系统调用在文件系统中查找时候所使用的标志，更多
 查找标志可以查看:
 
-> - [文件查找标志](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A14)
+> - [文件查找标志](/blog/SYSCALL_sys_open/#A14)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1237,17 +1237,17 @@ sys_open 系统调用。在用户空间使用 syscall() 直接触发 sys_open �
 并传入可选的参数到系统调用里。本节以 ARM32 为例子进行讲解，如果需要在其他架构
 上进行实践，可以参考下面文档细节:
 
-> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+> - [ARM32 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM/)
 >
-> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+> - [ARM64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM64/)
 >
-> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+> - [i386 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_I386/)
 >
-> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+> - [X86_64 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_X86_64/)
 >
-> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+> - [RISCV32 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV32/)
 >
-> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+> - [RISCV64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV64/)
 
 -------------------------------------------
 
@@ -1257,7 +1257,7 @@ sys_open 系统调用。在用户空间使用 syscall() 直接触发 sys_open �
 平台，开发者可以在 BiscuitOS 进行实践，如果还没有搭建 BiscuitOS
 ARM32 实践环境的开发者，可以参考如下文档进行搭建:
 
-> - [BiscuitOS 上搭建 ARM32 实践环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS 上搭建 ARM32 实践环境](/blog/Linux-5.0-arm32-Usermanual/)
 
 开发环境搭建完毕之后，可以继续下面的内容，如果开发者不想采用
 BiscuitOS 提供的开发环境，可以继续参考下面的内容在开发者使用
@@ -1436,7 +1436,7 @@ sys_open 系统调用已经成功触发，接下来进入系统调用内核部�
 直观的看出调用的是那个函数。针对上面提出的问题，开发者如果要调试内核系统
 调用，请先参考下面文档之后再进行调试:
 
-> - [解决系统调用调试遇到的诸多问题](https://biscuitos.github.io/blog/SYSCALL_DEBUG/)
+> - [解决系统调用调试遇到的诸多问题](/blog/SYSCALL_DEBUG/)
 
 准备好上述的内容之后，要调试内核系统调用函数，首先要找到函数的定义。在本
 例子中，sys_open 系统调用定义在:
@@ -1560,7 +1560,7 @@ open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_NONBLOCK -m S_IRUSR,S_IRGRP
 
 更多文件打开标志可以参考如下:
 
-> - [文件打开标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A10)
+> - [文件打开标志详解](/blog/SYSCALL_sys_open/#A10)
 
 ###### <-m mode>
 
@@ -1575,7 +1575,7 @@ open_common-0.0.1 -p BiscuitOS_file -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
 
 更多文件打开模式标志可以参考如下:
 
-> - [文件打开模式标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
+> - [文件打开模式标志详解](/blog/SYSCALL_sys_open/#A11)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1592,7 +1592,7 @@ open 系统调用调试工具支持多个平台，本实践以 ARM32 为例子�
 架构的运行平台，开发者可以在 BiscuitOS 进行实践，如果还没有搭建 BiscuitOS
 ARM32 实践环境的开发者，可以参考如下文档进行搭建:
 
-> - [BiscuitOS 上搭建 ARM32 实践环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS 上搭建 ARM32 实践环境](/blog/Linux-5.0-arm32-Usermanual/)
 
 开发环境搭建完毕之后，可以继续下面的内容，如果开发者不想采用
 BiscuitOS 提供的开发环境，可以继续参考下面的内容在开发者使用
@@ -1615,17 +1615,17 @@ make
 
 如果需要在其他架构上部署该工具，可以参考下面文档:
 
-> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+> - [ARM32 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM/)
 >
-> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+> - [ARM64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM64/)
 >
-> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+> - [i386 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_I386/)
 >
-> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+> - [X86_64 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_X86_64/)
 >
-> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+> - [RISCV32 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV32/)
 >
-> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+> - [RISCV64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV64/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1851,7 +1851,7 @@ getname_common-0.0.1 -l 128 -f O_RDWR,O_NONBLOCK -m S_IRUSR,S_IRGRP
 
 更多文件打开标志可以参考如下:
 
-> - [文件打开标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A10)
+> - [文件打开标志详解](/blog/SYSCALL_sys_open/#A10)
 
 ###### <-m mode>
 
@@ -1866,7 +1866,7 @@ getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
 
 更多文件打开模式标志可以参考如下:
 
-> - [文件打开模式标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
+> - [文件打开模式标志详解](/blog/SYSCALL_sys_open/#A11)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1883,7 +1883,7 @@ getname_common-0.0.1 -l 128 -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
 架构的运行平台，开发者可以在 BiscuitOS 进行实践，如果还没有搭建 BiscuitOS
 ARM32 实践环境的开发者，可以参考如下文档进行搭建:
 
-> - [BiscuitOS 上搭建 ARM32 实践环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS 上搭建 ARM32 实践环境](/blog/Linux-5.0-arm32-Usermanual/)
 
 开发环境搭建完毕之后，可以继续下面的内容，如果开发者不想采用
 BiscuitOS 提供的开发环境，可以继续参考下面的内容在开发者使用
@@ -1906,17 +1906,17 @@ make
 
 如果需要在其他架构上部署该工具，可以参考下面文档:
 
-> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+> - [ARM32 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM/)
 >
-> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+> - [ARM64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM64/)
 >
-> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+> - [i386 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_I386/)
 >
-> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+> - [X86_64 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_X86_64/)
 >
-> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+> - [RISCV32 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV32/)
 >
-> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+> - [RISCV64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV64/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -2154,7 +2154,7 @@ number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_NONBLOCK -m S_IRUSR,S_IRGRP
 
 更多文件打开标志可以参考如下:
 
-> - [文件打开标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A10)
+> - [文件打开标志详解](/blog/SYSCALL_sys_open/#A10)
 
 ###### <-m mode>
 
@@ -2169,7 +2169,7 @@ number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
 
 更多文件打开模式标志可以参考如下:
 
-> - [文件打开模式标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
+> - [文件打开模式标志详解](/blog/SYSCALL_sys_open/#A11)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -2186,7 +2186,7 @@ number_open_common-0.0.1 -n 2 -d 0 -f O_RDWR,O_CREAT -m S_IRUSR,S_IWUSR
 架构的运行平台，开发者可以在 BiscuitOS 进行实践，如果还没有搭建 BiscuitOS
 ARM32 实践环境的开发者，可以参考如下文档进行搭建:
 
-> - [BiscuitOS 上搭建 ARM32 实践环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS 上搭建 ARM32 实践环境](/blog/Linux-5.0-arm32-Usermanual/)
 
 开发环境搭建完毕之后，可以继续下面的内容，如果开发者不想采用
 BiscuitOS 提供的开发环境，可以继续参考下面的内容在开发者使用
@@ -2209,17 +2209,17 @@ make
 
 如果需要在其他架构上部署该工具，可以参考下面文档:
 
-> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+> - [ARM32 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM/)
 >
-> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+> - [ARM64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM64/)
 >
-> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+> - [i386 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_I386/)
 >
-> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+> - [X86_64 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_X86_64/)
 >
-> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+> - [RISCV32 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV32/)
 >
-> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+> - [RISCV64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV64/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -2475,7 +2475,7 @@ strace 工具支持多个平台，本实践以 ARM32 为例子进行讲解，其
 架构的运行平台，开发者可以在 BiscuitOS 进行实践，如果还没有搭建 BiscuitOS
 ARM32 实践环境的开发者，可以参考如下文档进行搭建:
 
-> - [BiscuitOS 上搭建 ARM32 实践环境](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS 上搭建 ARM32 实践环境](/blog/Linux-5.0-arm32-Usermanual/)
 
 开发环境搭建完毕之后，可以继续下面的内容，如果开发者不想采用
 BiscuitOS 提供的开发环境，可以继续参考下面的内容在开发者使用
@@ -2498,17 +2498,17 @@ make
 
 如果需要在其他架构上部署该工具，可以参考下面文档:
 
-> - [ARM32 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM/)
+> - [ARM32 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM/)
 >
-> - [ARM64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_ARM64/)
+> - [ARM64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_ARM64/)
 >
-> - [i386 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_I386/)
+> - [i386 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_I386/)
 >
-> - [X86_64 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_X86_64/)
+> - [X86_64 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_X86_64/)
 >
-> - [RISCV32 架构中添一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV32/)
+> - [RISCV32 架构中添一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV32/)
 >
-> - [RISCV64 架构中添加一个新的系统调用](https://biscuitos.github.io/blog/SYSCALL_ADD_NEW_RISCV64/)
+> - [RISCV64 架构中添加一个新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV64/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -2703,7 +2703,7 @@ ulimit -n
 实践环境搭建好之后，建议开发者了解一些调试技巧，这些调试技巧会让你的调试
 变得简单搞笑，请参考下面文章:
 
-> - [系统调用调试建议](https://biscuitos.github.io/blog/SYSCALL_DEBUG/)
+> - [系统调用调试建议](/blog/SYSCALL_DEBUG/)
 
 准备好上面的内容之后，接下来就是进入源码级实践调试，如下图:
 
@@ -2712,7 +2712,7 @@ ulimit -n
 上图是 open 系统调用相关的某个函数调用过程，开发者可以根据上图的调用
 关系，在下面的文档中找到合适的入口进行源码调试:
 
-> - [open 系统调用源码实践分析](https://biscuitos.github.io/blog/OPEN_SOURCE_CODE/)
+> - [open 系统调用源码实践分析](/blog/OPEN_SOURCE_CODE/)
 
 有了上面的实践基础之后，开发者可以进行更深入问题的研究讨论，可以查看本文的
 进阶研究部分，以此对 open 系统调用进行更深入的研究。
@@ -2729,7 +2729,7 @@ ulimit -n
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

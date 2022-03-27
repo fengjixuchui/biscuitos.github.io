@@ -61,7 +61,7 @@ struct open_flags 结构中。(源码较长分段解析)。开发者如果需要
 上实践这段代码请参考下面文档，源码分析过程中数据均依据 BiscuitOS 实践的结
 果而定:
 
-> - [BiscuitOS open 系统调用调试工具](https://biscuitos.github.io/blog/SYSCALL_sys_open/#C0)
+> - [BiscuitOS open 系统调用调试工具](/blog/SYSCALL_sys_open/#C0)
 
 ###### 源码 1
 
@@ -78,17 +78,17 @@ open_flag 成员由于存储 open 系统调用打开标志; mode 用于存储 op
 lookup_flags 标志用于存储查找文件的标志. 以上成员存储这不同的标志会导致
 不同的打开行为，开发者可以参考下文对各个标志的理解:
 
-> - [struct open_flags](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00017D)
+> - [struct open_flags](/blog/SYSCALL_sys_open/#A00017D)
 >
-> - [打开文件标志](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A10)
+> - [打开文件标志](/blog/SYSCALL_sys_open/#A10)
 >
-> - [用户权限标志](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A11)
+> - [用户权限标志](/blog/SYSCALL_sys_open/#A11)
 >
-> - [文件类型标志](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A12)
+> - [文件类型标志](/blog/SYSCALL_sys_open/#A12)
 >
-> - [访问权限标志](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A13)
+> - [访问权限标志](/blog/SYSCALL_sys_open/#A13)
 >
-> - [文件查找标志](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A14)
+> - [文件查找标志](/blog/SYSCALL_sys_open/#A14)
 
 回到 build_open_flags() 函数，函数定义了一个局部 int 变量 lookup_flags,
 并将其初始化为 0，接着定义了一个局部 int 变量 acc_mode, 并将 ACC_MODE(flags)
@@ -166,7 +166,7 @@ O_CLOEXEC 标志，看看测试结果，源码修改如下:
 函数检测打开参数中是否包含 \_\_O_SYNC, 该标志用于表示以同步 I/O 方式打开
 文件，具体分析请看如下链接:
 
-> - [\_\_O_SYNC 标志解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A0001K)
+> - [\_\_O_SYNC 标志解析](/blog/SYSCALL_sys_open/#A0001K)
 
 在源码中，如果包含 \_\_O_SYNC，那么将 O_DSYNC 标志加入到 flags 变量里面。
 这里注释解释了 O_SYNC 标志由 \_\_O_SYNC 和 O_DSYNC 
@@ -192,7 +192,7 @@ O_CLOEXEC 标志，看看测试结果，源码修改如下:
 描述符被关闭的时候，所有写入这个文件的内容都会丢失，除非在此之前给了它
 一个名字.
 
-> - [\_\_O_TMPFILE 标志解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A0001A)
+> - [\_\_O_TMPFILE 标志解析](/blog/SYSCALL_sys_open/#A0001A)
 
 如果包含 \_\_O_TMPFILE 标志，那么函数将打开标志与 O_TMPFILE_MASK 相与操
 作，以此隔离出 TMPFILE 相关的标志，此时查看隔离出来的标志是否等于 O_TMPFILE 标志，其定义如下:
@@ -293,13 +293,13 @@ ACC_MODE() 宏处理打开标志中，需要包含可写权限，从 ACC_MODE �
 标志，O_PATH 标志用于获得一个能表示文件在文件系统中位置的文件描述符。标志
 的具体含义请看:
 
-> - [O_PATH 标志详细解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A0001L)
+> - [O_PATH 标志详细解析](/blog/SYSCALL_sys_open/#A0001L)
 
 当满足上面的情况之后，函数会过滤打开标志中的多个标志，只保留 O_DIRECTORY、
 O_NOFOLLOW、O_PATH 中的一个或者多个标志。并且将 acc_mode 设置为 0. 三个标志
 的具体含义可以参看下面链接:
 
-> - [文件打开标志](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A10)
+> - [文件打开标志](/blog/SYSCALL_sys_open/#A10)
 
 开发者可以在 BiscuitOS 上测试但包含 O_PATH flags 的时候，是否不能包含上面
 的三个标志之外的其他标志，添加测试代码如下:
@@ -335,7 +335,7 @@ O_NOFOLLOW、O_PATH 中的一个或者多个标志。并且将 acc_mode 设置�
 那么清空文件内容，将其长度置为 0. 在 Linux 下使用此标志，无论以读、写方式
 打开文件，都可清空文件 内容 (在这种情况下，都必须拥有对文件的写权限)。
 
-> - [O_TRUNC 标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A0001B)
+> - [O_TRUNC 标志详解](/blog/SYSCALL_sys_open/#A0001B)
 
 如果 O_TRUNC 标志存在，那么也就以为了会对打开的文件执行写操作，因此将 acc_mode
 变量增加 MAY_WRITE 权限。在 BiscuitOS 中实践这段代码，添加如下调试信息:
@@ -357,7 +357,7 @@ O_NOFOLLOW、O_PATH 中的一个或者多个标志。并且将 acc_mode 设置�
 总在文件尾部追加数据。在当下的 Unix/Linux 系统中，这个选项已经被定义为一个
 原子操作。
 
-> - [O_APPEND 标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A0001C)
+> - [O_APPEND 标志详解](/blog/SYSCALL_sys_open/#A0001C)
 
 如果此时打开标志中包含了 O_APPEND, 那么函数中就让 acc_mode 变量增加
 MAY_APPEND 标志。同理在 BiscuitOs 上实践这段代码，在源码做如下修改:
@@ -383,7 +383,7 @@ MAY_APPEND 标志。同理在 BiscuitOs 上实践这段代码，在源码做如�
 函数再次判断此时 flags 变量中是否包含 O_PATH 标志，该标志用于获得一个能表
 示文件在文件系统中位置的文件描述符. 具体含义参考如下:
 
-> - [O_PATH 标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A0001L)
+> - [O_PATH 标志详解](/blog/SYSCALL_sys_open/#A0001L)
 
 因此如果此时 flags 中包含 O_PATH 标志，那么将 struct open_flags 结构中
 的 intent 成员设置为 0; 反之设置为 LOOKUP_OEPN 标志。函数继续检查 flags
@@ -392,7 +392,7 @@ MAY_APPEND 标志。同理在 BiscuitOs 上实践这段代码，在源码做如�
 函数继续检查 flags 变量是否包含 O_EXCL 标志，此标志与 O_CREAT 标志结合使用
 表明如果文件已经存在。具体含义参考如下:
 
-> - [O_EXCL 标志详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00018)
+> - [O_EXCL 标志详解](/blog/SYSCALL_sys_open/#A00018)
 
 如果 O_CREAT 和 O_EXCL 标志同时存在，那么函数将给 struct open_flags 结构的 
 intent 成员增加 LOOKUP_EXCL 标志。开发者可以在 BiscuitOS 上实践上面的代码，
@@ -461,7 +461,7 @@ getname()/getname_flags() 函数用于从用户空间拷贝字符串到内核空
 上实践这段代码请参考下面文档，源码分析过程中数据均依据 BiscuitOS 实践的结
 果而定:
 
-> - [BiscuitOS open 系统调用调试工具](https://biscuitos.github.io/blog/SYSCALL_sys_open/#C0)
+> - [BiscuitOS open 系统调用调试工具](/blog/SYSCALL_sys_open/#C0)
 
 正如上图所示，执行一次系统调用，open() 库函数将参数传递到内核系统调用
 "SYSCALL_DEFINE3(open, ...)", 该函数即 sys_open(),sys_open() 接着调用
@@ -478,7 +478,7 @@ getname_flags() 函数，getname_flags() 函数就是文件名处理的第一个
 文件打开的标志; 第三个参数是 empty。函数首先定义了一个 struct filename
 指针 result, struct filename 用于维护打开文件的文件名，更多信息可以查看
 
-> - [struct filename 数据结构解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00010D)
+> - [struct filename 数据结构解析](/blog/SYSCALL_sys_open/#A00010D)
 
 函数接着定义了局部 char 指针 kname, int 变量 len。然后调用
 "BUILD_BUG_ON()" 宏配合 offsetof() 函数确认 struct filename 结构体中，
@@ -632,7 +632,7 @@ names_cachep 缓存。如果拷贝成功，但拷贝长度为 PATH_MAX, 那么�
 解析). 开发者如果需要在 BiscuitOS 上实践这段代码请参考下面文档，源码分析
 过程中数据均依据 BiscuitOS 实践的结果而定:
 
-> - [BiscuitOS open 工具之打开任意个文件](https://biscuitos.github.io/blog/SYSCALL_sys_open/#C2)
+> - [BiscuitOS open 工具之打开任意个文件](/blog/SYSCALL_sys_open/#C2)
 
 正如上图所示，执行一次系统调用，open() 库函数将参数传递到内核系统调用
 "SYSCALL_DEFINE3(open, ...)", 该函数即 sys_open(),sys_open() 接着调用
@@ -663,7 +663,7 @@ current->files
 通过上面的代码可以获得当前进行打开文件信息。详细的 struct files_struct 
 结构体描述，请查看:
 
-> - [struct files_struct 解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00011D)
+> - [struct files_struct 解析](/blog/SYSCALL_sys_open/#A00011D)
 
 在 struct files_struct 结构中比较重要的成员是 struct fdtbale 结构体类型
 的 fdt 和 fdtab 两个成员。struct fdtable 的定义如下:
@@ -701,7 +701,7 @@ fd 是 struct file 的二级指针，用于指向当前进程所有打开文件�
 加入到当前进程的 struct files_struct 的 fd_array[] 数组里，然后 fd 就是
 指向 struct files_struct 的 fd_arrayp[] 数组。更多 struct fdtable 信息:
 
-> - [struct fdtable 详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00012D)
+> - [struct fdtable 详解](/blog/SYSCALL_sys_open/#A00012D)
 
 ###### 源码 2
 
@@ -793,7 +793,7 @@ O_CLOEXEC 标志。具体函数实现可以参考如下:
 函数的作用是在 struct fdtable 结构的 full_fds_bits 和 open_fds 成员中
 找到一个可用的文件描述符，struct fdtable 结构的详细分析如下:
 
-> - [struct fdtbale 解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00012D)
+> - [struct fdtbale 解析](/blog/SYSCALL_sys_open/#A00012D)
 
 由 struct fdtable 的 full_fds_bits 和 open_fds 成员可以得到如下关系:
 
@@ -821,7 +821,7 @@ bitmap bitbit 开始处第一个清零的 bit 位置，然后将该偏移乘以 
 最后函数调用 find_next_zero_bit() 函数开始在 open_fds 的 bitbit 之后找到
 第一个为 0 的值，这就是下一个可用的文件描述。函数返回该值。
 
-> - [find_next_zero_bit 函数解析](https://biscuitos.github.io/blog/BITMAP_find_next_zero_bit/)
+> - [find_next_zero_bit 函数解析](/blog/BITMAP_find_next_zero_bit/)
 
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
@@ -836,7 +836,7 @@ expand_files() 函数用于在满足特定条件下，扩充进程最大文件�
 参数 files 用于指向进程的 struct file_struct 结构，nr 用于指向一个待分配
 的文件描述符，struct file_struct 的详细介绍如下:
 
-> - [struct file_struct 结构详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00011D)
+> - [struct file_struct 结构详解](/blog/SYSCALL_sys_open/#A00011D)
 
 函数定义了一个 struct fdtable 的局部指针，以及一个 int 变量 expanded, 其值
 为 0.
@@ -848,7 +848,7 @@ expand_files() 函数用于在满足特定条件下，扩充进程最大文件�
 函数首先获得进程的 struct files_struct 对应的 fdt 成员，开发者可有先了解
 struct fdtable 结构体的信息，如下:
 
-> - [struct fdtable 结构详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00012D)
+> - [struct fdtable 结构详解](/blog/SYSCALL_sys_open/#A00012D)
 
 struct fdtable 的 max_fds 成员用于描述对应进程的最大文件打开数，如果此时
 待分配的文件描述符小于对应进程最大文件打开数，那么进程不需要扩充最大文件
@@ -867,7 +867,7 @@ resize_in_progress 由真变为假，那么函数就可以进行扩充。
 开发者也可以在 BiscuitOS 进行实践来让进行扩充最大文件打开数，开发者
 可以参考:
 
-> - [BiscuitOS open 工具之打开任意个文件](https://biscuitos.github.io/blog/SYSCALL_sys_open/#C2)
+> - [BiscuitOS open 工具之打开任意个文件](/blog/SYSCALL_sys_open/#C2)
 
 在源码中添加调试信息，如下:
 
@@ -959,9 +959,9 @@ expand_fdtable() 函数的作用是扩充进程最大打开文件数。struct fi
 定义了两个 struct fdtable 指针 new_fdt 和 cur_fdt. struct fdtable 用于
 维护打开文件的信息。具体结构描述如下:
 
-> - [struct files_struct 结构解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00011D)
+> - [struct files_struct 结构解析](/blog/SYSCALL_sys_open/#A00011D)
 >
-> - [struct fdtable 结构解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00012D)
+> - [struct fdtable 结构解析](/blog/SYSCALL_sys_open/#A00012D)
 
 ###### 源码 1
 
@@ -1188,7 +1188,7 @@ nr = current->files->fdtab.max_fds
 接下来函数初始化新的 struct fdtable 剩下的成员。回到 struct fdtable 剩下
 成员的定义:
 
-> - [struct fdtable 结构详解](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00012D)
+> - [struct fdtable 结构详解](/blog/SYSCALL_sys_open/#A00012D)
 
 ![](/assets/PDB/HK/HK000025.png)
 
@@ -1296,7 +1296,7 @@ copy_fdtable() 函数用于拷贝一个旧的 struct fdtable 到新的 struct fd
 函数定义了两个整形的局部变量 cpy 和 set 用于控制拷贝过程。拷贝之前可以查
 看 struct fdtable 的详细描述:
 
-> - [struct fdtable 结构解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00012D)
+> - [struct fdtable 结构解析](/blog/SYSCALL_sys_open/#A00012D)
 
 函数首先检测新的最大文件打开数是否小于原始的最大文件打开数，如果小于，函数
 判定这是一个 BUG，与初衷相悖直接报错。struct fdtable 的 fd 成员是一个
@@ -1313,7 +1313,7 @@ struct fdtable 的 fd 指针数组中需要初始化的字节数。接下来函�
 
 重新编译内核，运行 BiscuitOS，参考下面的工具，并使用调试命令:
 
-> - [BiscuitOS 打开任意个文件工具](https://biscuitos.github.io/blog/SYSCALL_sys_open/#C2)
+> - [BiscuitOS 打开任意个文件工具](/blog/SYSCALL_sys_open/#C2)
 
 {% highlight c %}
 number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
@@ -1351,7 +1351,7 @@ copy_fd_bitmaps() 函数用于拷贝 struct fdtable 的 bitmap 相关的成员�
 nfds 指向新的 struct fdtable, ofdt 参数指向原始的 struct fdtable. count
 参数代表需要拷贝的 bit 数。
 
-> - [struct fdtable 结构解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00012D)
+> - [struct fdtable 结构解析](/blog/SYSCALL_sys_open/#A00012D)
 
 函数根据 bit 参数，首先计算出需要拷贝的字节数，由于 count 参数已经按 
 BITS_PER_LONG 对齐过，因此可以直接使用 count 除以 BITS_PER_BYTE 获得，
@@ -1366,7 +1366,7 @@ open_fds 和 close_one_exec 的 bit 数了，然后将这个数除以 BITS_PER_B
 
 重新编译内核，运行 BiscuitOS，参考下面的工具，并使用调试命令:
 
-> - [BiscuitOS 打开任意个文件工具](https://biscuitos.github.io/blog/SYSCALL_sys_open/#C2)
+> - [BiscuitOS 打开任意个文件工具](/blog/SYSCALL_sys_open/#C2)
 
 {% highlight c %}
 number_open_common-0.0.1 -n 30 -d 29 -f O_RDWR,O_CREAT -m S_IRUSR,S_IRGRP
@@ -1412,9 +1412,9 @@ full_fds_bit 的一个 bit 代表 open_fds 中 BITS_PER_LONG 个 bit，因此可
 fd 指向将要置位的文件描述符，fdt 参数指向文件描述符表。首先了解
 struct fdtable 结构和用于实践的信息:
 
-> - [struct fdtable 结构解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00012D)
+> - [struct fdtable 结构解析](/blog/SYSCALL_sys_open/#A00012D)
 >
-> - [BiscuitOS 打开任意个文件工具](https://biscuitos.github.io/blog/SYSCALL_sys_open/#C2) 
+> - [BiscuitOS 打开任意个文件工具](/blog/SYSCALL_sys_open/#C2) 
 
 ![](/assets/PDB/HK/HK000025.png)
 
@@ -1467,9 +1467,9 @@ close_on_exec bitmap 中指定的位置上做置位操作。struct fdtable 的 c
 是一个 bitmap，每个文件描述符在该 bitmap 上都有一个对应的 bit。函数调用
 \_\_set_bit() 函数将 bitmap 中对应的位置置位。
 
-> - [struct fdtable 结构体解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00012D)
+> - [struct fdtable 结构体解析](/blog/SYSCALL_sys_open/#A00012D)
 >
-> - [\_\_set_bit() 函数解析](https://biscuitos.github.io/blog/BITMAP___set_bit/)
+> - [\_\_set_bit() 函数解析](/blog/BITMAP___set_bit/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1485,11 +1485,11 @@ close_on_exec bitmap 中指定的位置上做清零操作。struct fdtable 的 c
 调用 test_bit() 函数查看 fd 对应的 bit 是否已经置位，如果置位就调用
 \_\_clear_bit() 函数将 bitmap 中对应的位置清零。
 
-> - [struct fdtable 结构体解析](https://biscuitos.github.io/blog/SYSCALL_sys_open/#A00012D)
+> - [struct fdtable 结构体解析](/blog/SYSCALL_sys_open/#A00012D)
 >
-> - [test_bit() 函数解析](https://biscuitos.github.io/blog/BITMAP_test_bit/)
+> - [test_bit() 函数解析](/blog/BITMAP_test_bit/)
 >
-> - [\_\_clear_bit() 函数解析](https://biscuitos.github.io/blog/BITMAP_clear_bit/)
+> - [\_\_clear_bit() 函数解析](/blog/BITMAP_clear_bit/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 

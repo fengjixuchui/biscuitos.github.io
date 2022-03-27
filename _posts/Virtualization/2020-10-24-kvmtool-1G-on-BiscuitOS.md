@@ -66,7 +66,7 @@ BiscuitOS 为 kvmtool 提供了一套完成的开发实践环境，开发者可�
 
 kvmtool 项目目前只支持 x86_64，本文以 x86_64 架构进行讲解，并推荐使用该架构来构建 kvmtool 项目。首先开发者基于 BiscuitOS 搭建一个 x86_64 架构的开发环境，请开发者参考如下文档:
 
-> - [BiscuitOS Linux 5.0 X86_64 环境部署](https://biscuitos.github.io/blog/Linux-5.0-x86_64-Usermanual/)
+> - [BiscuitOS Linux 5.0 X86_64 环境部署](/blog/Linux-5.0-x86_64-Usermanual/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -213,7 +213,7 @@ kvmtool 的调试有很多种方法，这里主要介绍通过 LOG 日志的办�
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Blog 2.0](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Blog 2.0](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

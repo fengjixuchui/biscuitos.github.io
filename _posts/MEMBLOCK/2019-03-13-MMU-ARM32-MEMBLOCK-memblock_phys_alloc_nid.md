@@ -467,7 +467,7 @@ flags 所查找内存区块的标志。
 参数到第三个参数之间，所以可以看到，所遍历到的内存区块的起始地址要位于所查找
 的范围之内。如果找到就调用 round_down() 函数从找到的顶部找一块 size 大小
 的内存，最后将符合条件的地址返回。for_each_free_mem_range_reverse() 函数
-源码分析请看： [for_each_free_mem_range_reverse() 源码](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/#源码分析)
+源码分析请看： [for_each_free_mem_range_reverse() 源码](/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/#源码分析)
 
 ##### __memblock_find_range_bottom_up
 
@@ -518,11 +518,11 @@ flags 所查找内存区块的标志。
 函数，以确保要查找的范围在遍历到的内存区内。如果找到，那么调用 round_up()
 函数从找到的内存区底部到顶部，大小为 size 的内存区块。如果找到，那么就
 返回这个地址；如果没找到，那么继续遍历可用物理内存区块。最后找到符合要求的
-地址，for_each_free_mem_range() 函数源码分析请看：[for_each_free_mem_range() 源码分析](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/#源码分析)
+地址，for_each_free_mem_range() 函数源码分析请看：[for_each_free_mem_range() 源码分析](/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/#源码分析)
 
 ##### memblock_reserve
 
-memblock_reserve() 函数源码分析请看：[memblock_reserve() 源码](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/#源码分析)
+memblock_reserve() 函数源码分析请看：[memblock_reserve() 源码](/blog/MMU-ARM32-MEMBLOCK-memblock_reserve/#源码分析)
 
 
 ---------------------------------------------
@@ -558,7 +558,7 @@ memblock_phys_alloc_nid() 函数用于从指定的 NUMA 节点中分配物理内
 开发环境搭建方法以及重点关注驱动实践一节，请参考下例文章，选择一个 linux 5.x
 版本进行实践，后面内容均基于 linux 5.x 继续讲解，文章链接如下：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+[基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 #### <span id="驱动源码">驱动源码</span>
 
@@ -713,7 +713,7 @@ Device Driver--->
 
 具体过程请参考：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+[基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 #### <span id="驱动增加调试点">增加调试点</span>
 
@@ -753,13 +753,13 @@ ck_add
 
 驱动编译也请参考下面文章关于驱动编译一节：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+[基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 #### <span id="驱动运行">驱动运行</span>
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+[基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 驱动运行的结果如下：
 
@@ -845,19 +845,19 @@ Region: 0x9ff00000 - 0xa0000000
 
 # <span id="附录">附录</span>
 
-> [MEMBLOCK 内存分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+> [MEMBLOCK 内存分配器](/blog/MMU-ARM32-MEMBLOCK-index/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

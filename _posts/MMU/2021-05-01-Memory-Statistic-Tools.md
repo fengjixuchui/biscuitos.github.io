@@ -408,7 +408,7 @@ mount -t cgroup -o memory BiscuitOS /Cgroup_memory
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Blog 2.0](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Blog 2.0](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

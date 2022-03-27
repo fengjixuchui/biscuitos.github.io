@@ -41,9 +41,9 @@ nbits 参数指向查找的范围。函数首先调用 small_const_nbits() 函�
 内含有 1 的个数；如果 nbits 不满足条件，那么直接调用 __bitmap_weight() 函数
 返回指定范围内 1 的个数。
 
-> - [\_\_bitmap_weight](https://biscuitos.github.io/blog/BITMAP___bitmap_weight)
+> - [\_\_bitmap_weight](/blog/BITMAP___bitmap_weight)
 >
-> - [BITMAP_LAST_WORD_MASK](https://biscuitos.github.io/blog/BITMAP_BITMAP_LAST_WORD_MASK)
+> - [BITMAP_LAST_WORD_MASK](/blog/BITMAP_BITMAP_LAST_WORD_MASK)
 
 --------------------------------------------------
 
@@ -145,19 +145,19 @@ Device Driver--->
 
 具体过程请参考：
 
-> [Linux 5.0 开发环境搭建 -- 驱动配置](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E9%85%8D%E7%BD%AE)
+> [Linux 5.0 开发环境搭建 -- 驱动配置](/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E9%85%8D%E7%BD%AE)
 
 #### <span id="驱动编译">驱动编译</span>
 
 驱动编译也请参考下面文章关于驱动编译一节：
 
-> [Linux 5.0 开发环境搭建 -- 驱动编译](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E7%BC%96%E8%AF%91%E9%A9%B1%E5%8A%A8)
+> [Linux 5.0 开发环境搭建 -- 驱动编译](/blog/Linux-5.0-arm32-Usermanual/#%E7%BC%96%E8%AF%91%E9%A9%B1%E5%8A%A8)
 
 #### <span id="驱动运行">驱动运行</span>
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
-> [Linux 5.0 开发环境搭建 -- 驱动运行](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E8%BF%90%E8%A1%8C)
+> [Linux 5.0 开发环境搭建 -- 驱动运行](/blog/Linux-5.0-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E8%BF%90%E8%A1%8C)
 
 启动内核，并打印如下信息：
 
@@ -180,15 +180,15 @@ bitmap 权重计算方法。
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

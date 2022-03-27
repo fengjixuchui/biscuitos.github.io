@@ -267,7 +267,7 @@ rb-tree/Rotate/Right_Rotate$ ./rbtree
 
 # 红黑树与 2-3 树的关系
 
-> [红黑树与 2-3 树的关系](https://biscuitos.github.io/blog/Tree_2-3-tree/#RB23)
+> [红黑树与 2-3 树的关系](/blog/Tree_2-3-tree/#RB23)
 
 ### 红黑树右旋与 2-3 树的关系
 
@@ -288,7 +288,7 @@ rb-tree/Rotate/Right_Rotate$ ./rbtree
 成为了 p0 的左孩子。p0 自己成为了 n0 的右孩子。对应的红黑树如右边。更多红黑树与 2-3 树
 的关系请看文档：
 
-> [红黑树与 2-3 树的关系分析](https://biscuitos.github.io/blog/Tree_2-3-tree/)
+> [红黑树与 2-3 树的关系分析](/blog/Tree_2-3-tree/)
 -----------------------------------------------
 
 # <span id="附录">附录</span>
@@ -297,15 +297,15 @@ rb-tree/Rotate/Right_Rotate$ ./rbtree
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

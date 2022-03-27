@@ -58,7 +58,7 @@ CMA 基于 buddy 构建，Linux 内核既要确保本身预留合适的物理内
 不小的挑战。本文重点介绍如何在一个平台上布局 CMA。更多 CMA
 描述请参考:
 
-> - [CMA 分配器详解](https://biscuitos.github.io/blog/CMA/#A0)
+> - [CMA 分配器详解](/blog/CMA/#A0)
 
 ----------------------------------
 
@@ -309,7 +309,7 @@ address 的值为节点 reg 属性的属性值，并且用 16 进制表示。2)
 
 ![](/assets/PDB/HK/HK000149.png)
 
-> - [CMA 方案配置之 DTS 源码解析](https://biscuitos.github.io/blog/CMA/#E0111)
+> - [CMA 方案配置之 DTS 源码解析](/blog/CMA/#E0111)
 
 <span id="C022"></span>
 
@@ -331,7 +331,7 @@ DTS 方案的缺点就是在不支持的 DTS 的平台无法使用该方案.
 本例基于 BiscuitOS linux 5.0 进行实践，BiscuitOS linux 5.0 开发环境
 部署请参考下文:
 
-> - [BiscuitOS linux 5.0 arm32 开发环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 arm32 开发环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 准备好开发环境之后，开发者可以参考下列步骤实践 DTS 方案:
 
@@ -410,7 +410,7 @@ CMDLINE 方案内核初始化源码分析请参考下列文档:
 
 ![](/assets/PDB/HK/HK000151.png)
 
-> - [CMA 方案配置之 CMDLINE 源码解析](https://biscuitos.github.io/blog/CMA/#E0112)
+> - [CMA 方案配置之 CMDLINE 源码解析](/blog/CMA/#E0112)
 
 <span id="C032"></span>
 
@@ -434,7 +434,7 @@ CMDLINE 方案内核初始化源码分析请参考下列文档:
 本例基于 BiscuitOS linux 5.0 进行实践，BiscuitOS linux 5.0 开发环境
 部署请参考下文:
 
-> - [BiscuitOS linux 5.0 arm32 开发环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 arm32 开发环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 准备好开发环境之后，本次实践模拟 uboot 传递 CMDLINE 方式配置 CMA。
 开发者首先向 uboot 中添加传入的 CMDLINE 参数，以便添加 cma 配置，
@@ -521,7 +521,7 @@ Kbuild 通过设置 CMA 大小来配置 CMA，Kbuild 为了提供不同的使用
 
 ![](/assets/PDB/HK/HK000152.png)
 
-> - [CMA 配置方案之 Kbuild 源码分析](https://biscuitos.github.io/blog/CMA/#E0113)
+> - [CMA 配置方案之 Kbuild 源码分析](/blog/CMA/#E0113)
 
 <span id="C042"></span>
 
@@ -545,7 +545,7 @@ Kbuild 方案优先级最低，容易被其他方案取代。
 本例基于 BiscuitOS linux 5.0 进行实践，BiscuitOS linux 5.0 开发环境
 部署请参考下文:
 
-> - [BiscuitOS linux 5.0 arm32 开发环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 arm32 开发环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 准备好开发环境之后，开发者可以参考下列步骤实践 Kbuild 方案:
 
@@ -719,7 +719,7 @@ CMA 分配器可以设置 CMA 区域的起始基地址，名字和长度。综�
 本例基于 BiscuitOS linux 5.0 进行实践，BiscuitOS linux 5.0 开发环境
 部署请参考下文:
 
-> - [BiscuitOS linux 5.0 arm32 开发环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 arm32 开发环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 在布局 CMA 之前，需要先运行一下 BiscuitOS 获得 RAM 信息和 MEMBLOCK
 分配器预留区信息。使用下面命令:

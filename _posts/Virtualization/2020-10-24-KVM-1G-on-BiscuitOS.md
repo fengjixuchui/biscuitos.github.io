@@ -66,7 +66,7 @@ KVM 全称 "Kernel-Based Virtual Machine", 是基于内核的虚拟机，它由�
 
 KOB-1G 项目目前支持 x86_64，由于需要内核 HugePage 的支持，因此需要确保实践平台 HugePage 功能已经打开。首先开发者基于 BiscuitOS 搭建一个 x86_64 架构的开发环境，请开发者参考如下文档:
 
-> - [BiscuitOS Linux 5.0 X86_64 环境部署](https://biscuitos.github.io/blog/Linux-5.0-x86_64-Usermanual/)
+> - [BiscuitOS Linux 5.0 X86_64 环境部署](/blog/Linux-5.0-x86_64-Usermanual/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -646,7 +646,7 @@ RunBiscuitOS.sh 脚本会被安装到 BiscuitOS 的 /usr/bin 目录下，脚本�
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Blog 2.0](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Blog 2.0](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

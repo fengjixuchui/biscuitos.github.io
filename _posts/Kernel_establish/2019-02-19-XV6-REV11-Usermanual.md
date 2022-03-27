@@ -42,7 +42,7 @@ tags:
 脑的安装可以上网查找相应的教程。准备好相应的开发主机之后，请参照如下文章进行开
 发主机细节配置。
 
-> [BiscuitOS 开发环境搭建](https://biscuitos.github.io/blog/PlatformBuild/)
+> [BiscuitOS 开发环境搭建](/blog/PlatformBuild/)
 
 #### <span id="安装基础开发工具">安装基础开发工具</span>
 
@@ -209,9 +209,9 @@ make qemu
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

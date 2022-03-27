@@ -70,7 +70,7 @@ Linux。开发者可以按照如下步骤在 BiscuitOS 上运行 SeaBIOS。
 
 首先制作搭建 BiscuitOS 系统，请参考如下文档：
 
-> [制作基于 Linux 1.0.1.2 内核 BiscuitOS](https://biscuitos.github.io/blog/Linux-1.0.1.2-Usermanual/)
+> [制作基于 Linux 1.0.1.2 内核 BiscuitOS](/blog/Linux-1.0.1.2-Usermanual/)
 
 搭建完之后，请安装必要的开发工具，使用如下命令：
 
@@ -202,13 +202,13 @@ rel-1.9.3
 >
 > [SeaBIOS](https://www.coreboot.org/SeaBIOS)
 >
-> [BiscuitOS](https://biscuitos.github.io/blog/HomePage/)
+> [BiscuitOS](/blog/HomePage/)
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

@@ -112,7 +112,7 @@ end_of_stack() 函数用于获得进程堆栈栈顶的地址。在内核中，�
 
 > - [task_thread_info](#A0003)
 >
-> - [Thread_info 与内核堆栈的关系](https://biscuitos.github.io/blog/TASK-thread_info_stack/)
+> - [Thread_info 与内核堆栈的关系](/blog/TASK-thread_info_stack/)
 
 ------------------------------------
 
@@ -140,7 +140,7 @@ thread_union 联合体将进程的 thread_info 与内核态堆栈绑定在一起
 task_struct 初始化的时候，stack 成员指向的地址就是 thread_info
 的地址。
 
-> - [Thread_info 与内核堆栈的关系](https://biscuitos.github.io/blog/TASK-thread_info_stack/)
+> - [Thread_info 与内核堆栈的关系](/blog/TASK-thread_info_stack/)
 
 ------------------------------------
 
@@ -272,7 +272,7 @@ read_cpuid_mpidr() 函数的作用是读取 ARM MPDIR 寄存器，MPDIR
 寄存器用来附加的识别处理器核。在 SMP 系统中，可以通过该寄存器
 区分不同的处理器核。
 
-> - [read_cpuid_mpidr 实践](https://biscuitos.github.io/blog/CPUID_read_cpuid_mpidr/)
+> - [read_cpuid_mpidr 实践](/blog/CPUID_read_cpuid_mpidr/)
 >
 > - [B4.1.106 MPIDR, Multiprocessor Affinity Register, VMSA](https://github.com/BiscuitOS/Documentation/blob/master/Datasheet/ARM/ARMv7_architecture_reference_manual.pdf)
 
@@ -505,7 +505,7 @@ thread_info 与进程内核堆栈的关系，将堆栈的地址与上
 (THREAD_SIZE - 1) 反码的值，以此获得 thread_info 的地址，
 更多 thread_info 与内核态堆栈的关系，请参考：
 
-> - [Thread_info 与内核堆栈的关系](https://biscuitos.github.io/blog/TASK-thread_info_stack/)
+> - [Thread_info 与内核堆栈的关系](/blog/TASK-thread_info_stack/)
 >
 > - [current_stack_pointer](#A0018)
 
@@ -572,7 +572,7 @@ cpu 参数对应的位置位。函数调用 set_bit() 函数将 dstp 中的 cpu
 对应的位置位，其中 cpumask_check() 函数用于检查 cpu id 的合法性，
 cpumask_bits() 函数用于获得 dstp 参数对应的 bitmap。
 
-> - [set_bit](https://biscuitos.github.io/blog/BITMAP_set_bit/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+> - [set_bit](/blog/BITMAP_set_bit/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
 >
 > - [cpumask_check](#A0022)
 >
@@ -670,7 +670,7 @@ bitmap 的 cpu 位。cpumask_check() 函数用于检查 cpu 参数对应
 的 CPUID 合法性，cpumask_bits() 函数用于获得 dtsp 对应的
 bitmap。
 
-> - [clear_bit](https://biscuitos.github.io/blog/BITMAP_clear_bit/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+> - [clear_bit](/blog/BITMAP_clear_bit/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
 >
 > - [cpumask_check](#A0022)
 >
@@ -860,7 +860,7 @@ page_address_init() 函数用于初始化高端内存线性地址中永久映
 
 > - [page_address_htable](#A0035)
 >
-> - [INIT_LIST_HEAD](https://biscuitos.github.io/blog/LIST_INIT_LIST_HEAD/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+> - [INIT_LIST_HEAD](/blog/LIST_INIT_LIST_HEAD/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
 >
 > - [spin_lock_init](#)
 >
@@ -1032,9 +1032,9 @@ proc_info_list 结构。函数以汇编形式给出，参数通过 r0 寄存器
 __lookup_processor_type 获取 proc_info_list 的过程可以参考
 如下文档：
 
-> - [ARMv7 Cortex-A9 proc_info_list](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#ARMv7%20Cortex-A9%20proc_info_list)
+> - [ARMv7 Cortex-A9 proc_info_list](/blog/ARM-SCD-kernel-head.S/#ARMv7%20Cortex-A9%20proc_info_list)
 >
-> - [\_\_lookup_processor_type](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__lookup_processor_type)
+> - [\_\_lookup_processor_type](/blog/ARM-SCD-kernel-head.S/#__lookup_processor_type)
 
 ------------------------------------
 
@@ -1101,7 +1101,7 @@ __get_cpu_architecture() 函数中，如果 VMSA 域值大于等于 3，
 PMSA 域等于 2，那么体系就是 ARMv6。因此 __get_cpu_architecture()
 函数可以获得 ARM 的体系信息。
 
-> - [read_cpuid_id](https://biscuitos.github.io/blog/CPUID_read_cpuid_id/)
+> - [read_cpuid_id](/blog/CPUID_read_cpuid_id/)
 
 ------------------------------------
 
@@ -1446,7 +1446,7 @@ Primary part number 域。MIDR 寄存器的布局如下：
 
 ![](/assets/PDB/BiscuitOS/boot/BOOT000201.png)
 
-> - [read_cpuid_id](https://biscuitos.github.io/blog/CPUID_read_cpuid_id/)
+> - [read_cpuid_id](/blog/CPUID_read_cpuid_id/)
 
 ------------------------------------
 
@@ -1521,7 +1521,7 @@ SynchPrim_instrs_frac 域大于等于 3，那么函数将全局变量 elf_hwcap
 
 > - [cpuid_feature_extract](#A0048)
 >
-> - [read_cpuid_id](https://biscuitos.github.io/blog/CPUID_read_cpuid_id/)
+> - [read_cpuid_id](/blog/CPUID_read_cpuid_id/)
 
 ------------------------------------
 
@@ -1539,7 +1539,7 @@ read_cpuid_cachetype() 函数用于读取 ARM 的 CTR (Cache Type Register)
 
 ![](/assets/PDB/BiscuitOS/boot/BOOT000206.png)
 
-> - [read_cpuid](https://biscuitos.github.io/blog/CPUID_read_cpuid/)
+> - [read_cpuid](/blog/CPUID_read_cpuid/)
 
 ------------------------------------
 
@@ -1951,7 +1951,7 @@ ENTRY(cpu_v7_proc_init)
 ENDPROC(cpu_v7_proc_init)
 {% endhighlight %}
 
-> - [ARMv7 Cortex-A9mp proc_info](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#ARMv7%20Cortex-A9%20proc_info_list)
+> - [ARMv7 Cortex-A9mp proc_info](/blog/ARM-SCD-kernel-head.S/#ARMv7%20Cortex-A9%20proc_info_list)
 
 ------------------------------------
 
@@ -2116,7 +2116,7 @@ CPSR 寄存器的 F 标志和 I 标志置位，打开 FIRQ 和 IRQ，
 >
 > - [cpu_proc_init](#A0072)
 >
-> - [ARMv7 Cortex-A9mp proc_info](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#ARMv7%20Cortex-A9%20proc_info_list)
+> - [ARMv7 Cortex-A9mp proc_info](/blog/ARM-SCD-kernel-head.S/#ARMv7%20Cortex-A9%20proc_info_list)
 
 ------------------------------------
 
@@ -2255,7 +2255,7 @@ DIV 指令。本段代码主要获得体系的硬件信息。
 stacks[] 数组结构中。至此函数初始化硬件完毕，函数将相应的硬件信息
 维护到系统的全局变量里。
 
-> - [read_cpuid_id](https://biscuitos.github.io/blog/CPUID_read_cpuid_id/)
+> - [read_cpuid_id](/blog/CPUID_read_cpuid_id/)
 >
 > - [lookup_processor](#A0039)
 >
@@ -2310,9 +2310,9 @@ DTB 二进制文件起始的位置是一个 struct fdt_header 结构，
 
 > - [fdt32_ld](#A0075)
 >
-> - [DTB 二进制文件结构](https://biscuitos.github.io/blog/DTS/#M00)
+> - [DTB 二进制文件结构](/blog/DTS/#M00)
 >
-> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+> - [fd_header 数据结构解析](/blog/DTS/#B010)
 
 ------------------------------------
 
@@ -2328,7 +2328,7 @@ struct fdt_header 的 magic 成员。
 
 > - [fdt_get_header](#A0076)
 >
-> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+> - [fd_header 数据结构解析](/blog/DTS/#B010)
 
 ------------------------------------
 
@@ -2345,7 +2345,7 @@ struct fdt_header 的 fdt_totalsize 成员，该成员存储 DTB
 
 > - [fdt_get_header](#A0076)
 >
-> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+> - [fd_header 数据结构解析](/blog/DTS/#B010)
 
 ------------------------------------
 
@@ -2362,7 +2362,7 @@ struct fdt_header 的 off_dt_struct 成员，该成员指向 DTB
 
 > - [fdt_get_header](#A0076)
 >
-> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+> - [fd_header 数据结构解析](/blog/DTS/#B010)
 
 ------------------------------------
 
@@ -2379,7 +2379,7 @@ struct fdt_header 的 off_dt_strings 成员，该成员指向 DTB
 
 > - [fdt_get_header](#A0076)
 >
-> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+> - [fd_header 数据结构解析](/blog/DTS/#B010)
 
 ------------------------------------
 
@@ -2396,7 +2396,7 @@ struct fdt_header 的 off_mem_revmap 成员，该成员指向 DTB
 
 > - [fdt_get_header](#A0076)
 >
-> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+> - [fd_header 数据结构解析](/blog/DTS/#B010)
 
 ------------------------------------
 
@@ -2413,7 +2413,7 @@ struct fdt_header 的 version 成员，该成员指向 DeviceTree
 
 > - [fdt_get_header](#A0076)
 >
-> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+> - [fd_header 数据结构解析](/blog/DTS/#B010)
 
 ------------------------------------
 
@@ -2430,7 +2430,7 @@ struct fdt_header 的 last_comp_version 成员，该成员指向 DeviceTree
 
 > - [fdt_get_header](#A0076)
 >
-> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+> - [fd_header 数据结构解析](/blog/DTS/#B010)
 
 ------------------------------------
 
@@ -2447,7 +2447,7 @@ struct fdt_header 的 boot_cpuid_phys 成员，该成员指向 DeviceTree
 
 > - [fdt_get_header](#A0076)
 >
-> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+> - [fd_header 数据结构解析](/blog/DTS/#B010)
 
 ------------------------------------
 
@@ -2464,7 +2464,7 @@ struct fdt_header 的 dt_strings_size 成员，该成员指明了 DTB 文件
 
 > - [fdt_get_header](#A0076)
 >
-> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+> - [fd_header 数据结构解析](/blog/DTS/#B010)
 
 ------------------------------------
 
@@ -2481,7 +2481,7 @@ struct fdt_header 的 dt_struct_size 成员，该成员指明了 DTB 文件
 
 > - [fdt_get_header](#A0076)
 >
-> - [fd_header 数据结构解析](https://biscuitos.github.io/blog/DTS/#B010)
+> - [fd_header 数据结构解析](/blog/DTS/#B010)
 
 ------------------------------------
 
@@ -2790,7 +2790,7 @@ device-node 的地址。DTB 的结构设计如下图：
 
 > - [fdt_off_dt_struct](#A0079)
 >
-> - [DTB format describe](https://biscuitos.github.io/blog/DTS/#M00)
+> - [DTB format describe](/blog/DTS/#M00)
 
 ------------------------------------
 
@@ -4969,7 +4969,7 @@ r_start 之间最大的地址开始，到 m_end 与 r_end 之间最小的地址
 >
 > - [memblock_is_nomap](#A0143)
 >
-> - [\_\_next_mem_range 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__next_mem_range/)
+> - [\_\_next_mem_range 内核实践](/blog/MMU-ARM32-MEMBLOCK-__next_mem_range/)
 
 ------------------------------------
 
@@ -5061,7 +5061,7 @@ for_each_mem_range() 函数的作用就是遍历指定范围内的所有 region�
 
 > - [\_\_next_mem_range](#A0139)
 >
-> - [\_\_next_mem_range 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range/)
+> - [\_\_next_mem_range 内核实践](/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range/)
 
 ------------------------------------
 
@@ -5093,7 +5093,7 @@ regions，并确保遍历到的 region 不在 memblock.reserved 里面。
 
 > - [for_each_mem_range](#A0144)
 >
-> - [for_each_free_mem_range 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/)
+> - [for_each_free_mem_range 内核实践](/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range/)
 
 ------------------------------------
 
@@ -5514,7 +5514,7 @@ if (m_end > r_start) {
 >
 > - [memblock_is_nomap](#A0143)
 >
-> - [__next_mem_range_rev 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-__next_mem_range_rev/#header)
+> - [__next_mem_range_rev 内核实践](/blog/MMU-ARM32-MEMBLOCK-__next_mem_range_rev/#header)
 
 ------------------------------------
 
@@ -5557,7 +5557,7 @@ __next_mem_range_rev() 函数查找一块可用的物理内存。每遍历一次
 
 > - [\_\_next_mem_range_rev](#A0150)
 >
-> - [for_each_mem_range_rev 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range_rev/)
+> - [for_each_mem_range_rev 内核实践](/blog/MMU-ARM32-MEMBLOCK-for_each_mem_range_rev/)
 
 ------------------------------------
 
@@ -5590,7 +5590,7 @@ for_each_free_mem_range_reverse() 函数的作用就是倒叙遍历所有 free
 
 > - [for_each_free_mem_range_reverse](#A0151)
 >
-> - [for_each_free_mem_range_reverse 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/)
+> - [for_each_free_mem_range_reverse 内核实践](/blog/MMU-ARM32-MEMBLOCK-for_each_free_mem_range_reverse/)
 
 ------------------------------------
 
@@ -5865,7 +5865,7 @@ return __memblock_find_range_top_down(start, end, size, align, nid,
 >
 > - [\_\_memblock_find_range_top_down](#A0153)
 >
-> - [memblock_find_in_range_node 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_find_in_range_node/)
+> - [memblock_find_in_range_node 内核实践](/blog/MMU-ARM32-MEMBLOCK-memblock_find_in_range_node/)
 
 ------------------------------------
 
@@ -5920,7 +5920,7 @@ align 参数用于对齐操作。
 >
 > - [choose_memblock_flags](#A0157)
 >
-> - [memblock_find_in_range 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_find_in_range/)
+> - [memblock_find_in_range 内核实践](/blog/MMU-ARM32-MEMBLOCK-memblock_find_in_range/)
 
 ------------------------------------
 
@@ -6243,7 +6243,7 @@ memblock_remove_range() 函数从保留区内移除 base 到 end
 
 > - [memblock_remove_range](#A0160)
 >
-> - [memblock_free 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_free/)
+> - [memblock_free 内核实践](/blog/MMU-ARM32-MEMBLOCK-memblock_free/)
 
 ------------------------------------
 
@@ -6957,7 +6957,7 @@ if (!insert) {
 >
 > - [memblock_merge_region](#A0164)
 >
-> - [memblock_add_range 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add_range/)
+> - [memblock_add_range 内核实践](/blog/MMU-ARM32-MEMBLOCK-memblock_add_range/)
 
 ------------------------------------
 
@@ -6993,7 +6993,7 @@ memblock.memory 内存区。
 
 > - [memblock_add_range](#A0165)
 >
-> - [memblock_add 内核实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-memblock_add/)
+> - [memblock_add 内核实践](/blog/MMU-ARM32-MEMBLOCK-memblock_add/)
 
 ------------------------------------
 
@@ -12428,7 +12428,7 @@ __pv_table_begin, 终止地址是 __pv_table_end. 再回到 __pv_stub
 例如在 ARMv7 内核启动过程中，在汇编阶段就通过 __fixup_pv_table
 对 .init.pv_table section 进行修改，具体可以参考：
 
-> - [__fixup_pv_table](https://biscuitos.github.io/blog/ARM-SCD-kernel-head.S/#__fixup_pv_table)
+> - [__fixup_pv_table](/blog/ARM-SCD-kernel-head.S/#__fixup_pv_table)
 
 这里还涉及一个比较有意思的地方，1 标志处的代码为：
 
@@ -12576,9 +12576,9 @@ static_vmlist 链表，直到在链表中找到一个成员的地址大于参数
 
 > - [vm_area_add_early](#A0291)
 >
-> - [list_for_each_entry](https://biscuitos.github.io/blog/LIST_list_for_each_entry/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+> - [list_for_each_entry](/blog/LIST_list_for_each_entry/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
 >
-> - [list_add_tail](https://biscuitos.github.io/blog/LIST_list_add_tail/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+> - [list_add_tail](/blog/LIST_list_add_tail/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
 
 ------------------------------------
 
@@ -13057,7 +13057,7 @@ pmd_empty_section_gap() 函数填充该 PMD 入口，同理检查静态映射的
 地址对应的 PMD 入口是否也存在其中一个 PMD 入口也是空的情况。最后函数
 将 next 指向该静态映射的结尾。
 
-> - [list_for_each_entry](https://biscuitos.github.io/blog/LIST_list_for_each_entry/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
+> - [list_for_each_entry](/blog/LIST_list_for_each_entry/#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90)
 >
 > - [pmd_off_k](#A0255)
 >

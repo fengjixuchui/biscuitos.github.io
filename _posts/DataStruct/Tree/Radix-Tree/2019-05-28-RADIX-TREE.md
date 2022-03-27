@@ -42,9 +42,9 @@ tags:
 >
 >   - [Radix-Tree 遍历操作](#AD4)
 >
-> - [Radix-tree 在应用程序中部署](https://biscuitos.github.io/blog/Tree_RADIX-TREE_UserArrange/)
+> - [Radix-tree 在应用程序中部署](/blog/Tree_RADIX-TREE_UserArrange/)
 >
-> - [Radix-tree 进阶研究](https://biscuitos.github.io/blog/Tree_RADIX-TREE_Advance/)
+> - [Radix-tree 进阶研究](/blog/Tree_RADIX-TREE_Advance/)
 >
 > - [使用 Data Structure Visualizations 动态分析 Radix-Tree](https://www.cs.usfca.edu/~galles/visualization/RadixTree.html)
 >
@@ -398,19 +398,19 @@ Device Driver--->
 
 具体过程请参考：
 
-> [Linux 4.19.1 开发环境搭建 -- 驱动配置](https://biscuitos.github.io/blog/Linux-4.19.1-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E9%85%8D%E7%BD%AE)
+> [Linux 4.19.1 开发环境搭建 -- 驱动配置](/blog/Linux-4.19.1-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E9%85%8D%E7%BD%AE)
 
 #### <span id="AA驱动编译">驱动编译</span>
 
 驱动编译也请参考下面文章关于驱动编译一节：
 
-> [Linux 4.19.1 开发环境搭建 -- 驱动编译](https://biscuitos.github.io/blog/Linux-4.19.1-arm32-Usermanual/#%E7%BC%96%E8%AF%91%E9%A9%B1%E5%8A%A8)
+> [Linux 4.19.1 开发环境搭建 -- 驱动编译](/blog/Linux-4.19.1-arm32-Usermanual/#%E7%BC%96%E8%AF%91%E9%A9%B1%E5%8A%A8)
 
 #### <span id="AA驱动运行">驱动运行</span>
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
-> [Linux 4.19.1 开发环境搭建 -- 驱动运行](https://biscuitos.github.io/blog/Linux-4.19.1-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E8%BF%90%E8%A1%8C)
+> [Linux 4.19.1 开发环境搭建 -- 驱动运行](/blog/Linux-4.19.1-arm32-Usermanual/#%E9%A9%B1%E5%8A%A8%E8%BF%90%E8%A1%8C)
 
 启动内核，并打印如下信息：
 
@@ -622,9 +622,9 @@ radix-tree 是否能够存储 index，如果能，那么继续插入；如果不
 
 内核提供了插入相关的接口函数，开发者可以参考下面的文章进行对应的实践：
 
-> - [\_\_radix_tree_insert](https://biscuitos.github.io/blog/RADIX-TREE___radix_tree_insert/)
+> - [\_\_radix_tree_insert](/blog/RADIX-TREE___radix_tree_insert/)
 >
-> - [radix_tree_insert](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_insert/)
+> - [radix_tree_insert](/blog/RADIX-TREE_radix_tree_insert/)
 
 ------------------------------------
 
@@ -656,9 +656,9 @@ Radix-tree 一共支持 RADIX_TREE_MAX_TAGS 中 tag，每种 tag 包含了一个
 
 内核提供了查找相关的接口函数，开发者可以通过下面文章进行相关实践：
 
-> - [\_\_radix_tree_lookup](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#___radix_tree_lookup)
+> - [\_\_radix_tree_lookup](/blog/RADIX-TREE_SourceAPI/#___radix_tree_lookup)
 >
-> - [radix_tree_lookup](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_lookup/)
+> - [radix_tree_lookup](/blog/RADIX-TREE_radix_tree_lookup/)
 
 ------------------------------------
 
@@ -672,11 +672,11 @@ Linux 内核在以下两种情况下会触发修改操作，一是主动修改�
 也会修改。修改的逻辑是通过查找操作找到 index 对应的私有指针，然后修改节点对应 slot
 的值即可，开发者可以参考如下文章进行相应的实践：
 
-> - [\_\_radix_tree_delete](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#___radix_tree_delete)
+> - [\_\_radix_tree_delete](/blog/RADIX-TREE_SourceAPI/#___radix_tree_delete)
 >
-> - [radix_tree_delete](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_delete/)
+> - [radix_tree_delete](/blog/RADIX-TREE_radix_tree_delete/)
 >
-> - [replace_slot](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#replace_slot)
+> - [replace_slot](/blog/RADIX-TREE_SourceAPI/#replace_slot)
 
 ------------------------------------
 
@@ -687,11 +687,11 @@ Linux 内核也提供了 radix-tree 的删除操作。删除一个节点的基�
 节点，且该节点没有任何的孩子，那么 radix-tree 就是进行 shrink 操作，减小树的高度。
 开发者可以通过下面的文章进行详细了解和实践：
 
-> - [\_\_radix_tree_delete](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#___radix_tree_delete)
+> - [\_\_radix_tree_delete](/blog/RADIX-TREE_SourceAPI/#___radix_tree_delete)
 >
-> - [radix_tree_delete](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_delete/)
+> - [radix_tree_delete](/blog/RADIX-TREE_radix_tree_delete/)
 >
-> - [radix_tree_shrink](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_shrink)
+> - [radix_tree_shrink](/blog/RADIX-TREE_SourceAPI/#radix_tree_shrink)
 
 ------------------------------------
 
@@ -702,7 +702,7 @@ struct radix_tree_iter 数据结构用于存储每次遍历的数据，每次遍
 都会将必要的信息存储在 struct radix_tree_iter 内，以便便捷使用。开发者
 可以参考如下文章进行实践：
 
-> - [radix_tree_for_each_slot](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_for_each_slot/)
+> - [radix_tree_for_each_slot](/blog/RADIX-TREE_radix_tree_for_each_slot/)
 
 -----------------------------------
 
@@ -712,95 +712,95 @@ struct radix_tree_iter 数据结构用于存储每次遍历的数据，每次遍
 
 ## Radix-Tree 内核接口函数列表
 
-> - [all_tag_set](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#all_tag_set)
+> - [all_tag_set](/blog/RADIX-TREE_SourceAPI/#all_tag_set)
 >
-> - [delete_node](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#delete_node)
+> - [delete_node](/blog/RADIX-TREE_SourceAPI/#delete_node)
 >
-> - [entry_to_node](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#entry_to_node)
+> - [entry_to_node](/blog/RADIX-TREE_SourceAPI/#entry_to_node)
 >
-> - [INIT_RADIX_TREE](https://biscuitos.github.io/blog/RADIX-TREE_INIT_RADIX_TREE/)
+> - [INIT_RADIX_TREE](/blog/RADIX-TREE_INIT_RADIX_TREE/)
 >
-> - [insert_entries](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#insert_entries)
+> - [insert_entries](/blog/RADIX-TREE_SourceAPI/#insert_entries)
 >
-> - [is_idr](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#is_idr)
+> - [is_idr](/blog/RADIX-TREE_SourceAPI/#is_idr)
 >
-> - [node_maxindex](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#node_maxindex)
+> - [node_maxindex](/blog/RADIX-TREE_SourceAPI/#node_maxindex)
 >
-> - [\_\_radix_tree_create](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#___radix_tree_create)
+> - [\_\_radix_tree_create](/blog/RADIX-TREE_SourceAPI/#___radix_tree_create)
 >
-> - [\_\_radix_tree_delete](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#___radix_tree_delete)
+> - [\_\_radix_tree_delete](/blog/RADIX-TREE_SourceAPI/#___radix_tree_delete)
 >
-> - [radix_tree_delete](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_delete/)
+> - [radix_tree_delete](/blog/RADIX-TREE_radix_tree_delete/)
 >
-> - [radix_tree_delete_item](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_delete_item/)
+> - [radix_tree_delete_item](/blog/RADIX-TREE_radix_tree_delete_item/)
 >
-> - [radix_tree_descend](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_descend)
+> - [radix_tree_descend](/blog/RADIX-TREE_SourceAPI/#radix_tree_descend)
 >
-> - [radix_tree_extend](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_extend)
+> - [radix_tree_extend](/blog/RADIX-TREE_SourceAPI/#radix_tree_extend)
 >
-> - [radix_tree_empty](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_empty/)
+> - [radix_tree_empty](/blog/RADIX-TREE_radix_tree_empty/)
 >
-> - [radix_tree_exceptional_entry](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_exceptional_entry/)
+> - [radix_tree_exceptional_entry](/blog/RADIX-TREE_radix_tree_exceptional_entry/)
 >
-> - [radix_tree_find_next_bit](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_find_next_bit)
+> - [radix_tree_find_next_bit](/blog/RADIX-TREE_SourceAPI/#radix_tree_find_next_bit)
 >
-> - [radix_tree_for_each_slot](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_for_each_slot/)
+> - [radix_tree_for_each_slot](/blog/RADIX-TREE_radix_tree_for_each_slot/)
 >
-> - [RADIX_TREE_INIT](https://biscuitos.github.io/blog/RADIX-TREE_RADIX_TREE_INIT/)
+> - [RADIX_TREE_INIT](/blog/RADIX-TREE_RADIX_TREE_INIT/)
 >
-> - [radix_tree_iter_tag_clear](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_iter_tag_clear)
+> - [radix_tree_iter_tag_clear](/blog/RADIX-TREE_SourceAPI/#radix_tree_iter_tag_clear)
 >
-> - [radix_tree_iter_find](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_iter_find)
+> - [radix_tree_iter_find](/blog/RADIX-TREE_SourceAPI/#radix_tree_iter_find)
 >
-> - [radix_tree_iter_init](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_iter_init/)
+> - [radix_tree_iter_init](/blog/RADIX-TREE_radix_tree_iter_init/)
 >
-> - [\_\_radix_tree_insert](https://biscuitos.github.io/blog/RADIX-TREE___radix_tree_insert/)
+> - [\_\_radix_tree_insert](/blog/RADIX-TREE___radix_tree_insert/)
 >
-> - [radix_tree_insert](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_insert/)
+> - [radix_tree_insert](/blog/RADIX-TREE_radix_tree_insert/)
 >
-> - [radix_tree_is_internal_node](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_is_internal_node/)
+> - [radix_tree_is_internal_node](/blog/RADIX-TREE_radix_tree_is_internal_node/)
 >
-> - [radix_tree_load_root](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_load_root)
+> - [radix_tree_load_root](/blog/RADIX-TREE_SourceAPI/#radix_tree_load_root)
 >
-> - [\_\_radix_tree_lookup](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#___radix_tree_lookup)
+> - [\_\_radix_tree_lookup](/blog/RADIX-TREE_SourceAPI/#___radix_tree_lookup)
 >
-> - [radix_tree_lookup](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_lookup/)
+> - [radix_tree_lookup](/blog/RADIX-TREE_radix_tree_lookup/)
 >
-> - [radix_tree_next_chunk](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_next_chunk/)
+> - [radix_tree_next_chunk](/blog/RADIX-TREE_radix_tree_next_chunk/)
 >
-> - [radix_tree_next_slot](https://biscuitos.github.io/blog/RADIX-TREE_radix_tree_next_slot/)
+> - [radix_tree_next_slot](/blog/RADIX-TREE_radix_tree_next_slot/)
 >
-> - [radix_tree_node_alloc](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_node_alloc)
+> - [radix_tree_node_alloc](/blog/RADIX-TREE_SourceAPI/#radix_tree_node_alloc)
 >
-> - [radix_tree_node_free](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_node_free)
+> - [radix_tree_node_free](/blog/RADIX-TREE_SourceAPI/#radix_tree_node_free)
 >
-> - [radix_tree_node_rcu_free](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_node_rcu_free)
+> - [radix_tree_node_rcu_free](/blog/RADIX-TREE_SourceAPI/#radix_tree_node_rcu_free)
 >
-> - [radix_tree_iter_replace](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_iter_replace)
+> - [radix_tree_iter_replace](/blog/RADIX-TREE_SourceAPI/#radix_tree_iter_replace)
 >
-> - [\_\_radix_tree_replace](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#__radix_tree_replace)
+> - [\_\_radix_tree_replace](/blog/RADIX-TREE_SourceAPI/#__radix_tree_replace)
 >
-> - [radix_tree_shrink](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_shrink)
+> - [radix_tree_shrink](/blog/RADIX-TREE_SourceAPI/#radix_tree_shrink)
 >
-> - [radix_tree_tagged](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#radix_tree_tagged)
+> - [radix_tree_tagged](/blog/RADIX-TREE_SourceAPI/#radix_tree_tagged)
 >
-> - [replace_slot](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#replace_slot)
+> - [replace_slot](/blog/RADIX-TREE_SourceAPI/#replace_slot)
 >
-> - [root_tag_clear](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#root_tag_clear)
+> - [root_tag_clear](/blog/RADIX-TREE_SourceAPI/#root_tag_clear)
 >
-> - [root_tag_clear_all](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#root_tag_clear_all)
+> - [root_tag_clear_all](/blog/RADIX-TREE_SourceAPI/#root_tag_clear_all)
 >
-> - [root_tag_get](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#root_tag_get)
+> - [root_tag_get](/blog/RADIX-TREE_SourceAPI/#root_tag_get)
 >
-> - [root_tag_set](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#root_tag_set)
+> - [root_tag_set](/blog/RADIX-TREE_SourceAPI/#root_tag_set)
 >
-> - [shift_maxindex](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#shift_maxindex)
+> - [shift_maxindex](/blog/RADIX-TREE_SourceAPI/#shift_maxindex)
 >
-> - [tag_clear](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#tag_clear)
+> - [tag_clear](/blog/RADIX-TREE_SourceAPI/#tag_clear)
 >
-> - [tag_get](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#tag_get)
+> - [tag_get](/blog/RADIX-TREE_SourceAPI/#tag_get)
 >
-> - [tag_set](https://biscuitos.github.io/blog/RADIX-TREE_SourceAPI/#tag_set)
+> - [tag_set](/blog/RADIX-TREE_SourceAPI/#tag_set)
 
 -----------------------------------------------
 
@@ -812,15 +812,15 @@ struct radix_tree_iter 数据结构用于存储每次遍历的数据，每次遍
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

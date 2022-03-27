@@ -47,7 +47,7 @@ mispredicted 等信息。Linux kernel 对这些 registers 进行了一系列抽�
 本教程安装基于 BiscuitOS 制作的 Linux 5.0 系统，其他平台参照安装。如需要安装基于 BiscuitOS
 的 Linux 5.0 开发环境，请参考下面文章：
 
-> [Linux 5.0 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> [Linux 5.0 arm32 开发环境搭建教程](/blog/Linux-5.0-arm32-Usermanual/)
 
 ##### 获取源码
 
@@ -205,19 +205,19 @@ perf script --header
 
 > [The GNU Assembler](http://tigcc.ticalc.org/doc/gnuasm.html)
 >
-> [Debugging on ARM Boot Stage](https://biscuitos.github.io/blog/BOOTASM-debuggingTools/#header)
+> [Debugging on ARM Boot Stage](/blog/BOOTASM-debuggingTools/#header)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

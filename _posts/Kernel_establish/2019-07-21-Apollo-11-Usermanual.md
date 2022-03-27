@@ -166,7 +166,7 @@ README:
 BiscuitOS/output/Apollo-11/README.md
 
 Blog
-https://biscuitos.github.io/blog/
+/blog/
 *******************************************************************
 {% endhighlight %}
 
@@ -279,9 +279,9 @@ Apollo-11 使用的汇编，如下图：
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

@@ -535,15 +535,15 @@ Bootmem 分配器的实践分作以下几种类型的实践，首先是在特定
 
 因此开发者在选择架构之后，内核版本应该选择小于默认使用 Bootmem 分配器的版本。本节以 "i386 架构 2.6.36 版本内核" 进行讲解. 开发者首先进行环境的搭建:
 
-> [> BiscuitOS Linux 2.x i386 Usermanual](https://biscuitos.github.io/blog/Linux-2.x-i386-Usermanual/#header)
+> [> BiscuitOS Linux 2.x i386 Usermanual](/blog/Linux-2.x-i386-Usermanual/#header)
 >
-> [> BiscuitOS Linux 2.x x86_64 Usermanual](https://biscuitos.github.io/blog/Linux-2.x-x86_64-Usermanual/)
+> [> BiscuitOS Linux 2.x x86_64 Usermanual](/blog/Linux-2.x-x86_64-Usermanual/)
 >
-> [> BiscuitOS Linux 2.6.10 - 2.6.11 arm32 Usermanual](https://biscuitos.github.io/blog/Linux-2.6.10-arm32-Usermanual/)
+> [> BiscuitOS Linux 2.6.10 - 2.6.11 arm32 Usermanual](/blog/Linux-2.6.10-arm32-Usermanual/)
 >
-> [> BiscuitOS Linux 2.6.12 - 2.6.33 arm32 Usermanual](https://biscuitos.github.io/blog/Linux-2.6.12-arm32-Usermanual/)
+> [> BiscuitOS Linux 2.6.12 - 2.6.33 arm32 Usermanual](/blog/Linux-2.6.12-arm32-Usermanual/)
 >
-> [> BiscuitOS Linux 2.6.34 - 2.6.39 arm32 Usermanual](https://biscuitos.github.io/blog/Linux-2.6.34-arm32-Usermanual/)
+> [> BiscuitOS Linux 2.6.34 - 2.6.39 arm32 Usermanual](/blog/Linux-2.6.34-arm32-Usermanual/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -606,7 +606,7 @@ cd BiscuitOS/output/linux-2.6.36-i386/
 >
 > - [实践执行](#C0002)
 >
-> - [实践建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C0003)
+> - [实践建议](/blog/HISTORY-MMU/#C0003)
 >
 > - [测试建议](#C0004)
 
@@ -619,7 +619,7 @@ cd BiscuitOS/output/linux-2.6.36-i386/
 本实践是基于 BiscuitOS Linux 5.0 ARM32 环境进行搭建，因此开发者首先
 准备实践环境，请查看如下文档进行搭建:
 
-> [BiscuitOS Linux 5.0 ARM32 环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> [BiscuitOS Linux 5.0 ARM32 环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 --------------------------------------------
 
@@ -917,7 +917,7 @@ bootmem 内存分配器与本项目相关的调用顺序如下:
 对于 Linux 2.6.12 的补丁，Linus 将 Linux 内核源码树加入到 git 中来，因此
 这个版本的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -976,7 +976,7 @@ bootmem 内存分配器与本项目相关的调用顺序如下:
 对于 Linux 2.6.12 的补丁，Linus 将 Linux 内核源码树加入到 git 中来，因此
 这个版本的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1035,7 +1035,7 @@ bootmem 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.12.1，bootmem 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1094,7 +1094,7 @@ bootmem 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.12.2，bootmem 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1153,7 +1153,7 @@ bootmem 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.12.3，bootmem 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1212,7 +1212,7 @@ bootmem 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.12.4，bootmem 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1271,7 +1271,7 @@ bootmem 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.12.5，bootmem 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1386,7 +1386,7 @@ vi 0001-PATCH-Use-ALIGN-to-remove-duplicate-code.patch
 这个补丁只是将 bootmem 内存分配中对齐操作全部替换成了 ALIGN() 函数。
 更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1445,7 +1445,7 @@ bootmem 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.13，bootmem 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1550,7 +1550,7 @@ vi 0001-PATCH-swiotlb-make-sure-initial-DMA-allocations-real.patch
 分配函数，以便在使用 bootmem 分配时能够限制范围。bootmem 提供了这些函数
 的具体实现过程。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1648,7 +1648,7 @@ vi 0001-PATCH-fix-in-__alloc_bootmem_core-when-there-is-no-f.patch
 继续查找可用的物理内存，当当前 node 没有可用的物理内存之后，即条件满足就
 跳出循环，继续去下一个 node 中查找。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -3329,7 +3329,7 @@ static int BiscuitOS_Demo(void)
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

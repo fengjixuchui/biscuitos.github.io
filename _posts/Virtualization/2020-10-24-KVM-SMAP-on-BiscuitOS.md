@@ -66,9 +66,9 @@ KVM 全称 "Kernel-Based Virtual Machine", 是基于内核的虚拟机，它由�
 
 KSMOB 项目目前支持 x86_64 和 i386 架构，开发者可以自行选择，本文以 x86_64 架构进行讲解，并推荐使用该架构来构建 KSMOB 项目。首先开发者基于 BiscuitOS 搭建一个 x86_64 架构的开发环境，请开发者参考如下文档，如果想要以 i386 架构进行搭建，搭建过程类似，开发者参考搭建:
 
-> - [BiscuitOS Linux 5.0 i386 环境部署](https://biscuitos.github.io/blog/Linux-5.0-i386-Usermanual/)
+> - [BiscuitOS Linux 5.0 i386 环境部署](/blog/Linux-5.0-i386-Usermanual/)
 >
-> - [BiscuitOS Linux 5.0 X86_64 环境部署](https://biscuitos.github.io/blog/Linux-5.0-x86_64-Usermanual/)
+> - [BiscuitOS Linux 5.0 X86_64 环境部署](/blog/Linux-5.0-x86_64-Usermanual/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -712,7 +712,7 @@ MODULE_DESCRIPTION("BiscuitOS KVM Private MMAP");
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Blog 2.0](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Blog 2.0](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

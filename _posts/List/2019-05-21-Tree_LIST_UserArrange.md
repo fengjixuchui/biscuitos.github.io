@@ -141,7 +141,7 @@ int main()
 
 完整实践例子可以查看下面教程：
 
-> [用户空间双链表最小实践](https://biscuitos.github.io/blog/LIST/#%E5%86%85%E6%A0%B8%E5%8F%8C%E9%93%BE%E8%A1%A8%E6%9C%80%E5%B0%8F%E5%AE%9E%E8%B7%B5)
+> [用户空间双链表最小实践](/blog/LIST/#%E5%86%85%E6%A0%B8%E5%8F%8C%E9%93%BE%E8%A1%A8%E6%9C%80%E5%B0%8F%E5%AE%9E%E8%B7%B5)
 
 -----------------------------------------------
 
@@ -149,19 +149,19 @@ int main()
 
 > [Data Structure Visualizations](https://www.cs.usfca.edu/~galles/visualization/Algorithms.html)
 >
-> [Bidirect list](https://biscuitos.github.io/blog/LIST/)
+> [Bidirect list](/blog/LIST/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

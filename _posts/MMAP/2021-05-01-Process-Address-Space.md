@@ -773,7 +773,7 @@ SYS_execve 系统调用到此基本将新进程的区域都部署完成，接下
 
 本文支持在 BiscuitOS 上进行实践及调试，设计的工具和技巧请参考本节，本文以 i386 架构为例子进行讲解，开发者可以基于 BiscuitOS 在 X64、ARM、RISCV 架构上进行调试。首先开发者基于 BiscuitOS 搭建一个 i386 架构的开发环境，请查考下文:
 
-> - [BiscuitOS Linux 5.0 i386 环境部署](https://biscuitos.github.io/blog/Linux-5.0-i386-Usermanual/)
+> - [BiscuitOS Linux 5.0 i386 环境部署](/blog/Linux-5.0-i386-Usermanual/)
 
 在部署完毕开发环境之后，开发者接下来部署实践所需的源码，具体部署方法参考如下:
 
@@ -824,7 +824,7 @@ cd BiscuitOS/output/linux-5.0-i386/
 
 在实践过程中需要从用户空间到内核空间进行调试，为了方便开发者调试，BiscuitOS 提供了一个便捷的调试方式，开发者可以参考:
 
-> [BiscuitOS 调试技巧](https://biscuitos.github.io/blog/32bit-Paging/#K0)
+> [BiscuitOS 调试技巧](/blog/32bit-Paging/#K0)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -834,7 +834,7 @@ cd BiscuitOS/output/linux-5.0-i386/
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Blog 2.0](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Blog 2.0](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

@@ -606,7 +606,7 @@ static int TestCase_kmalloc(void)
 >
 > - [实践执行](#C0002)
 >
-> - [实践建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C0003)
+> - [实践建议](/blog/HISTORY-MMU/#C0003)
 >
 > - [测试建议](#C0004)
 
@@ -619,7 +619,7 @@ static int TestCase_kmalloc(void)
 本实践是基于 BiscuitOS Linux 5.0 ARM32 环境进行搭建，因此开发者首先
 准备实践环境，请查看如下文档进行搭建:
 
-> - [BiscuitOS Linux 5.0 ARM32 环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS Linux 5.0 ARM32 环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 --------------------------------------------
 
@@ -936,7 +936,7 @@ vi 0001-PATCH-add-kmalloc_node-inline-cleanup.patch
 在 NUMA 架构中能从指定的 NODE 上分配内存。并增加了 \_\_find_general_cachep()
 函数，然后将 kmem_find_general_cachep() 函数导出. 更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -999,7 +999,7 @@ page_set_slab
 
 相对于前一个版本 linux 2.6.12, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1062,7 +1062,7 @@ page_set_slab
 
 相对于前一个版本 linux 2.6.12.1, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1125,7 +1125,7 @@ page_set_slab
 
 相对于前一个版本 linux 2.6.12.2, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1188,7 +1188,7 @@ page_set_slab
 
 相对于前一个版本 linux 2.6.12.3, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1251,7 +1251,7 @@ page_set_slab
 
 相对于前一个版本 linux 2.6.12.4, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1314,7 +1314,7 @@ page_set_slab
 
 相对于前一个版本 linux 2.6.12.5, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1425,7 +1425,7 @@ vi 0001-PATCH-Fix-broken-kmalloc_node-in-rc1-rc2.patch
 该补丁用于当使用 kmem_cache_alloc_node() 分配缓存对象时，如果 nodeid 设置为
 -1，那么高速缓存从当前节点进行分配缓存对象. 更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1488,7 +1488,7 @@ page_set_slab
 
 相对于前一个版本 linux 2.6.13, 该版本并未产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1690,7 +1690,7 @@ vi 0001-PATCH-kmalloc_node-IRQ-safety-fix.patch
 该补丁用于 kmem_cache_alloc_node() 函数在不同 NODE 上使用 \_\_cache_alloc()
 函数分配. 更多补丁使用请参考下文:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1815,7 +1815,7 @@ vi 0001-PATCH-slab-remove-alloc_pages-calls.patch
 
 该补丁用于提供从 Buddy 分配器获得物理内存的统一接口. 更多补丁使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -2103,7 +2103,7 @@ vi 0001-slab-clarify-and-fix-calculate_slab_order.patch
 该补丁修改 calculate_slab_order() 函数，是其支持从 order 0 开始计算从 Buddy
 分配器中获得物理页. 更多补丁使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -5118,7 +5118,7 @@ nodelists 成员设置为 initkmem_list3 数组中的特定 struct kmem_list3 �
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

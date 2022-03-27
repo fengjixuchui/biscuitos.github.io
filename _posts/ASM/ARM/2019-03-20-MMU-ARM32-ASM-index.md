@@ -62,7 +62,7 @@ ARM 汇编语句中. 当前语句很多时候要隐含的使用上一句的执�
 ARM 汇编实践方法很多，这里提供在 Linux arm32 系统里进行实践。由于本文所介绍的
 实践都基于 Linux 5.0 arm32，读者可以根据下文构建 Linux 5.0 arm32 的开发环境：
 
-> [Linux Arm32 5.0 开发环境搭建教程](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> [Linux Arm32 5.0 开发环境搭建教程](/blog/Linux-5.0-arm32-Usermanual/)
 
 在进行实践之前，将所用到的资源如下：
 
@@ -186,19 +186,19 @@ Device Driver--->
         [*]ARM assembly
 {% endhighlight %}
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+[基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 ##### 驱动编译
 
 驱动编译也请参考下面文章关于驱动编译一节：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+[基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 ##### 驱动运行
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
-[基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+[基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 --------------------------------------------------------------
 <span id="ARM_INS_LIST"></span>
@@ -337,15 +337,15 @@ Device Driver--->
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

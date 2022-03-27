@@ -56,7 +56,7 @@ zImage，这个 zImage 是可以直接加载到内存直接运行的。其原理
 独立拆开进行介绍。本节主要介绍 zImage 重定位之前，GDB 调试方法。
 本文基于 ARM 32 Linux 5.0 进行讲解，如果还没有搭建 Linux 5.0 ，可以参考下面教程：
 
-> [Linux 5.0 arm 32 开发环境搭建手册](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> [Linux 5.0 arm 32 开发环境搭建手册](/blog/Linux-5.0-arm32-Usermanual/)
 
 搭建完上面的教程之后，参考 BiscuitOS/output/linux-5.0-arm32/README.md ,其中
 关于 zImage 重定位之前的调试介绍如下：
@@ -206,7 +206,7 @@ zImage 完成基本的初始化之后，由于 zImage 的运行地址空间和�
 重新加载，因此对该阶段的调试，请参考本节。本节的所有内容都是基于 Linux 5.0 进行
 讲解的，如果还未搭建 Linux 5.0 开发环境，请参看如下教程：
 
-> [Linux 5.0 arm 32 开发环境搭建手册](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> [Linux 5.0 arm 32 开发环境搭建手册](/blog/Linux-5.0-arm32-Usermanual/)
 
 搭建完上面的教程之后，参考 BiscuitOS/output/linux-5.0-arm32/README.md ,其中
 关于 zImage 重定位之后的调试介绍如下：
@@ -428,7 +428,7 @@ zImage 将压缩的内核解压到指定位置之后，然后将 CPU 的执行�
 这个阶段的代码，本节用于介绍如何调试这个阶段的代码。本节的所有内容都是基于 Linux 5.0
 进行讲解的，如果还未搭建 Linux 5.0 开发环境，请参看如下教程：
 
-> [Linux 5.0 arm 32 开发环境搭建手册](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> [Linux 5.0 arm 32 开发环境搭建手册](/blog/Linux-5.0-arm32-Usermanual/)
 
 搭建完上面的教程之后，参考 BiscuitOS/output/linux-5.0-arm32/README.md ,其中
 关于 Image 解压运行开始到 start_kernel 之前的调试介绍如下：
@@ -619,7 +619,7 @@ Image 已经进行基础的初始化，但 MMU 并未开启，所以使用的都
 start_kernel 这个阶段的调试需要按如下的步骤。本节的所有内容都是基于 Linux 5.0
 进行讲解的，如果还未搭建 Linux 5.0 开发环境，请参看如下教程：
 
-> [Linux 5.0 arm 32 开发环境搭建手册](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> [Linux 5.0 arm 32 开发环境搭建手册](/blog/Linux-5.0-arm32-Usermanual/)
 
 搭建完上面的教程之后，参考 BiscuitOS/output/linux-5.0-arm32/README.md ,其中
 关于 Image 解压运行开始 (MMU ON) 到 start_kernel 之前的调试介绍如下：
@@ -786,7 +786,7 @@ BiscuitOS 已经自动生成 gdb_RImage 文件，开发者只需按照教程 REA
 可以直接调试内核而不需要重定位 vmlinux 的符号表。本节的所有内容都是基于 Linux 5.0
 进行讲解的，如果还未搭建 Linux 5.0 开发环境，请参看如下教程：
 
-> [Linux 5.0 arm 32 开发环境搭建手册](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> [Linux 5.0 arm 32 开发环境搭建手册](/blog/Linux-5.0-arm32-Usermanual/)
 
 搭建完上面的教程之后，参考 BiscuitOS/output/linux-5.0-arm32/README.md ,其中
 关于 start_kernel 之后的调试介绍如下：
@@ -848,15 +848,15 @@ start_kernel 之后的 kernel GDB 调试都可以使用通用的 GDB 进行断�
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

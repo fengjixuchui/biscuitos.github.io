@@ -83,7 +83,7 @@ BiscuitOS 项目是一个用于制作 Linux 0.x、1.x、2.x、3.x、4.x、5.0
 
 > - [BiscuitOS 主页](https://biscuitos.github.io/)
 >
-> - [BiscuitOS 博客](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> - [BiscuitOS 博客](/blog/BiscuitOS_Catalogue/)
 
 -----------------------------------------------
 
@@ -123,7 +123,7 @@ Ubuntu 电脑的安装可以上网查找相应的教程。准备好相应的开�
 接下来是安装运行 BiscuitOS 项目所需的基础开发工具。以 Ubuntu 为例
 安装基础的开发工具。开发者可以按如下文档进行安装 (必须):
 
-> - [BiscuitOS 基础开发工具安装指南](https://biscuitos.github.io/blog/Develop_tools)
+> - [BiscuitOS 基础开发工具安装指南](/blog/Develop_tools)
 
 ----------------------------------------
 
@@ -609,9 +609,9 @@ insmod misc.ko
 
 BiscuitOS 提供了丰富的驱动开发教程，开发者可以参考如下文档:
 
-> - [BiscuitOS 驱动实践合集](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#Enginerring)
+> - [BiscuitOS 驱动实践合集](/blog/BiscuitOS_Catalogue/#Enginerring)
 > 
-> - [BiscuitOS RaspberryPi 驱动合集](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#RaspberryPi)
+> - [BiscuitOS RaspberryPi 驱动合集](/blog/BiscuitOS_Catalogue/#RaspberryPi)
 
 ------------------------------------------
 
@@ -636,9 +636,9 @@ BiscuitOS 目前提供了一套完整的应用程序开发系统，开发者可�
 BiscuitOS 提供了多种动态库、静态块、GNU 工具、BiscuitOS 应用程序，
 以及各种开源项目，开发者可以参考下文进行使用:
 
-> - [BiscuitOS 上使用 GNU hello 项目](https://biscuitos.github.io/blog/USER_hello/)
+> - [BiscuitOS 上使用 GNU hello 项目](/blog/USER_hello/)
 >
-> - [BiscuitOS 支持应用列表](https://biscuitos.github.io/blog/APP-Usermanual/)
+> - [BiscuitOS 支持应用列表](/blog/APP-Usermanual/)
 
 ----------------------------------
 
@@ -647,11 +647,11 @@ BiscuitOS 提供了多种动态库、静态块、GNU 工具、BiscuitOS 应用�
 BiscuitOS 也支持游戏，开发者可以参考如下文章，为自己的
 开发之旅带来更多的快乐:
 
-> - [Snake 贪吃蛇](https://biscuitos.github.io/blog/USER_snake/)
+> - [Snake 贪吃蛇](/blog/USER_snake/)
 >
-> - [2048](https://biscuitos.github.io/blog/USER_2048/)
+> - [2048](/blog/USER_2048/)
 >
-> - [tetris 俄罗斯方块](https://biscuitos.github.io/blog/USER_tetris/)
+> - [tetris 俄罗斯方块](/blog/USER_tetris/)
 
 ------------------------------------------
 
@@ -701,7 +701,7 @@ gdb 挂载：
 
 更多内核调试，请查考文档:
 
-> - [BiscuitOS 调试](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/#Debug)
+> - [BiscuitOS 调试](/blog/BiscuitOS_Catalogue/#Debug)
 
 -----------------------------------------------
 
@@ -709,7 +709,7 @@ gdb 挂载：
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Catalogue](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Catalogue](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

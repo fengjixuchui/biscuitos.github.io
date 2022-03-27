@@ -667,7 +667,7 @@ hugetlb_bad_size() 函数用于将 parsed_valid_hugepagesz 标记为 false. 在�
 
 在 Hugetlb 大页机制中，内核使用 struct hstate 数据结构描述指定长度的大页，并将描述不同长度大页的 struct hstate 数据结构统一维护在 hstates[] 数组中。当系统要新支持一种大页，那么内核就会调用 hugetlb_add_hstate() 函数进行添加，其逻辑如上图。order 参数表示新加入大页的阶数，即大页的长度为 "2^order * 4KiB", 接着函数首先在 18 行调用 size_to_hstate() 函数检查当前系统中是否已经存在同样长度的大页，如果存在函数就打印相应信息之后直接退出; 反之表明当前系统还没有指定长度的大页。hstates[] 数组的最大长度为 HUGE_MAX_HSTATE, 而当前系统中已经注册大页的数量使用 hugetlb_max_hstate 进行描述，如果此时函数在 22 行检查到 hugetlb_max_hstate 大于 HUGE_MAX_HSTATE, 那么 hstates[] 数组即将越界，那么函数通过 BUG_ON() 进行报错，另外如果检查到 order 参数为 0，那么 order 参数是非法参数，那么函数同样也通过 BUG_ON() 报警. 通过上面检查之后，函数从 hstates[] 数组中取出 hugetlb_max_hstate 对应最新可用的 struct hstate，之后将 hugetlb_max_hstate 加一操作指向 hstates[] 数组中下一个成员。函数在 25 行将 struct hstate 的 order 成员设置为 order 参数，以此表示大页的阶数，另外通过阶数算出大页的掩码，该掩码用于掩盖大页内部偏移。函数接着在 27 行将 nr_huge_pages 成员初始化为 0，以此表示当前指定长度的可用大页数量为 0，同理 free_huge_pages 成员设置为 0，也表示当前指定长度大页的空闲大页数量为 0. 在 struct hstate 数据结构中存在 hugepage_freelists[] 数组成员，数组由双链表构成，其用于维护不同 NUMA NODE 上的大页，那么函数在 29-30 行将 hugepage_freelists[] 数组内的各链表初始化。struct hstate 数据结构中存在 hugepage_activelist 成员，其由一个双链表构成，用于维护正在使用的大页，那么函数在 31 行将其 hugepage_activelist 链表进行初始化。struct hstate 数据结构的 next_nid_to_alloc 成员表示下一个可分配内存 NUMA NODE 节点，而 next_nid_to_free 成员表示下一个可以回收内存的 NUMA NODE 节点，函数在 32-33 行将两个成员都指向了 first_memory_node, first_memory_node 表示第一个存在内存的 NUMA NODE 节点。函数接着在 34 行调用 snprintf() 函数为大页设置一个名字，其名字规则是 "hugepages-XkB", 其中 X 为大页长度包含 KiB 的数量. 函数最后将 parsed_hstate 指向了新插入的 struct hstate 数据结构，以此表示内核正在解析的 struct hstate 大页.
 
-> [first_memory_node](https://biscuitos.github.io/blog/NODEMASK/#D102)
+> [first_memory_node](/blog/NODEMASK/#D102)
 >
 > [size_to_hstate](#D02006)
 >
@@ -3250,7 +3250,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001172.png)
 
@@ -3369,7 +3369,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-sysv-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001176.png)
 
@@ -3403,7 +3403,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-memfd-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001191.png) 
 
@@ -3455,7 +3455,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-libhugetlbfs-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001194.png)
 
@@ -3503,7 +3503,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-migration-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001180.png)
 
@@ -3531,7 +3531,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-noreserve-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001187.png)
 
@@ -3561,7 +3561,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-populate-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001189.png)
 
@@ -3667,7 +3667,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-64KiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001197.png)
 
@@ -3752,7 +3752,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-sysv-64KiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001200.png)
 
@@ -3786,7 +3786,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-memfd-64KiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001203.png)
 
@@ -3838,7 +3838,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-libhugetlbfs-64KiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001206.png)
 
@@ -3884,7 +3884,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-migration-64KiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001208.png)
 
@@ -3912,7 +3912,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-noreserve-64KiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001209.png)
 
@@ -3942,7 +3942,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-populate-64KiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001212.png)
 
@@ -4045,7 +4045,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-2MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001221.png)
 
@@ -4130,7 +4130,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-sysv-2MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001224.png)
 
@@ -4164,7 +4164,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-memfd-2MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001227.png)
 
@@ -4216,7 +4216,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-libhugetlbfs-2MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001230.png)
 
@@ -4262,7 +4262,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-migration-2MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001232.png)
 
@@ -4290,7 +4290,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-noreserve-2MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001234.png)
 
@@ -4320,7 +4320,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-populate-2MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001237.png)
 
@@ -4422,7 +4422,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-4MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001244.png)
 
@@ -4450,7 +4450,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-sysv-4MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001246.png)
 
@@ -4484,7 +4484,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-memfd-4MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001249.png)
 
@@ -4536,7 +4536,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-libhugetlbfs-4MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001252.png)
 
@@ -4564,7 +4564,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-noreserve-4MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001254.png)
 
@@ -4594,7 +4594,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-populate-4MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001257.png)
 
@@ -4696,7 +4696,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-32MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001265.png)
 
@@ -4781,7 +4781,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-sysv-32MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001268.png)
 
@@ -4815,7 +4815,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-memfd-32MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001271.png)
 
@@ -4867,7 +4867,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-libhugetlbfs-32MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001274.png)
 
@@ -4913,7 +4913,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-migration-32MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001276.png)
 
@@ -4941,7 +4941,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-noreserve-32MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001278.png)
 
@@ -4971,7 +4971,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-populate-32MiB-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001281.png)
 
@@ -5075,7 +5075,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-1Gig-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001289.png)
 
@@ -5160,7 +5160,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-sysv-1Gig-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001293.png)
 
@@ -5194,7 +5194,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-memfd-1Gig-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001296.png)
 
@@ -5246,7 +5246,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-libhugetlbfs-1Gig-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001299.png)
 
@@ -5292,7 +5292,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-migration-1Gig-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001301.png)
 
@@ -5320,7 +5320,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-noreserve-1Gig-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001303.png)
 
@@ -5350,7 +5350,7 @@ OUTPUT:
 BiscuitOS/output/linux-XXX-YYY/package/BiscuitOS-hugetlb-anonymous-share-mapping-populate-1Gig-default
 {% endhighlight %}
 
-> [BiscuitOS 独立应用程序实践攻略](https://biscuitos.github.io/blog/Human-Knowledge-Common/#C2)
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001305.png)
 

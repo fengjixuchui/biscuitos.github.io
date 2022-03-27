@@ -144,9 +144,9 @@ void __init BiscuitOS_demo(void)
 
 RESERVE_BRK 内存分配器实践目前支持 x86_64 和 i386 架构，开发者可以自行选择，本文以 i386 架构进行讲解，并推荐使用该架构来实践 RESERVE_BRK 分配器。首先开发者基于 BiscuitOS 搭建一个 i386 架构的开发环境，请开发者参考如下文档，如果想要以 x86-64 架构进行搭建，搭建过程类似，开发者参考搭建:
 
-> - [BiscuitOS Linux 5.0 i386 环境部署](https://biscuitos.github.io/blog/Linux-5.0-i386-Usermanual/)
+> - [BiscuitOS Linux 5.0 i386 环境部署](/blog/Linux-5.0-i386-Usermanual/)
 >
-> - [BiscuitOS Linux 5.0 X86_64 环境部署](https://biscuitos.github.io/blog/Linux-5.0-x86_64-Usermanual/)
+> - [BiscuitOS Linux 5.0 X86_64 环境部署](/blog/Linux-5.0-x86_64-Usermanual/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -352,7 +352,7 @@ RESERVE_BRK() 函数用于向系统插入一个指定长度的 ".brk_reservation
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

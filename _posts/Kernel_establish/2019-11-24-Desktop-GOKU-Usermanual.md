@@ -57,7 +57,7 @@ BiscuitOS 项目是一个用于制作 Linux 0.x、1.x、2.x、3.x、4.x、5.3
 
 > - [BiscuitOS 主页](https://biscuitos.github.io/)
 >
-> - [BiscuitOS 博客](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> - [BiscuitOS 博客](/blog/BiscuitOS_Catalogue/)
 
 -----------------------------------------------
 
@@ -99,7 +99,7 @@ Ubuntu 电脑的安装可以上网查找相应的教程。准备好相应的开�
 接下来是安装运行 BiscuitOS 项目所需的基础开发工具。以 Ubuntu 为例
 安装基础的开发工具。开发者可以按如下文档进行安装 (必须):
 
-> - [BiscuitOS 基础开发工具安装指南](https://biscuitos.github.io/blog/Develop_tools)
+> - [BiscuitOS 基础开发工具安装指南](/blog/Develop_tools)
 
 ----------------------------------------
 
@@ -145,7 +145,7 @@ README:
  BiscuitOS/output/BiscuitOS-Desktop-GOKU/README.md 
 
 Blog:
- https://biscuitos.github.io/blog/BiscuitOS_Catalogue/ 
+ /blog/BiscuitOS_Catalogue/ 
 
 ***********************************************
 {% endhighlight %}
@@ -222,7 +222,7 @@ BiscuitOS-Desktop-GOKU 的使用可以参考附录链接.
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Catalogue](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Catalogue](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

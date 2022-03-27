@@ -27,7 +27,7 @@ tags:
 Linux 内核提供了双链表运用在各种数据结构中，为数据结构之间构建更紧密的联系。本文
 主要介绍内核中主要的双链表。如下表：
 
-> - [alias_prop: 维护 DTS 所有别名](https://biscuitos.github.io/blog/LIST_alias_prop/)
+> - [alias_prop: 维护 DTS 所有别名](/blog/LIST_alias_prop/)
 >
 > - early_platform_driver_list: 早期 platform driver 链表
 >
@@ -39,15 +39,15 @@ Linux 内核提供了双链表运用在各种数据结构中，为数据结构�
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
-> [BiscuitOS Kernel Build](https://biscuitos.github.io/blog/Kernel_Build/)
+> [BiscuitOS Kernel Build](/blog/Kernel_Build/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >
 > [Bootlin: Elixir Cross Referencer](https://elixir.bootlin.com/linux/latest/source)
 >
-> [搭建高效的 Linux 开发环境](https://biscuitos.github.io/blog/Linux-debug-tools/)
+> [搭建高效的 Linux 开发环境](/blog/Linux-debug-tools/)
 
 ## 赞赏一下吧 🙂
 

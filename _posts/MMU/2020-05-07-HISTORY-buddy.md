@@ -601,7 +601,7 @@ static int TestCase_alloc_page_from_HIGHMEM(void)
 >
 > - [实践执行](#C0002)
 >
-> - [实践建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C0003)
+> - [实践建议](/blog/HISTORY-MMU/#C0003)
 >
 > - [测试建议](#C0004)
 
@@ -614,7 +614,7 @@ static int TestCase_alloc_page_from_HIGHMEM(void)
 本实践是基于 BiscuitOS Linux 5.0 ARM32 环境进行搭建，因此开发者首先
 准备实践环境，请查看如下文档进行搭建:
 
-> - [BiscuitOS Linux 5.0 ARM32 环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS Linux 5.0 ARM32 环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 --------------------------------------------
 
@@ -921,7 +921,7 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 对于 Linux 2.6.12 的补丁，Linus 将 Linux 内核源码树加入到 git 中来，因此
 这个版本的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -982,7 +982,7 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 相比 Linux 2.6.12 版本，该版本并未产生 Buddy 分配器相关的补丁。更多补丁
 的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1043,7 +1043,7 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 相比 Linux 2.6.12.1 版本，该版本并未产生 Buddy 分配器相关的补丁。更多补丁
 的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1104,7 +1104,7 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 相比 Linux 2.6.12.2 版本，该版本并未产生 Buddy 分配器相关的补丁。更多补丁
 的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1165,7 +1165,7 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 相比 Linux 2.6.12.3 版本，该版本并未产生 Buddy 分配器相关的补丁。更多补丁
 的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1226,7 +1226,7 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 相比 Linux 2.6.12.4 版本，该版本并未产生 Buddy 分配器相关的补丁。更多补丁
 的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1287,7 +1287,7 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 相比 Linux 2.6.12.5 版本，该版本并未产生 Buddy 分配器相关的补丁。更多补丁
 的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1597,7 +1597,7 @@ vi 0001-PATCH-Fix-NUMA-node-sizing-in-nr_free_zone_pages.patch
 
 该补丁用于在计算一个 ZONE 上物理的数量支持了多 NODE. 更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1658,7 +1658,7 @@ buddy 内存分配器与本项目相关的调用顺序如下:
 相比 Linux 2.6.13 版本，该版本并未产生 Buddy 分配器相关的补丁。更多补丁
 的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1845,7 +1845,7 @@ vi 0001-PATCH-gfp-flags-annotations-part-1.patch
 该补丁用于将 Buddy 内存分配器相关函数的 gfp 参数全部修改为 gfp_t 类型.
 更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -2166,7 +2166,7 @@ vi 0001-PATCH-mm-__alloc_pages-cleanup-fix.patch
 该补丁向 Buddy 内存管理器分配物理页时，新增了多个 ALLOC\_ 与水位线有关的标志.
 更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -2695,9 +2695,9 @@ int zone_watermark_ok(struct zone *z, int order, unsigned long mark,
 
 #### buddy 进阶研究
 
-> - [Buddy-Normal Memory Allocator On Userspace](https://biscuitos.github.io/blog/Memory-Userspace/#E)
+> - [Buddy-Normal Memory Allocator On Userspace](/blog/Memory-Userspace/#E)
 >
-> - [Buddy-HighMEM Memory Allocator On Userspace](https://biscuitos.github.io/blog/Memory-Userspace/#F)
+> - [Buddy-HighMEM Memory Allocator On Userspace](/blog/Memory-Userspace/#F)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -2751,7 +2751,7 @@ cat /proc/buddyinfo
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

@@ -86,7 +86,7 @@ SerenityOS 给我的感觉是他与 Linux 不同，作者用 C++ 编写操作系
 
 由于项目构建基于 Ubuntu，因此需要准备一台运行 Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通, 推荐使用 Ubuntu 18.04. 安装完 Ubuntu 之后需要安装基础开发软件，请参考:
 
-> - [BiscuitOS 基础开发工具安装指南](https://biscuitos.github.io/blog/Develop_tools)
+> - [BiscuitOS 基础开发工具安装指南](/blog/Develop_tools)
 
 基础软件安装之后还需要安装 SerenityOS 开发环境所需的工具，请参考如下命令:
 
@@ -178,7 +178,7 @@ cd BiscuitOS/output/SerenityOS-on-BiscuitOS
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Blog 2.0](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Blog 2.0](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

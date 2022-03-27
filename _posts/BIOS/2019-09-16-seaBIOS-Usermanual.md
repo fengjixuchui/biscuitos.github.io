@@ -59,7 +59,7 @@ BiscuitOS 项目是一个用于制作 Linux 0.x、1.x、2.x、3.x、4.x、5.x
 
 > - [BiscuitOS 主页](https://biscuitos.github.io/)
 >
-> - [BiscuitOS 博客](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> - [BiscuitOS 博客](/blog/BiscuitOS_Catalogue/)
 
 ![](/assets/PDB/RPI/RPI100100.png)
 
@@ -91,7 +91,7 @@ Ubuntu 14.04/16.04/18.04 的主机，主机需要保持网络的连通。
 开发者准好硬件设备之后，首先在 Ubuntu 上安装相应的开发工具，请参考下面文档，
 其他 Linux 发行版与之类似:
 
-> - [BiscuitOS 基础开发工具安装指南](https://biscuitos.github.io/blog/Develop_tools)
+> - [BiscuitOS 基础开发工具安装指南](/blog/Develop_tools)
 
 基础环境搭建完毕之后，开发者从 GitHub 上获取 BiscuitOS 项目源码，使用如下命令:
 
@@ -346,7 +346,7 @@ vi BiscuitOS/output/BiscuitOS-seaBIOS/bootloader/seaBIOS/src/post.c
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Catalogue](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Catalogue](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

@@ -613,7 +613,7 @@ MEMBLOCK 提供了很多接口函数用于设置 MEMBLOCK 分配器的属性，�
 开发环境搭建方法以及重点关注驱动实践一节，请参考下例文章，选择一个 linux 5.x
 版本进行实践，后面内容均基于 linux 5.x 继续讲解，文章链接如下：
 
-> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 -------------------------------------------
 
@@ -849,7 +849,7 @@ Device Driver--->
 
 具体过程请参考：
 
-> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 ---------------------------------------------
 
@@ -893,7 +893,7 @@ ck_add
 
 驱动编译也请参考下面文章关于驱动编译一节：
 
-> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 ------------------------------------------
 
@@ -901,7 +901,7 @@ ck_add
 
 驱动的运行，请参考下面文章中关于驱动运行一节：
 
-> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](https://biscuitos.github.io/blog/Kernel_Build/#Linux_5X)
+> - [基于 Linux 5.x 的 arm32 开发环境搭建教程](/blog/Kernel_Build/#Linux_5X)
 
 驱动运行的结果如下:
 
@@ -1289,11 +1289,11 @@ MEMBLOCK direction: top-down
 
 #### <span id="附录">附录</span>
 
-> [MEMBLOCK 内存分配器](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/)
+> [MEMBLOCK 内存分配器](/blog/MMU-ARM32-MEMBLOCK-index/)
 >
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Blog](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Blog](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

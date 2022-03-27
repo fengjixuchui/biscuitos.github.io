@@ -100,7 +100,7 @@ Linux 5.x，原理根据经典书籍 《深入理解 Linux 虚拟内存管理》
 
 > - [BiscuitOS 主页: https://biscuitos.github.io/](https://biscuitos.github.io/)
 >
-> - [BiscuitOS 实践文档目录: https://biscuitos.github.io/blog/BiscuitOS_Catalogue/](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/) 
+> - [BiscuitOS 实践文档目录: /blog/BiscuitOS_Catalogue/](/blog/BiscuitOS_Catalogue/) 
 >
 > - 作者邮箱: BuddyZhang1 <buddy.zhang@aliyun.com>
 
@@ -145,7 +145,7 @@ MEMBLOCK 内存分配器完成使命之后，会将 "可用物理内存" 的物�
 CMA 占用的物理页作为临时预留，直到 CMA 内存管理器初始化时才解除预留。
 更多 MEMBLOCK 内存分配器的原理和实践参考下列文章:
 
-> - [MEMBLOCK 内存分配器原理及实践](https://biscuitos.github.io/blog/MMU-ARM32-MEMBLOCK-index/#header)
+> - [MEMBLOCK 内存分配器原理及实践](/blog/MMU-ARM32-MEMBLOCK-index/#header)
 
 ![](/assets/PDB/HK/HK000225.png) 
 
@@ -263,7 +263,7 @@ BiscuitOS 已经支持用户空间的 MEMBLOCK 内存分配器实践，如果
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -496,7 +496,7 @@ BiscuitOS 已经支持用户空间的 PERCPU(UP) 内存分配器实践，如果
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -783,7 +783,7 @@ BiscuitOS 已经支持用户空间的 PERCPU(SMP) 内存分配器实践，如果
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -1037,7 +1037,7 @@ BiscuitOS 已经支持用户空间的 Buddy-Normal 内存分配器实践，如�
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -1295,7 +1295,7 @@ BiscuitOS 已经支持用户空间的 Buddy-HighMEM 内存分配器实践，如�
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -1527,7 +1527,7 @@ BiscuitOS 已经支持用户空间的 PCP 内存分配器实践，如果
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -1769,7 +1769,7 @@ BiscuitOS 已经支持用户空间的 Slub 内存分配器实践，如果
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -1990,7 +1990,7 @@ BiscuitOS 已经支持用户空间的 Kmem_cache 内存分配器实践，如果
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -2211,7 +2211,7 @@ BiscuitOS 已经支持用户空间的 Kmalloc 内存分配器实践，如果
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -2422,7 +2422,7 @@ BiscuitOS 已经支持用户空间的 NAME 内存分配器实践，如果
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -2616,7 +2616,7 @@ make
 VMALLOC 内存分配器的行为间接深入研究红黑树的工作原理，更多红黑树
 实践原理文档请参考如下链接:
 
-> - [红黑树的设计原理与实践研究](https://biscuitos.github.io/blog/Tree_RBTree/)
+> - [红黑树的设计原理与实践研究](/blog/Tree_RBTree/)
 
 由于用户空间 VMALLOC 直接分配的虚拟地址是 "虚拟的"，因此我在设计
 用户空间 VMALLOC 内存分配器的时候也设计了一个软件的 MMU，用户帮助
@@ -2646,7 +2646,7 @@ BiscuitOS 已经支持用户空间的 VMALLOC 内存分配器实践，如果
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -2716,7 +2716,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 VMALLOC 内存分配器的行为间接深入研究红黑树的工作原理，更多红黑树
 实践原理文档请参考如下链接:
 
-> - [红黑树的设计原理与实践研究](https://biscuitos.github.io/blog/Tree_RBTree/)
+> - [红黑树的设计原理与实践研究](/blog/Tree_RBTree/)
 
 由于用户空间 VMALLOC 直接分配的虚拟地址是 "虚拟的"，因此我在设计
 用户空间 VMALLOC 内存分配器的时候也设计了一个软件的 MMU，用户帮助
@@ -2866,7 +2866,7 @@ BiscuitOS 已经支持用户空间的 KMAP 内存分配器实践，如果
 还未部署 BiscuitOS，请参考下列文章, 如果已经部署 BiscuitOS
 项目的童鞋请使用 "git pull" 更新 BiscuitOS，并查看下一节:
 
-> - [BiscuitOS linux 5.0 部署介绍](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS linux 5.0 部署介绍](/blog/Linux-5.0-arm32-Usermanual/)
 
 -----------------------------------------------
 
@@ -2941,7 +2941,7 @@ cd BiscuitOS/output/linux-5.0-arm32/
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS 实践文档目录](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS 实践文档目录](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

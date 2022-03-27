@@ -276,7 +276,7 @@ put_cpu_var()
 >
 > - [实践执行](#C0002)
 >
-> - [实践建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C0003)
+> - [实践建议](/blog/HISTORY-MMU/#C0003)
 >
 > - [测试建议](#C0004)
 
@@ -289,7 +289,7 @@ put_cpu_var()
 本实践是基于 BiscuitOS Linux 5.0 ARM32 环境进行搭建，因此开发者首先
 准备实践环境，请查看如下文档进行搭建:
 
-> - [BiscuitOS Linux 5.0 ARM32 环境部署](https://biscuitos.github.io/blog/Linux-5.0-arm32-Usermanual/)
+> - [BiscuitOS Linux 5.0 ARM32 环境部署](/blog/Linux-5.0-arm32-Usermanual/)
 
 --------------------------------------------
 
@@ -591,7 +591,7 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 对于 Linux 2.6.12 的补丁，Linus 将 Linux 内核源码树加入到 git 中来，因此
 这个版本的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -654,7 +654,7 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 对于 Linux 2.6.12 的补丁，Linus 将 Linux 内核源码树加入到 git 中来，因此
 这个版本的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -717,7 +717,7 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.12.1，PERCPU 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -780,7 +780,7 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.12.2，PERCPU 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -843,7 +843,7 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.12.3，PERCPU 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -906,7 +906,7 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.12.4，PERCPU 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -969,7 +969,7 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.12.5，PERCPU 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1051,7 +1051,7 @@ vi 0001-PATCH-sparsemem-base-simple-NUMA-remap-space-allocat.patch
 "\_\_per_cpu_start" 和终止地址 "\_\_per_cpu_end" 从 "init/main.c" 中移除并
 在 "sections.h" 中统一导出声明. 更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1114,7 +1114,7 @@ PERCPU 内存分配器与本项目相关的调用顺序如下:
 相对上一个版本 linux 2.6.13，PERCPU 内存分配器并未做改动。这个版本
 的代码均不产生补丁。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1196,7 +1196,7 @@ vi 0001-PATCH-add-kmalloc_node-inline-cleanup.patch
 替换成了 kmalloc_node() 函数，从补丁描述来看，替换成新的分配函数之后，性能
 有了提高. 更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1277,7 +1277,7 @@ vi 0001-PATCH-Shut-up-per_cpu_ptr-on-UP.patch
 该补丁对 UP 架构的 PERCPU 变量访问时，由原先的对变量直接访问，增加了
 对 cpu 的访问。更多补丁的使用请参考:
 
-> - [BiscuitOS Memory Manager Patch 建议](https://biscuitos.github.io/blog/HISTORY-MMU/#C00033)
+> - [BiscuitOS Memory Manager Patch 建议](/blog/HISTORY-MMU/#C00033)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1401,9 +1401,9 @@ static void __init setup_per_cpu_areas(void)
 
 #### PERCPU 进阶研究
 
-> - [PERCPU(UP) Memory Allocator On Userspace](https://biscuitos.github.io/blog/Memory-Userspace/#C)
+> - [PERCPU(UP) Memory Allocator On Userspace](/blog/Memory-Userspace/#C)
 >
-> - [PERCPU(SMP) Memory Allocator On Userspace](https://biscuitos.github.io/blog/Memory-Userspace/#D)
+> - [PERCPU(SMP) Memory Allocator On Userspace](/blog/Memory-Userspace/#D)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1413,7 +1413,7 @@ static void __init setup_per_cpu_areas(void)
 
 > [BiscuitOS Home](https://biscuitos.github.io/)
 >
-> [BiscuitOS Driver](https://biscuitos.github.io/blog/BiscuitOS_Catalogue/)
+> [BiscuitOS Driver](/blog/BiscuitOS_Catalogue/)
 >
 > [Linux Kernel](https://www.kernel.org/)
 >

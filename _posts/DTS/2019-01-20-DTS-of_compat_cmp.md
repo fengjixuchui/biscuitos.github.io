@@ -65,7 +65,7 @@ of_compat_cmp() 函数对比节点的 compatible 属性值是否为指定字符�
 本文实践基于 Linux 4.20.8 arm32 平台，开发者可以参考如下文章快速搭建一个
 调试环境：
 
-> [Establish Linux 4.20.8 on ARM32](https://biscuitos.github.io/blog/Linux-4.20.8-arm32-Usermanual/)
+> [Establish Linux 4.20.8 on ARM32](/blog/Linux-4.20.8-arm32-Usermanual/)
 
 #### DTS 文件
 
