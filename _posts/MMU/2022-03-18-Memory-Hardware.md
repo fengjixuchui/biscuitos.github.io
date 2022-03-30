@@ -27,6 +27,8 @@ tags:
 > - Memory Hardware Layout
 >
 >   - X86 Architecture Memory Layout
+>
+> - [附录/捐赠](#Z0)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -352,3 +354,25 @@ MMU 通过遍历页表将一个虚拟地址转换成物理地址。例如在 X86
 内核空间(Kernel Space) 是内核运行时的地址空间，内核空间被换成多个区域，首先是线性映射区，所谓**线性映射区**就是内核将 PAGE_OFFSET 开始的连续虚拟内存与连续物理内存建立内核页表之后，区间内的虚拟地址可以通过线性关系就可以获得对应的物理地址。线性映射区是内核核心数据存储区域，其中包括了 \[KERNEL_START, KERNEL_END) 的内核镜像区，其中包含了内核的代码段、数据段和 BSS 段等，线性映射区对应的物理内存一般存在 ZONE_DMA、ZONE_DMA32 和 ZONE_NORMAL 中，另外这些物理内存由 Buddy 分配器进行维护，当内核需要线性映射区的内存时通过 Buddy 分配器进行分配，并通过线性关系直接获得对应的虚拟地址，当不再使用时，Buddy 分配器记性回收。线性映射区的虚拟内存还供给 SLAB/SLOB/SLUB 分配器使用。接下来是 VMALLOC 区域，所谓**VMALLOC 区域**指由 VMALLOC 分配器管理的 \[VMALLOC_START, VMALLOC_END) 的区域，内核可以从 VMALLOC 分配器动态分配连续的虚拟内存，分配的虚拟内存与 Buddy 分配器中分配的独立物理页建立页表，因此形成了虚拟内存连续但物理内存不连续的区域，当内核不再使用时，VMALLOC 分配器回收虚拟内存，并解除页表映射。接下来是 PKMAP 区域，所谓 **PKMAP 区域** 就是 PKMAP 内存分配器维护的一小块虚拟内存区域，其范围是 \[PKMAP_BASE, PKMAP_BASE + 2MiB), PKMAP 分配器提供了小块虚拟内存的临时映射，分配的虚拟内存与 Buddy 分配器分配的物理内存建立页表，当内核不再使用时，PKMAP 分配器回收虚拟内存以及摧毁页表释放物理页。最后一个是 FIXMAP 区域，所谓 **FIXMAP 区域**指由 FIXMAP 分配器管理的 \[FIXADDR_START, FIXADDR_END) 的区域，该区域的虚拟地址是固定分配指定的外设或功能的，内核在编译阶段就已经确认好的，内核在初始化阶段为该区域的虚拟内存分配了物理内存并建立页表。
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### 捐赠一下吧 🙂
+
+![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
