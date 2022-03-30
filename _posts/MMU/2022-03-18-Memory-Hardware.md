@@ -373,6 +373,6 @@ MMU 通过遍历页表将一个虚拟地址转换成物理地址。例如在 X86
 
 
 
-#### 捐赠一下吧 🙂
+#### <span id="Z0">捐赠一下吧 🙂</span>
 
 ![MMU](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
