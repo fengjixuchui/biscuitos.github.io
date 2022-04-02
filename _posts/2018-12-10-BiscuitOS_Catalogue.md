@@ -112,6 +112,13 @@ tags:
 >
 >   - [PCP Memory Allocator](/blog/HISTORY-PCP/)
 >
+> - I/O and Device Memory
+>
+>   - PCI and PCIe Address Space
+>
+>   - I/O Port Space
+>
+>
 > - [PERCPU Memory Allocator](/blog/HISTORY-PERCPU/)
 >
 > - SLAB/KMEM Allocator
