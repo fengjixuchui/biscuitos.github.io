@@ -284,6 +284,12 @@ tags:
 > - CPU 虚拟化
 >
 > - QEMU-KVM
+>
+> - 设备虚拟化
+>
+>   - [新增一个 PCIe 设备](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/PCIe/BiscuitOS-pci-device-QEMU-emulate)
+>
+>   - [新增一个带 DMA 的 PCIe 设备](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/DMA/BiscuitOS-dma-device-QEMU-emulate)
 
 ![](/assets/PDB/GamePICBF000002.gif)
 
