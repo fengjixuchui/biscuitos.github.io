@@ -285,6 +285,8 @@ tags:
 >
 > - QEMU-KVM
 >
+>   - [QEMU Memory Manager for Virtual machine](/blog/QEMU-Memory-Manager-VM)
+>
 > - 设备虚拟化
 >
 >   - [新增一个 PCIe 设备](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/PCIe/BiscuitOS-pci-device-QEMU-emulate)
