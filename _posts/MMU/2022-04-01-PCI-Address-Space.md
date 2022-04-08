@@ -14,19 +14,21 @@ tags:
 
 #### 目录
 
-> - [PCI 基础知识](#A)
+> - [PCI/PCIe 基础知识](#A)
+>
+> - [PCI/PCIe 地址空间](#B)
+>
+> - [PCI/PCIe 实践攻略](#D)
+>
+> - [PCI/PCIe 工具手册](#E)
+>
+> - [PCI/PCIe 使用攻略](#F)
+>
+> - PCI/PCIe 进阶研究
 >
 >   - [PCI Type0 Header Mapping](#D0)
 >
 >   - [PCI Type1 Header Mapping](#D1)
->
-> - [PCIe 基础知识](#A)
->
->   - [PCIe Type0 Header Mapping](#D0)
->
->   - [PCIe Type1 Header Mapping](#D1)
->
-> - [PCI 地址空间](#B)
 
 
 ######  🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂 捐赠一下吧 🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂
@@ -39,7 +41,7 @@ tags:
 
 ![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
-#### PCI 基础知识
+#### PCI/PCIe 基础知识
 
 ![](/assets/PDB/HK/TH001468.JPEG)
 
@@ -83,7 +85,7 @@ PCI 总线采用的是一种深度优先(Depth First Search) 的拓扑算法，�
 
 ![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
 
-#### PCI 地址空间
+#### PCI/PCIe 地址空间
 
 ![](/assets/PDB/HK/TH001474.png)
 
