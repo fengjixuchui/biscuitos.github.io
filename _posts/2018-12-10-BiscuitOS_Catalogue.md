@@ -54,7 +54,7 @@ tags:
 > - [问题反馈及留言](https://github.com/BiscuitOS/BiscuitOS/issues)
 
 ![](/assets/PDB/GamePICBF000001.gif)
-
+![](/assets/PDB/BGP/BGP000100.png)
 
 ## [内存管理]()
 
@@ -250,6 +250,7 @@ tags:
 >   - [RISCV64 架构中添加新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV64/)
 
 ![](/assets/PDB/GamePICBS00001.gif)
+![](/assets/PDB/BGP/BGP000101.png)
 
 ## [虚拟化]()
 
