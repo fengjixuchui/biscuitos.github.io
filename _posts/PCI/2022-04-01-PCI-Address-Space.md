@@ -14,19 +14,23 @@ tags:
 
 #### 目录
 
-> - [PCI/PCIe 基础知识](#A)
+> - [PCI 基础知识](#A)
 >
-> - [PCI/PCIe 地址空间](#B)
+> - [PCI 地址空间](#B)
 >
-> - [PCI/PCIe 实践攻略](#D)
+> - [PCI 实践攻略](#D)
 >
-> - [PCI/PCIe 工具手册](#E)
+> - [PCI 开源工具](#E)
 >
-> - [PCI/PCIe 使用攻略](#F)
+> - [PCI 使用攻略](#F)
 >
-> - [PCI/PCIe 设备驱动](#G)
+> - [PCI 设备驱动](#G)
 >
-> - [PCI/PCIe DMA](#H)
+> - [PCI DMA 驱动](#H)
+>
+> - [PCI BIOS 研究](/blog/PCI-Address-Space-seaBIOS/)
+>
+> - [PCI 设备虚拟化研究]()
 >
 > - PCI/PCIe 进阶研究
 >
@@ -93,6 +97,8 @@ PCI 总线采用的是一种深度优先(Depth First Search) 的拓扑算法，�
 **Interrupt Pin**(中断引脚): PCI 中断线的标准设计是 4 条: INTA/INTB/INTC/INTD. 
 
 **Interrupt Line**(设备中断线): 该寄存器只起一个保护作用.
+
+> [PCIE_Base_Specification_Revision_4_0_Version 1](https://whycan.com/files/members/3423/PCIE_Base_Specification_Revision_4_0_Version%201_0.pdf)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -341,7 +347,7 @@ cd BiscuitOS/output/linux-5.0-x86_64/qemu-system/
 
 ###### 部署 PCI 设备驱动
 
-与 QEMU PCI 设备部署一致，借助 BiscuitOS 编译平台进行 PCI 设备驱动的部署，使用如下命令:
+与 QEMU PCI 设备部署一致，借助 BiscuitOS 编译平台通过简单的几个命令就可以进行 PCI 设备驱动的部署，使用如下命令:
 
 {% highlight bash %}
 cd BiscuitOS/
@@ -362,6 +368,8 @@ make run
 {% endhighlight %}
 
 > [BiscuitOS PCI Device Driver Soruce Code on Gitee](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/PCIe/BiscuitOS-pci-device-driver)
+>
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
 ![](/assets/PDB/HK/TH001499.png)
 
@@ -377,6 +385,552 @@ make run
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
+-------------------------------------------
 
+<span id="G"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
+
+#### PCI/PCIe 设备驱动
+
+PCI(Peripheral Component Interconnect) 是外围设备互连的简称，作为一种通用的总线接口标准，它在目前的计算机系统中得到了非常广泛的应用。PCI 提供了一组完整的总线接口规范，其目的是描述如何将计算机系统中的外围设备以一种结构化和可控化的方式连接在一起，同时它还刻画了外围设备在连接时的电气特性和行为规约，并且详细定义了计算机系统中的各个不同部件之间应该如何正确地进行交互。无论是在基于 Intel 芯片的 PC 机中，或是在基于 Alpha 芯片的工作站上，PCI 毫无疑问都是目前使用最广泛的一种总线接口标准。同旧式的 ISA 总线不同，PCI 将计算机系统中的总线子系统与存储子系统完全地分开，CPU 通过一块称为 PCI 桥(PCI-Bridge)的设备来完成同总线子系统的交互，如图
+
+![](/assets/PDB/HK/TH001481.png)
+
+由于使用了更高的时钟频率，因此 PCI 总线能够获得比 ISA 总线更好的整体性能。PCI 总线的时钟频率一般在 25MHz 到 33MHz 范围内，有些甚至能够达到 66MHz 或者 133MHz，而在 64 位系统中则最高能达到 266MHz。尽管目前 PCI 设备大多采用 32 位数据总线，但 PCI 规范中已经给出了 64 位的扩展实现，从而使 PCI 总线能够更好地实现平台无关性，现在 PCI 总线已经能够用于 IA-32、Alpha、PowerPC、SPARC64 和 IA-64 等体系结构中。
+
+![](/assets/PDB/HK/TH001467.png)
+
+一个典型的 PCI 总线系统如上图的以 Intel 440FX PMC(PCI and Memory Controller) 为北桥芯片，PIIX (PCI ISA Xcelerator) 为南桥芯片组成的芯片组。北桥芯片 PMC 用于连接主板上的高速设备，向上提供了连接处理器的 Host 总线接口，可以连接多个处理器，向下主要提供了连接内存 DRAM 的接口和连接 PCI 总线系统的 PCI 总线接口，通过该 PCI root port 扩展出整个 PCI 设备树，包括 PIIX 南桥芯片. PIIX 南桥芯片则用于连接主板上的低速设备，主要包括 IDE 控制器、DMA 控制器、硬盘、USB 控制器、SMBus 总线控制器，并且提供了 ISA 总线用于连接更多的低速设备，如键盘、鼠标、BIOS ROM 等. 如果想更深入的了解 PCI/PCIe 知识，可以参考如下文档:
+
+> [https://tldp.org/LDP/tlk/dd/pci.html](https://tldp.org/LDP/tlk/dd/pci.html)
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+#### PCI 驱动部署实践
+
+BiscuitOS 为了让开发者能够在不使用真实硬件的情况下感受 Linux PCI 驱动， BiscuitOS 基于 QEMU 模拟了一个 PCI 设备 "BiscuitOS-pci", 感兴趣的童鞋可以参考下面内容进行部署实践:
+
+> - [PCI/PCIe 实践攻略(QEMU PCI 设备模拟/Linux PCI 驱动)](#D)
+
+另外借助 BiscuitOS 编译平台通过简单的几个命令就可以进行 PCI 设备驱动的部署，开发者可以使用如下命令进行部署: (以 X86_64 Linux 5.0 为例进行讲解)
+
+{% highlight bash %}
+cd BiscuitOS/
+make linux-5.0-x86_64_defconfig
+make menuconfig
+
+  [*] Package --->
+      [*] PCI: Peripheral Component Interconnect --->
+          [*] PCI Common Device Driver Module --->
+
+make
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-pci-device-driver-default/
+make download
+tree
+{% endhighlight %}
+
+![](/assets/PDB/HK/TH001502.png)
+![](/assets/PDB/HK/TH001503.png)
+![](/assets/PDB/HK/TH001504.png)
+![](/assets/PDB/HK/TH001505.png)
+
+部署完毕之后可以在 BiscuitOS-pci-device-driver-default 目录下获得多个文件，其中 main.c 为 Linux PCI 设备驱动源文件、Makefile 是 BiscuitOS 编译驱动使用的 make 文件、Makefile.host 是本机编译驱动使用的 make 脚本文件、Kconfig 是 KBuild 的宏定义文件(可忽略)、README.md 是驱动简要说明文件. 有了以上文件就可以在 BiscuitOS 编译并运行(前提是已经部署了 QEMU PCI 设备模拟组件), 开发者只需参考如下命令就可以实践驱动:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-pci-device-driver-default/
+make
+make install
+make pack
+make run
+{% endhighlight %}
+
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
+
+![](/assets/PDB/HK/TH001499.png)
+
+当驱动部署成功在 BiscuitOS 上运行之后，注册一个 PCI 设备，PCI 设备的其中一块 BAR 映射到系统地址空间，而另外一个 BAR 映射到系统的 IO 空间，驱动程序分别对两块 BAR 空间进行了读写操作.
+
+![](/assets/PDB/HK/TH001500.png)
+
+查看系统的地址空间布局可以看到 PCI 设备的内存 BAR 映射到了系统地址空间的 \[0xFEA00000, 0xFEB00000), 这段区域在系统地址空间称为 "BiscuitOS-PCIe-MMIO".
+
+![](/assets/PDB/HK/TH001501.png)
+
+查看系统的 IO 空间布局可以看到 PCI 设备的 IO BAR 映射到了系统 IO空间的 \[0xC000, 0xC07F], 这段区域在系统 IO 空间称为 "BiscuitOS-PCIe-IO"。至此实践到此为止.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+#### 驱动源码
+
+> [BiscuitOS PCI Device Driver Soruce Code on Gitee](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/PCIe/BiscuitOS-pci-device-driver)
+
+{% highlight c %}
+/*
+ * BiscuitOS PCIe QEMU Device Driver
+ *
+ * (C) 2022.03.26 BuddyZhang1 <buddy.zhang@aliyun.com>
+ * (C) 2022.04.02 BiscuitOS <https://biscuitos.github.io/blog/BiscuitOS_Catalogue/>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/miscdevice.h>
+#include <linux/fs.h>
+#include <linux/slab.h>
+#include <linux/uaccess.h>
+#include <linux/pci.h>
+
+#define DEV_NAME		"BiscuitOS-PCIe"
+#define IO_BAR			0
+#define MMIO_BAR		1
+#define BAR_ADDR_REG		0x04
+#define BAR_VER_REG		0x08
+
+struct BiscuitOS_PCIe_state {
+	struct pci_dev *pdev;
+	/* IRQ */
+	int irq;
+	/* IO BAR */
+	void __iomem *io;
+	/* MMIO BAR */
+	void __iomem *mmio;
+};
+static struct BiscuitOS_PCIe_state *bds;
+
+/* Interrup handler */
+static irqreturn_t BiscuitOS_PCIe_irq_handler(int irq, void *dev)
+{
+	/* TODO */
+	return IRQ_HANDLED;
+}
+
+/* Device Probe interface */
+static int BiscuitOS_PCIe_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+{
+	int ret = 0;
+
+	/* DMA status */
+	bds = kzalloc(sizeof(*bds), GFP_KERNEL);
+	if (!bds) {
+		ret = -ENOMEM;
+		printk("%s ERROR: DMA Status allocate failed.\n", DEV_NAME);
+		goto err_alloc;
+	}
+	bds->pdev = pdev;
+
+	/* Enable PCI device */
+	ret = pci_enable_device(pdev);
+	if (ret < 0) {
+		printk("%s ERROR: PCI Device Enable failed.\n", DEV_NAME);
+		goto err_enable_pci;
+	}
+
+	/* Request IO BAR resource */
+	ret = pci_request_region(pdev, IO_BAR, "BiscuitOS-PCIe-IO");
+	if (ret < 0) {
+		printk("%s ERROR: Request IO BAR Failed.\n", DEV_NAME);
+		goto err_request_io;
+	}
+
+	/* Mapping IO BAR */
+	bds->io = pci_iomap(pdev, IO_BAR, pci_resource_len(pdev, IO_BAR));
+	if (!bds->io) {
+		ret = -EBUSY;
+		printk("%s ERROR: Mapping IO Failedn\n", DEV_NAME);
+		goto err_io;
+	}
+
+	/* Request MMIO BAR resource */
+	ret = pci_request_region(pdev, MMIO_BAR, "BiscuitOS-PCIe-MMIO");
+	if (ret < 0) {
+		printk("%s ERROR: Request MMIO BAR Failed.\n", DEV_NAME);
+		goto err_request_mmio;
+	}
+
+	/* Mapping MMIO BAR */
+	bds->mmio = pci_iomap(pdev, MMIO_BAR, pci_resource_len(pdev, MMIO_BAR));
+	if (!bds->mmio) {
+		ret = -EBUSY;
+		printk("%s ERROR: Mapping MMIO Failedn\n", DEV_NAME);
+		goto err_mmio;
+	}
+
+	/* Request MSI IRQ */
+	ret = pci_enable_msi(pdev);
+	if (ret < 0) {
+		printk("%s ERROR: Enable MSI Interrupt failed.\n", DEV_NAME);
+		goto err_msi;
+	}
+	bds->irq = pdev->irq;
+
+	/* Register Interrupt */
+	ret = request_irq(bds->irq, BiscuitOS_PCIe_irq_handler,
+					IRQF_SHARED, DEV_NAME, (void *)bds);
+	if (ret < 0) {
+		printk("%s ERROR: register irq failed.\n", DEV_NAME);
+		goto err_irq;
+	}
+
+	/* Set master */
+	pci_set_master(pdev);
+
+	printk("%s Success Register PCIe Device.\n", DEV_NAME);
+
+	/* Read Data From IO BAR */
+	iowrite8(0x12, bds->io + BAR_ADDR_REG);
+	printk("[IO-BAR] Address-Reg: %#hhx\n", ioread8(bds->io + BAR_ADDR_REG));
+
+	/* Read Data From MMIO BAR */
+	printk("[MMIO-BAR] VerionReg: %c\n", *(uint8_t *)(bds->mmio + BAR_VER_REG));
+
+	return 0;
+
+err_irq:
+	pci_disable_msi(pdev);
+err_msi:
+	pci_iounmap(pdev, bds->io);
+err_mmio:
+	pci_release_region(pdev, MMIO_BAR);
+err_request_mmio:
+	pci_iounmap(pdev, bds->mmio);
+err_io:
+	pci_release_region(pdev, IO_BAR);
+err_request_io:
+	pci_disable_device(pdev);
+err_enable_pci:
+	kfree(bds);
+	bds = NULL;
+err_alloc:
+	return ret;
+}
+
+static void BiscuitOS_PCIe_remove(struct pci_dev *pdev)
+{
+
+	free_irq(bds->irq, (void *)bds);
+	pci_disable_msi(pdev);
+	pci_iounmap(pdev, bds->io);
+	pci_release_region(pdev, IO_BAR);
+	pci_iounmap(pdev, bds->mmio);
+	pci_release_region(pdev, MMIO_BAR);
+	pci_disable_device(pdev);
+	kfree(bds);
+	bds = NULL;
+}
+
+static const struct pci_device_id BiscuitOS_PCIe_ids[] = {
+	{ PCI_DEVICE(0x1016, 0x1413), },
+};
+
+static struct pci_driver BiscuitOS_PCIe_driver = {
+	.name		= DEV_NAME,
+	.id_table	= BiscuitOS_PCIe_ids,
+	.probe		= BiscuitOS_PCIe_probe,
+	.remove		= BiscuitOS_PCIe_remove,
+};
+
+/* Module initialize entry */
+static int __init BiscuitOS_init(void)
+{
+	/* Register pci device */
+	return pci_register_driver(&BiscuitOS_PCIe_driver);
+}
+
+/* Module exit entry */
+static void __exit BiscuitOS_exit(void)
+{
+	/* Un-Register pci device */
+	pci_unregister_driver(&BiscuitOS_PCIe_driver);
+}
+
+module_init(BiscuitOS_init);
+module_exit(BiscuitOS_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("BiscuitOS <buddy.zhang@aliyun.com>");
+MODULE_DESCRIPTION("BiscuitOS PCIe Device Driver");
+{% endhighlight %}
+
+###### MAkefile
+
+{% highlight bash %}
+obj-m += pcie.o
+
+pcie-objs := main.o
+
+KERNELDIR ?= /lib/modules/$(shell uname -r)/build
+
+PWD := $(shell pwd)
+
+ROOT := $(dir $(M))
+DEMOINCLUDE := -I$(ROOT)../include -I$(ROOT)/include
+
+GCCVERSION = $(shell gcc -dumpversion | sed -e 's/\.\([0-9][0-9]\)/\1/g' -e 's/\.\([0-9]\)/0\1/g' -e 's/^[0-9]\{3,4\}$$/&00/')
+
+GCC49 := $(shell expr $(GCCVERSION) \>= 40900)
+
+all:
+        $(MAKE) -C $(KERNELDIR) M=$(PWD) modules
+
+install: all
+        $(MAKE) -C $(KERNELDIR) M=$(PWD) modules_install
+        depmod -a
+
+clean:
+        rm -rf *.o *.o.d *~ core .depend .*.cmd *.ko *.ko.unsigned *.mod.c .tmp_versions *.symvers \
+                *.save *.bak Modules.* modules.order Module.markers *.bin
+
+CFLAGS_pcie_demo.o := -Wall $(DEMOINCLUDE)
+
+ifeq ($(GCC49),1)
+        CFLAGS_pcie_demo.o += -Wno-error=date-time
+endif
+
+CFLAGS_main.o := $(DEMOINCLUDE)
+{% endhighlight %}
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------
+
+#### 驱动讲解
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+-------------------------------------------
+
+<span id="E"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
+
+#### PCI/PCIe 开源工具
+
+开源世界存在多个工具用于操作 PCI，本节用于介绍各种与 PCI 相关的开源工具，需要的童鞋可以按目录进行使用:
+
+> - [pcituils](#E0)
+>
+>   - [pciutils 编译部署](#E01)
+>
+>   - [lspci](#E02)
+>
+>   - [setpci](#E03)
+>
+>   - [update-pciids](#E04)
+>
+>   - [pcimodules](#E05)
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+-------------------------------------------
+
+<span id="E0"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
+
+#### pciuitls
+
+pciutils 包含了一个用于 PCI 总线配置寄存器的可移植库及基于这个库开发的几个实用程序. pciutils 支持的平台非常多，包括 Linux/Windows/FreeBSD/Darwin 等平台，且这些不同平台访问 pci bus 总线的方法也有所区别，pciutils 完成兼容了这些平台，具有很好的移植性. pciutils 支持如下几个实用程序以及部署:
+
+> - [lspci - 显示所有 pci 总线与设备的详细信息](#E02)
+>
+> - [setpci - 运行用户从 pci 配置空间寄存器读取写入数据](#E03)
+>
+> - [update-pciids - 从网络上下载 pci.ids 文件的当前版本](#E04)
+>
+> - [pcimodules - 列出当前系统上所有插入的 pci 设备可用的内核驱动](#E05)
+>
+> - [pciuitls 源码编译/跨平台安装](#E01)
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------
+
+#### <span id="E01">pciutils 源码编译/跨平台安装</span>
+
+pciuitls 支持的平台非常多，本节用于介绍如何通过源码编译安装 pciuitls 工具。BiscuitOS 目前已经支持 pciutils 的部署，本节从三个维度进行讲解:
+
+> [pciutils 源码网站 http://mj.ucw.cz/pciutils.shtml ](http://mj.ucw.cz/pciutils.shtml )
+
+下载所需版本并进行解压编译，使用如下命令:
+
+{% highlight bash %}
+wget http://mj.ucw.cz/download/linux/pci/pciutils-3.7.0.tar.gz
+tar xf pciutils-3.7.0.tar.gz
+cd pciutils-3.7.0
+make
+{% endhighlight %}
+
+![](/assets/PDB/HK/TH001506.png)
+
+编译成功之后可以获得 lspci/setpci/update-pciids 等工具，直接运行即可. 如果开发者不想通过源码编译的方式安装 pciuitls 工具，那么开发者可以在不同发行版下使用包安装工具直接进行安装, 例如:
+
+{% highlight bash %}
+# Ubuntu/Debian
+sudo apt install -y pciutils
+
+# CentOS
+sudo yum install -y pciutils
+{% endhighlight %}
+
+最后 BiscuitOS 上部署 pciuitls 工具可以参考如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/
+make linux-5.0-x86_64_defconfig
+make menuconfig
+
+  [*] Package --->
+      [*] PCI: Peripheral Component Interconnect --->
+          [*] PCI Common Device Driver Module --->
+
+make
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-pci-device-driver-default/
+make download
+make tar
+tree -L 1
+{% endhighlight %}
+
+![](/assets/PDB/HK/TH001502.png)
+![](/assets/PDB/HK/TH001503.png)
+![](/assets/PDB/HK/TH001507.png)
+![](/assets/PDB/HK/TH001508.png)
+
+在 BiscuitOS 使用简单几个命令就可以部署 pciutils，接下来进行源码编译安装并在 BiscuitOS 使用，参考如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-pci-device-driver-default/
+make
+make install
+make pack
+make run
+{% endhighlight %}
+
+![](/assets/PDB/HK/TH001509.png)
+
+由于 BUSYBOX 默认带有 lspci，为了区分两个工具，那么将 pciutils 生成的 lscpi 命名为 lspci-common, 可以看出该工具可以在 BiscuitOS 正常运行.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------
+
+#### <span id="E02">lspci</span>
+
+![](/assets/PDB/HK/TH001509.png)
+
+lscpi 是 pciuitls 工具包合集中一个用于显示 PCI 总线与设备信息的工具，其提供了丰富的参数以此获得更多有效的信息，其参数列表如下:
+
+![](/assets/PDB/HK/TH001510.png)
+
+> [lspci](#E0200)
+>
+> [lspci -s](#E0201)
+>
+> [lspci -v](#E0202)
+
+----------------------------------
+
+###### <span id="E0200">lspci</span>
+
+![](/assets/PDB/HK/TH001511.png)
+
+lspci 命令不带任何参数时将显示处目前所有 PCI 总线上的设备，其输出的格式如下:
+
+{% highlight bash %}
+# lspci information format
+# 00:04.0 Class 00ff: Device 1016:1413 (rev 10)
+00            : 00        : 04       . 0           Class 00ff      : Device 1016      : 1413              ( rev 10        )
+<DomainNumber>:<BusNumber>:<DeviceID>.<FunctionID> Class <ClassNum>: Device <VendorID>:<Product-DeviceID> (<ReviewVersion>)
+{% endhighlight %}
+
+* DomainNumer: 域编号，一般为 0 不显示
+* BusNumer: BDF 中 PCI 设备所在 PCI Bus 号
+* DeviceID: BDF 中 PCI 设备的设备号
+* FunctionID: BDF 中 PCI 设备的功能号
+* ClassNum: 
+* VendorID: 厂商 ID
+* Product-DeviceID: 厂商设备 ID
+* ReviewVersion: 
+
+----------------------------------
+
+###### <span id="E0201">lspci -s</span>
+
+![](/assets/PDB/HK/TH001512.png)
+
+lspci "-s" 通过 BDF 找到指定 PCI 设备，该参数与其他参数配合使用，以便简介显示指定 PCI 设备的信息. 其使用格式以及输出如下:
+
+{% highlight bash %}
+# Show only devices in selected slots
+lspci -s [[[[<domain>]:]<bus>]:][<slot>][.[<func>]]
+{% endhighlight %}
+
+* domain: 域 ID
+* bus: BDF 中 PCI 设备所在 PCI Bus ID
+* slot: BDF 中 PCI 设备所在 Slot ID，或者是 DeviceID
+* func: BDF 中 PCI 设备的 Function Number
+
+----------------------------------
+
+###### <span id="E0202">lspci -v</span>
+
+lspci "-v" 参数以冗余模式显示所有设备的详细信息. 其可以和 "-s" 参数联合使用，以此获得指定 PCI 设备详细信息. 其使用如下:
+
+![](/assets/PDB/HK/TH001513.png)
+
+上面的命令用于显示 00:04.0 设备的详细信息，"00:04.0" 字段表示设备的 BDF 号，"Class 00ff" 为设备的 ClassNumber，"Device 1016:1413" 字段是设备的厂商 ID 和厂商设备 ID. "Subsystem: Device" 字段表示. "IRQ 11" 字段表示 PCI 使用的中断 11. "I/O ports at c000 [size=128]" 表示 PCI 设备的第一个 BAR 是一个 IO，其映射到系统 IO 空间 0xC000, 另外 BAR 长度为 128 字节. "Memory at fea00000 (32-bit, non-prefetchable) [size=1M]" 表示 PCI 设备的第二个 BAR 是一个 MEM，其映射到系统地址空间 0xFEA00000, 长度为 1M 且为非预读 MEM. 
+
+-------------------------------------------
+
+<span id="K"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
+
+#### PCI BIOS 研究
+
+![](/assets/PDB/HK/TH001481.png)
+
+在 X86 架构中，BIOS 负责在内核运行之前为必备硬件设备进行初始化，其中包括对 PCI-Host、PCI-Bridge 以及 PCI 设备的初始化，其中包括 BDF 号的分配，以及设备配置空间的初始化，其中一个重要的任务是为 PCI 设备的 MEM-IO BAR 分配系统地址空间的 MMIO 地址和系统 IO 空间的端口号.
+
+![](/assets/PDB/HK/TH001514.png)
+
+通过 PCI 基础知识的了解，在 PCI 设备内部存在三种存储空间，第一种是以内存形式的寄存器空间(MEM-BAR)，第二种是以 IO 端口形式的寄存器空间(IO-BAR)，第三种则是设备内部的存储空间. 在 X86 架构的 PCI 总线架构中，由于系统地址空间与 PCI 总线空间是 1:1 的映射关系，那么系统可以通过 MMIO 机制将 PCI 地址空间的区域映射到系统地址空间，那么 CPU 就可以像访问内存一样访问 PCI 空间; 同理在 X86 架构的 PCI 总线架构中，由于系统 IO 空间与 PCI IO 空间也存在 1:1 映射的关系，那么 PCI IO 空间的端口可以映射到系统 IO 空间，那么 CPU 可以向访问普通 IO 端口一样访问 PCI IO 空间。有了上面的基础，BIOS 的任务就是为每个 PCI 设备的 MEM-IO BAR 分配系统空间地址(同时等于 PCI 空间地址)，或着分配系统 IO 端口(同时等于 PCI IO 端口).
+
+![](/assets/PDB/HK/TH001486.png)
+
+BAR 寄存器有些只读的 bit 是出厂前厂商固定好的 bit，固定 bit 包括 [3:0], 其中 Bit0 为 0 时表示对应的空间是一块内存，为 1 时表示对应的空间是一块 IO 空间. Bit2:1 构成的域用于表示对应的空间宽度，如果是 00，那么对应的空间宽度为 32 位，如果是 10，那么空间宽度为 64 位. Bit3 表示空间是否支持预读，当为 0 时表示不预读，而为 1 时表示为预读.
+
+![](/assets/PDB/HK/TH001487.png)
+
+系统上电之后，BAR 寄存器的低 [11:4] 位全为 0 而高位未知，此时 BIOS 向 BAR 寄存器写入全 1，然后读取 BAR 寄存器会得到 BAR 对应空间的长度，从 Bit4 到 Bit31 域的最低置位位表示 BAR 的大小，例如上图中域中最低置位位是 Bit20, 那么可操作的最低位为 20，则 BAR 可申请的地址空间为 1MiB(2^20).
+
+![](/assets/PDB/HK/TH001488.png)
+
+在获得 BAR 对应空间的长度之后，BIOS 将通过 MMIO 映射之后的地址对应的页帧号写入到 BAR 寄存器的高 20 位，例如上图 BAR 对应的内存通过 MMIO 映射到了系统地址空间的 0xFE000000, 那么将 0xFE000 写入到 BAR 寄存器高 20 位. 至此 PCI 设备 32 位内存映射到了系统地址空间. 对于 IO-BAR 和 64-Bit BAR 的初始化，这里不做细节介绍，另外对于 PCI 设备/PCI 桥 BDF 号分配的原理，请参考:
+
+> [PCI BAR 初始化研究](#D4)
+>
+> [PCI 总线枚举分配 BDF 原理](#D3)
+
+![](/assets/PDB/HK/TH001474.png)
+
+每一个 PCI 设备功能包含 256 字节的配置空间，如果将所有的 PCI 设备功能的配置空间集合在一起，那么称为 PCI 配置空间(PCI Configuration Space), 并使用 BDF 进行寻址。由于每个 PCI 设备最多支持 8 中功能 (Function), 每一条 PCI 总线最多支持 32 个设备，每个 PCI 总线系统最多支持 256 个子总线，那么 PCI Configuration Space 的大小为: 256 (Bytes/Function) * 8 (Functioins/device) * 32 (device/Bus) * 256 (buses/system) = 16MiB。
+
+![](/assets/PDB/HK/TH001475.png)
+
+在 X86 架构中，只能通过 IO 端口方式才能访问 PCI Configuration Space。由于 X86 I/O 地址空间有限 (64KiB), 所以一般在 I/O Space 中都包含两个寄存器，一个指向要操作的内部地址，第二个存放读或写的数据。因此对于 PCI 周期来说，包含了两个步骤: 首先 CPU 对 PCI Address Port 的 [0xCF8, 0xCFB] 写入要操作的的寄存器地址，其中包括了总线号(Bus Numer)、设备号(Device Number)、功能号(Function Number) 和寄存器指针; 接着 CPU 向 PCI Data Port 的 [0xCFC, 0xCFF] 中写入读或写的数据.
+
+--------------------------------
+
+###### BIOS PCI 软件架构
+
+![](/assets/PDB/HK/TH001515.png)
 
 
