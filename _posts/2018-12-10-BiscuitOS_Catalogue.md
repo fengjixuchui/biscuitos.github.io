@@ -118,7 +118,6 @@ tags:
 >
 >   - I/O Port Space
 >
->
 > - [PERCPU Memory Allocator](/blog/HISTORY-PERCPU/)
 >
 > - SLAB/KMEM Allocator
@@ -168,6 +167,8 @@ tags:
 > - Memory Reclaim Mechansim
 >
 >   - SWAP
+>
+> - OOM Mechanism
 >
 > - Share Memory Mechanism
 >
@@ -220,6 +221,8 @@ tags:
 > - 内存压测工具
 >
 >   - Intel MLC
+>
+>   - memtest
 >
 > - [Memory ERROR Collection](/blog/Memory-ERROR/)
 
