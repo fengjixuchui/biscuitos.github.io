@@ -168,7 +168,7 @@ tags:
 >
 >   - SWAP
 >
-> - OOM Mechanism
+> - [OOM Mechanism](/blog/OOM/)
 >
 > - Share Memory Mechanism
 >
