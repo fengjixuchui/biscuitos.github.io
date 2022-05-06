@@ -158,7 +158,7 @@ tags:
 >
 >   - [Hugetlb and Hugetlbfs Mechanism](/blog/Hugetlbfs)
 >
->   - [Transparent HugePage Mechanism]()
+>   - [Transparent HugePage Mechanism](/blog/THP/)
 >
 > - Memory Mmapping Mechanism
 >
