@@ -106,7 +106,7 @@ tags:
 >
 >   - [ZONE]()
 >
->   - [Physical Page/Frame]()
+>   - [Physical Page/Frame](/blog/PAGE/)
 >
 >   - [Buddy Memory Allocator](/blog/HISTORY-buddy/)
 >
