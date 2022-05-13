@@ -68,6 +68,8 @@ tags:
 >
 > - Detecting Memory
 >
+>   - [X86_64 启动流程之内存初始化]()
+>
 >   - [Detecting Memory from CMOS \[X86\]](/blog/MMU-seaBIOS_E820/#E1)
 >
 >   - [Detecting Memory from BDA \[X86\]](/blog/MMU-seaBIOS_E820/#E2)
@@ -146,6 +148,8 @@ tags:
 >
 >   - [EPT Paging Mechansim]()
 >
+>   - [GUP: Get User Page Mechanism]()
+>
 > - Page Fault Mechanism
 >
 >   - [Anonymous Shared/Private Page Fault]()
@@ -154,21 +158,21 @@ tags:
 >
 >   - [缺页实践: Page Fault Practice and Trace on 32-Bit Paging](/blog/32bit-Paging/#K0)
 >
+>   - [userfaultfd mechanism]()
+>
 > - Huge Page Mechanism
 >
 >   - [Hugetlb and Hugetlbfs Mechanism](/blog/Hugetlbfs)
 >
 >   - [Transparent HugePage Mechanism](/blog/THP/)
 >
-> - Memory Mmapping Mechanism
+> - Memory MMAP Mechanism
 >
 > - Memory Compact Technology
 >
 > - Memory Reclaim Mechansim
 >
->   - SWAP
->
-> - [OOM Mechanism](/blog/OOM/)
+> - Memory SWAP Mechanism
 >
 > - Share Memory Mechanism
 >
@@ -178,7 +182,7 @@ tags:
 >
 > - Memory Hotplug Technology
 >
-> - [Memory Virtualize]()
+> - Memory Virtualize
 >
 >   - [QEMU Memory Manager for Virtual machine](/blog/QEMU-Memory-Manager-VM)
 >
@@ -224,7 +228,13 @@ tags:
 >
 >   - memtest
 >
-> - [Memory ERROR Collection](/blog/Memory-ERROR/)
+> - Memory BUG
+>
+>   - [Memory ERROR Collection](/blog/Memory-ERROR/)
+>
+>   - [Memory UCE]()
+>
+>   - [OOM Mechanism](/blog/OOM/)
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000108.png)
 
