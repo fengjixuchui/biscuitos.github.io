@@ -427,9 +427,21 @@ tags:
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
-## <span id="Enginerring">Enginerring Practice</span>
+## <span id="Enginerring">Enginerring Hardware Practice</span>
 
+> - [Build BiscuitOS on RaspberryPi 4B](/blog/RaspberryPi_4B-Usermanual/)
+>
+> - [Build BiscuitOS on RaspberryPi 3B](/blog/RaspberryPi_3B-Usermanual/)
+>
 > - [I2C](/blog/I2CBus/)
+>
+>   - [EEPROM AT24C08](/blog/LDD_I2C_AT24C08/)
+>
+>   - [Temperature LM75A](/blog/LDD_I2C_LM75A/)
+>
+>   - [I/O Expander FPC8574](/blog/LDD_I2C_PCF8574AT/)
+>
+>   - [A/D D/A Coverter PCF8591](/blog/LDD_I2C_PCF8591/)
 >
 > - [PCIe](/blog/PCIe/)
 >
@@ -450,37 +462,8 @@ tags:
 > - [CAN](/blog/CAN/)
 >
 > - [DTS](/blog/DTS/)
-
-<span id="RaspberryPi"></span>
-![](/assets/PDB/RPI/RPI000000.png)
-
-## Hardware Platform Practice
-
-> - [Build BiscuitOS on RaspberryPi 4B](/blog/RaspberryPi_4B-Usermanual/)
 >
-> - [Build BiscuitOS on RaspberryPi 3B](/blog/RaspberryPi_3B-Usermanual/)
->
-> - I2C
->
->   - [EEPROM AT24C08](/blog/LDD_I2C_AT24C08/)
->
->   - [Temperature LM75A](/blog/LDD_I2C_LM75A/)
->
->   - [I/O Expander FPC8574](/blog/LDD_I2C_PCF8574AT/)
->
->   - [A/D D/A Coverter PCF8591](/blog/LDD_I2C_PCF8591/)
->
-> - SPI
->
-> - 1-wire
->
-> - CAN
->
-> - Input
->
-> - Platform
->
-> - PWM
+> - [IO 多路复用: Select/Poll/Epoll](/blog/IO-SYNC/)
 
 ![](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000210.gif)
 
