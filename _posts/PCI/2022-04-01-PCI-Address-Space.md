@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "PCI/PCIe Address Space"
+title:  "PCI/PCIe 域地址空间"
 date:   2022-04-01 12:00:00 +0800
 categories: [HW]
 excerpt: PCI Memory Sapce.
@@ -16,21 +16,59 @@ tags:
 
 > - [PCI 基础知识](#A)
 >
-> - [PCI 地址空间](#B)
+> - [PCIe 基础知识]()
+>
+> - [PCI 域地址空间](#B)
+>
+>   - [PCI MM-BAR 存储空间]()
+>
+>   - [PCI IO-BAR IO 端口]()
+>
+>   - [CPU 访问 PCI 域空间]()
+>
+>   - [PCI 访问内存域: DMA]()
+>
+>   - [PCI Memory Cache 一致性]()
 >
 > - [PCI 实践攻略](#D)
 >
 > - [PCI 开源工具](#E)
 >
-> - [PCI 使用攻略](#F)
+> - [PCI/PCIe 使用攻略](#F)
 >
-> - [PCI 设备驱动](#G)
+> - PCI/PCIe 与 Linux/BIOS
 >
-> - [PCI DMA 驱动](#H)
+>   - [BIOS PCI/PCIe 研究](/blog/PCI-Address-Space-seaBIOS/)
 >
-> - [PCI BIOS 研究](/blog/PCI-Address-Space-seaBIOS/)
+>   - [Linux PCI/PCIe 子系统]()
+>
+>   - [PCI/PCIe 设备驱动](#G)
+>
+>   - [DMA 设备驱动]()
+>
+>   - [PCI IO-Port]()
 >
 > - [PCI 设备虚拟化研究]()
+>
+>   - [QEMU PCI 总线/PCI 设备/PCI 桥模拟]()
+>
+>   - [PCI 半虚拟化之 virtio]()
+>
+>   - [PCI 虚拟化之设备直通]()
+>
+>   - [PCI 虚拟化之 vhost]()
+>
+>   - [PCI 虚拟化之 vhost-user]()
+>
+>   - [PCI 虚拟化值 Intel SR-IOV]()
+>
+> - PCI/PCIe 中断研究
+>
+>   - PCI INTA 中断机制
+>
+>   - PCIe MSI 中断机制
+>
+>   - PCIe MSIX 中断机制
 >
 > - PCI/PCIe 进阶研究
 >
@@ -51,6 +89,8 @@ tags:
 >   - QEMU PCI 总线设备模拟研究
 >
 >   - QEMU DMA 内存搬运研究
+>
+>   - [PCI/PCIe Class Code 表](https://blog.csdn.net/niepangu/article/details/61619990)
 
 ######  🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂 捐赠一下吧 🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂
 
@@ -290,6 +330,11 @@ cp BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-pci-device-QEMU-emulate-d
 
 > [BiscuitOS QEMU PCI Device Soruce Code on Gitee](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/PCIe/BiscuitOS-pci-device-QEMU-emulate)
 
+![](/assets/PDB/HK/TH001502.png)
+![](/assets/PDB/HK/TH001664.png)
+![](/assets/PDB/HK/TH001665.png)
+![](/assets/PDB/HK/TH001666.png)
+
 在 BiscuitOS 的顶层目录执行 make menuconfig 之后，选择 QEMU PCI 设备源码和内核 PCI 驱动源码，然后执行 make 进行部署。接着进入 BiscuitOS-pci-device-QEMU-emulate-default 目录执行 make download 下载 QEMU PCI 设备源码。待源码下载完毕之后将其拷贝到 QEMU 源码 hw/BiscuitOS/ 目录下.
 
 {% highlight bash %}
@@ -360,10 +405,15 @@ make menuconfig
 
 make
 cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-pci-device-driver-default/
+# 源码下载
 make download
+# 源码编译
 make 
+# 驱动安装
 make install
+# rootfs 打包
 make pack
+# 运行 BiscuitOS
 make run
 {% endhighlight %}
 
@@ -371,6 +421,10 @@ make run
 >
 > [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
 
+![](/assets/PDB/HK/TH001502.png)
+![](/assets/PDB/HK/TH001664.png)
+![](/assets/PDB/HK/TH001667.png)
+![](/assets/PDB/HK/TH001668.png)
 ![](/assets/PDB/HK/TH001499.png)
 
 当驱动部署成功在 BiscuitOS 上运行之后，注册一个 PCI 设备，PCI 设备的其中一块 BAR 映射到系统地址空间，而另外一个 BAR 映射到系统的 IO 空间，驱动程序分别对两块 BAR 空间进行了读写操作. 
@@ -789,10 +843,10 @@ make menuconfig
 
   [*] Package --->
       [*] PCI: Peripheral Component Interconnect --->
-          [*] PCI Common Device Driver Module --->
+          [*] PCI Utilities: lspci/setpci/update-pciids --->
 
 make
-cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-pci-device-driver-default/
+cd BiscuitOS/output/linux-5.0-x86_64/package/pciutils-3.7.0/
 make download
 make tar
 tree -L 1
@@ -806,7 +860,7 @@ tree -L 1
 在 BiscuitOS 使用简单几个命令就可以部署 pciutils，接下来进行源码编译安装并在 BiscuitOS 使用，参考如下命令:
 
 {% highlight bash %}
-cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-pci-device-driver-default/
+cd BiscuitOS/output/linux-5.0-x86_64/package/pciutils-3.7.0/
 make
 make install
 make pack
@@ -829,11 +883,15 @@ lscpi 是 pciuitls 工具包合集中一个用于显示 PCI 总线与设备信�
 
 ![](/assets/PDB/HK/TH001510.png)
 
-> [lspci](#E0200)
+> - [lspci](#E0200)
 >
-> [lspci -s](#E0201)
+> - [lspci -s](#E0201)
 >
-> [lspci -v](#E0202)
+> - [lspci -v\[vv\]](#E0202)
+>
+> - [lspci -n\[n\]](#E0203)
+>
+> - [lspci -d](#E0204)
 
 ----------------------------------
 
@@ -854,7 +912,7 @@ lspci 命令不带任何参数时将显示处目前所有 PCI 总线上的设备
 * BusNumer: BDF 中 PCI 设备所在 PCI Bus 号
 * DeviceID: BDF 中 PCI 设备的设备号
 * FunctionID: BDF 中 PCI 设备的功能号
-* ClassNum: 
+* ClassNum: BDF 中 PCI 设备的功能类别信息 
 * VendorID: 厂商 ID
 * Product-DeviceID: 厂商设备 ID
 * ReviewVersion: 
@@ -865,11 +923,26 @@ lspci 命令不带任何参数时将显示处目前所有 PCI 总线上的设备
 
 ![](/assets/PDB/HK/TH001512.png)
 
-lspci "-s" 通过 BDF 找到指定 PCI 设备，该参数与其他参数配合使用，以便简介显示指定 PCI 设备的信息. 其使用格式以及输出如下:
+lspci "-s" 通过 BDF 找到指定 PCI 设备，该参数与 "Domain"、"BusID"、"SlotID" 和 "FunctionID" 任意组合都可以查找不同需求的 PCI 设备，以便简介显示指定 PCI 设备的信息. 其使用格式以及输出如下:
 
 {% highlight bash %}
 # Show only devices in selected slots
 lspci -s [[[[<domain>]:]<bus>]:][<slot>][.[<func>]]
+
+# Show Domain all Device
+lspci -s Domain::.
+
+# Show Bus all Device
+lspci -s :Bus:.
+
+# Show match slot all Device
+lspci -s ::slot.
+
+# show match function all Device
+lspci -s ::.func
+
+# Show all Device
+lspci -s ::.
 {% endhighlight %}
 
 * domain: 域 ID
@@ -879,7 +952,7 @@ lspci -s [[[[<domain>]:]<bus>]:][<slot>][.[<func>]]
 
 ----------------------------------
 
-###### <span id="E0202">lspci -v</span>
+###### <span id="E0202">lspci -v[vv]</span>
 
 lspci "-v" 参数以冗余模式显示所有设备的详细信息. 其可以和 "-s" 参数联合使用，以此获得指定 PCI 设备详细信息. 其使用如下:
 
@@ -887,50 +960,448 @@ lspci "-v" 参数以冗余模式显示所有设备的详细信息. 其可以和 
 
 上面的命令用于显示 00:04.0 设备的详细信息，"00:04.0" 字段表示设备的 BDF 号，"Class 00ff" 为设备的 ClassNumber，"Device 1016:1413" 字段是设备的厂商 ID 和厂商设备 ID. "Subsystem: Device" 字段表示. "IRQ 11" 字段表示 PCI 使用的中断 11. "I/O ports at c000 [size=128]" 表示 PCI 设备的第一个 BAR 是一个 IO，其映射到系统 IO 空间 0xC000, 另外 BAR 长度为 128 字节. "Memory at fea00000 (32-bit, non-prefetchable) [size=1M]" 表示 PCI 设备的第二个 BAR 是一个 MEM，其映射到系统地址空间 0xFEA00000, 长度为 1M 且为非预读 MEM. 
 
+![](/assets/PDB/HK/TH001552.png)
+
+lspci "-vv" 参数比 "-v" 参数以更冗余模式显示所有设备的信息。相比 "-v" 参数输出的信息，其包含了 Control 寄存器的信息、Status Cap 寄存器的信息.
+
+![](/assets/PDB/HK/TH001553.png)
+
+lspci "-vvv" 参数比 "-vv" 参数以更冗余模式显示所有设备的信息。大部分情况下两者输出信息一致.
+
+--------------------------------------------
+
+###### <span id="E0203">lspci -n[n]</span>
+
+![](/assets/PDB/HK/TH001554.png)
+
+lspci "-n" 参数相比单纯的 "lspci" 命令，其不显示 ID 的名字只显示 ID 的值，其格式如下:
+
+{% highlight bash %}
+# lspci -n information format
+# 00:04.0 00ff: 1016:1413 (rev 10)
+00            : 00        : 04       . 0           00ff      : 1016      : 1413              ( rev 10        )
+<DomainNumber>:<BusNumber>:<DeviceID>.<FunctionID> <ClassNum>: <VendorID>:<Product-DeviceID> (<ReviewVersion>)
+{% endhighlight %}
+
+* DomainNumer: 域编号，一般为 0 不显示
+* BusNumer: BDF 中 PCI 设备所在 PCI Bus 号
+* DeviceID: BDF 中 PCI 设备的设备号
+* FunctionID: BDF 中 PCI 设备的功能号
+* ClassNum: BDF 中 PCI 设备的功能类别信息 
+* VendorID: 厂商 ID
+* Product-DeviceID: 厂商设备 ID
+* ReviewVersion: 
+
+![](/assets/PDB/HK/TH001555.png)
+
+相比 lspci "-n" 参数，lspci "-nn" 参数命令不止会输出 ID 的名字还会将 ID 的值通过中括号圈起来，其格式如下:
+
+{% highlight bash %}
+# lspci -nn information format
+# 00:04.0 Class [00ff]: Device [1016:1413] (rev 10)
+00            : 00        : 04       . 0           Class [00ff]      : Device [1016      : 1413]              ( rev 10        )
+<DomainNumber>:<BusNumber>:<DeviceID>.<FunctionID> Class [<ClassNum>]: Device [<VendorID>:<Product-DeviceID>] (<ReviewVersion>)
+{% endhighlight %}
+
+* DomainNumer: 域编号，一般为 0 不显示
+* BusNumer: BDF 中 PCI 设备所在 PCI Bus 号
+* DeviceID: BDF 中 PCI 设备的设备号
+* FunctionID: BDF 中 PCI 设备的功能号
+* ClassNum: BDF 中 PCI 设备的功能类别信息
+* VendorID: 厂商 ID
+* Product-DeviceID: 厂商设备 ID
+* ReviewVersion:
+
+----------------------------------
+
+###### <span id="E0206">lspci -d</span>
+
+![](/assets/PDB/HK/TH001556.png)
+
+lspci "-d" 参数可以根据 VendorID、DeviceID 和 ClassID 任意组合在 PCI 总线上查找指定的 PCI 设备，其使用格式如下:
+
+{% highlight bash %}
+# lspci -d information format
+# Show only devices with specified ID's
+lspci -d [<vendor>]:[<device>][:<class>]
+
+# vendor and device and class
+lspci -d vendor:device:class
+
+# Only vendor and device
+lspci -d vendor:device
+
+# Only vendor and class
+lspci -d vendor::class
+
+# Only device and class
+lspci -d :device:class
+
+# Only vendor
+lspci -d vendor::
+
+# Only device
+lspci -d :device:
+
+# Only class
+lspci -d ::class
+
+# Nobody
+lspci -d ::
+{% endhighlight %}
+
 -------------------------------------------
 
-<span id="K"></span>
+<span id="F"></span>
 
-![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
+![](/assets/PDB/BiscuitOS/kernel/IND00000W.jpg)
 
-#### PCI BIOS 研究
+#### PCI/PCIe 使用攻略
 
-![](/assets/PDB/HK/TH001481.png)
+PCI/PCIe 使用攻略章节基于 [PCI 实践攻略](#D) 章节提供了 PCI 设备的多种应用场景，皆在最大程度上让开发者从实践中感受 PCI 设备的用途。BiscuitOS 通过 QEMU 模拟了适应不同场景的 PCI/PCIe 设备，并提供配套的驱动和应用程序，以此提供一个完整的实践环境与使用说明，开发者可以参考如下文档:
 
-在 X86 架构中，BIOS 负责在内核运行之前为必备硬件设备进行初始化，其中包括对 PCI-Host、PCI-Bridge 以及 PCI 设备的初始化，其中包括 BDF 号的分配，以及设备配置空间的初始化，其中一个重要的任务是为 PCI 设备的 MEM-IO BAR 分配系统地址空间的 MMIO 地址和系统 IO 空间的端口号.
-
-![](/assets/PDB/HK/TH001514.png)
-
-通过 PCI 基础知识的了解，在 PCI 设备内部存在三种存储空间，第一种是以内存形式的寄存器空间(MEM-BAR)，第二种是以 IO 端口形式的寄存器空间(IO-BAR)，第三种则是设备内部的存储空间. 在 X86 架构的 PCI 总线架构中，由于系统地址空间与 PCI 总线空间是 1:1 的映射关系，那么系统可以通过 MMIO 机制将 PCI 地址空间的区域映射到系统地址空间，那么 CPU 就可以像访问内存一样访问 PCI 空间; 同理在 X86 架构的 PCI 总线架构中，由于系统 IO 空间与 PCI IO 空间也存在 1:1 映射的关系，那么 PCI IO 空间的端口可以映射到系统 IO 空间，那么 CPU 可以向访问普通 IO 端口一样访问 PCI IO 空间。有了上面的基础，BIOS 的任务就是为每个 PCI 设备的 MEM-IO BAR 分配系统空间地址(同时等于 PCI 空间地址)，或着分配系统 IO 端口(同时等于 PCI IO 端口).
-
-![](/assets/PDB/HK/TH001486.png)
-
-BAR 寄存器有些只读的 bit 是出厂前厂商固定好的 bit，固定 bit 包括 [3:0], 其中 Bit0 为 0 时表示对应的空间是一块内存，为 1 时表示对应的空间是一块 IO 空间. Bit2:1 构成的域用于表示对应的空间宽度，如果是 00，那么对应的空间宽度为 32 位，如果是 10，那么空间宽度为 64 位. Bit3 表示空间是否支持预读，当为 0 时表示不预读，而为 1 时表示为预读.
-
-![](/assets/PDB/HK/TH001487.png)
-
-系统上电之后，BAR 寄存器的低 [11:4] 位全为 0 而高位未知，此时 BIOS 向 BAR 寄存器写入全 1，然后读取 BAR 寄存器会得到 BAR 对应空间的长度，从 Bit4 到 Bit31 域的最低置位位表示 BAR 的大小，例如上图中域中最低置位位是 Bit20, 那么可操作的最低位为 20，则 BAR 可申请的地址空间为 1MiB(2^20).
-
-![](/assets/PDB/HK/TH001488.png)
-
-在获得 BAR 对应空间的长度之后，BIOS 将通过 MMIO 映射之后的地址对应的页帧号写入到 BAR 寄存器的高 20 位，例如上图 BAR 对应的内存通过 MMIO 映射到了系统地址空间的 0xFE000000, 那么将 0xFE000 写入到 BAR 寄存器高 20 位. 至此 PCI 设备 32 位内存映射到了系统地址空间. 对于 IO-BAR 和 64-Bit BAR 的初始化，这里不做细节介绍，另外对于 PCI 设备/PCI 桥 BDF 号分配的原理，请参考:
-
-> [PCI BAR 初始化研究](#D4)
+> - [PCI Agent 设备使用攻略](#F0)
 >
-> [PCI 总线枚举分配 BDF 原理](#D3)
+> - [PCI Agent DMA 使用攻略](#F1)
+>
+> - [PCI Bridge 使用攻略](#F2)
 
-![](/assets/PDB/HK/TH001474.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
-每一个 PCI 设备功能包含 256 字节的配置空间，如果将所有的 PCI 设备功能的配置空间集合在一起，那么称为 PCI 配置空间(PCI Configuration Space), 并使用 BDF 进行寻址。由于每个 PCI 设备最多支持 8 中功能 (Function), 每一条 PCI 总线最多支持 32 个设备，每个 PCI 总线系统最多支持 256 个子总线，那么 PCI Configuration Space 的大小为: 256 (Bytes/Function) * 8 (Functioins/device) * 32 (device/Bus) * 256 (buses/system) = 16MiB。
+-------------------------------------------
 
-![](/assets/PDB/HK/TH001475.png)
+<span id="F0"></span>
 
-在 X86 架构中，只能通过 IO 端口方式才能访问 PCI Configuration Space。由于 X86 I/O 地址空间有限 (64KiB), 所以一般在 I/O Space 中都包含两个寄存器，一个指向要操作的内部地址，第二个存放读或写的数据。因此对于 PCI 周期来说，包含了两个步骤: 首先 CPU 对 PCI Address Port 的 [0xCF8, 0xCFB] 写入要操作的的寄存器地址，其中包括了总线号(Bus Numer)、设备号(Device Number)、功能号(Function Number) 和寄存器指针; 接着 CPU 向 PCI Data Port 的 [0xCFC, 0xCFF] 中写入读或写的数据.
+![](/assets/PDB/BiscuitOS/kernel/IND00000I.jpg)
 
---------------------------------
+#### PCI Agent 设备使用攻略
 
-###### BIOS PCI 软件架构
+![](/assets/PDB/HK/TH001678.png)
 
-![](/assets/PDB/HK/TH001515.png)
+市面上常见的 PCI Agent 设备包括网卡、显卡、加速卡等，BiscuitOS 通过 QEMU 模拟了一个简单的 PCI 设备，并在 BiscuitOS 内提供了对应的 PCI 驱动，通过 PCI 驱动和用户空间开源工具描述 PCI Agent 的使用方法. QEMU 模拟了的 PCI Agent 设备 VendorID:DeviceID 为 1016:1413，其包含了一个 MM-BAR 和一个 IO-BAR，MM-BAR 对应的存储空间长度为 1MiB，IO-BAR 的 IO 端口长度为 128 字节.
+
+###### QEMU 部署 PCI 模拟设备
+
+QEMU 可以模拟 PCI 设备，BiscuitOS 提供了一个可实践的 PCI 设备 "BiscuitOS-pci", 其是一个简单的 PCI 设备，其内部包含了一块存储空间和一块 IO 空间，设备挂载 PCI Bus 0 总线上。首先在 QEMU 源码目录下执行如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/qemu-system/qemu-system/hw/
+mkdir BiscuitOS
+vi Makefile.objs
+
+# Add context
+devices-dirs-$(CONFIG_SOFTMMU) += BiscuitOS/
+
+vi Kconfig
+
+# Add context
+source BiscuitOS/Kconfig
+{% endhighlight %}
+
+安装 QEMU 源码的逻辑，在 hw 目录下创建 BiscuitOS 目录，用于存放 PCI 设备的源码。接下来是通过 BiscuitOS 编译平台下载 PCI 设备源码，参考如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/
+make linux-5.0-x86_64_defconfig
+make menuconfig 
+
+  [*] Package --->
+      [*] PCI: Peripheral Component Interconnect --->
+          [*] QEMU emulate PCIe Device (BiscuitOS-pcie) --->
+
+make
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-pci-device-QEMU-emulate-default/
+make download
+cd BiscuitOS/output/linux-5.0-x86_64/qemu-system/qemu-system/hw/BiscuitOS/
+cp BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-pci-device-QEMU-emulate-default/BiscuitOS-pci-device-QEMU-emulate-default ./ -rf
+{% endhighlight %}
+
+> [BiscuitOS QEMU PCI Device Soruce Code on Gitee](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/PCIe/BiscuitOS-pci-device-QEMU-emulate)
+
+![](/assets/PDB/HK/TH001502.png)
+![](/assets/PDB/HK/TH001664.png)
+![](/assets/PDB/HK/TH001665.png)
+![](/assets/PDB/HK/TH001666.png)
+
+在 BiscuitOS 的顶层目录执行 make menuconfig 之后，选择 QEMU PCI 设备源码和内核 PCI 驱动源码，然后执行 make 进行部署。接着进入 BiscuitOS-pci-device-QEMU-emulate-default 目录执行 make download 下载 QEMU PCI 设备源码。待源码下载完毕之后将其拷贝到 QEMU 源码 hw/BiscuitOS/ 目录下.
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/qemu-system/qemu-system/hw/BiscuitOS/
+vi Makefile.objs
+
+# Add context
+common-obj-$(CONFIG_BISCUITOS_PCI) += BiscuitOS-pci-device-QEMU-emulate-default/
+
+vi Kconfig
+
+# Add context
+source BiscuitOS-pci-device-QEMU-emulate-default/Kconfig
+{% endhighlight %}
+
+源码拷贝完毕之后，修改 hw/BiscuitOS 目录下 Makefile.objs 和 Kconfig，是 QEMU PCI 设备源码进入 QEMU 源码的编译体系中.
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/qemu-system/qemu-system/
+vi default-configs/i386-softmmu.mak
+
+# Add context
+CONFIG_BISCUITOS_PCI=y
+
+vi config-all-devices.mak
+
+# Add context
+CONFIG_BISCUITOS_PCI:=$(findstring y,$(CONFIG_BISCUITOS_PCI)y)
+{% endhighlight %}
+
+接着修改 QEMU 源码目录下的 "default-configs/i386-softmmu.mak", 启用 CONFIG_BISCUITOS_PCI 宏，然后修改 config-all-devices.mak 文件，使 CONFIG_BISCUITOS_PCI 宏始终为 Y，至此 QEMU PCI 设备源码已经添加到 QEMU 编译体系，接着只要重新编译源码设备就存在 QEMU 中，但还没能让 QEMU 启用该设备，需要修改 QEMU Command Line:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/
+vi RunBiscuitOS.sh
+
+# Add context
+        -hda ${ROOT}/BiscuitOS.img \
++       -device BiscuitOS-pci \
+        -drive file=${ROOT}/Freeze.img,if=virtio \
+{% endhighlight %}
+
+在 RunBiscuitOS.sh 中添加 "-device BiscuitOS-pci" 字段之后，系统启动之后就可以看到该设备。设备的 VendorID 和 DeviceID 分别是 0x1016:0x1413. 最后使用如下命令重新编译 QEMU 并在 BiscuitOS 中检查 QEMU 模拟的 PCI 设备:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/qemu-system/
+./RunQEMU.sh -b
+{% endhighlight %}
+
+![](/assets/PDB/HK/TH001498.png)
+
+从内核的 Dmesg 中可以看出内核在枚举 PCI 总线上的 PCI 设备时，已经探测到 QEMU 模拟的 PCI 设备 0x1016:0x1413. 那么接下来部署 PCI 设备对应的 Linux 驱动:
+
+---------------------------------------
+
+###### 部署 PCI 设备驱动
+
+与 QEMU PCI 设备部署一致，借助 BiscuitOS 编译平台通过简单的几个命令就可以进行 PCI 设备驱动的部署，使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/
+make linux-5.0-x86_64_defconfig
+make menuconfig
+
+  [*] Package --->
+      [*] PCI: Peripheral Component Interconnect --->
+          [*] PCI Common Device Driver Module --->
+
+make
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-pci-device-driver-default/
+# 源码下载
+make download
+# 源码编译
+make 
+# 模块安装
+make install
+# Rootfs 打包
+make pack
+# 运行 BiscuitOS
+make run
+{% endhighlight %}
+
+> [BiscuitOS PCI Device Driver Soruce Code on Gitee](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/PCIe/BiscuitOS-pci-device-driver)
+>
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
+
+![](/assets/PDB/HK/TH001502.png)
+![](/assets/PDB/HK/TH001664.png)
+![](/assets/PDB/HK/TH001667.png)
+![](/assets/PDB/HK/TH001668.png)
+![](/assets/PDB/HK/TH001499.png)
+
+当驱动部署成功在 BiscuitOS 上运行之后，注册一个 PCI 设备，PCI 设备的其中一块 BAR 映射到系统地址空间，而另外一个 BAR 映射到系统的 IO 空间，驱动程序分别对两块 BAR 空间进行了读写操作. 通过 lspci 工具可以看出 PCI Agent 设备的配置空间信息.
+
+![](/assets/PDB/HK/TH001500.png)
+
+查看系统的地址空间布局可以看到 PCI 设备的内存 BAR 映射到了系统地址空间的 \[0xFEA00000, 0xFEB00000), 这段区域在系统地址空间称为 "BiscuitOS-PCIe-MMIO".
+
+![](/assets/PDB/HK/TH001501.png)
+
+查看系统的 IO 空间布局可以看到 PCI 设备的 IO BAR 映射到了系统 IO空间的 \[0xC000, 0xC07F], 这段区域在系统 IO 空间称为 "BiscuitOS-PCIe-IO"。至此实践到此为止.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+-------------------------------------------
+
+<span id="F1"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000C.jpg)
+
+#### PCI Agent DMA 使用攻略
+
+![](/assets/PDB/HK/TH001678.png)
+
+市面上常见的 PCI Agent 设备包括网卡、显卡、加速卡等，这些 PCI 设备都会将其内部数据拷贝到系统内存里，也会将系统内存的数据拷贝到设备内部，这样的数据交互称为 DMA。BiscuitOS 通过 QEMU 模拟了一个简单的 PCI-DMA 设备，并在 BiscuitOS 内提供了对应的 DMA 驱动和应用程序，通过 DMA 驱动和用户空间开源工具描述 PCI Agent 的使用方法. QEMU 模拟了的 PCI-DMA 设备 VendorID:DeviceID 为 1016:1314，其包含了一个 MM-BAR 和一块 2MiB 的内部存储空间，MM-BAR 对应的存储空间长度为 1MiB，MM-BAR 的 bitmap 如下图:
+
+![](/assets/PDB/HK/TH001669.png)
+
+###### QEMU 部署 PCI-DMA 模拟设备
+
+QEMU 可以模拟 PCI 设备，BiscuitOS 提供了一个可实践的 PCI 设备 "BiscuitOS-DMA", 其是一个简单的 PCI 设备，设备挂载 PCI Bus 0 总线上。首先在 QEMU 源码目录下执行如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/qemu-system/qemu-system/hw/
+mkdir BiscuitOS
+vi Makefile.objs
+
+# Add context
+devices-dirs-$(CONFIG_SOFTMMU) += BiscuitOS/
+
+vi Kconfig
+
+# Add context
+source BiscuitOS/Kconfig
+{% endhighlight %}
+
+安装 QEMU 源码的逻辑，在 hw 目录下创建 BiscuitOS 目录，用于存放 PCI 设备的源码。接下来是通过 BiscuitOS 编译平台下载 PCI 设备源码，参考如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/
+make linux-5.0-x86_64_defconfig
+make menuconfig 
+
+  [*] Package --->
+      [*] PCI: Peripheral Component Interconnect --->
+          [*] QEMU emulate DMA Device (BiscuitOS-DMA) --->
+
+make
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-dma-device-QEMU-emulate-default/
+make download
+cd BiscuitOS/output/linux-5.0-x86_64/qemu-system/qemu-system/hw/BiscuitOS/
+cp BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-dma-device-QEMU-emulate-default/BiscuitOS-dma-device-QEMU-emulate-default ./ -rf
+{% endhighlight %}
+
+> [BiscuitOS QEMU DMA Device Soruce Code on Gitee](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/DMA/BiscuitOS-dma-device-QEMU-emulate)
+
+![](/assets/PDB/HK/TH001502.png)
+![](/assets/PDB/HK/TH001664.png)
+![](/assets/PDB/HK/TH001670.png)
+![](/assets/PDB/HK/TH001671.png)
+
+在 BiscuitOS 的顶层目录执行 make menuconfig 之后，选择 QEMU PCI 设备源码和内核 PCI 驱动源码，然后执行 make 进行部署。接着进入 BiscuitOS-dma-device-QEMU-emulate-default 目录执行 make download 下载 QEMU DMA 设备源码。待源码下载完毕之后将其拷贝到 QEMU 源码 hw/BiscuitOS/ 目录下.
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/qemu-system/qemu-system/hw/BiscuitOS/
+vi Makefile.objs
+
+# Add context
+common-obj-$(CONFIG_BISCUITOS_DMA) += BiscuitOS-dma-device-QEMU-emulate-default/
+
+vi Kconfig
+
+# Add context
+source BiscuitOS-dma-device-QEMU-emulate-default/Kconfig
+{% endhighlight %}
+
+源码拷贝完毕之后，修改 hw/BiscuitOS 目录下 Makefile.objs 和 Kconfig，是 QEMU PCI-DMA 设备源码进入 QEMU 源码的编译体系中.
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/qemu-system/qemu-system/
+vi default-configs/i386-softmmu.mak
+
+# Add context
+CONFIG_BISCUITOS_DMA=y
+
+vi config-all-devices.mak
+
+# Add context
+CONFIG_BISCUITOS_DMA:=$(findstring y,$(CONFIG_BISCUITOS_DMA)y)
+{% endhighlight %}
+
+接着修改 QEMU 源码目录下的 "default-configs/i386-softmmu.mak", 启用 CONFIG_BISCUITOS_DMA 宏，然后修改 config-all-devices.mak 文件，使 CONFIG_BISCUITOS_DMA 宏始终为 Y，至此 QEMU PCI-DMA 设备源码已经添加到 QEMU 编译体系，接着只要重新编译源码设备就存在 QEMU 中，但还没能让 QEMU 启用该设备，需要修改 QEMU Command Line:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/
+vi RunBiscuitOS.sh
+
+# Add context
+        -hda ${ROOT}/BiscuitOS.img \
++       -device BiscuitOS-DMA \
+        -drive file=${ROOT}/Freeze.img,if=virtio \
+{% endhighlight %}
+
+在 RunBiscuitOS.sh 中添加 "-device BiscuitOS-DMA" 字段之后，系统启动之后就可以看到该设备。设备的 VendorID 和 DeviceID 分别是 0x1016:0x1314. 最后使用如下命令重新编译 QEMU 并在 BiscuitOS 中检查 QEMU 模拟的 PCI 设备:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-5.0-x86_64/qemu-system/
+./RunQEMU.sh -b
+{% endhighlight %}
+
+![](/assets/PDB/HK/TH001672.png)
+
+从内核的 Dmesg 中可以看出内核在枚举 PCI 总线上的 PCI 设备时，已经探测到 QEMU 模拟的 PCI-DMA 设备 0x1016:0x1314. 那么接下来部署 PCI 设备对应的 Linux 驱动:
+
+---------------------------------------
+
+###### 部署 PCI-DMA 设备驱动和应用程序
+
+与 QEMU PCI 设备部署一致，借助 BiscuitOS 编译平台通过简单的几个命令就可以进行 PCI-DMA 设备驱动的部署，使用如下命令:
+
+{% highlight bash %}
+cd BiscuitOS/
+make linux-5.0-x86_64_defconfig
+make menuconfig
+
+  [*] Package --->
+      [*] PCI: Peripheral Component Interconnect --->
+          [*] DMA Common Device Driver Module (PCIe) --->
+          [*] DMA userland Application (BiscuitOS-DMA module) --->
+
+make
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-dma-device-driver-default/
+# 源码下载
+make download
+# 源码编译
+make 
+# 模块安装
+make install
+# Rootfs 打包
+make pack
+# 部署应用程序
+cd BiscuitOS/output/linux-5.0-x86_64/package/BiscuitOS-dma-userland-default/
+# 源码下载
+make download
+# 源码编译
+make 
+# 模块安装
+make install
+# Rootfs 打包
+make pack
+# 运行 BiscuitOS
+make run
+{% endhighlight %}
+
+> [BiscuitOS DMA Device Driver Soruce Code on Gitee](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/DMA/BiscuitOS-dma-device-driver)
+>
+> [BiscuitOS DMA Userland application Soruce Code on Gitee](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/DMA/BiscuitOS-dma-userland)
+>
+> [BiscuitOS 独立应用程序实践攻略](/blog/Human-Knowledge-Common/#C2)
+
+![](/assets/PDB/HK/TH001502.png)
+![](/assets/PDB/HK/TH001664.png)
+![](/assets/PDB/HK/TH001667.png)
+![](/assets/PDB/HK/TH001673.png)
+![](/assets/PDB/HK/TH001675.png)
+![](/assets/PDB/HK/TH001674.png)
+![](/assets/PDB/HK/TH001676.png)
+
+当驱动部署成功在 BiscuitOS 上运行之后，注册一个 PCI-DMA 设备，PCI 设备的其中一块 BAR 映射到系统地址空间，接着运行程序 BiscuitOS-dma-userland-default, 其功能是在主内存和 PCI-DMA 设备之间通过 DMA 传输数据，可以通过结果看到从设备读取了字符串 "This is BiscuitOS DMA module, welcome :)"，驱动程序分别对两块 BAR 空间进行了读写操作. 
+
+![](/assets/PDB/HK/TH001677.png)
+
+查看系统的地址空间布局可以看到 PCI-DMA 设备的内存 BAR 映射到了系统地址空间的 \[0xFEA00000, 0xFEB00000), 这段区域在系统地址空间称为 "BiscuitOS-DMA-MMIO".
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+
+
+
+
 
 
