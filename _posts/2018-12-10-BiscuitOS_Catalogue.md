@@ -180,7 +180,7 @@ tags:
 >
 >   - [KSM: Kernel Same Page Mechanism]()
 >
-> - Memory Hotplug Technology
+> - [Memory Hotplug Technology](/blog/MEMORY-HOTPLUG/)
 >
 > - Memory Virtualize
 >
