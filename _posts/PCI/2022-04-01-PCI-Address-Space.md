@@ -16,7 +16,7 @@ tags:
 
 > - [PCI 基础知识](#A)
 >
-> - [PCIe 基础知识]()
+> - [PCIe 基础知识](#C)
 >
 > - [PCI 域地址空间](#B)
 >
@@ -102,15 +102,105 @@ tags:
 
 ![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
 
-#### PCI/PCIe 基础知识
+#### PCI 基础知识
 
 ![](/assets/PDB/HK/TH001468.JPEG)
 
-**PCI**: Peripheral Component Interconnect(外部设备互联标志) 是由 PCISIG(PCI Special Interest Group) 推出的一种局部并行总线标准，其由 **ISA**(Industy Standard Architecture) 总线发展而来，是一种同步的独立于处理器的 32/64 位局部总线。从结构上看，PCI 是在 CPU 原来的系统总线之间插入的一级总线，具体由一个桥接电路实现对该层的管理，并实现上下之间的接口以协调数据的传送。PCI 总线是一种树型结构且独立于 CPU 总线，与 CPU 总线并行操作，PCI 总线上可以挂接 PCI 设备和 PCI 桥，PCI 总线上同一时刻只允许有一个 PCI 主设备，其他均为 PCI 从设备，而且读写操作只能在主从设备之间进行，从设备之间数据交换需要通过主设备中转。
+**PCI**: Peripheral Component Interconnect(外部设备互联标志) 是由 PCISIG(PCI Special Interest Group) 推出的一种局部并行总线标准，其由 **ISA**(Industy Standard Architecture) 总线发展而来，是一种同步的独立于处理器的 32/64 位局部总线。从结构上看，PCI 是在 CPU 原来的系统总线之间插入的一级总线，具体由一个桥接电路实现对该层的管理，并实现上下之间的接口以协调数据的传送。本节对 PCI 总线相关的基础概念进行讲解:
+
+> [PCI 总线](#A0)
+>
+> [PCI 设备](#A1)
+>
+> [PCI 桥](#A2)
+>
+> [HOST 主桥](#A3)
+>
+> [HOST 处理器](#A4)
+>
+> [BDF](#A5)
+>
+> [配置空间](#A6)
+>
+> [MM-BAR/IO-BAR]()
+
+###### <span id="A0">PCI 总线</span>
+
+![](/assets/PDB/HK/TH001481.png)
+
+**PCI 总线**是一种树型结构且独立于 CPU 总线，与 CPU 总线并行操作，PCI 总线上可以挂接 PCI 设备和 PCI 桥，PCI 总线上同一时刻只允许有一个 PCI 主设备，其他均为 PCI 从设备，而且读写操作只能在主从设备之间进行，从设备之间数据交换需要通过主设备中转。PCI 总线由 HOST 主桥或者 PCI 桥管理，用来链接各类设备，如声卡、网卡和 IDE 接口卡等。在一个系统中，可以通过 PCI 桥扩展 PCI 总线，形成具有血缘关系的多级 PCI 总线，从而形成 PCI 总线树型结构。在某些系统中具有几个 HOST 主桥，也就具有几颗 PCI 总线树，而每一课 PCI 总线树都与一个 PCI 总线域对应. 与 HOST 主桥直接连接的 PCI 总线通常命名为 PCI 总线 0.
 
 ![](/assets/PDB/HK/TH001467.png)
 
 一个典型的 PCI 总线系统如上图的以 Intel 440FX PMC(PCI and Memory Controller) 为北桥芯片，PIIX (PCI ISA Xcelerator) 为南桥芯片组成的芯片组。北桥芯片 PMC 用于连接主板上的高速设备，向上提供了连接处理器的 Host 总线接口，可以连接多个处理器，向下主要提供了连接内存 DRAM 的接口和连接 PCI 总线系统的 PCI 总线接口，通过该 PCI root port 扩展出整个 PCI 设备树，包括 PIIX 南桥芯片. PIIX 南桥芯片则用于连接主板上的低速设备，主要包括 IDE 控制器、DMA 控制器、硬盘、USB 控制器、SMBus 总线控制器，并且提供了 ISA 总线用于连接更多的低速设备，如键盘、鼠标、BIOS ROM 等.
+
+![](/assets/PDB/HK/TH001692.png)
+
+
+-----------------------------------
+
+###### <span id="A1">PCI 设备</span>
+
+![](/assets/PDB/HK/TH001479.png)
+
+PCI 设备是挂接在 PCI 总线上的设备, PCI 设备主要有三类设备: PCI 主设备、PCI 从设备和 PCI 桥设备。其中 PCI 从设备只能被动的接受来自 HOST 主桥或者其他 PCI 设备的读写请求; 而 PCI 主设备可以通过总线仲裁获得 PCI 总线使用权，并主动向其他 PCI 设备或者存储器发起读写请求。PCI 桥设备主要用于管理下游的 PCI 总线，并转发上下游之间的总线事务。一个 PCI 设备可以既是主设备也可以是从设备，但是同一时刻，这个 PCI 设备或者为主设备或者为从设备。PCI 总线规范将 PCI 主从设备统称为 **PCI Agent 设备**. 在 PCI 总线中，HOST 主桥是一个特殊的 PCI 设备，该设备可以获得 PCI 总线的控制权访问 PCI 设备，可以被 PCI 设备访问。在 PCI 总线中，还有一类特殊的设备，既 PCI 桥设备，它包括了 PCI 桥、PCI-to-ISA 桥、PCI-to-EISA 桥和 PCI-to-Cardbus 桥。
+
+![](/assets/PDB/HK/TH001687.png)
+
+PCI 设备都有独立的配置空间, HOST 主桥通过配置读写总线事务访问这段空间，PCI 总线规定了三种类型的 PCI 配置空间，分别是 PCI Agent 设备使用的配置空间，PCI 桥使用的配置空间和 Cardbus 桥卡使用的配置空间。PCI 设备通常将 PCI 配置信息存放在 EEPROM 中，PCI 设备进行上电初始化时将 EEPROM 中的信息读到 PCI 设备的配置空间作为初始值，这个过程由硬件逻辑完成，绝大多数 PCI 设备使用这种方式初始化其配置空间。PCI 设备可能使用 PCI 总线域上的一段或多段存储器空间，并使用 BAR 寄存器表示这段存储器空间在 PCI 总线域的基地址; 同理 PCI 设备可能使用 PCI 总线域上的一段或多段 I/O 空间，并使用 BAR 寄存器表示这段 I/O 空间在 PCI 总线域的基地址。为了区分 PCI 设备的 I/O 空间和存储器空间的 BAR，使用 MEM-BAR 表示存储器 BAR，而 IO-BAR 表示 I/O 空间 BAR. PCI 内部也存在存储空间 (Intramural memory).
+
+![](/assets/PDB/HK/TH001472.png)
+
+在 X86 处理器中，内核通过 CONFIG_ADDR 和 CONFIG_DATA 寄存器读取 PCI Agent 设备的配置空间。在 PCI Agent 设备配置空间包含上图中的寄存器，详细寄存器介绍可以参考《[PCI Agent 设备配置空间 TYPE0](#D0)》, 当 PCI 设备的配置空间初始化之后，该 PCI 设备在当前的 PCI 总线树上拥有一个独立的 PCI 总线地址空间，即 BAR 寄存器所描述的空间。在配置空间中含有该设备在 PCI 总线中使用的基地址，系统软件可以动态配置这个地址，从而保证每个 PCI 设备使用的物理地址并不相同。常见的 PCI 设备包括下面的: PCI 网卡、PCI 声卡、PCI 磁盘以及 PCI 显卡.
+
+![PCI 网卡](/assets/PDB/HK/TH001689.png)
+![PCI 声卡](/assets/PDB/HK/TH001690.png)
+![PCI 磁盘](/assets/PDB/HK/TH001691.png)
+![PCI 显卡](/assets/PDB/HK/TH001693.png)
+
+------------------------------------------
+
+###### <span id="A2">PCI 桥</span>
+
+![](/assets/PDB/HK/TH001479.png)
+
+在 PCI 总线中，还有一类特殊的设备，既 PCI 桥设备，它包括了 PCI 桥、PCI-to-ISA 桥、PCI-to-EISA 桥和 PCI-to-Cardbus 桥。PCI 桥的引入使 PCI 总线具有扩展性，也极大增加了 PCI 总线的复杂度。PCI 总线的电气特性决定了一条 PCI 总线上挂接的负载有限，当 PCI 总线需要连接多个 PCI 设备时，需要使用 PCI 桥进行总线扩展，扩展出的 PCI 总线可以连接其他 PCI 设备，包括 PCI 桥。在一颗 PCI 总线树上，最多可以挂接 256 个 PCI 设备，包括 PCI 桥。PCI 桥作为一个特殊的 PCI 设备，具有独立的配置空间，但是其配置空间与 PCI Agent 设备有所不同。PCI 桥的配置空间可以管理其下 PCI 总线子树的 PCI 设备. 使用 PCI 桥可以扩展出新的 PCI 总线，在这条 PCI 总线上可以继续挂接多个 PCI 设备。
+
+![](/assets/PDB/HK/TH001688.png)
+
+PCI 桥跨接在两个 PCI 总线之间, 其中距离 HOST 主桥较近的 PCI 总线被称为该桥片的上游总线(Primary Bus)，距离 HOST 主桥较远的 PCI 总线称为该桥片的下游总线(Secondary Bus). 如图 PCI 桥1 的上游总线为 PCI Bus 0，而 PCI 桥1 的下游总线为 PCI Bus1, 同理 PCI 桥3 的上游总线为 PCI Bus 2, 而下游总线为 PCI Bus 3. 上下游总线间的数据通过 PCI 桥进行处理和转发. 每一个 PCI 总线的下方都可以挂接一个或多个 PCI 桥，每个 PCI 桥都可以连接一条新的 PCI 总线。在同一条 PCI 总线上的设备之间的数据交换不会影响其他 PCI 总线。PCI 桥可以扩展一条新的 PCI 总线，但是不能扩展新的 PCI 总线域，例如当前系统使用 32 位的 PCI 总线地址，那么这个系统的 PCI 总线域的地址空间为 4GB，在这个总线域上的所有设备将共享这个 4GB 大小的空间。
+
+![](/assets/PDB/HK/TH001473.png)
+
+在 X86 处理器中，内核通过 CONFIG_ADDR 和 CONFIG_DATA 寄存器读取 PCI 桥的配置空间。在 PCI 桥配置空间包含上图中的寄存器，与 PCI Agent 设备的配置空间类似，详细寄存器介绍可以参考《[PCI 桥配置空间 TYPE1](#D1)》。不同的是 PCI 桥的配置空间值包括两组 BAR 寄存器，其含义与 PCI Agent 设备的 BAR 寄存器一致。PCI 桥除了作为 PCI 设备之外，还需要管理旗下连接的 PCI 总线字树使用的各类资源。在 PCI 桥中，与 Secondary Bus 相关的寄存器分做两大类，一类寄存器管理 Secondary Bus 之下 PCI 子树的总线号，如 Secondary 寄存器存放 Secondary Bus 号，这个 Bus 号也是该 PCI 桥管理的 PCI 子树中编号最小的 PCI 总线号，同理 Subordinate Bus Number 寄存器存放当前 PCI 桥管理的 PCI 子树中，编号最大的 PCI 总线号.
+
+----------------------------------
+
+###### <span id="A3">HOST 主桥</span>
+
+![](/assets/PDB/HK/TH001481.png)
+
+HOST 主桥是一个很特别的 PCI 桥，其主要功能是隔离处理器系统的存储域和 PCI 总线域，管理 PCI 总线域，并完成处理器与 PCI 设备间的数据交换。处理器与 PCI 设备间的数据交换主要由**处理器访问 PCI 设备的地址空间**和**PCI 设备使用 DMA 机制访问主存储器**两部分组成. 不同架构的处理器中 HOST 主桥的位置不同，在 x86 架构中使用南北桥结构，处理器内核在一个芯片中，而 HOST 主桥在北桥中。HOST 主桥是联系处理器与 PCI 设备的桥梁，在一个处理器系统中，每一个 HOST 主桥都管理一棵 PCI 总线树，在同一棵 PCI 总线树上的所有 PCI 设备都属于同一个 PCI 总线域。
+
+![](/assets/PDB/HK/TH001694.png)
+
+如上拓扑图有一个 CPU、一个 DRAM 控制器和两个 HOST 主桥组成，在这个处理器系统中，包含了 CPU 域、存储域和 PCI 总线域。其中 HOST 主桥A 和 HOST 主桥 B 分别管理 PCI 总线 A 域和 PCI 总线 B 域。PCI 设备访问存储器域时，也需要通过 HOST 主桥，并由 HOST 主桥进行 PCI 总线域到存储器域地址转换; 同理 CPU 访问 PCI 设备时，同样需要通过 HOST 主桥进行存储器与到 PCI 总线域地址转换。如果 HOST 主桥支持 Peer-to-Peer 传送机制，那么 PCI 总线 A 域上的设备可以与 PCI 总线 B 域上的设备直接通信，如 PCI 设备0 可以直接与 PCI 设备4 直接通信.
+
+![](/assets/PDB/HK/TH001467.png)
+
+x86 处理器使用南北桥连接 CPU 和 PCI 设备，其中北桥 (North Bridge) 连接快速设备，如显卡和内存条，并连接 PCI 总线，HOST 主桥包含在北桥中。而南桥 (South Bridge) 连接慢速设备，上图典型的 PCI 总线系统 Intel 440FX, 其中 PMC 为北桥芯片，PIIX 为南桥芯片组成的芯片组. 不同处理器系统继承这些部件的方式并不相同，在许多嵌入式系统中，既含有 PCI 设备也含有 PCIe 设备等。Intel 使用南北桥概念统一 PC 架构，但从本质来看，南北桥架构并不重要，北桥中存放的主要部件不过是存储器控制器、显卡控制器和 HOST 主桥而已，而南桥存放的是一些慢速设备，如 ISA 总线和中断控制器等.
+
+
+
+
+-------------------------------------------
+
+<span id="C"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
+
+#### PCIe 基础知识
+
 
 ![](/assets/PDB/HK/TH001471.png)
 
