@@ -114,6 +114,12 @@ tags:
 >
 >   - [PCP Memory Allocator](/blog/HISTORY-PCP/)
 >
+> - Register
+>
+>   - [寄存器之函数参数约定](/blog/Register-FunctionCall/)
+>
+>   - [X86 Architecture Register](/blog/Register/)
+>
 > - I/O and Device Memory
 >
 >   - [PCI and PCIe Address Space](/blog/PCI-Address-Space/)
@@ -195,8 +201,6 @@ tags:
 >   - [PAT: Page Attribute Table]()
 >
 >   - [MTRR: Memory Type Range Register]()
->
->   - [Register With Memory Mechanism](/blog/Register/)
 >
 > - Address Space Layout
 >
