@@ -60,11 +60,15 @@ tags:
 
 > - [内存百科全书](/blog/Memory-Hardware/)
 >
-> - [Linux MMU History Project](/blog/HISTORY-MMU/)
+> - 开源内存项目
 >
-> - [自己动手设计一个内存管理子系统 (ARM Architecture)](/blog/Design-MMU/)
+>   - [Linux MMU History Project](/blog/HISTORY-MMU/)
 >
-> - [自己动手设计一个内存管理子系统 (X86 Architecture)](/blog/Design-MMU/)
+>   - [自己动手设计一个内存管理子系统 (ARM Architecture)](/blog/Design-MMU/)
+>
+>   - [自己动手设计一个内存管理子系统 (X86 Architecture)](/blog/Design-MMU/)
+>
+>   - [用户空间实现 Linux 内核分配器](/blog/Memory-Userspace/)
 >
 > - Physical Address Mechanism
 >
@@ -251,8 +255,6 @@ tags:
 >   - tcmalloc
 >
 >   - libhugetlbfs: Hugetlb allocator on Userspace
->
->   - [用户空间实现 Linux 内核分配器](/blog/Memory-Userspace/)
 >
 > - 内存压测工具
 >
