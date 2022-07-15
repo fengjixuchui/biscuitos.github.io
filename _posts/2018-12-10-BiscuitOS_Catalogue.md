@@ -66,7 +66,83 @@ tags:
 >
 > - [自己动手设计一个内存管理子系统 (X86 Architecture)](/blog/Design-MMU/)
 >
-> - Detecting Memory
+> - Physical Address Mechanism
+>
+>   - [X86: Real Mode Address Space (\< 1 MiB)](/blog/MMU-seaBIOS_E820/#B0003)
+>
+>   - [进程地址空间构建研究](/blog/Process-Address-Space)
+>
+>   - [i386/X86_64 Address Space Layout](/blog/Address-Space-i386)
+>
+> - Virtual Address Mechanism
+>
+> - Register
+>
+>   - [寄存器之函数参数约定](/blog/Register-FunctionCall/)
+>
+>   - [X86 Architecture Register](/blog/Register/)
+>
+> - Cache/TLB
+>
+>   - Cache Mechanism
+>
+>   - TLB Mechanism
+>
+>   - Page table struct cache
+>
+> - Paging Mechanism
+>
+>   - [Intel 32-Bit Paging Mechanism](/blog/32bit-Paging/)
+>
+>   - [Intel PAE Paging Mechanism]()
+>
+>   - [Intel 4-level/5-level Paging Mechanism]()
+>
+>   - [EPT Paging Mechansim]()
+>
+>   - [GUP: Get User Page Mechanism]()
+>
+> - Memory Model
+>
+>   - [Flat Memory Model]()
+>
+>   - [Discontig Memory Model]()
+>
+>   - [SPARSE Memory Model]()
+>
+> - PCI/PCIe Bus
+>
+>   - [PCI and PCIe Address Space](/blog/PCI-Address-Space/)
+>
+> - I/O and Device Memory
+>
+>   - DMA Buffer
+>
+>   - IOMMU
+>
+>   - I/O Port Space
+>
+> - Physical Memory
+>
+>   - [NUMA]()
+>
+>   - [UMA]()
+>
+>   - [ZONE]()
+>
+>   - [Physical Page/Frame](/blog/PAGE/)
+>
+> - Memory Management on Architecutre
+>
+>   - I386 Memory Management
+>
+>   - X86-64 Memory Management
+>
+>   - ARM Memory Management
+>
+>   - ARM64 Memory Management
+>
+> - X86 Detecting Memory
 >
 >   - [X86_64 启动流程之内存初始化]()
 >
@@ -80,7 +156,7 @@ tags:
 >
 >   - [E820 内存管理器 \[X86\]](/blog/MMU-E820/)
 >
-> - Boot-Time Allocator
+> - X86 Boot-Time Memory Allocator
 >
 >   - [Static Compile Memory Allocator]()
 >
@@ -92,73 +168,29 @@ tags:
 >
 >   - [MEMBLOCK Allocator](/blog/MMU-ARM32-MEMBLOCK-index/)
 >
-> - Memory Model
->
->   - [Flat Memory Model]()
->
->   - [Discontig Memory Model]()
->
->   - [SPARSE Memory Model]()
->
-> - Physical Memory Manager
->
->   - [NUMA]()
->
->   - [UMA]()
->
->   - [ZONE]()
->
->   - [Physical Page/Frame](/blog/PAGE/)
+> - Memory Management Allocator
 >
 >   - [Buddy Memory Allocator](/blog/HISTORY-buddy/)
 >
 >   - [PCP Memory Allocator](/blog/HISTORY-PCP/)
 >
-> - Register
+>   - [PERCPU Memory Allocator](/blog/HISTORY-PERCPU/)
 >
->   - [寄存器之函数参数约定](/blog/Register-FunctionCall/)
+>   - SLAB/KMEM Allocator
 >
->   - [X86 Architecture Register](/blog/Register/)
+>     - [SLAB Memory Allocator](/blog/HISTORY-SLAB/)
 >
-> - I/O and Device Memory
+>     - [SLUB Memory Allocator]()
 >
->   - [PCI and PCIe Address Space](/blog/PCI-Address-Space/)
+>     - [SLOB Memory Allocator]()
 >
->   - DMA Buffer
+>   - [VMALLOC Memory Allocator](/blog/HISTORY-VMALLOC/)
 >
->   - IOMMU
+>   - [KMAP Memory Allocator](/blog/HISTORY-KMAP/)
 >
->   - I/O Port Space
+>   - [Fixmap Memory Allcator](/blog/HISTORY-FIXMAP/)
 >
-> - [PERCPU Memory Allocator](/blog/HISTORY-PERCPU/)
->
-> - SLAB/KMEM Allocator
->
->   - [SLAB Memory Allocator](/blog/HISTORY-SLAB/)
->
->   - [SLUB Memory Allocator]()
->
->   - [SLOB Memory Allocator]()
->
-> - [VMALLOC Memory Allocator](/blog/HISTORY-VMALLOC/)
->
-> - [KMAP Memory Allocator](/blog/HISTORY-KMAP/)
->
-> - [Fixmap Memory Allcator](/blog/HISTORY-FIXMAP/)
->
-> - [CMA: Contiguous Memory Allocator](/blog/CMA)
->
-> - Paging Mechanism
->
->   - [Intel 32-Bit Paging Mechanism](/blog/32bit-Paging/)
->
->   - [Intel PAE Paging Mechanism]()
->
->   - [Intel 4-level/5-level Paging Mechanism]()
->
->   - [EPT Paging Mechansim]()
->
->   - [GUP: Get User Page Mechanism]()
+>   - [CMA: Contiguous Memory Allocator](/blog/CMA)
 >
 > - Page Fault Mechanism
 >
@@ -201,14 +233,6 @@ tags:
 >   - [PAT: Page Attribute Table]()
 >
 >   - [MTRR: Memory Type Range Register]()
->
-> - Address Space Layout
->
->   - [X86: Real Mode Address Space (\< 1 MiB)](/blog/MMU-seaBIOS_E820/#B0003)
->
->   - [进程地址空间构建研究](/blog/Process-Address-Space)
->
->   - [i386/X86_64 Address Space Layout](/blog/Address-Space-i386)
 >
 > - Memory Diagnostic/Sanitizers Tools
 >
