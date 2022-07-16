@@ -70,15 +70,15 @@ tags:
 >
 >   - [用户空间实现 Linux 内核分配器](/blog/Memory-Userspace/)
 >
-> - Physical Address Mechanism
+> - Physical Address Space
 >
 >   - [X86: Real Mode Address Space (\< 1 MiB)](/blog/MMU-seaBIOS_E820/#B0003)
 >
->   - [进程地址空间构建研究](/blog/Process-Address-Space)
->
 >   - [i386/X86_64 Address Space Layout](/blog/Address-Space-i386)
 >
-> - Virtual Address Mechanism
+> - Virtual Address Space
+>
+>   - [进程地址空间构建研究](/blog/Process-Address-Space)
 >
 > - Register
 >
@@ -106,14 +106,6 @@ tags:
 >
 >   - [GUP: Get User Page Mechanism]()
 >
-> - Memory Model
->
->   - [Flat Memory Model]()
->
->   - [Discontig Memory Model]()
->
->   - [SPARSE Memory Model]()
->
 > - PCI/PCIe Bus
 >
 >   - [PCI and PCIe Address Space](/blog/PCI-Address-Space/)
@@ -126,7 +118,13 @@ tags:
 >
 >   - I/O Port Space
 >
-> - Physical Memory
+> - Physical Memory Topology
+>
+>   - [Flat Memory Model]()
+>
+>   - [Discontig Memory Model]()
+>
+>   - [SPARSE Memory Model]()
 >
 >   - [NUMA]()
 >
@@ -168,11 +166,11 @@ tags:
 >
 >   - [Early_Res Allocator \[x86\]](/blog/Early_Res/)
 >
+> - Memory Management Allocator
+>
 >   - [Bootmem Allocator](/blog/HISTORY-bootmem/)
 >
 >   - [MEMBLOCK Allocator](/blog/MMU-ARM32-MEMBLOCK-index/)
->
-> - Memory Management Allocator
 >
 >   - [Buddy Memory Allocator](/blog/HISTORY-buddy/)
 >
