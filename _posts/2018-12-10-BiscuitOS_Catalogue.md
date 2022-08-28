@@ -53,10 +53,9 @@ tags:
 >
 > - [问题反馈及留言](https://github.com/BiscuitOS/BiscuitOS/issues)
 
-![](/assets/PDB/GamePICBF000001.gif)
 ![](/assets/PDB/BGP/BGP000100.png)
 
-## [内存管理]()
+## 内存管理
 
 > - [内存百科全书](/blog/Memory-Hardware/)
 >
@@ -270,7 +269,7 @@ tags:
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000108.png)
 
-## [虚拟文件系统]()
+## 虚拟文件系统
 
 > - [系统调用](/blog/SYSCALL)
 >
@@ -296,10 +295,9 @@ tags:
 >
 >   - [RISCV64 架构中添加新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV64/)
 
-![](/assets/PDB/GamePICBS00001.gif)
 ![](/assets/PDB/BGP/BGP000101.png)
 
-## [虚拟化]()
+## 虚拟化
 
 > - 虚拟化实践
 >
@@ -341,9 +339,8 @@ tags:
 >
 >   - [新增一个带 DMA 的 PCIe 设备](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/DMA/BiscuitOS-dma-device-QEMU-emulate)
 
-![](/assets/PDB/GamePICBF000002.gif)
 
-## [Basic Research]()
+### Basic Research
 
 > - [Bit: bitmap/bitops/bitmask/bit find](/blog/BITMAP/)
 >
@@ -409,9 +406,8 @@ tags:
 >
 >   - [atomic 原子操作](/blog/ATOMIC/)
 
-![](/assets/PDB/GamePICBF000000.gif)
 
-## [Linux Source Code list]()
+## Linux Source Code list
 
 > - [Linux 5.0 源码](/blog/SC-5.0/)
 >

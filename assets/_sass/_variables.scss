@@ -1,0 +1,53 @@
+//colors
+$bodycolor           : #333;
+$black           	 : #000;
+$white               : #fcfcfc;
+$light_gray          : #a8a8a8;
+$red                 : #e44a66; 
+$red2                : #FF4136; //original template red
+$red-brighter        : #FF594F;
+$maroon              : #85144b;
+$black_light         : #484848;
+$color_tuatara       : #383838;
+$color_shark         : #282828;
+$color_mischka       : #d0d1d5;
+$color_mercury       : #e5e6e9;
+$color_bon_jour      : #dfe0e4;
+$color_gallery       : #f0f0f0;
+$color_stack         : #8c8b8b;
+$color_alabaster     : #f9f9f9;
+$color_tundora       : #444;
+$color_fuscous_gray  : #555;
+$color_alabaster     : #fcfcfc;
+$color_celeste       : #ccc;
+$color_pink_swan     : #bbb;
+$comp-color 	     : complement(#222); 
+$blue                : #0095eb;
+$dark_blue           : #007cc3;
+$yellow              : #ff7e00;
+$green               : #00b28b;
+$font_gray           :#626262;
+$font_black          :#444444;
+
+//button colors
+$success			 : #5cb85c;
+$warning			 : #dd8338;
+$danger				 : #C64537;
+$info		         : #308cbc;
+
+//fonts
+$font1               : Segoe UI, Helvetica Neue, Microsoft Yahei, Fira Sans, sans-serif;
+$font2               : Consolas, Menlo;
+$alt-font            : Inconsolata;//serif;
+$font3               : Aldrich, sans-serif;
+$font4               : Fredericka the Great, cursive;;
+$doc-font-size       : 16;
+$doc-line-height     : 26;
+
+//media
+$small               : "only screen and (max-width: 768px)";
+$medium              : "only screen and (min-width: 768px) and (max-width: 992px)";
+$large               : "only screen and (min-width: 992px) and (max-width: 1280px)";
+$xlarge              : "only screen and (min-width: 1280px)";
+$notsmall            : "only screen and (min-width: 768px)";
+$notlarge              : "only screen and (max-width: 992px)";

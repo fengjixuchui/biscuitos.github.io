@@ -2,24 +2,65 @@
 layout: default
 ---
 
-	<section style="padding-bottom: 0">
-		<article class="wrapper">
-			<div class="post-header">
-			<h2 class="red-title" >{{ page.title }}</h2>
-			<ul class="tags">
-				{% for tag in page.tags %}
-				<li><a href="/tags#{{ tag }}">{{ tag }}</a></li>
-				{% unless forloop.last %}
-				{% endunless %}
-				{% endfor %}
-			</ul>
-			<div class="line-highlight">{% if page.date %}{{ page.date | date: '%d %b %Y' }}{% else %}<i class="fa fa-paw" aria-hidden="true"></i>{% endif %}</div>
-			</div>
-			<div class="post-content">
-				{{ content }}
-			</div>
-			{% include post-pagination.html %}
-			{% include share.html %}
-		</article>
-	</section>
-	{% include comments.html %}
+<section style="padding-bottom: 0">
+    <div id="post-container" class="wrapper">
+            <div class="post-header">
+                <h2 class="red-title" >{{ page.title }}</h2>
+                <ul class="tags">
+                    {% for tag in page.tags %}
+                    <li><a href="/tags#{{ tag }}">{{ tag }}</a></li>
+                    {% unless forloop.last %}
+                    {% endunless %}
+                    {% endfor %}
+                </ul>
+                <div class="line-highlight">{% if page.date %}{{ page.date | date: '%d %b %Y' }}{% else %}<i class="fa fa-paw" aria-hidden="true"></i>{% endif %}</div>
+            </div>
+            <div class="post-content post-article">
+                {{ content }}
+            </div>
+            {% include post-pagination.html %}
+            {% include share.html %}
+    </div>
+</section>
+
+<script src="/assets/js/modernizr-3.3.1.custom.min.js"></script>
+<script src="/assets/js/scrollnav.min.umd.js"></script>
+<script>
+    const ct = document.querySelector('.post-article');  //".post-content"指向文章内容所在的div，需根据实际情况修改
+    scrollnav.init(ct, {
+            debug: false,
+            //easingStyle: 'linear',
+            //section为一级目录，subsection为二级目录
+            //以下两行意为h3为一级目录，h4为二级目录（个人只需要一级目录，所以注释了二级目录）
+            sections: ($('.post-content > h4').length>0) ? 'h4' : 'h4',
+            subSections: ($('.post-content > h5').length > 0) ? 'h5' : 'h5'
+        });
+    document.querySelector('.scroll-nav').setAttribute('id', 'scrollnav_div');
+    //dynamically positon
+    var sideNav = function () {
+            var mainrect = document.getElementById('post-container').getBoundingClientRect();
+            //var oldreac = document.getelementsbyclassname('scroll-nav')[0].getboundingclientrect();
+            $('#post-container > nav').css('left', mainrect.right + 10 + 'px');
+        }
+
+     sideNav();
+     window.addEventListener("resize", sideNav);
+    window.onscroll = function(){
+            var t = document.documentElement.scrollTop || document.body.scrollTop;
+            var nav_div = document.getElementById('scrollnav_div');
+            if( t >= 300 ) {
+                    nav_div.style.display = "inline";
+                } else {
+                        nav_div.style.display = "none";
+                    }
+        }
+</script>
+{% include comments.html %}
+{% include scripts.html %}
+{% if site.mathjax == true %}
+<!-- MathJax -->
+<script async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+{% endif %}
+<!--social share icons-->
+<script asunc type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5c93e88014e26421"></script>
+

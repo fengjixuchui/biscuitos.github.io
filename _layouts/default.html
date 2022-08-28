@@ -9,7 +9,7 @@
 		{% include header.html %}
 		{% include banner.html %}
 		{{content}}
-		{% if !page.comment %}
+		{% if page.comment != null and page.comment != "" %}
 			{% include comments.html %}
 		{% endif %}
 		{% include footer.html %}

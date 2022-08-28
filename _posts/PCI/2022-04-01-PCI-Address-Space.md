@@ -92,7 +92,7 @@ tags:
 >
 >   - [PCI/PCIe Class Code 表](https://blog.csdn.net/niepangu/article/details/61619990)
 
-######  🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂 捐赠一下吧 🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂
+###### 捐赠一下吧
 
 ![BiscuitOS](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
 

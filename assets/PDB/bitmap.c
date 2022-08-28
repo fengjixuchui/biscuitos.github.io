@@ -7452,7 +7452,7 @@ virtio_blk
                                                                    |                 |
                                                                    |                 o-> picdev_write
                                                                    |      
-                                                                   o-> kvm_io_bus_register_dev: 0x20/0xa0/0x4d0
+                                                                   o-> kvm_io_bus_register_dev: 0x20/0xa0/0x4d0                           
 
 
 
@@ -7472,6 +7472,1176 @@ virtio_blk
                                                               o-> kvm_set_irq
                                                                     |
                                                                     o-> kvm_irq_map_gsi
+
+
+
+
+
+                                               broiler_base_init
+                                                 |
+                                                 o-> kvm_init
+                                                       |
+                                                       o-> ioctl: KVM_CREATE_IRQCHIP                              Broiler
+                                               ==========================================================================
+                                               kvm_arch_vm_ioctl                                                      KVM
+                                                 |
+                                                 o-> case: KVM_CREATE_IRQCHIP
+                                                       |
+                                                       o-> kvm_pic_init
+                                                       |     |
+                                                       |     o-> kvm_iodevice_init
+                                                       |     |     |
+                                                       |     |     o-> picdev_master_ops/picdev_slave_ops/picdev_eclr_ops
+                                                       |     |           |
+                                                       |     |           o-> picdev_master_read
+                                                       |     |           |     |
+                                                       |     |           |     o-> picdev_read
+                                                       |     |           | 
+                                                       |     |           o-> picdev_write 
+                                                       |     |                 |
+                                                       |     |                 o-> picdev_write
+                                                       |     |      
+                                                       |     o-> kvm_io_bus_register_dev: 0x20/0xa0/0x4d0                      
+                                                       |
+                                                       o-> kvm_setup_default_irq_routing
+                                                             |
+                                                             o-> kvm_set_irq_routing
+                                                                   |
+                                                                   o-> setup_routing_entry
+                                                                         |
+                                                                         o-> kvm_set_routing_entry
+                                                                         |     |
+                                                                         |     o-> e->set: kvm_set_pic_irq
+                                                                         |
+                                                                         o-> hlist_add_head
+
+
+
+
+
+                                               broiler_base_init
+                                                 |
+                                                 o-> kvm_init
+                                                       |
+                                                       o-> ioctl: KVM_CREATE_IRQCHIP                              Broiler
+                                               ==========================================================================
+                                               kvm_arch_vm_ioctl                                                      KVM
+                                                 |
+                                                 o-> case: KVM_CREATE_IRQCHIP
+                                                       |
+                                                       o-> kvm_setup_default_irq_routing
+                                                             |
+                                                             o-> kvm_set_irq_routing
+                                                                   |
+                                                                   o-> setup_routing_entry
+                                                                         |
+                                                                         o-> kvm_set_routing_entry
+                                                                         |     |
+                                                                         |     o-> e->set: kvm_set_pic_irq
+                                                                         |
+                                                                         o-> hlist_add_head                     
+
+
+
+
+                                      struct kvm_irq_routing_table
+
+                                      | <---------------------- chip -----------------------> | <------- map[] -------> |
+                                      +-+-+-+-------+-+-+-+-+-+-+------+-+-+-+-+-+-+------+-+-+-+-+-+-+---------+-+-+-+-+
+                                      | | | |       | | | | | | |      | | | | | | |      | | | | | | |         | | | | |
+                                      | | | |  ...  | | | | | | | ...  | | | | | | | ...  | | |0|1|2|3|   ...   |y|x|m|n|
+                                      | | | |       | | | | | | |      | | | | | | |      | | | | | | |         | | | | |
+                                      +-+-+-+-------+-+-+-+-+-+-+------+-+-+-+-+-+-+------+-+-+-+-+-+-+---------+-+-+-+-+
+                                      | <- vPIC-Master -> | <- vPIC-Slave -> | <-- IOAPIC --> |  A A             A A
+                                                                                                 | |             | |  +--+ 
+                                                                                                 | |             | o->|e0| 
+                                                                                                 | |             |    +--+ 
+                                                                                                 | |             |  +--+   +--+
+                                                                                                 | |             o->|e0|<->|e1|
+                                                                                                 | |                +--+   +--+
+                                                                                                 | |  +--+   +--+   
+                                                                                                 | o->|e0|<->|e1|     
+                                                                                                 |    +--+   +--+
+                                                                                                 |  +--+
+                                                                                                 o->|e0|  
+                                                                                                    +--+
+
+
+
+
+                                       broiler_base_init
+                                         |
+                                         o-> broiler_irq_init
+                                               |
+                                               o-> ioctl: KVM_SET_GSI_ROUTING                             Broiler
+                                       ==========================================================================
+                                       kvm_vm_ioctl
+                                         |
+                                         o-> case: KVM_SET_GSI_ROUTING
+                                               |
+                                               o-> kvm_set_irq_routing
+                                                     |
+                                                     o-> kvm_set_routing_entry                
+                                                     |     |
+                                                     |     o-> e->set: kvm_set_pic_irq
+                                                     |
+                                                     o-> hlist_add_head                     
+
+
+
+
+
+
+
+
+
+                                                             +---------------+                        +---------------+
+                                                             |               |                        |               |
+                                                             |     VCPU0     |                        |     VCPU1     |
+                                                             |               |                        |               |
+                                                             +---------------+                        +---------------+
+                                                                     A                                        A                  Guest OS
+                                                                     | VM ENTRY                      VM ENTRY |               VMX no-root
+                                                     ----------------|----------------------------------------|--------------------------
+                                                                     | Interrupt Inject      Interrupt Inject |                  VMX root
+                                                                     |                                        |
+                                                             +----------------+                       +----------------+
+                                                             |                |                       |                |
+                                                             | vLocal  APIC-0 |                       | vLocal  APIC-1 |
+                                                             |                |                       |                |
+                                                             +----------------+                       +----------------+
+                                                                     A                                        A
+                                                                     |                                        |
+                                                                     o--------------------o-------------------o
+                                                                       A                  |                 A
+                                                                       |                  |                 |
+                                                                  +--------+ +------------------------+ +--------+
+                                                                  |        | |                        | |        |
+                                                                  | 8259AS | |         IOAPIC         | | 8259AM |
+                                                                  |        | |                        | |        |
+                                                                  +--------+ +------------------------+ +--------+
+                                                                   ||||||||   ||||||||||||||||||||||||   ||||||||
+                                                                       ||||               ||||  
+                                                                       oooo               oooo
+                                                                         |                 |   
+                                                                         o-----------------o
+                                                                                ||||
+
+
+
+
+
+
+
+
+
+                                                                  ||||||||||||||||||||||||  
+                                                                 +------------------------+
+                                                                 |                       o|
+                                                                 |         IOAPIC         |
+                                                                 |                        |
+                                                                 +------------------------+
+                                                                  |||||||||||||||||||||||| 
+
+
+
+
+
+
+
+
+
+                                      struct kvm_irq_routing_table
+
+                                      | <---------------------- chip -----------------------> | <------- map[] -------> |
+                                      +-+-+-+-------+-+-+-+-+-+-+------+-+-+-+-+-+-+------+-+-+-+-+-+-+---------+-+-+-+-+
+                                      | | | |       | | | | | | |      | | | | | | |      | | | | | | |         | | | | |
+                                      | | | |  ...  | | | | | | | ...  | | | | | | | ...  | | |0|.|C|D|   ...   |F|x|m|n|
+                                      | | | |       | | | | | | |      | | | | | | |      | | | | | | |         | | | | |
+                                      +-+-+-+-------+-+-+-+-+-+-+------+-+-+-+-+-+-+------+-+-+-+-+-+-+---------+-+-+-+-+
+                                      | <- vPIC-Master -> | <- vPIC-Slave -> | <-- IOAPIC --> |  A A             A A
+                                                                                                 | |             | |  +--+
+                                                                                                 | |             | o->|e0|
+                                                                                                 | |             |    +--+
+                                                                                                 | |             |  +--+   +--+
+                                                                                                 | |             o->|e0|<->|e1|
+                                                                                                 | |                +--+   +--+
+                                                                                                 | |  +--+   +--+
+                                                                                                 | o->|e0|<->|e1|
+                                                                                                 |    +--+   +--+
+                                                                                                 |  +--+
+                                                                                                 o->|e0|
+                                                                                                    +--+
+
+
+
+
+
+
+
+o
+
+
+
+
+
+
+
+
+
+
+
+
+                                                broiler_irq_line
+                                                  |
+                                                  o-> KVM_IRQ_LINE                                       Asynchronous Broiler
+                                                =============================================================================
+                                                kvm_vm_ioctl                                                 Asynchronous KVM
+                                                  |
+                                                  o-> case: KVM_IRQ_LINE
+                                                        |
+                                                        o-> kvm_vm_ioctl_irq_line
+                                                              |
+                                                              o-> kvm_set_irq
+                                                                    |
+                                                                    o-> kvm_set_pic_irq
+                                                                          |
+                                                                          o-> kvm_pic_set_irq
+                                                                                |
+                                                                                o-> __kvm_irq_line_state
+                                                                                |
+                                                                                o-> pic_set_irq1
+                                                                                |
+                                                                                o-> pic_update_irq
+                                                                                |     |
+                                                                                |     o-> pic_irq_request ----> s->output = 1
+                                                                                |
+                                                                                o-> pic_unlock
+                                                                                      |
+                                                                                      o-> kvm_make_request ---> KVM_REQ_EVENT
+                                                                                      |
+                                                                                      o-> kvm_vcpu_kick ---------> Inject IPI
+                                                                                            |
+                                                                                            |                Asynchronous KVM
+                                                ============================================|================================
+                                                                                            | VM_EXIT         Synchronous KVM
+                                                                                            V
+                                                vcpu_enter_guest
+                                                  |
+                                                  o-> kvm_check_request: KVM_REQ_EVENT
+                                                  |
+                                                  o-> inject_pending_event
+                                                        |
+                                                        o-> kvm_cpu_has_injectable_intr
+                                                        |     |
+                                                        |     o-> kvm_cpu_has_extint -------------> v->kvm->arch.vpic->output
+                                                        |
+                                                        o-> kvm_queue_interrupt
+                                                        |
+                                                        o-> vmx_inject_irq
+                                                              |
+                                                              o-> vmcs_write32: VM_ENTRY_INTR_INFO_FIELD
+                                                                    
+                                                                    | VM_ENTRY                                Synchronous KVM
+                                                ====================|========================================================
+                                                                    | Inject Interrupt                               Guest OS              
+                                                                    V
+                                                                Guest-PIC
+
+
+
+
+
+
+                                                          7   6   5   4   3   2   1   0
+                                                        +---+---+---+---+---+---+---+---+
+                                                        | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |          ICW1 Register
+                                                        +---+---+---+---+---+---+---+---+
+                                                                      A   A       A   A
+                                                                      |   |       |   |
+                                                                      |   |       |   o----------- 1: ICW4 NEEDED
+                                                                      |   |       |                0: NO ICW4 NEEDED
+                                                                      |   |       |   
+                                                                      |   |       o--------------- 1: SINGLE
+                                                                      |   |                        0: CASCADE MODE
+                                                                      |   |      
+                                                                      |   o----------------------- 0: LEVEL TRIGGERED MODE  
+                                                                      |                            1: EDGE  TRIGGERED MODE
+                                                                      |   
+                                                                      o--------------------------- ICW1 MUST 1
+
+
+
+
+                                                          7   6   5   4   3   2   1   0
+                                                        +---+---+---+---+---+---+---+---+
+                                                        | X | X | X | X | X | 0 | 0 | 0 |          ICW2 Register
+                                                        +---+---+---+---+---+---+---+---+
+                                                        | <---------------> | <-------> |
+                                                              First IRQ        IR0-IR7
+                                                                              
+
+
+                                                          7   6   5   4   3   2   1   0
+                                                        +---+---+---+---+---+---+---+---+        
+                                                        | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 |          Master 8259A ICW3 Register
+                                                        +---+---+---+---+---+---+---+---+        
+                                                                                                 
+                                                                                                 
+                                                          7   6   5   4   3   2   1   0          
+                                                        +---+---+---+---+---+---+---+---+        
+                                                        | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 |          Slave 8259A ICW3 Register
+                                                        +---+---+---+---+---+---+---+---+
+
+
+
+
+
+
+
+
+
+                                                          7   6   5   4   3   2   1   0
+                                                        +---+---+---+---+---+---+---+---+
+                                                        | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 1 |          ICW4 Register
+                                                        +---+---+---+---+---+---+---+---+
+                                                                      A   A   A   A   A
+                                                                      |   |   |   |   |
+                                                                      |   o---o   |   o----------- 1: 8085/8088 MODE
+                                                                      |     |     |                0: MCS-80/85 MODE
+                                                                      |     |     |   
+                                                                      |     |     o--------------- 1: AUTO EOI
+                                                                      |     |                      0: NORMAL EOI
+                                                                      |     | 
+                                                                      |     o--------------------- 0X: NON BUFFERED MODE 
+                                                                      |                            10: BUFFERED MODE/SLAVE
+                                                                      |                            11: BUFFERED MODE/MASTER
+                                                                      |   
+                                                                      o--------------------------- 1: SPECIAL FULLY NESTED MODE
+                                                                                                   0: NOT SPECIAL FULLY NESTED MODE
+
+
+
+
+
+                                                           7    6    5    4    3    2    1    0
+                                                        +----+----+----+----+----+----+----+----+
+                                                        | M7 | M6 | M5 | M4 | M3 | M2 | M1 | M0 |          OCW1 Register
+                                                        +----+----+----+----+----+----+----+----+
+                                                           A    A    A    A    A    A    A    A
+                                                           |    |    |    |    |    |    |    |           INTERRUPT MASK
+                                                           o----o----o----o----o----o----o----o----------> 1: MASK SET
+                                                                                                           0: MASK RESET
+
+
+
+
+
+
+
+                                                          7    6   5   4   3    2    1    0
+                                                        +---+----+---+---+---+----+----+----+
+                                                        | R | SL |EOI| 0 | 0 | L2 | L1 | L0 |          OCW2 Register
+                                                        +---+----+---+---+---+----+----+----+
+                                                          A    A   A            A    A    A
+                                                          |    |   |            |    |    | 
+                                                          |    |   |            |    |    |      +---+---+---+---+---+---+---+---+
+                                                          |    |   |            |    |    o----> | 0 | 1 | 0 | 1 | 0 | 1 | 0 | 1 |
+                                                          |    |   |            |    |           +---+---+---+---+---+---+---+---+
+                                                          |    |   |            |    o---------> | 0 | 0 | 1 | 1 | 0 | 0 | 1 | 1 |
+                                                          |    |   |            |                +---+---+---+---+---+---+---+---+
+                                                          |    |   |            o--------------> | 0 | 0 | 0 | 0 | 1 | 1 | 1 | 1 |
+                                                          |    |   |                             +---+---+---+---+---+---+---+---+
+                                                          |    |   |                         IRQ   0   1   2   3   4   5   6   7 
+                                                          |    |   |
+                                                          V    V   V
+                                                        +---+----+---+
+                                                        | 0 |  0 | 1 | NON-SPECIFIC EOI COMMAND                 o--o
+                                                        +---+----+---+                                             |---> END OF INTERRUPT
+                                                        | 0 |  1 | 1 | SPECIFIC EOI COMMAND                     o--o
+                                                        +---+----+---+ 
+                                                        | 1 |  0 | 1 | ROTATE ON NO-SPECIFIC EOI COMMAND        o--o
+                                                        +---+----+---+                                             |
+                                                        | 1 |  0 | 0 | ROTATE IN AUTOMATIC EOI MODE(SET)        o--o---> AUTOMATIC ROTATION
+                                                        +---+----+---+                                             |
+                                                        | 0 |  0 | 0 | ROTATE IN AUTOMATIC EOI MODE(CLEAN)      o--o
+                                                        +---+----+---+
+                                                        | 1 |  1 | 1 | *ROTATE ON SPECIFIC EOI COMMAND          o--o
+                                                        +---+----+---+                                             |---> SPECIFIC ROTATION
+                                                        | 1 |  1 | 0 | *SET PRORITY COMMAND                     o--o
+                                                        +---+----+---+
+                                                        | 0 |  1 | 0 | NO OPERATION
+                                                        +---+----+---+
+                                                  
+
+
+
+                                                          7    6   5   4   3   2   1   0
+                                                        +---+----+---+---+---+---+----+---+
+                                                        | 0 |ESMM|SMM| 0 | 1 | P | RR |RIS|          OCW3 Register
+                                                        +---+----+---+---+---+---+----+---+
+                                                               A   A           A    A   A
+                                                               |   |           |    |   |      +-----------+-----------+-----------+-----------+
+                                                               |   |           |    |   o----> |     0     |     1     |     0     |     1     |
+                                                               |   |           |    |          +-----------+-----------+-----------+-----------+
+                                                               |   |           |    o--------> |     0     |     0     |     1     |     1     |
+                                                               |   |           |               +-----------+-----------+-----------+-----------+
+                                                               |   |           |               |                       | READ      | READ      |
+                                                               |   |           |               |       NO ACTION       | IR REG    | IS REG    |
+                                                               |   |           |               |                       | ON NEXT   | ON NEXT   |
+                                                               |   |           |               |                       | RD PULSE  | RD PULSE  |
+                                                               |   |           |               +-----------------------+-----------+-----------+
+                                                               |   |           |   
+                                                               |   |           o-------------> 1: POLL COMMAND   
+                                                               |   |                           0: NO POLL COMMAND
+                                                               |   |          
+                                                               |   |                          +-----------+-----------+-----------+-----------+  
+                                                               |   o------------------------> |     0     |     1     |     0     |     1     |
+                                                               |                              +-----------+-----------+-----------+-----------+
+                                                               o----------------------------> |     0     |     0     |     1     |     1     |
+                                                                                              +-----------+-----------+-----------+-----------+
+                                                                                              |                       | RESET     | SET       |
+                                                                                              |       NO ACTION       | SPECIAL   | SEPECIAL  |
+                                                                                              |                       | MASK      | MASK      |
+                                                                                              +-----------------------+-----------+-----------+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                               broiler_base_init
+                                                 |
+                                                 o-> kvm_init
+                                                       |
+                                                       o-> ioctl: KVM_CREATE_IRQCHIP                                            Broiler
+                                               ========================================================================================
+                                               kvm_arch_vm_ioctl                                                                    KVM
+                                                 |
+                                                 o-> case: KVM_CREATE_IRQCHIP
+                                                       |
+                                                       o-> kvm_ioapic_init
+                                                       |     |
+                                                       |     o-> kvm_ioapic_reset
+                                                       |     |
+                                                       |     o-> kvm_iodevice_init
+                                                       |     |     |
+                                                       |     |     o-> ioapic_mmio_ops
+                                                       |     |           |
+                                                       |     |           o-> ioapic_mmio_read
+                                                       |     |           |
+                                                       |     |           o-> ioapic_mmio_write
+                                                       |     |
+                                                       |     o-> kvm_io_bus_register_dev: IOAPIC_DEFAULT_BASE_ADDRESS/IOAPIC_MEM_LENGTH
+                                                       |
+                                                       o-> kvm_setup_default_irq_routing
+                                                             |
+                                                             o-> kvm_set_irq_routing
+                                                                   |
+                                                                   o-> setup_routing_entry
+                                                                         |
+                                                                         o-> kvm_set_routing_entry
+                                                                         |     |
+                                                                         |     o-> e->set: kvm_set_ioapic_irq
+                                                                         |
+                                                                         o-> hlist_add_head
+
+
+
+
+
+                                               broiler_base_init
+                                                 |
+                                                 o-> kvm_init
+                                                       |
+                                                       o-> ioctl: KVM_CREATE_IRQCHIP                              Broiler
+                                               ==========================================================================
+                                               kvm_arch_vm_ioctl                                                      KVM
+                                                 |
+                                                 o-> case: KVM_CREATE_IRQCHIP
+                                                       |
+                                                       o-> kvm_setup_default_irq_routing
+                                                             |
+                                                             o-> kvm_set_irq_routing
+                                                                   |
+                                                                   o-> setup_routing_entry
+                                                                         |
+                                                                         o-> kvm_set_routing_entry
+                                                                         |     |
+                                                                         |     o-> e->set: kvm_set_pic_irq
+                                                                         |
+                                                                         o-> hlist_add_head
+
+
+
+
+
+
+
+				     Direct Access Register
+
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     |      Register      |   Start Address   |   Width(bits)   | R/W |          Description           |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     |   Index Register   |    0xFEC00000H    |        8        | R/W | 访问间接访问寄存器             |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     |   Data  Register   |    0xFEC00010H    |       32        | R/W | 访问间接访问寄存器             |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     |      IRQ  Pin      |    0xFEC00020H    |       32        | WO  | 当设备支持 MSI，将 IRQ Number  |
+                                     | Assertion Register |                   |                 |     | 写入该寄存器 [4:0],[31.5] 清零 |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     |    EOI Register    |    0xFEC00040H    |       32        | WO  | 中断结束寄存器，对电平触发有效 |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     
+                                     Indirect Access Register
+
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     |      Register      |   Index Address   |   Width(bits)   | R/W |          Description           |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     | Identification Reg |        0x00       |       32        | R/W | APIC ID                        |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     |  Version Register  |        0x01       |       32        | RO  | IOAPIC Version                 |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     |      Reserved      |     0x02-0x0F     |       -         | RO  | Reserved                       |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     | Redirection  Table |     0x10-0x11     |       64        | R/W | PRT                            |
+                                     |     Register 0     |                   |                 | RO  |                                |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     | Redirection  Table |     0x12-0x13     |       64        | R/W | PRT                            |
+                                     |     Register 1     |                   |                 | RO  |                                |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     | Redirection  Table |        ---        |       64        | R/W | PRT                            |
+                                     |     Register n     |                   |                 | RO  |                                |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                                     |      Reserved      |        0xFE       |       -         | RO  | Reserved                       |
+                                     +--------------------+-------------------+-----------------+-----+--------------------------------+
+                         
+
+
+
+
+
+
+
+
+
+
+
+
+                                    63            56 55           17 16 15 14 13 12 11 10   8 7         0
+                                   +----------------+---------------+--+--+--+--+--+--+------+-----------+
+                                   |                |               |  |  |  |  |  |  |      |           |
+                                   +----------------+---------------+--+--+--+--+--+--+------+-----------+
+                                           A                         A  A  A  A  A  A    A         A
+                                           |                         |  |  |  |  |  |    |         |
+                                           |                         |  |  |  |  |  |    |         |
+                                           |                         |  |  |  |  |  |    |         |
+                                           |                         |  |  |  |  |  |    |         o--------------- Interrupt Vector
+                                           |                         |  |  |  |  |  |    o------------------------- Delivery Mode
+                                           |                         |  |  |  |  |  o------------------------------ Destination Mode
+                                           |                         |  |  |  |  o--------------------------------- Delivery Status
+                                           |                         |  |  |  o------------------------------------ Interrupt Pin Polarity
+                                           |                         |  |  o--------------------------------------- Remote IRR
+                                           |                         |  o------------------------------------------ Trigger Mode
+                                           |                         o--------------------------------------------- Interrupt Mask
+                                           o----------------------------------------------------------------------- Destination Field
+
+
+
+
+
+
+
+
+
+
+
+
+                                               broiler_base_init
+                                                 |
+                                                 o-> kvm_init
+                                                       |
+                                                       o-> ioctl: KVM_CREATE_IRQCHIP                                            Broiler
+                                               ========================================================================================
+                                               kvm_arch_vm_ioctl                                                                    KVM
+                                                 |
+                                                 o-> case: KVM_CREATE_IRQCHIP
+                                                       |
+                                                       o-> kvm_ioapic_init
+                                                             |
+                                                             o-> kvm_ioapic_reset
+                                                             |
+                                                             o-> kvm_iodevice_init
+                                                             |     |
+                                                             |     o-> ioapic_mmio_ops
+                                                             |           |
+                                                             |           o-> ioapic_mmio_read
+                                                             |           |
+                                                             |           o-> ioapic_mmio_write
+                                                             |
+                                                             o-> kvm_io_bus_register_dev: IOAPIC_DEFAULT_BASE_ADDRESS/IOAPIC_MEM_LENGTH
+
+
+
+
+
+
+
+
+
+
+                                               broiler_base_init
+                                                 |
+                                                 o-> kvm_init
+                                                       |
+                                                       o-> ioctl: KVM_CREATE_IRQCHIP                                            Broiler
+                                               ========================================================================================
+                                               kvm_arch_vm_ioctl                                                                    KVM
+                                                 |
+                                                 o-> case: KVM_CREATE_IRQCHIP
+                                                       |
+                                                       o-> kvm_setup_default_irq_routing
+                                                             |
+                                                             o-> kvm_set_irq_routing
+                                                                   |
+                                                                   o-> setup_routing_entry
+                                                                         |
+                                                                         o-> kvm_set_routing_entry
+                                                                         |     |
+                                                                         |     o-> e->set: kvm_set_ioapic_irq
+                                                                         |
+                                                                         o-> hlist_add_head
+
+
+
+
+
+
+
+
+
+                                       broiler_base_init
+                                         |
+                                         o-> broiler_irq_init
+                                               |
+                                               o-> ioctl: KVM_SET_GSI_ROUTING                             Broiler
+                                       ==========================================================================
+                                       kvm_vm_ioctl                                                           KVM
+                                         |
+                                         o-> case: KVM_SET_GSI_ROUTING
+                                               |
+                                               o-> kvm_set_irq_routing
+                                                     |
+                                                     o-> kvm_set_routing_entry
+                                                     |     |
+                                                     |     o-> e->set: kvm_set_ioapic_irq
+                                                     |
+                                                     o-> hlist_add_head
+
+
+
+
+
+
+
+
+
+                                                broiler_irq_line
+                                                  |
+                                                  o-> KVM_IRQ_LINE                                                                   Asynchronous Broiler
+                                                =========================================================================================================
+                                                kvm_vm_ioctl                                                                             Asynchronous KVM
+                                                  |
+                                                  o-> case: KVM_IRQ_LINE
+                                                        |
+                                                        o-> kvm_vm_ioctl_irq_line
+                                                              |
+                                                              o-> kvm_set_irq
+                                                                    |
+                                                                    o-> kvm_set_ioapic_irq
+                                                                          |
+                                                                          o-> kvm_ioapic_set_irq
+                                                                                |
+                                                                                o-> __kvm_irq_line_state
+                                                                                |
+                                                                                o-> ioapic_set_irq
+                                                                                      |
+                                                                                      o-> ioapic_service
+                                                                                            |
+                                                                                            o-> kvm_irq_delivery_to_apic
+                                                                                                  |
+                                                                                                  o-> kvm_irq_delivery_to_apic_fast
+                                                                                                  |
+                                                                                                  o-> kvm_apic_present
+                                                                                                  |
+                                                                                                  o-> kvm_apic_match_dest
+                                                                                                  |
+                                                                                                  o-> kvm_lowest_prio_delivery
+                                                                                                  |
+                                                                                                  o-> kvm_apic_set_irq
+                                                                                                        |
+                                                                                                        o-> __apic_accept_irq
+                                                                                                              |
+                                                                                                              o-> kvm_lapic_set_irr --> apic->irr_pending
+                                                                                                              |
+                                                                                                              o-> kvm_make_request -------> KVM_REQ_EVENT
+                                                                                                              |
+                                                                                                              o-> kvm_vcpu_kick -------------> Inject IPI
+                                                                                                                    |
+                                                                                                                    |                    Asynchronous KVM
+                                                ====================================================================|====================================
+                                                                                                                    | VM_EXIT             Synchronous KVM
+                                                                                                                    V
+                                                vcpu_enter_guest
+                                                  |
+                                                  o-> kvm_check_request: KVM_REQ_EVENT
+                                                  |
+                                                  o-> inject_pending_event
+                                                        |
+                                                        o-> kvm_cpu_has_injectable_intr
+                                                        |     |
+                                                        |     o-> kvm_apic_has_interrupt
+                                                        |           |
+                                                        |           o-> apic_find_highest_irr --------> apic->irr_pending
+                                                        |
+                                                        o-> kvm_queue_interrupt
+                                                        |
+                                                        o-> vmx_inject_irq
+                                                              |
+                                                              o-> vmcs_write32: VM_ENTRY_INTR_INFO_FIELD
+
+                                                                    | VM_ENTRY                                                            Synchronous KVM
+                                                ====================|====================================================================================
+                                                                    | Inject Interrupt                                                           Guest OS
+                                                                    V
+                                                                Guest-LAPIC
+
+
+
+
+                                         VM_ENTRY_INTR_INFO_FIELD
+ 
+                                            30                               12   10      8 7               0
+                                         +-+-----------------------------------+-+---------+-----------------+
+                                         | |              Reserved             | |         |                 |
+                                         +-+-----------------------------------+-+---------+-----------------+
+                                          A                                     A     A             A      
+                                          |                                     |     |             |
+                                          |                                     |     |             |
+                                          |                                     |     |             |
+                                          |                                     |     |             o------------ Vector
+                                          |                                     |     o-------------------------- Interrupt Type
+                                          |                                     o-------------------------------- Deliver err Code
+                                          o---------------------------------------------------------------------- Valid
+
+
+
+               
+
+
+
+
+
+
+                                                                            Processor#1                 Processor#2                Processor#3               Processor#4
+                                                                     +-----------------------+   +-----------------------+  +-----------------------+  +-----------------------+
+                                                                     |                       |   |                       |  |                       |  |                       |
+                                                                     |          CPU          |   |          CPU          |  |          CPU          |  |          CPU          |
+                                                                     |                       |   |                       |  |                       |  |                       |
+                                                                     +-----------------------+   +-----------------------+  +-----------------------+  +-----------------------+
+                                                                     |      Local  APIC      |   |      Local  APIC      |  |      Local  APIC      |  |      Local  APIC      |
+                                                                     +-----------------------+   +-----------------------+  +-----------------------+  +-----------------------+
+                                                                                A A                         A A                        A A                        A A
+                                                                      Interrupt | |               Interrupt | |              Interrupt | |              Interrupt | |
+                                                                       Messages | | IPIs           Messages | | IPIs          Messages | | IPIs          Messages | | IPIs
+                                                                                V V                         V V                        V V                        V V
+                                                                     <--------------------------------------------------------------------------------------------------------->
+                                                                                               A                              Processor System Bus
+                                                                                               |
+                                                                                               |
+                                                                                               V
+                                                                                        +-------------+
+                                                                                        | PCI  Bridge |
+                                                                                        +-------------+
+                                                                                               A
+                                                                                               |
+                                                                                               V
+                                                                     <----------------------------------------------------> PCI Bus
+                                                                                A                                A
+                                                                                | MSI                            |
+                                                                                |                                V
+                                                                       +--------o--------+                 +-----------+              +-----------+
+                                                                       |                 |                 |           |       INTX#  |           |
+                                                                       | PCI/PCIe  Agent |                 | I/O  APIC |<------------ | PCI Agent |
+                                                                       |                 |                 |           |        PIRQ  |           |
+                                                                       +-----------------+                 +-----------+              +-----------+
+
+
+
+
+
+
+
+
+
+
+                                                     +--------------+
+                                                     |              |
+                                                     | PCI Device A |
+                                                     |              |
+                                                     |        INTA# |-----------------o                                       
+                                                     |        INTB# |                 |                     
+                                                     |        INTC# |--------------o  |                     
+                                                     |        INTD# |              |  |                     
+                                                     |              |              |  |                     
+                                                     +--------------+              |  |                          +-----------------+
+                                                                                   |  |                          |                 |
+                                                     +--------------+              |  |                          |  Source Bridge  |
+                                                     |              |              |  |                          |                 |
+                                                     | PCI Device B |              |  o------------------------> | PIRQA   (IRQ10) |
+                                                     |              |              |            o--------------> | PIRQB   (IRQ9)  |
+                                                     |        INTA# |--------------|------------|--------------> | PIRQC   (IRQ11) |
+                                                     |        INTB# |             (+)-----------|--------------> | PIRQD   (IRQ12) | ----> PIC/IOAPIC
+                                                     |        INTC# |              |            |                | PIRQE           |
+                                                     |        INTD# |--------------o            |                | PIRQF           |
+                                                     |              |                           | o------------> | PIRQG   (IRQ7)  |
+                                                     +--------------+                           | |              | PRQH            |
+                                                                                                | |              |                 |
+                                                     +--------------+                           | |              +-----------------+
+                                                     |              |                           | |         
+                                                     | PCI Device C |                           | |         
+                                                     |              |                           | |
+                                                     |        INTA# |---------------------------o |
+                                                     |        INTB# |                             |
+                                                     |        INTC# |-----------------------------o
+                                                     |        INTD# |
+                                                     |              |
+                                                     +--------------+
+
+
+
+
+
+
+
+
+                                                     |7|6|5|4|3|2|1|0|7|6|5|4|3|2|1|0|7|6|5|4|3|2|1|0|7|6|5|4|3|2|1|0|
+                                                  -- +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                                  A  | Fmt |  Type   |R| TC  |R|A|R|T|T|E|ATT|AT |      Length       | 
+                                                  |  |0 1 1|0 0 0 0 0| |     | |T| |H|D|P|0 0|   |0 0 0 0 0 0 0 0 0 1| Byte 0
+                                                  |  +-----+---------+-+-----+-+-+-+-+-+-+---+-------+-------+-------+
+                                                  |  |         Requester  ID         |      Tag      |Last DW|FirstDW| 
+                                           Header |  |                               |               |0 0 0 0|1 1 1 1| Byte 4
+                                                  |  +-------------------------------+---------------+-------+-------+ 
+                                                  |  |                  MSI Message Address [63:32]                  | Byte 8
+                                                  |  +-----------------------------------------------------------+---+ 
+                                                  V  |                  MSI Message Address [31:00]              |0 0| Byte 12
+                                                  -- +-------------------------------+---------------------------+---+
+                                             Data    |       MSI Message Data        |             0000h             | Byte 16
+                                                     +-------------------------------+-------------------------------+
+
+
+
+
+o
+
+                                                   Capability Structure for 32-bit Message Address
+
+                                                   +-----------------------------------------+--------------------+--------------------+
+                                                   |             Message Control             |    Next Pointer    |   Capability  ID   | Capability Pointer + 0x0h
+                                                   +-----------------------------------------+--------------------+--------------------+
+                                                   |                                 Message  Address                                  | Capability Pointer + 0x4h
+                                                   +-----------------------------------------+-----------------------------------------+
+                                                                                             |              Message  Data              | Capability Pointer + 0x8h
+                                                                                             +-----------------------------------------+
+
+                                                   Capability Structure for 64-bit Message Address
+
+                                                   +-----------------------------------------+--------------------+--------------------+
+                                                   |             Message Control             |    Next Pointer    |   Capability  ID   | Capability Pointer + 0x0h
+                                                   +-----------------------------------------+--------------------+--------------------+
+                                                   |                                 Message  Address                                  | Capability Pointer + 0x4h
+                                                   +-----------------------------------------+--------------------+--------------------+
+                                                   |                               Message Upper Address                               | Capability Pointer + 0x8h
+                                                   +-----------------------------------------+-----------------------------------------+
+                                                                                             |              Message  Data              | Capability Pointer + 0xCh
+                                                                                             +-----------------------------------------+
+
+                                                   Capablity Structure for 32-bit Message Address and Per-vector Masking
+
+                                                   +-----------------------------------------+--------------------+--------------------+
+                                                   |             Message Control             |    Next Pointer    |   Capability  ID   | Capability Pointer + 0x0h
+                                                   +-----------------------------------------+--------------------+--------------------+
+                                                   |                                 Message  Address                                  | Capability Pointer + 0x4h
+                                                   +-----------------------------------------+-----------------------------------------+
+                                                   |                 Reserved                |              Message  Data              | Capability Pointer + 0x8h
+                                                   +-----------------------------------------+-----------------------------------------+
+                                                   |                                     Mask Bits                                     | Capability Pointer + 0xCh
+                                                   +-----------------------------------------------------------------------------------+
+                                                   |                                   Pending Bits                                    | Capability Pointer + 0x10h
+                                                   +-----------------------------------------------------------------------------------+
+
+						   Capability Structure for 64-bit Message Address and Per-vector Masking
+						
+                                                   +-----------------------------------------+--------------------+--------------------+
+                                                   |             Message Control             |    Next Pointer    |   Capability  ID   | Capability Pointer + 0x0h
+                                                   +-----------------------------------------+--------------------+--------------------+
+                                                   |                                 Message  Address                                  | Capability Pointer + 0x4h
+                                                   +-----------------------------------------------------------------------------------+
+                                                   |                               Message Upper Address                               | Capability Pointer + 0x8h
+                                                   +-----------------------------------------+-----------------------------------------+
+                                                   |                 Reserved                |              Message  Data              | Capability Pointer + 0xCh
+                                                   +-----------------------------------------+-----------------------------------------+
+                                                   |                                     Mask Bits                                     | Capability Pointer + 0x10h
+                                                   +-----------------------------------------------------------------------------------+
+                                                   |                                   Pending Bits                                    | Capability Pointer + 0x14h
+                                                   +-----------------------------------------------------------------------------------+
+
+
+
+
+
+
+                                                   PCI Configuration Space
+
+                                                   +-----------------------------------------+-----------------------------------------+
+                                                   |                Device ID                |                Vendor ID                | 0x0H
+                                                   +-----------------------------------------+-----------------------------------------+
+                                                   |                  Status                 |                 Command                 | 0x04H
+                                                   +-----------------------------------------+--------------------+--------------------+
+                                                   |                          Class Code                          |  Cache Line Size   | 0x08H
+                                                   +--------------------+--------------------+--------------------+--------------------+
+                                                   |        BIST        |    Header  Type    |   Latency  Timer   |  Cache Line Size   | 0x0CH
+                                                   +--------------------+--------------------+--------------------+--------------------+
+                                                   |                               Base Address 0 (BAR0)                               | 0x10H
+                                                   +-----------------------------------------------------------------------------------+
+                                                   |                               Base Address 1 (BAR1)                               | 0x14H
+                                                   +-----------------------------------------------------------------------------------+
+                                                   |                               Base Address 2 (BAR2)                               | 0x18H
+                                                   +-----------------------------------------------------------------------------------+
+                                                   |                               Base Address 3 (BAR3)                               | 0x1CH
+                                                   +-----------------------------------------------------------------------------------+
+                                                   |                               Base Address 4 (BAR4)                               | 0x20H
+                                                   +-----------------------------------------------------------------------------------+
+                                                   |                               Base Address 5 (BAR5)                               | 0x24H
+                                                   +-----------------------------------------------------------------------------------+
+                                                   |                                CarBus CIS Pointer                                 | 0x28H
+                                                   +-----------------------------------------+-----------------------------------------+
+                                                   |           Subsystem Device ID           |           Subsystem Vendor ID           | 0x2CH
+                                                   +-----------------------------------------+-----------------------------------------+
+                                                   |                             Expansion ROM Base Address                            | 0x30H
+                                                   +--------------------------------------------------------------+--------------------+
+                                                   |                            Rserved                           | Capability Pointer |----o 
+                                                   +--------------------------------------------------------------+--------------------+    |  
+                                                                                                                                  0x80H     |
+                                                                                                                                            |
+                                                   MSI Capability Regsiter                                                                  |
+                                                   +-----------------------------------------+--------------------+--------------------+    |
+                                                   |             Message Control             |    Next Pointer    |   Capability  ID   | <--o
+                                                   +-----------------------------------------+--------------------+--------------------+
+                                                   |                                 Message  Address                                  | 0x84H
+                                                   +-----------------------------------------+-----------------------------------------+
+                                                                                             |              Message  Data              | 0x88H
+                                                                                             +-----------------------------------------+
+
+
+
+                                                    Message Control
+                                                     
+                                                     15                                  11   9 8 7 6   4 3   1 0
+                                                    +--------------------------------------+-+-+-+-+-----+-----+-+
+                                                    |                RsvdP                 | | | | |     |     | |
+                                                    +--------------------------------------+-+-+-+-+-----+-----+-+
+                                                                                            A A A A   A     A   A
+                                                                                            | | | |   |     |   |
+                                                                                            | | | |   |     |   o----- MSI Enable
+                                                                                            | | | |   |     o--------- Multiple Message Capable
+                                                                                            | | | |   o--------------- Multiple Message Enable
+                                                                                            | | | o------------------- 64-bit Address Capable
+                                                                                            | | o--------------------- Per-Vector Masking Capable
+                                                                                            | o----------------------- Extended Message Data Capable    
+                                                                                            o------------------------- Extended Message Data Enable
+ 
+
+
+
+
+
+
+
+                                                   31                  20 19                 12 11               4  3    2   1  0
+                                                  +----------------------+---------------------+------------------+----+----+----+
+                                                  |        0XFEEH        |   Destination  ID   |     Reserved     | RH | DM | XX |
+                                                  +----------------------+---------------------+------------------+----+----+----+
+
+
+
+
+                                                  MSI Message Address Register
+
+                                                   31                  20 19                 12 11               4 3 2 1 0
+                                                  +----------------------+---------------------+------------------+-+-+---+
+                                                  |        0xFEEH        |                     |     Reserved     | | |   |
+                                                  +----------------------+---------------------+------------------+-+-+---+
+                                                                                    A                              A A  A
+                                                                                    |                              | |  |                     
+                                                                                    |                              | |  o------- XX                     
+                                                                                    |                              | o---------- DM           
+                                                                                    |                              o------------ RH           
+                                                                                    o------------------------------------------- Destination ID           
+
+
+
+                                                  MSI Message Data Register
+
+                                                   31                                                                     0
+                                                  +------------------------------------------------------------------------+
+                                                  |                                  Reserved                              |
+                                                  +------------------------------------------------------------------------+
+
+                                                   31                                  16     13        11    8 7         0
+                                                  +--------------------------------------+-+-+------------+----+-----------+
+                                                  |               Reserved               | | |  Reserved  |    |  Vector   |
+                                                  +--------------------------------------+-+-+------------+----+-----------+
+                                                                                          A A                A
+                                                                                          | |                |
+                                                                                          | |                o----------------- Delivery Mode
+                                                                                          | |                                     000 - Fixed
+                                                                                          | |                                     001 - Lowest Priority
+                                                                                          | |                                     010 - SMI
+                                                                                          | |                                     011 - Reserved
+                                                                                          | |                                     100 - NMI
+                                                                                          | |                                     101 - INTR
+                                                                                          | |                                     110 - Reserved
+                                                                                          | |                                     111 - ExtINT
+                                                                                          | | 
+                                                                                          | o---------------------------------- Level for Trigger Mode = 0 
+                                                                                          |                                       X - Don't Care
+                                                                                          |                                     Level for Trigger Mode = 1
+                                                                                          |                                       0 - Deassert
+                                                                                          |                                       1 - Assert
+                                                                                          |  
+                                                                                          o------------------------------------ Trigger Mode
+                                                                                                                                  0 - Edge
+                                                                                                                                  1 - Level
+
+
+
+
+
+
+
+
+
+                                               MSI Mask Register
+                                                31                                                              0
+                                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                               | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+                                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                                               MSI Pending Register
+                                                31                                                              0
+                                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                               | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | | |
+                                               +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+
+
+
+
+
+
+
+                                           pci_enable_msi
+                                             |
+                                             o-> __pci_enable_msi_range
+                                                   |
+                                                   o-> pci_msi_vec_count
+                                                   |
+                                                   o-> msi_capability_init
+                                                         |
+                                                         o-> pci_msi_set_enable
+                                                         |
+                                                         o-> msi_setup_entry
+                                                         |     |
+                                                         |     o-> alloc_msi_entry
+                                                         |
+                                                         o-> pci_msi_setup_msi_irqs
+                                                               |
+                                                               o-> msi_domain_alloc_irqs
+                                                                     |
+                                                                     o-> __msi_domain_alloc_irqs
+                                                                           |
+                                                                           o-> __irq_domain_alloc_irqs -------> alloc irq/vector
+                                                                           |
+                                                                           o-> irq_domain_get_irq_data 
+                                                                           |
+                                                                           o-> irq_domain_activate_irq
+                                                                                 |
+                                                                                 o-> __irq_domain_activate_irq
+                                                                                       |
+                                                                                       o-> msi_domain_activate
+                                                                                             |
+                                                                                             o-> irq_chip_compose_msi_msg
+                                                                                             |     |
+                                                                                             |     o-> x86_vector_msi_compose_msg
+                                                                                             |           |
+                                                                                             |           o-> __irq_msi_compose_msg --> Constructure msg_addr/msg_data
+                                                                                             |
+                                                                                             o-> irq_chip_write_msi_msg
+                                                                                                   |
+                                                                                                   o-> pci_msi_domain_write_msg
+                                                                                                         |
+                                                                                                         o-> __pci_write_msi_msg ----> Write msi_msg To MSI Capability Register
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
