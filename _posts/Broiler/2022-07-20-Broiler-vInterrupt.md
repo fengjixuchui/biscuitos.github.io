@@ -44,13 +44,33 @@ tags:
 >
 > - [MSI 中断虚拟化](#E7)
 >
->   - [MSI 中断编程]()
+>   - [MSI 中断编程](#E71)
 > 
->   - [Broiler 设备使用 MSI 中断]()
+>   - [Broiler 设备使用 MSI 中断](#E72)
 > 
->   - [MSI 中断注入]()
+>   - [MSI 中断注入](#E73)
 >
-> - [设备中断虚拟化](#E4)
+> - [MSIX 中断虚拟化](#E8)
+>
+>   - [MSIX 中断编程](#E81)
+> 
+>   - [Broiler 设备使用 MSIX 中断](#E82)
+> 
+>   - [MSIX 中断注入](#E83)
+>
+> - Broiler 中断虚拟化
+>
+> - Broiler 设备中断虚拟化案例
+>
+>   - [PCI Line-Based PCI Interrupt Routing(INTX#)](#EA2)
+>
+>   - [PCI Message-Signalled Interrupt(MSI)](#E72)
+>
+>   - [PCI Message-Signalled Interrupt extended(MSIX)](#E82)
+>
+>   - [Device Using PIC Interrupt](#E52)
+>
+>   - [Device Using IOAPIC Interrupt](#E61)
 
 ######  🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂 捐赠一下吧 🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂
 
@@ -153,7 +173,7 @@ PIN、IRQ、GSI 和 Vector 这几个概念容易搅浑，**IRQ** 是 PIC 时代�
 
 上图中有 3 个 I/O APIC, IO-APIC0 具有 24 个引脚，其中 GSI Base 为 0, 每个 Pin 的 **GSI=GSI_Base + Pin** , 故 IO-APIC0 的 GSI 范围为 \[0: 23]. IO-APIC1 具有 16 个引脚，GSI base 为 24，GSI 范围为 \[24, 39], 以此类推。APIC 要求 ISA 的 16 个 IRQ 应该被 Identify map 到 GSI \[0, 15]. **Vector** 是中断中 IDT 表中的索引，是一个 CPU 概念，每个 IRQ (或 GSI) 都对应一个 Vector。在 PIC 模式下，IRQ 对应的 **vector = Start_Vector + IRQ**; 在 APIC 模式下, IRQ/GSI 的 vector 由操作系统分配.
 
-##### 操作系统对中断/异常的处理流程
+###### 操作系统对中断/异常的处理流程
 
 虽然各种操作系统对中断/异常处理的实现不同，但基本流程遵循如下顺序:
 一个中断或异常发生，打断当前正在执行的任务
@@ -177,6 +197,29 @@ PIN、IRQ、GSI 和 Vector 这几个概念容易搅浑，**IRQ** 是 PIC 时代�
 ![](/assets/PDB/HK/TH001766.png)
 
 在虚拟化场景中，VMM 也需要为 Guest OS 展现一个与物理中断架构类似的虚拟中断架构。如上图展示虚拟机的中断架构，和物理平台一样，每个 VCPU 都对应一个虚拟 Local APIC 用于接收中断. 虚拟平台也包含了虚拟 I/O APIC 或者虚拟 PIC 用于发送中断。和 VCPU 一样，虚拟 Local APIC、虚拟 I/O APIC 和 虚拟 PIC 都是由 VMM 维护. 当虚拟设备需要发送中断时，虚拟设备会调用虚拟 I/O APIC 的接口发送中断，虚拟 I/O APIC 根据中断请求，挑选出相应的虚拟 Local APIC, 调用其接口发出中断请求，虚拟 Local APIC 进一步利用 VT-x 的事件注入机制将中断注入到相应的 VCPU. 由此可见中断虚拟化主要任务就是实现虚拟 PIC、虚拟 I/O APIC 和虚拟 Local APIC，并且实现虚拟中断的生成、采集和注入的过程。
+
+> [PIC 8259A 虚拟化](#E5)
+>
+> [IOAPIC 虚拟化](#E6)
+
+![](/assets/PDB/HK/TH001852.png)
+
+在 PCI/PCIe 设备上不仅支持 **Line-Based PCI Interrupt Routing**, 也支持更为现代的 **PCI Message-Signalled Interrupt**, 让设备支持超过 IOAPIC/PIC 更多的中断，MSI/MSIX 更好的服务 PCI Function，使中断直接送到指定的 LAPIC.
+
+> [MSI 中断虚拟化](#E7)
+>
+> [MSIX 中断虚拟化](#E8)
+
+当 Broiler 触发了 PIC/IOAPIC 中断，需要让虚拟机 VM-EXIT 之后再 VM-ENTRY，将需要注入的中断写入到 VMCS 的 VM_ENTRY_INTR_INFO_FIELD 域中，VM-ENTRY 的时候会检查该域是否有中断需要注入，如果有 VM-ENTRY 之后理解触发对应的中断, 当 Guest OS 处理完中断之后，需要写入 EOI，那么同样导致 VM-EXIT. 如果 Broiler 提出注入中断的请求之后，虚拟机正处于休眠时，那么 KVM 会模拟发送 IPI 中断，让虚拟机发送 VM-EXIT. 随机硬件功能的不断完善，开发者在考虑是否可以借助硬件，在不 VM-EXIT 的情况下进行中断注入，APICv 的映入很好的解决了这个问题，并且使用 Posted Interrupt 方式进行中断注入，使虚拟机在不发生 VM-EXIT 的请求下完成中断的注入和 EOI.
+
+> [VM_ENTRY_INTR_INFO_FIELD 中断注入(TODO)]()
+>
+> [IPI 虚拟化(TODO)]()
+>
+> [APIv 虚拟化(TODO)]()
+>
+> [Posted Interrupt(TODO)]()
+
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -206,7 +249,7 @@ PIN、IRQ、GSI 和 Vector 这几个概念容易搅浑，**IRQ** 是 PIC 时代�
 
 -----------------------------
 
-###### <span id="E55">8259A 中断控制器编程</span>
+##### <span id="E55">8259A 中断控制器编程</span>
 
 x86 架构中 vPIC 通过模拟 8259A 中断控制器的逻辑来实现中断模拟，并侧重模拟 8259A 内部的寄存器处理逻辑，而 8259A 中断控制器编程侧重从操作系统对 8259A 的使用进行描述，那么本节用于介绍 8259A 的编程逻辑，这对 vPIC 的模拟有一定的帮助。根据 PIC 硬件规范，PIC 主要为软件提供了以下几个接口用于操作 PIC:
 
@@ -251,7 +294,7 @@ OCW3 寄存器用于设置特殊屏蔽方式以及查询方式。BIT0 RIS 标志
 
 -----------------------------
 
-###### <span id="E50">vPIC 创建</span>
+##### <span id="E50">vPIC 创建</span>
 
 ![](/assets/PDB/HK/TH001775.png)
 
@@ -293,7 +336,7 @@ KVM 默认支持的中断设备的引脚如上图，从 ROUTING_ENTRY2 宏的定
 
 -----------------------------
 
-###### <span id="E51">Broiler vPIC 中断配置</span>
+##### <span id="E51">Broiler vPIC 中断配置</span>
 
 ![](/assets/PDB/HK/TH001784.png)
 
@@ -315,7 +358,7 @@ struct kvm_irq_routing_table 数据架构维护了 vPIC 引脚与 GSI 的映射�
 
 -------------------------------------------
 
-###### <span id="E52">Broiler 设备使用 vPIC 中断</span>
+##### <span id="E52">Broiler 设备使用 vPIC 中断</span>
 
 ![](/assets/PDB/HK/TH001787.png)
 
@@ -372,7 +415,7 @@ Broiler 启动 BiscuitOS 系统之后，加载驱动 Broiler-vPIC-interrupt-defa
 
 ------------------------------------------
 
-###### <span id="E53">vPIC 中断注入</span>
+##### <span id="E53">vPIC 中断注入</span>
 
 ![](/assets/PDB/HK/TH001789.png)
 
@@ -449,7 +492,7 @@ Deliver err Code 域指明是否需要向 Guest 的堆栈中写入错误码，Va
 
 -----------------------------
 
-###### <span id="E65">IOAPIC 中断控制器编程</span>
+##### <span id="E65">IOAPIC 中断控制器编程</span>
 
 ![](/assets/PDB/HK/TH001759.png)
 
@@ -481,7 +524,7 @@ IOAPIC 的主要作用是中断分发，最初有一条专门的 APIC 总线用�
 
 -----------------------------
 
-###### <span id="E60">vIOAPIC 创建</span>
+##### <span id="E60">vIOAPIC 创建</span>
 
 ![](/assets/PDB/HK/TH001806.png)
 
@@ -527,7 +570,7 @@ KVM 默认支持的中断设备的引脚如上图，从 ROUTING_ENTRY2 宏的定
 
 -----------------------------
 
-###### <span id="E61">Broiler vIOAPIC 中断配置</span>
+##### <span id="E61">Broiler vIOAPIC 中断配置</span>
 
 ![](/assets/PDB/HK/TH001784.png)
 
@@ -549,7 +592,7 @@ struct kvm_irq_routing_table 数据架构维护了 vIOAPIC 引脚与 GSI 的映�
 
 -------------------------------------------
 
-###### <span id="E62">Broiler 设备使用 vIOAPIC 中断</span>
+##### <span id="E62">Broiler 设备使用 vIOAPIC 中断</span>
 
 ![](/assets/PDB/HK/TH001761.png)
 
@@ -606,7 +649,7 @@ Broiler 启动 BiscuitOS 系统之后，加载驱动 Broiler-vIOAPIC-interrupt-d
 
 ------------------------------------------
 
-###### <span id="E63">vIOAPIC 中断注入</span>
+##### <span id="E63">vIOAPIC 中断注入</span>
 
 ![](/assets/PDB/HK/TH001820.png)
 
@@ -671,7 +714,7 @@ PCI/PCIe 设备作为系统外设，其也需要通过中断与系统交互。�
 
 ![](/assets/PDB/HK/TH001825.png)
 
-在 Line-Based PCI Interrupt Routing 机制中，PCI 设备的中断需要 PIC 或者 IOAPIC 进行转发; 另外每个 PCI Device 包含多个 Function，但每个 PCI Device 只有 INTXA~INTXD 四个 Pin，每个 PCI Function 都可以使用四个 Pin，那么就出现 PIRQ 和 IRQ 被多个 PCI Function 复用，对中断管理比较麻烦，另外无法做到对每个 PCI Function 的 INTX# 进行屏蔽。为了解决以上问题 PCI 规范提出了更为先进的中断机制: **PCI Message-base Interrupt** 机制, 简称 MSI. MSI 的出现解决了 Line-Based Interrupt Routing 的几个问题:
+在 Line-Based PCI Interrupt Routing 机制中，PCI 设备的中断需要 PIC 或者 IOAPIC 进行转发; 另外每个 PCI Device 包含多个 Function，但每个 PCI Device 只有 INTXA~INTXD 四个 Pin，每个 PCI Function 都可以使用四个 Pin，那么就出现 PIRQ 和 IRQ 被多个 PCI Function 复用，对中断管理比较麻烦，另外无法做到对每个 PCI Function 的 INTX# 进行屏蔽。为了解决以上问题 PCI 规范提出了更为先进的中断机制: **PCI Message-Signalled Interrupt** 机制, 简称 MSI. MSI 的出现解决了 Line-Based Interrupt Routing 的几个问题:
 
 * 无需经过 PIC/IOAPIC 转发中断，直接通过 Memory Write Transaction 向 CPU 发中断
 * 每个 PCI Function 可以支持分配多个中断向量，满足同一个设备有多个中断请求的需求
@@ -685,40 +728,407 @@ PCI/PCIe 设备作为系统外设，其也需要通过中断与系统交互。�
 
 -----------------------------
 
-###### <span id="E71">MSI 中断编程</span>
+##### <span id="E71">MSI 中断编程</span>
 
+![](/assets/PDB/HK/TH001829.png)
 
+PCI/PCIe 设备通过在其 PCI Configuration Space 中实现 MSI Capability Register 来向系统软件表明是否支持 MSI. MSI Capability Registers 属于传统的 Basic PCI Capability Structure, 其可以通过 PCI Configuration Space 的 Capability Pointer(0x34) 进行遍历查找获得，其组成包括:
 
+* 标准的 Basic PCI Capability Header (Capability ID + Next Capability)
+* Capability-specific Register (Message Control)
 
+![](/assets/PDB/HK/TH001830.png)
+
+Message Control 寄存器用于描述 MSI Capability Register 的布局结构，其 Bit 含义如下:
+
+* BIT0: MSI Enable Bit 表示是否禁用 MSI，置位时启用 MSI，默认清零.
+* BIT1-3: Multiple Message Capable 表示设备支持多少 Vector.
+  * 其取值为 X 则支持 2^x 个 Vector，X 最大为 5 即允许 32 个不同的 Vector
+  * 设备使用的 Vector 号受到 Message Data 的限制，只能改变 Message Data 的末 X 位.
+* BIT4-6: Multiple Message Enable 指明软件允许设备使用多个 Vector.
+* BIT7: 64-Bit Address Capability 决定 Message address 是否为 64 位.
+* BIT8: Per-Vector Masking Capable 决定是否有 Mask Bits 和 Pending Bits 域.
+
+![](/assets/PDB/HK/TH001828.png)
+
+由于 Message Control 的配置不同，导致 MSI Capability Register 的布局不同，一共四种布局，但无论那种布局基本包含如下要素:
+
+* Capability ID: MSI 为 PCI_CAP_ID_MSI
+* Next Pointer: Next Capability Register 地址
+* Message Control: 用来打开或关闭 MSI 功能
+* Message Address & Data: 用来指定 MSI 中断对应 Message Address/Message Data
+* Vector Masking: 用于屏蔽指定 MSI 中断
+* Pending Status: 反应中断 Pending 状态
+
+![](/assets/PDB/HK/TH001831.png)
  
+MSI Message Address Register 用来指定 MSI 中断对应的 Message Address，其值由操作系统进行设置。Bit\[31:20] 域必须为 0xFEE, 该值会让 MSI Write TLP 写入到 "4G-18M" 处，对该区域的访问被认为是中断 Message，另外该区域是一段 MMIO 区域. BIT\[19:12] 域为 Destination ID，用于指明 Interrupt Message 传递给哪个 CPU 的 LAPIC。BIT3 RH(Redirection hit indication) 置位时以最低优先级向指定 CPU 发送中断; BIT4 DM(Destination mode), 用于指明目 Destination ID 对应的是物理 LAPIC 还是逻辑 LAPIC, 如果置位那么 Destination ID 指向的 LAPIC 是一个逻辑 LAPIC, 反之 Destination ID 指向的 LAPIC 是一个物理 LAPIC.
+
+![](/assets/PDB/HK/TH001832.png)
+
+MSI Message Data Register 用来指定 MSI 中断对应的 Message Data，其值由操作系统进行设置。Bit\[7:0] 域指明了 MSI 中断对应的向量号; Bit\[10:8] 域指明了中断分发模式，MSI 支持 6 中中断，包括了 Fixed、SMI、NMI 以及 INTR 等; Bit15 用于指明中断的触发方式，该位置位表示中断为电平触发，清零则表示中断为边缘触发.
+
+![](/assets/PDB/HK/TH001833.png)
+
+MSI Mask Register/MSI Pending Register，在设备支持多 Vector 的场景，MSI Capability Register 会包含这两个寄存器，每个 Vector 对应一个 bit，若无该 Vector bit 为 0. 
+* Mask Bits 由系统软件设置，其某个位置位，那么表示禁止发送对应的 Vector
+* Pending Bits 由设备设置，当某个 Vector 被 Mask，且设备产生一个中断准备生成 MSI 时，Pending Bits 将 Vector 对应位就置位，当 Mask 取消之后，设备就会立即发送该 Vector 对应的 MSI Message，并将对应位清零.
+
+![](/assets/PDB/HK/TH001834.png)
+
+MSI Capability Register 的内容由系统软件填充，在 Linux 中通过在 PCI 驱动中调用 pci_enable_msi() 函数对 MSI Capability Register 的 MSI Message Address 和 MSI Message Data Register 进行设置，具体流程如上图. \_\_irq_domain_alloc_irqs() 函数分配了 MSI 所使用的 Vector，\_\_irq_msi_compose_msg() 函数构建了 MSI 的 Message Address 和 Message Data 内容，\_\_pci_write_msi_msg() 函数将内容写入到 MSI Capability Register 里.
+
+![](/assets/PDB/HK/TH001835.png)
+
+\_\_irq_msi_compose_msg() 函数可以很详细的看出 MSI Message Address 和 Message Data 的构造过程，可以看出 MSI 中断是边缘触发，vector 则是 \_\_irq_domain_alloc_irqs() 函数获得的.
+
+![](/assets/PDB/HK/TH001836.png)
+
+\_\_pci_write_msi_msg() 函数描述了内核将 MSI Message Address/Data 数据写入到 PCI 设备的配置空间的技术细节，对应 MSI 中断使用的 328-346 分支，可以看出写入逻辑还是根据 MSI Message Control 寄存器的值进行写入.
+
+![](/assets/PDB/HK/TH001837.png)
+
+系统软件在注册好设备的 MSI 中断之后，那么 MSI Capability Register 已经被设置好，那么接下设备如果要触发一个 MSI 中断，那么 PCI 设备会发起一次 Memory Write TLP，在 TLP 中，TLP MSI Message Address 的内容来自 MSI Capability Message Address，TLP MSI Message Data 的内容来自 MSI Capability Message Data. TLP 直接发送到指定的物理地址，那么系统会将 MSI 转换成 Vector 直接送到指定 CPU 的 LAPIC. 至此 MSI 中断编程分析完毕.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------
+
+##### <span id="E72">Broiler 设备使用 MSI 中断</span>
+
+![](/assets/PDB/HK/TH001838.png)
+
+根据之前的分析，Broiler 中要模拟 MSI 中断需要支持两个事情，首先是模拟的 PCI 设备的 PCI Configuration Space 中支持 MSI Capability，其实是在系统软件配置好 MSI Capability Register 之后，将 MSI Message Address 和 MSI Message Data 构造成一个 Memory Write TLP 就可以发送一个 MSI 中断。由于是模拟的 PCI 设备，因此不会真正的产生 Memory Write TLP，这个时候需要 KVM 模拟 TLP 传输到指定 CPU LAPIC 的过程. 本节通过 Broiler 模拟一个 PCI 设备，并结合 Guest OS 内部的 PCI 驱动来触发一个 MSI 中断，以此讲解 MSI 模拟的整个过程(源码位置是: foodstuff/Broiler-pci-msi-base.c)
+
+![](/assets/PDB/HK/TH001839.png)
+
+案例代码虽然有点长，但其划分做以下几个部分: 首先就是模拟 PCI 设备的代码，其次是 PCI 包含了一个 IO-BAR，IO-BAR 中包含了一个异步 IO DoorBall，DoorBall 在 Guest OS 执行写操作的时候会唤醒线程 doorball_thdhands，线程用于模拟设备向虚拟机发送 MSI 中断，那么接下来对 MSI 中断模拟部分进行讲解:
+
+![](/assets/PDB/HK/TH001840.png)
+
+PCI 设备要支持 MSI 中断，首先要将 PCI Configuration Space 的 Status 寄存器的 Capabilities List 标志位置位，因此在函数 178 行向模拟的 Status 寄存器中添加了 PCI_STATUS_CAP_LIST. 接下来是让 PCI Configuration Space 的 Capability Pointer 指向 MSI Capability Register, 对应函数 179 行. 
+
+![](/assets/PDB/HK/TH001841.png)
+
+Broiler PCI 设备中使用 struct msi_cap 数据结构描述 MSI Capability Register, 可以看到其兼容不同类型的 MSI 结构，因此回到 Broiler_pci_init() 函数 179 行，其将 Capability Pointer 直接指向了 Broiler PCI 设备的 msi 成员.
+
+![](/assets/PDB/HK/TH001842.png)
+
+在系统软件配置 MSI Message Address/Data 之前模拟 PCI 设备需要对 MSI Capability Register 的 Message Control 控制器进行配置，以此让系统软件知道设备支持的 MSI 类型，在上图中将 MSI Capability ID 设置为 PCI_CAP_ID_MSI，并将 MSI Next Pointer Regsiter 设置为 0，并且将 MSI Message Control 控制器设置为 0，那么告诉系统软件该 PCI 设备只支持一个 32bit Address 的 MSI 中断，不带 Mask/Pending 字段, 最后将 MSI Message Address/Data Register 设置为 0xFF.
+
+![](/assets/PDB/HK/TH001843.png)
+
+通过上面的配置，PCI 设备的 MSI Capability Register 的布局如上图. 那么接下来就是 Guest OS 内部的 PCI 驱动在注册阶段，调用 pci_enable_msi() 函数对 MSI Message Address/Data 寄存器进行初始化.
+
+![](/assets/PDB/HK/TH001844.png)
+
+当系统软件配置完 MSI Message Address/Data 寄存器之后，那么接下来就是设备模拟 MSI 中断，之前分析过 MSI 中断的本质是使用 MSI Message Address/Data 寄存器构造一个 Memory Write TLP，但由于是模拟设备不可能真实的发送 TLP，因此这里需要借助 KVM 进行 TLP 的投递过程，因此函数 doorball_msi_raise() 用于模拟 MSI 中断的发送过程，其通过将 MSI Message Address/Data 寄存器的值构造一个 struct kvm_msi 数据结构，然后通过 irq_signal_msi() 函数将其传递给 KVM 进行模拟. 接下来看看 Guest OS 内部 PCI 驱动注册和触发 MSI 中断的过程, BiscuitOS 已经支持该驱动程序的部署，其部署逻辑如下:
+
+{% highlight bash %}
+# 切换到 BiscuitOS 目录
+cd BiscuitOS
+make linux-5.10-x86_64_defconfig
+make menuconfig
+
+  [*] Package --->
+      [*] PCI: Peripheral Component Interconnect --->
+          [*] Broiler PCI MSI Interrupt
+
+# 保存配置并使配置生效
+make
+
+# 进入 Broiler 目录
+cd output/linux-5.10-x86_64/package/Broiler-pci-msi-interrupt-default/
+# 下载源码
+make download
+# 编译并运行源码
+make
+make install
+make pack
+# Broiler Rootfs 打包
+cd output/linux-5.10-x86_64/package/BiscuitOS-Broiler-default/
+make build
+{% endhighlight %}
+
+![](/assets/PDB/HK/TH001747.png)
+![](/assets/PDB/HK/TH001846.png)
+![](/assets/PDB/HK/TH001847.png)
+![](/assets/PDB/HK/TH001845.png)
+
+> [Broiler-pci-msi-interrupt-default Gitee @link](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/PCIe/Broiler-pci-msi-interrupt)
+
+抛开基础的 PCI 设备注册过程，重点查看 MSI 中断注册和触发过程，驱动在 75 行调用 pci_enable_msi() 函数注册 MSI 中断，该函数会配置 MSI Message Address/Data 寄存器，接着驱动在 80 行调用 request_irq() 函数为 MSI 对应的 Vector 注册中断处理函数，此时触发方式设置为上升沿触发，中断处理函数为 Broiler_msi_handler(), 中断处理函数里仅仅打印中断号，最后驱动在 93 行对设备的 Doorball 寄存器进行写操作，该操作会触发 MSI 中断. 接下来在 BiscuitOS 实践该案例:
+
+![](/assets/PDB/HK/TH001848.png)
+
+Broiler 启动 BiscuitOS 系统之后，加载 Broiler-pci-msi-interrupt-default.ko 驱动，可以看到驱动加载成功，等待 5s 之后中断处理程序收到设备发来的中断，此时可以看到 IRQ 为 26，IRQ26 并不在 vPIC/vIOAPIC IRQ 范围内. 接着查看 IO 空间，可以看到端口 0x6600-0x6700 分配给了 Broiler-PCIe-MSI-IO 设备使用。最后查看 "/proc/interrupts" 节点获得中断映射关系，可以看到 Broiler-PCI-MSI 使用的是 PCI MSI 中断.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------
+
+##### <span id="E73">MSI 中断注入</span>
+
+![](/assets/PDB/HK/TH001849.png)
+
+MSI 中断注入流程图如上图，Broiler 通过 ioctl() 函数向 KVM 传入 KVM_SIGNAL_MSI 命令，从 MSI Message Address/Data 中解析出中断相关的信息，以此进行 MSI 中断注入，此时 Broiler 和 KVM 是异步运行的，且 Guest OS 在运行并没有 VM-EXIT. MSI 使用 Posted Interrupt 方式注入中断，该方式并不会导致 VM-EXIT, Guest OS 在不退出的情况下, KVM 将解析到的中断写入到 Posted Interrupt descriptor 中，且预定一个特殊中断号，然后给 Guest OS 发送该中断，Guest OS 收到这个特殊中断之后模拟读 LAPIC page，进而从 Posted Interrupt Descriptor 中取出中断号并更新到 LAPIC Page 中，接着虚拟机读 Virtual-access Page 获得中断号，接下来虚拟机处理中断，最后写 EOI。
+
+![](/assets/PDB/HK/TH001850.png)
+
+kvm_set_msi_irq() 函数的作用是将 MSI Message Address/Data 的值进行解析，并获得目的 LAPIC ID、Vector、Destination Mode、Trigger Mode 等信息.
+
+![](/assets/PDB/HK/TH001851.png)
+
+\_\_apic_accept_irq() 函数的作用是进行中断投递，在 MSI 中断中支持 Posted Interrupt 方式投递，也支持向 VM_ENTRY_INTR_INFO_FIELD 域注入中断。KVM 优先采用 Posted Interrupt 方式。这里通过在 1094 行调用 vmx_deliver_posted_interrupt() 函数实现，该函数是 Posted Interrupt 实现的核心，Posted Interrupt 是 Intel 提供的一种硬件机制，不需要 Guest OS VM-EXIT 就能把虚拟中断注入到 Guest OS，其实现原理是将需要注入的中断写入到 Posted Interrupt Descriptor, 并向系统预定义了一个中断号，然后给 Guest OS 发送预定义的中断，Guest OS 收到预定义的中断，那么触发对 virtual-apic page 的硬件模拟，其从 Posted Interrupt descriptor 取出虚拟中断更新到 virtual-apic page 中，Guest OS 读取 virtual-access page 获得需要注入的中断，接着虚拟机处理中断，处理完毕之后写 EOI，并触发硬件 EOI 虚拟化，这样就把 virtual-apic page 和 posted interrupt descripotr 数据中清除. 至此 MSI 中断注入完毕.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 
+-------------------------------------------
 
+<span id="E8"></span>
 
+![](/assets/PDB/BiscuitOS/kernel/IND00000E.jpg)
 
+#### MSIX 中断虚拟化
 
+![](/assets/PDB/HK/TH001825.png)
 
+通过前面介绍可以知道 PCI/PCIe 设备中可以使用 MSI 中断机制替代 **PCI Interrupt Routing** 机制，使每个 PCI Function 都可以使用自己的中断，但 MSI 中断还是有一些缺点:
 
+* MSI 机制只允许每个 PCI Function 最多拥有 32 个中断向量，对某些应用完全不够
+* MSI 机制下每个 PCI Function 的所有中断共用一个 Message Address，无法将其分配到不同 CPU 以实现中断服务在 CPU 之间的负载均衡.
+* MSI 机制下每个 PCI Function 的所有中断向量都是连续的，那么同样的中断优先级无法区分中断优先级的需求.
 
+为了解决上面的问题，PCI 规范提出了更为先进的中断机制: **PCI Message-Signalled Interrupt extended** 机制，简称 MSIX 或 MSI-X.
 
+![](/assets/PDB/HK/TH001852.png)
 
+在 MSI 机制中，PCI 设备的 MSI 中断无需 PIC/IOAPIC 转发直接通过 Memory Write Transaction 向 CPU 发中断，MSI 机制最多使用 32 个中断向量，而 MSI-X 可以使用更多的中断向量。引入 MSIX 中断机制的主要原因是不需要中断控制器分配给 PCI 设备连续的中断号.
 
+![](/assets/PDB/HK/TH001827.png)
 
+根据 PCI 规范的定义 MSIX 中断请求发送时，PCI/PCIe 设备会实际产生一个 Memory Write Transaction, 对应的数据封包为 Memory Write 类型的 Transaction Layer Packet(Posted TLP), 其格式如下. 其中目标 Memory Address 称为 **Message Address**, 要写入该内存地址的数据称为 **Message Data**, 这两个字段来自 MSI Capability Structure 中的设定，具体数值由系统软件在 Enable MSIX 过程中必须预设好. 当 PCI/PCIe 设备向 Message Address 写入 Message Data 之后，CPU 就收到 MSIX 中断.
 
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
+-----------------------------
 
+##### <span id="E81">MSIX 中断编程</span>
 
+![](/assets/PDB/HK/TH001853.png)
 
+PCI/PCIe 设备通过在其 PCI Configuration Space 中实现 MSI Capability Register 来向系统软件表明是否支持 MSIX. MSIX Capability Registers 属于传统的 Basic PCI Capability Structure, 其可以通过 PCI Configuration Space 的 Capability Pointer(0x34) 进行遍历查找获得，MSIX Capability ID 为 0x11, 其组成包括:
 
+* 标准的 Basic PCI Capability Header (Capability ID + Next Capability)
+* Capability-specific Register (Message Control)
+* Table-Offset Register
+* PBA-Offset Register
+
+![](/assets/PDB/HK/TH001854.png)
+
+Message Control 寄存器用于描述 MSIX Capability Register 的布局结构，其 Bit 含义如下:
+
+* BIT15: MSIX Enable 标志位，MSIX 中断机制的使能位，复位为 0，表示不能使用 MSIX 中断，该位置位且 PCI Configuration Space Status Register 的 MSX Enable 为 0 时，当前设备使用 MSIX 中断机制，此时 INTx 和 MSX 中断机制被禁用. 当 PCIe 设备的 MSI Enable 和 MSIX Enable 位清零，将使用 INTx 中断机制.
+* BIT14: Function Mask 中断请求全局 Mask 位，复位值为 0.如果该位置位，该设备所有中断请求将被屏蔽; 如果该位为 0，则由 Per Vector Mask 位决定是否屏蔽相应的中断请求。Per Vector Mask 位在 MSIX Table 中定义.
+* BIT10-0: Table Sie，MSIX 中断机制使用 MSIX Table 存放 Message Address 字段和 Message Data 字段，该字段用来存放 MSIX Table 的大小.
+
+![](/assets/PDB/HK/TH001855.png)
+
+MSIX Capability Register 还包括了 Table-Offset/PBA-Offset Register. 与 MSI 不同的是 MSI 的 Message Address/Data/Mask/Pending Register 寄存器位于 PCI Configuration Space 里，而 MSIX 在 BAR 空间存储 Message Address/Data 等寄存器，因此在 MSIX Capability Register 中使用 Table-Offset/PBD-Offset Register 描述其在 BAR 的布局。Table Offset 用于指明 MSIX Table 在 BAR 的中偏移，Table BIR 字段则描述 MSIX Table 所在的 BAR; 同理 PDB Offset 用于描述 PBA(Pending Bit Array) 在 BAR 中的偏移，PBA BIR 字段则表示 PBA 所在的 BAR.
+
+![](/assets/PDB/HK/TH001856.png)
+
+MSIX Table 由 MSI Table Entry 构成，每个 MSI Table Entry 包含四个寄存器，分别为 MSIX Vector Control Register、MSIX Message Data Register、MSIX Message Upper Address Register 以及 MSX Message Address Register.
+
+![](/assets/PDB/HK/TH001858.png)
  
+MSIX Table Message Address Register 用来指定 MSIX 中断对应的 Message Address，其值由操作系统进行设置。Bit\[31:20] 域必须为 0xFEE, 该值会让 Memory Write TLP 写入到 "4G-18M" 处，对该区域的访问被认为是中断 Message，另外该区域是一段 MMIO 区域. BIT\[19:12] 域为 Destination ID，用于指明 Interrupt Message 传递给哪个 CPU 的 LAPIC。BIT3 RH(Redirection hit indication) 置位时以最低优先级向指定 CPU 发送中断; BIT4 DM(Destination mode), 用于指明目 Destination ID 对应的是物理 LAPIC 还是逻辑 LAPIC, 如果置位那么 Destination ID 指向的 LAPIC 是一个逻辑 LAPIC, 反之 Destination ID 指向的 LAPIC 是一个物理 LAPIC.
+
+![](/assets/PDB/HK/TH001859.png)
+
+MSIX Table Message Data Register 用来指定 MSIX 中断对应的 Message Data，其值由操作系统进行设置。Bit\[7:0] 域指明了 MSIX 中断对应的向量号; Bit\[10:8] 域指明了中断分发模式，MSIX 支持 6 中中断，包括了 Fixed、SMI、NMI 以及 INTR 等; Bit15 用于指明中断的触发方式，该位置位表示中断为电平触发，清零则表示中断为边缘触发.
+
+![](/assets/PDB/HK/TH001857.png)
+
+MSIX Table Vector Control Register 只有 BIT0 Per Vector Mask 有效，其他位保留。当该位置位时，PCIe 设备不能使用该 Entry 提交中断请求; 该位清零时可以提交中断请求. 该位在复位时为 0. Per Vector Mask 位使用方法与 MSI 机制的 Mask 位类似.
+
+![](/assets/PDB/HK/TH001860.png)
+
+在 MSIX Pending Table 中，一个 Entry 由 64 位组成，其中每一位与 MSIX Table 中的一个 Entry 对应，即 Pending Table 中每个 Entry 与 MSIX Table 的 64 个 Entry 对应. 与 MSI 机制类似，Pending 位需要与 Per Vector Mask 位配置使用. 当 Per Vector Mask 位置位，PCIe 设备不能立即发送 MSIX 中断请求，而是将对应的 Pending 位置位; 当系统软件将 Per Vector Mask 位清零，PCIe 设备需要提交 MSIX 中断请求，同时将 Pending 位清零.
+
+![](/assets/PDB/HK/TH001861.png)
+
+MSIX Table Entry 的内容由系统软件填充，在 Linux 中通过在 PCI 驱动中调用 pci_enable_msix_range() 函数对 MSIX Table Entry 的 MSI Message Address 和 MSI Message Data Register 进行设置，具体流程如上图. \_\_irq_domain_alloc_irqs() 函数分配了 MSI 所使用的 Vector，\_\_irq_msi_compose_msg() 函数构建了 MSI 的 Message Address 和 Message Data 内容，pci_msi_domain_write_msg() 函数将内容写入到 MSIX Table Entry 里.
+
+![](/assets/PDB/HK/TH001835.png)
+
+\_\_irq_msi_compose_msg() 函数可以很详细的看出 MSI Message Address 和 Message Data 的构造过程，可以看出 MSIX 中断是边缘触发，vector 则是 \_\_irq_domain_alloc_irqs() 函数获得的.
+
+![](/assets/PDB/HK/TH001836.png)
+
+pci_msi_domain_write_msg 函数描述了内核将 MSIX Message Address/Data 数据写入到 MSIX Table Entry 的技术细节，对应 MSIX 中断使用的 318-326 分支，可以看出写入逻辑是写入到 BAR 对应的 MMIO 地址.
+
+![](/assets/PDB/HK/TH001862.png)
+
+系统软件在注册好设备的 MSIX 中断之后，那么 MSIX Table Entry 已经被设置好，那么接下设备如果要触发一个 MSIX 中断，那么 PCIe 设备会发起一次 Memory Write TLP，在 TLP 中，TLP MSI Message Address 的内容来自 MSI Table Entry Message Address，TLP MSI Message Data 的内容来自 MSI Table Entry Message Data. TLP 直接发送到指定的物理地址，那么系统会将 MSIX 转换成 Vector 直接送到指定 CPU 的 LAPIC. 至此 MSIX 中断编程分析完毕.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------
+
+##### <span id="E82">Broiler 设备使用 MSIX 中断</span>
+
+![](/assets/PDB/HK/TH001838.png)
+
+根据之前的分析，Broiler 中要模拟 MSIX 中断需要支持两个事情，首先是模拟的 PCI 设备的 PCI Configuration Space 中支持 MSI Capability，然后配置到 MSIX Capability Register. 其次由于 MSIX Table 和 Pending Table 位于 BAR 空间，因此需要模拟相应的 BAR 空间. 在系统软件配置好 MSIX Table Entry 之后，将 MSI Message Address 和 MSI Message Data 构造成一个 Memory Write TLP 就可以发送一个 MSIX 中断。由于是模拟的 PCI 设备，因此不会真正的产生 Memory Write TLP，这个时候需要 KVM 模拟 TLP 传输到指定 CPU LAPIC 的过程. 本节通过 Broiler 模拟一个 PCI 设备，并结合 Guest OS 内部的 PCI 驱动来触发一个 MSIX 中断，以此讲解 MSIX 模拟的整个过程(源码位置是: foodstuff/Broiler-pci-msix-base.c)
+
+![](/assets/PDB/HK/TH001863.png)
+
+案例代码虽然有点长，但其划分做以下几个部分: 首先就是模拟 PCI 设备的代码，其次是 PCI 包含了一个 IO-BAR，IO-BAR 中包含了一个异步 IO DoorBall，DoorBall 在 Guest OS 执行写操作的时候会唤醒线程 doorball_thdhands，线程用于模拟设备向虚拟机发送 MSIX 中断，那么接下来对 MSIX 中断模拟部分进行讲解:
+
+![](/assets/PDB/HK/TH001864.png)
+
+PCI 设备要支持 MSIX 中断，首先要将 PCI Configuration Space 的 Status 寄存器的 Capabilities List 标志位置位，因此在函数 222 行向模拟的 Status 寄存器中添加了 PCI_STATUS_CAP_LIST. 接下来是让 PCI Configuration Space 的 Capability Pointer 指向 MSIX Capability Register, 对应函数 223 行. 接下来需要为 PCI 设备新增一块 MM-BAR，用于存储 MSIX Table 和 Pending Table. 
+
+![](/assets/PDB/HK/TH001865.png)
+
+Broiler PCI 设备中使用 struct msix_cap 数据结构描述 MSIX Capability Register, 另外使用 struct msix_table 描述 MSIX Table. 接下来需要将 PCI Capability Pointer 指向 MSIX Capability Register，因此回到 Broiler_pci_init() 函数 223 行，其将 Capability Pointer 直接指向了 Broiler PCI 设备的 msix 成员.
+
+![](/assets/PDB/HK/TH001866.png)
+
+PCI 设备在 doorball_msix_init() 函数中对 MSIX Capability Register 进行配置，从代码可以看出设备支持一个 MSIX 中断，然后 MSIX Table 和 Pending Table 都位于 BAR1 中，其中 MSIX Table 位于 MM-BAR1 的起始处，而 MSIX Pending Table 位于 BAR1 偏移 (PCI_IO_SIZE/2) 处. PCI 设备在 Broiler_pci_msix_bar_callback() 函数用于模拟 MSIX Table 的读写，MSIX Table 最终会同步到 msix_table[] 数组. 
+
+![](/assets/PDB/HK/TH001867.png)
+
+当系统软件配置完 MSIX Table Message Address/Data 寄存器之后，那么接下来就是设备模拟 MSIX 中断，之前分析过 MSIX 中断的本质是使用 MSI Message Address/Data 寄存器构造一个 Memory Write TLP，但由于是模拟设备不可能真实的发送 TLP，因此这里需要借助 KVM 进行 TLP 的投递过程，因此函数 doorball_msi_raise() 用于模拟 MSIX 中断的发送过程，其通过将 MSIX Table Message Address/Data 寄存器的值构造一个 struct kvm_msi 数据结构，然后通过 irq_signal_msi() 函数将其传递给 KVM 进行模拟. 接下来看看 Guest OS 内部 PCI 驱动注册和触发 MSIX 中断的过程, BiscuitOS 已经支持该驱动程序的部署，其部署逻辑如下:
+
+{% highlight bash %}
+# 切换到 BiscuitOS 目录
+cd BiscuitOS
+make linux-5.10-x86_64_defconfig
+make menuconfig
+
+  [*] Package --->
+      [*] PCI: Peripheral Component Interconnect --->
+          [*] Broiler PCI MSIX Interrupt
+
+# 保存配置并使配置生效
+make
+
+# 进入 Broiler 目录
+cd output/linux-5.10-x86_64/package/Broiler-pci-msix-interrupt-default/
+# 下载源码
+make download
+# 编译并运行源码
+make
+make install
+make pack
+# Broiler Rootfs 打包
+cd output/linux-5.10-x86_64/package/BiscuitOS-Broiler-default/
+make build
+{% endhighlight %}
+
+![](/assets/PDB/HK/TH001747.png)
+![](/assets/PDB/HK/TH001846.png)
+![](/assets/PDB/HK/TH001868.png)
+![](/assets/PDB/HK/TH001869.png)
+
+> [Broiler-pci-msix-interrupt-default Gitee @link](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/PCIe/Broiler-pci-msix-interrupt)
+
+抛开基础的 PCI 设备注册过程，重点查看 MSI 中断注册和触发过程，驱动在 78 行初始化了数据结构 struct msix_entry, 该数据结构用于描述需要获得的中断信息，可以看出 79-80 行从 MSIX Table Entry 0 中获得一个中断，然后在 82 行调用 pci_enable_msix_range() 函数根据 struct msix_entry 初始化一个 MSIX 中断，初始化完毕之后中断 vector 信息存储在 msix.vector 里，最后在 88 行调用 request_irq() 行将 msix.vector 对应的中断进行注册，并且使用上升沿触发，中断处理函数为 Broiler_msix_handle(). 程序 37-38 行为中断处理函数，其仅仅打印了中断号。程序最后在 102 行向 Doorball 寄存器写操作，以此触发 PCI 设备发送 MSIX 中断. 接下来在 BiscuitOS 实践该案例: 
+
+![](/assets/PDB/HK/TH001870.png)
+
+Broiler 启动 BiscuitOS 系统之后，加载 Broiler-pci-msix-interrupt-default.ko 驱动，可以看到驱动加载成功，等待 5s 之后中断处理程序收到设备发来的中断，此时可以看到 IRQ 为 26，IRQ26 并不在 vPIC/vIOAPIC IRQ 范围内. 接着查看 IO 空间，可以看到端口 0x6300-0x6400 分配给了 Broiler-PCIe-MSIX-IO 设备使用。最后查看 "/proc/interrupts" 节点获得中断映射关系，可以看到 Broiler-PCI-MSIX 使用的是 PCI MSI 中断.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+-----------------------------
+
+##### <span id="E83">MSIX 中断注入</span>
+
+![](/assets/PDB/HK/TH001849.png)
+
+MSIX 中断注入流程图如上图，Broiler 通过 ioctl() 函数向 KVM 传入 KVM_SIGNAL_MSI 命令，从 MSI Message Address/Data 中解析出中断相关的信息，以此进行 MSIX 中断注入，此时 Broiler 和 KVM 是异步运行的，且 Guest OS 在运行并没有 VM-EXIT. MSIX 使用 Posted Interrupt 方式注入中断，该方式并不会导致 VM-EXIT, Guest OS 在不退出的情况下, KVM 将解析到的中断写入到 Posted Interrupt descriptor 中，且预定一个特殊中断号，然后给 Guest OS 发送该中断，Guest OS 收到这个特殊中断之后模拟读 LAPIC page，进而从 Posted Interrupt Descriptor 中取出中断号并更新到 LAPIC Page 中，接着虚拟机读 Virtual-access Page 获得中断号，接下来虚拟机处理中断，最后写 EOI。
+
+![](/assets/PDB/HK/TH001850.png)
+
+kvm_set_msi_irq() 函数的作用是将 MSI Message Address/Data 的值进行解析，并获得目的 LAPIC ID、Vector、Destination Mode、Trigger Mode 等信息.
+
+![](/assets/PDB/HK/TH001851.png)
+
+\_\_apic_accept_irq() 函数的作用是进行中断投递，在 MSI 中断中支持 Posted Interrupt 方式投递，也支持向 VM_ENTRY_INTR_INFO_FIELD 域注入中断。KVM 优先采用 Posted Interrupt 方式。这里通过在 1094 行调用 vmx_deliver_posted_interrupt() 函数实现，该函数是 Posted Interrupt 实现的核心，Posted Interrupt 是 Intel 提供的一种硬件机制，不需要 Guest OS VM-EXIT 就能把虚拟中断注入到 Guest OS，其实现原理是将需要注入的中断写入到 Posted Interrupt Descriptor, 并向系统预定义了一个中断号，然后给 Guest OS 发送预定义的中断，Guest OS 收到预定义的中断，那么触发对 virtual-apic page 的硬件模拟，其从 Posted Interrupt descriptor 取出虚拟中断更新到 virtual-apic page 中，Guest OS 读取 virtual-access page 获得需要注入的中断，接着虚拟机处理中断，处理完毕之后写 EOI，并触发硬件 EOI 虚拟化，这样就把 virtual-apic page 和 posted interrupt descripotr 数据中清除. 至此 MSIX 中断注入完毕.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 
+-------------------------------------------
 
+<span id="EA2"></span>
 
+![](/assets/PDB/BiscuitOS/kernel/IND00000X.jpg)
 
+##### Broiler PCI 设备使用 INTX 中断
 
+![](/assets/PDB/HK/TH001838.png)
 
+根据之前的分析，Broiler 中要模拟 MSIX 中断需要支持两个事情，首先是模拟的 PCI 设备的 PCI Configuration Space 中支持 MSI Capability，然后配置到 MSIX Capability Register. 其次由于 MSIX Table 和 Pending Table 位于 BAR 空间，因此需要模拟相应的 BAR 空间. 在系统软件配置好 MSIX Table Entry 之后，将 MSI Message Address 和 MSI Message Data 构造成一个 Memory Write TLP 就可以发送一个 MSIX 中断。由于是模拟的 PCI 设备，因此不会真正的产生 Memory Write TLP，这个时候需要 KVM 模拟 TLP 传输到指定 CPU LAPIC 的过程. 本节通过 Broiler 模拟一个 PCI 设备，并结合 Guest OS 内部的 PCI 驱动来触发一个 MSIX 中断，以此讲解 MSIX 模拟的整个过程(源码位置是: foodstuff/Broiler-pci-msix-base.c)
 
+![](/assets/PDB/HK/TH001863.png)
 
+案例代码虽然有点长，但其划分做以下几个部分: 首先就是模拟 PCI 设备的代码，其次是 PCI 包含了一个 IO-BAR，IO-BAR 中包含了一个异步 IO DoorBall，DoorBall 在 Guest OS 执行写操作的时候会唤醒线程 doorball_thdhands，线程用于模拟设备向虚拟机发送 MSIX 中断，那么接下来对 MSIX 中断模拟部分进行讲解:
 
+![](/assets/PDB/HK/TH001864.png)
+
+PCI 设备要支持 MSIX 中断，首先要将 PCI Configuration Space 的 Status 寄存器的 Capabilities List 标志位置位，因此在函数 222 行向模拟的 Status 寄存器中添加了 PCI_STATUS_CAP_LIST. 接下来是让 PCI Configuration Space 的 Capability Pointer 指向 MSIX Capability Register, 对应函数 223 行. 接下来需要为 PCI 设备新增一块 MM-BAR，用于存储 MSIX Table 和 Pending Table. 
+
+![](/assets/PDB/HK/TH001865.png)
+
+Broiler PCI 设备中使用 struct msix_cap 数据结构描述 MSIX Capability Register, 另外使用 struct msix_table 描述 MSIX Table. 接下来需要将 PCI Capability Pointer 指向 MSIX Capability Register，因此回到 Broiler_pci_init() 函数 223 行，其将 Capability Pointer 直接指向了 Broiler PCI 设备的 msix 成员.
+
+![](/assets/PDB/HK/TH001866.png)
+
+PCI 设备在 doorball_msix_init() 函数中对 MSIX Capability Register 进行配置，从代码可以看出设备支持一个 MSIX 中断，然后 MSIX Table 和 Pending Table 都位于 BAR1 中，其中 MSIX Table 位于 MM-BAR1 的起始处，而 MSIX Pending Table 位于 BAR1 偏移 (PCI_IO_SIZE/2) 处. PCI 设备在 Broiler_pci_msix_bar_callback() 函数用于模拟 MSIX Table 的读写，MSIX Table 最终会同步到 msix_table[] 数组. 
+
+![](/assets/PDB/HK/TH001867.png)
+
+当系统软件配置完 MSIX Table Message Address/Data 寄存器之后，那么接下来就是设备模拟 MSIX 中断，之前分析过 MSIX 中断的本质是使用 MSI Message Address/Data 寄存器构造一个 Memory Write TLP，但由于是模拟设备不可能真实的发送 TLP，因此这里需要借助 KVM 进行 TLP 的投递过程，因此函数 doorball_msi_raise() 用于模拟 MSIX 中断的发送过程，其通过将 MSIX Table Message Address/Data 寄存器的值构造一个 struct kvm_msi 数据结构，然后通过 irq_signal_msi() 函数将其传递给 KVM 进行模拟. 接下来看看 Guest OS 内部 PCI 驱动注册和触发 MSIX 中断的过程, BiscuitOS 已经支持该驱动程序的部署，其部署逻辑如下:
+
+{% highlight bash %}
+# 切换到 BiscuitOS 目录
+cd BiscuitOS
+make linux-5.10-x86_64_defconfig
+make menuconfig
+
+  [*] Package --->
+      [*] PCI: Peripheral Component Interconnect --->
+          [*] Broiler PCI MSIX Interrupt
+
+# 保存配置并使配置生效
+make
+
+# 进入 Broiler 目录
+cd output/linux-5.10-x86_64/package/Broiler-pci-msix-interrupt-default/
+# 下载源码
+make download
+# 编译并运行源码
+make
+make install
+make pack
+# Broiler Rootfs 打包
+cd output/linux-5.10-x86_64/package/BiscuitOS-Broiler-default/
+make build
+{% endhighlight %}
+
+![](/assets/PDB/HK/TH001747.png)
+![](/assets/PDB/HK/TH001846.png)
+![](/assets/PDB/HK/TH001868.png)
+![](/assets/PDB/HK/TH001869.png)
+
+> [Broiler-pci-msix-interrupt-default Gitee @link](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/PCIe/Broiler-pci-msix-interrupt)
+
+抛开基础的 PCI 设备注册过程，重点查看 MSI 中断注册和触发过程，驱动在 78 行初始化了数据结构 struct msix_entry, 该数据结构用于描述需要获得的中断信息，可以看出 79-80 行从 MSIX Table Entry 0 中获得一个中断，然后在 82 行调用 pci_enable_msix_range() 函数根据 struct msix_entry 初始化一个 MSIX 中断，初始化完毕之后中断 vector 信息存储在 msix.vector 里，最后在 88 行调用 request_irq() 行将 msix.vector 对应的中断进行注册，并且使用上升沿触发，中断处理函数为 Broiler_msix_handle(). 程序 37-38 行为中断处理函数，其仅仅打印了中断号。程序最后在 102 行向 Doorball 寄存器写操作，以此触发 PCI 设备发送 MSIX 中断. 接下来在 BiscuitOS 实践该案例: 
+
+![](/assets/PDB/HK/TH001870.png)
 
