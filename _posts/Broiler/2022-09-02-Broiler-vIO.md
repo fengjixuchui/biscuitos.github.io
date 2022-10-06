@@ -73,6 +73,10 @@ tags:
 >   - [In-Broiler 设备使用异步 MMIO](#E3)
 >
 >   - [PCI 设备使用异步 MMIO](#E4)
+>
+> - X86 PIO/MMIO 虚拟化进阶研究
+>
+>   - [KVM 与 Broiler 之间 PIO/MMIO 数据桥梁](#P1)
 
 ######  🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂 捐赠一下吧 🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂
 
@@ -1388,3 +1392,88 @@ Broiler 启动 BiscuitOS 系统之后，加载驱动 Broiler-Asynchronous-mmio-P
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 -------------------------------------------
+
+#### X86 PIO/MMIO 虚拟化进阶研究 
+
+-------------------------------------------
+
+<span id="P1"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000F.jpg)
+
+##### KVM 与 Broiler 之间 PIO/MMIO 数据桥梁
+
+![](/assets/PDB/HK/TH001872.png)
+
+在虚拟机访问 PIO 或者 MMIO 导致 VM-EXIT 时，KVM 发现 PIO/MMIO 对应的设备位于用户空间的 Broiler，那么需要将 PIO/MMIO 需要模拟的数据传递给 Broiler，然后 Broiler 接受到需要模拟的 PIO/MMIO 请求之后，Broiler 找打对应的模拟设备进行 PIO/MMIO 读写模拟。待 Broiler 模拟完毕之后需要再将模拟好的数据传递给 KVM，最后虚拟机恢复之前 KVM 将模拟的结果填充到 VMCS Host 区域指定的寄存器中，虚拟机恢复运行之后就可以获得所需的值. 以上便是 In-Broiler 设备模拟的流程，那么 KVM 和 Broiler 之间如何传递 PIO/MMIO 请求和应答?
+
+![](/assets/PDB/HK/TH001982.png)
+
+Broiler 在创建虚拟机时，KVM 先在内核空间申请了一段内存空间，然后 Broiler 通过 mmap 映射到这段存储空间，那么 KVM 和 Broiler 可以共享这块内存。KVM 使用 struct kvm_run 数据结构维护这段内存，并用以实现 KVM 与 Broiler 之间的数据交互。其中包含了两个区域 struct io 和 struct mmio，struct io 承载了 PIO 的模拟而 struct struct mmio 则承载了 MMIO 的模拟. 对于 PIO 的模拟通过 direction 指明模拟 PIO 指令的方向，如果是读 PIO 则是 KVM_EXIT_IO_IN，反之如果写 PIO 则 KVM_EXIT_IO_OUT; size 成员指明了指令读写 PIO 的宽度，可以是 1、2、4、8 字节; port 成员则指明 PIO 指明操作的 IO Port 编号; count 成员则指明指令执行的次数; data_offset 成员则指明了 PIO 模拟数据存储的位置. 对于 MMIO 的模拟 struct mmio 通过 phys_addr 指明了 MMIO 的地址; data 成员指向要模拟的数据; len 成员则表明 MMIO 模拟的长度; is_write 成员则指明了 MMIO 指令是读还是写. 接下来通过 PIO/MMIO 读两个理解进行介绍具体细节:
+
+----------------------------------------------------
+
+###### In-Broiler 设备 PIO 读模拟
+
+![](/assets/PDB/HK/TH001925.png)
+
+> [In-Broiler 设备使用同步 PIO](#B2)
+
+上图是 In-Broiler 设备 PIO 读模拟流程和具体实践链接，开发者可以边看边实践。在 PIO 读模拟流程中，VM-EXIT 退出之后 KVM 捕获到退出原因是 EXIT_REASON_IO_INSTRUCTION，那么调用 handle_io() 函数进行处理，handle_io() 从 VMCS 的 Exit Qualification 寄存器获得需要模拟 PIO 读信息.
+
+![](/assets/PDB/HK/TH001928.png)
+
+KVM 发现 PIO 对应的设备位于 Broiler 中，因此需要将 PIO 模拟的信息通过 struct kvm_run 传递给用户空间的 Broiler. 具体实现位于 emulator_pio_in_out(). 42 行 KVM 将需要模拟的 PIO IO Port 信息存储在 struct kvm_cpu 的 arch.pio.port 里，然后将访问 PIO 方向信息存储在 struct kvm_cpu 的 arch.pio.in 里，同理将长度和指令次数信息存储在 arch.pio.count 和 arch.pio.size 里，存储在 struct kvm_cpu 的 arch.pio 信息供 KVM 和 X86 架构使用; 函数从 52 行开始将 VM-EXIT 原因 KVM_EXIT_IO 存储在 kvm_run 的 exit_reason, 接着对于 PIO 读将 KVM_EXIT_IO_IN 存储在 kvm_run 的 io.direction 中，另外还有需要模拟的 PIO IO Port 和长度、次数信息也存储到了 kvm_run 的 io 里. 最后将 kvm_run 的 io.data_offset 指向了 (KVM_PIO_PAGE_OFFSET * PAGE_SIZE) 处，以此存储 PIO 读模拟的数据.
+
+![](/assets/PDB/HK/TH001929.png)
+
+KVM 将 PIO 模拟的数据存储到 kvm_run.io 之后退出到 Broiler，Broiler 检查到虚拟机退出的原因是 KVM_EXIT_IO, 那么调用 broiler_cpu_emulate_io() 进行 PIO 模拟，可以看出 PIO 模拟所需的信息都来自 kvm_run->io 中.
+
+![](/assets/PDB/HK/TH001983.png)
+
+在 In-Broiler 设备内部，对于 PIO 读模拟在位于 50-62 行，参数 data 对应 kvm_run + kvm_run->io.data_offset, 参数 addr 对应 kvm_run->io.port, 参数 len 对应 kvm_run->io.size. Broiler_pio_callback() 函数通过调用 ioport_write32() 函数将 PIO 读模拟的值写入到 kvm_run + kvm_run->io.data_offset 处. In-Broiler 模拟完毕之后，Broiler 通过 KVM_RUN IOCTL 告诉 KVM 虚拟机恢复运行.
+
+![](/assets/PDB/HK/TH001984.png)
+
+KVM 在恢复虚拟机运行之前，通过 complete_fast_io() 函数将 PIO 读模拟的数据写入到 VMCS Guest 指定的寄存器中。在 emulator_pio_in() 函数中，程序直接跳转到 84 行处执行，可以看到 85 行处调用 memcpy() 函数将 kvm_vcpu->arch.pio_data 数据拷贝到 val 变量，但这里为什么不是 kvm_run + kvm_run->io.data_offset 模拟好的数据呢?
+
+![](/assets/PDB/HK/TH001986.png)
+![](/assets/PDB/HK/TH001985.png)
+
+具体原因是在虚拟机创建过程中，KVM 在 kvm_arch_vcpu_create() 函数中调用 alloc_page() 函数分配一个物理页，然后将 vcpu->arch.pio_data 指向物理页对应的虚拟地址; 接着 KVM 在 kvm_vcpu_fault() 函数的 18-21 行将 VCPU \[KVM_PIO_PAGE_OFFSET * PAGE_SIZE, KVM_PIO_PAGE_OFFSET * PAGE_SIZE + PAGE_SIZE) 虚拟内存映射到 vcpu->arch.pio_data 对应的物理内存，也就是说 \[KVM_PIO_PAGE_OFFSET * PAGE_SIZE, KVM_PIO_PAGE_OFFSET * PAGE_SIZE + PAGE_SIZE) 与 \[vcpu->arch.pio_data, vcpu->arch.pio_data + PAGE_SIZE) 对应同一个区域. 那么之前的逻辑就说的通了，KVM 在刚开始模拟 PIO 之间将存储数据地址 kvm_run->io.data_offset 设置为 (KVM_PIO_PAGE_OFFSET * PAGE_SIZE), 然后 Broiler 将模拟完的数据存储在 (kvm_run + kvm_run->io.data_offset) 处，最后 KVM 在恢复虚拟机运行之前将 kvm_vcpu->arch.pio_data 数据拷贝到 val 变量，因为 kvm_vcpu->arch.pio_data 指向的就是 (kvm_run + kvm_run->io.data_offset)，因此 val 变量里存储的就是 PIO 读模拟的结果.
+
+![](/assets/PDB/HK/TH001931.png)
+
+val 变量获得 PIO 读模拟的值之后，调用 kvm_rax_write() 函数将 val 的值写入到 RAX/AX 中，因为 IN 指令最终要从 RAX/AX 中读出 IO Port 的值，最后虚拟机恢复运行之前 RAX/AX 的值会被更新到 VMCS GUEST 指定的区域，虚拟机恢复运行之后 RAX/AX 寄存器里就是 PIO 读模拟之后的值.
+
+----------------------------------------------------
+
+###### In-Broiler 设备 MMIO 读模拟
+
+![](/assets/PDB/HK/TH001906.png)
+
+> [In-Broiler 设备使用同步 MMIO](#D5)
+
+上图是 In-Broiler 设备 MMIO 读模拟流程和具体实践链接，开发者可以边看边实践。在 MMIO 读模拟流程中，VM-EXIT 退出之后 KVM 捕获到退出原因是 EXIT_REASON_EPT_VIOLA-TION，那么调用 handle_ept_violation() 函数进行处理，handle_ept_violation() 从 VMCS 的 Exit Qualification 寄存器获得需要模拟 MMIO 读信息.
+
+![](/assets/PDB/HK/TH001912.png)
+
+由于虚拟机可以向访问普通内存一样访问 MMIO，因此可以使用不同类型的指令来访问 MMIO，那么 KVM 需要对访问 MMIO 的指令进行解码和模拟，以此获得 MMIO 模拟的相关的信息。emulator_read_write() 函数在发现 MMIO 对应的设备位于用户空间的 Broiler，那么其执行 6313 行分支. kvm_run->exit_reason 设置为 KVM_EXIT_MMIO，MMIO 地址存储在 kvm_run->mmio.phys_addr, 访问 MMIO 方向信息存储在 kvm_run->mmio.is_write 中，最后访问 MMIO 长度信息存储在 kvm_run->mmio.len 中. 接下来 KVM 通过 KVM_RUN IOCTL 退出到 Broiler.
+
+![](/assets/PDB/HK/TH001914.png)
+
+Broiler 检查到虚拟机退出的原因是 KVM_EXIT_MMIO, 那么调用 broiler_cpu_emula-te_mmio() 进行 MMIO 模拟，可以看出 MMIO 模拟的信息都来自 kvm_run->mmio 中.
+
+![](/assets/PDB/HK/TH001987.png)
+
+在 In-Broiler 设备内部，对于 MMIO 读模拟在位于 50-62 行，参数 data 对应 kvm_ru-n->mmio.data, 参数 addr 对应 kvm_run->mmio.phys_addr, 参数 len 对应 kvm_run->mmio.len. Broiler_mmio_callback() 函数通过调用 ioport_write32() 函数将 MMIO 读模拟的值写入到 kvm_run.mmio.data 处. In-Broiler 模拟完毕之后，Broiler 通过 KVM_RUN IOCTL 告诉 KVM 虚拟机恢复运行.
+
+![](/assets/PDB/HK/TH001988.png)
+
+KVM 在恢复虚拟机之前会调用 complete_emulated_mmio(), 其在 07 行判断到 MMIO 读操作，那么调用 memcpy() 函数将 kvm_run->mmio.data 模拟好的数据存储到 frag->data 中. frag 来自 vpcu->mmio_frqgment[] 数组，其通过 vcpu->mmio_cur_frqgment 指定.
+
+![](/assets/PDB/HK/TH001989.png)
+
+当 KVM 调用到 read_emulated() 函数时，其首先获得 ctxt 的 mem_read 成员，该成员内部维护 frag->data 的数据，也就是 kvm_run->mmio.data 中的数据，由于满足 54 行条件，那么直接跳转到 68 行将 MMIO 读模拟的数据拷贝到 dest 变量里，有函数调用关系可以知道 dest 指向 ctxt->src.valptr. KVM 最后将 MMIO 读模拟的值写入到了 VMCS Guest 指定区域内. 当虚拟机恢复运行之后，虚拟机从指定寄存器中读取了 MMIO 的值.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
