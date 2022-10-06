@@ -299,6 +299,12 @@ tags:
 
 ## 虚拟化
 
+> - [Broiler](/blog/Broiler/)
+>
+>   - [Broiler 中断虚拟化](/blog/Broiler-vInterrupt/)
+>
+>   - [Broiler PIO/MMIO 虚拟化](/blog/Broiler-vIO)
+>
 > - 虚拟化实践
 >
 >   - [KVM on BiscuitOS (4KiB Page) \[x86_64/i386\]](/blog/KVM-on-BiscuitOS/)
