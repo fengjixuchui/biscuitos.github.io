@@ -193,6 +193,8 @@ tags:
 >
 >   - [CMA: Contiguous Memory Allocator](/blog/CMA)
 >
+>   - [Permanent Mapping Memory Allocator](/blog/PERMANENT-MEMAT/)
+>
 > - Page Fault Mechanism
 >
 >   - [Anonymous Shared/Private Page Fault]()

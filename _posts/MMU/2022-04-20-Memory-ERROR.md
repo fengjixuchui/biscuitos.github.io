@@ -23,6 +23,10 @@ tags:
 >   - [SLAB/SLUB/SLOB 内存分配器 GFP Flags 标志混淆使用导致 Kernel BUG](#A00A03)
 >
 >   - [VMALLOC 内存分配器 GFP Flags 标志混淆使用导致 Kernel BUG](#A00A04)
+>
+> - 永久映射内存分配器(Permanent Mapping Memory Allocator) BUG
+>
+>   - [永久映射内存分配器占用的内存超限 BUG](#A00A05)
 
 ######  🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂 捐赠一下吧 🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂
 
@@ -161,7 +165,11 @@ alloc_page(GFP_KERNEL | __GFP_MOVABLE | __GFP_DMA32)
 
 -------------------------------------
 
-###### <span id="A00A01">PCP 内存分配器 GFP Flags 标志混淆使用导致 Kernel BUG</span>
+<span id="A00A01"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000G.jpg)
+
+###### PCP 内存分配器 GFP Flags 标志混淆使用导致 Kernel BUG
 
 基于 <[GFP Flags 标志混淆使用导致 Kernel BUG](#A00A00)> 章节对原理的分析，本节直接通过 PCP 分配器混淆使用 GFP Flags 标志的代码进行分析，BiscuitOS 已经支持案例源码的部署，开发者参考使用如下命令:
 
@@ -215,7 +223,11 @@ insmod /lib/modules/5.0.0/extra/BiscuitOS-MM-ERROR-Confuse-GFP-Flags-PCP-default
 
 -------------------------------------
 
-###### <span id="A00A02">Buddy 内存分配器 GFP Flags 标志混淆使用导致 Kernel BUG</span>
+<span id="A00A02"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
+
+###### Buddy 内存分配器 GFP Flags 标志混淆使用导致 Kernel BUG
 
 基于 <[GFP Flags 标志混淆使用导致 Kernel BUG](#A00A00)> 章节对原理的分析，本节直接通过 Buddy 分配器混淆使用 GFP Flags 标志的代码进行分析，BiscuitOS 已经支持案例源码的部署，开发者参考使用如下命令:
 
@@ -269,7 +281,11 @@ insmod /lib/modules/5.0.0/extra/BiscuitOS-MM-ERROR-Confuse-GFP-Flags-Buddy-defau
 
 -------------------------------------
 
-###### <span id="A00A03">SLAB/SLUB/SLOB 内存分配器 GFP Flags 标志混淆使用导致 Kernel BUG</span>
+<span id="A00A03"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
+
+###### SLAB/SLUB/SLOB 内存分配器 GFP Flags 标志混淆使用导致 Kernel BUG
 
 基于 <[GFP Flags 标志混淆使用导致 Kernel BUG](#A00A00)> 章节对原理的分析，本节直接通过 Buddy 分配器混淆使用 GFP Flags 标志的代码进行分析，BiscuitOS 已经支持案例源码的部署，开发者参考使用如下命令:
 
@@ -319,9 +335,15 @@ insmod /lib/modules/5.0.0/extra/BiscuitOS-MM-ERROR-Confuse-GFP-Flags-SLAB-defaul
 
 可以看到只要模块一安装就触发 "Confuse GFP Flags BUG", 从错误的 Log 可以看到 **kernel BUG at ./include/linux/gfp.h:425!** 字符串，那么验证了 SLAB/SLUB/SLOB 分配器同样存在该 BUG.
 
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
 -------------------------------------
 
-###### <span id="A00A04">VMALLOC 内存分配器 GFP Flags 标志混淆使用导致 Kernel BUG</span>
+<span id="A00A04"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000V.jpg)
+
+######VMALLOC 内存分配器 GFP Flags 标志混淆使用导致 Kernel BUG
 
 基于 <[GFP Flags 标志混淆使用导致 Kernel BUG](#A00A00)> 章节对原理的分析，本节直接通过 VMALLOC 分配器混淆使用 GFP Flags 标志的代码进行分析，BiscuitOS 已经支持案例源码的部署，开发者参考使用如下命令:
 
@@ -370,3 +392,79 @@ insmod /lib/modules/5.0.0/extra/BiscuitOS-MM-ERROR-Confuse-GFP-Flags-VMALLOC-def
 ![](/assets/PDB/HK/TH001584.png)
 
 可以看到只要模块一安装就触发 "Confuse GFP Flags BUG", 从错误的 Log 可以看到 **kernel BUG at ./include/linux/gfp.h:425!** 字符串，那么验证了 VMALLOC 分配器同样存在该 BUG.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+-------------------------------------------
+
+#### 永久映射内存分配器 BUG
+
+-------------------------------------------
+
+<span id="A00A05"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000Q.jpg)
+
+##### 永久映射内存分配器占用的内存超限
+
+![](/assets/PDB/HK/TH002052.png)
+
+当向永久内存映射分配器中新增一块虚拟内存，采用了上图的代码逻辑，新增的 IDX 为 (2 * PTRS_PER_PTE), 也就是 IDX 等于 1024 接下来使用测试用例:
+
+{% highlight bash %}
+cd BiscuitOS/
+make linux-X.Y.Z-${ARCH}\_defconfig
+make menuconfig
+
+  [*] Package --->
+      [*] Memory Error Collect (Kernel/Userspace) --->
+          [*] Permanent Mapping BUG: Overflow Range --->
+
+make
+cd BiscuitOS/output/linux-X.Y.Z-${ARCH}/package/BiscuitOS-MM-ERROR-Permanent-Overflow-default/
+# 下载案例源码
+make download
+{% endhighlight %}
+
+> [BiscuitOS-MM-ERROR-Permanent-Overflow Gitee Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/FIXMAP/BiscuitOS-Permanent)
+>
+> [BiscuitOS 独立模块部署手册](https://biscuitos.github.io/blog/Human-Knowledge-Common/#B1)
+
+![](/assets/PDB/HK/TH001502.png)
+![](/assets/PDB/HK/TH001559.png)
+![](/assets/PDB/HK/TH002053.png)
+![](/assets/PDB/HK/TH002011.png)
+
+程序源码很精简，程序在 21 行调用 set_fixmap_io() 函数将 BROILER_FIXMAP_IDX 对应的虚拟内存映射到外设 MMIO 地址 BROILER_MMIO_BASE 上，然后调用 virt_to_fix() 函数将映射的虚拟地址存储在 addr 变量里。接下来程序直接在 24 行访问 addr 进而访问外设 MMIO, 但使用完毕之后，可以使用 clear_fixmap() 函数清除页表即可. 源码没有问题，但一旦编译就报错，那么接下来使用如下命令在 BiscuitOS 上实践案例代码:
+
+{% highlight bash %}
+cd BiscuitOS/output/linux-X.Y.Z-${ARCH}/package/BiscuitOS-MM-ERROR-Permanent-Overflow-default/
+# 编译源码
+make
+# 安装驱动
+make install
+# Rootfs 打包
+make pack
+# 运行 BiscuitOS
+make run
+{% endhighlight %}
+
+![](/assets/PDB/HK/TH002051.png)
+
+一旦编译编译器就报错，通过提示的信息可以看到是因为 BUILD_BUG_ON() 在编译阶段检查到了错误，这个错误是 BUILD_BUG_ON(\_\_end_of_permanent_fix_address) 越界了。内核源码只修改了 enum fixed_addresses，仅仅是新增加了一个 IDX FIX_BISCUITOS，其值为 (2 * PTRS_PER_PTE), 那么为什么新增加一个 IDX 就触发编译错误呢? 首先从案例分析，案例中调用了 set_fixmap_io() 函数:
+
+![](/assets/PDB/HK/TH002054.png)
+ 
+set_fixmap_io() 函数最终会调用 \_\_native_set_fixmap() 函数，其实现逻辑如上，在 51 行处函数调用 BUILD_BUG_ON() 函数在编译阶段对 \_\_end_of_permanent_fixed_addresses 的值进行检查，该值表示永久映射分配器支持的最大 IDX，通过该 IDX 可以知道永久映射支持最大的虚拟内存范围. 从 51 行可以看到如果 \_\_end_of_permanent_fixed_addresses 大于 (FIXMAP_PMD_NUM * PTRS_PER_PTE) 时编译器就会报错，那么内核为什么要加入这个限制呢?
+
+![](/assets/PDB/HK/TH002001.png)
+![](/assets/PDB/HK/TH002002.png)
+
+这个问题还要从永久映射分配器的起源说起，既然是永久，那么其虚拟地址从源码编译解决到系统运行时，其含义一直没变，如果做到不变，内核通过保持永久映射维护的虚拟地址对应的页表都是固定不变即可，那么内核从编译时就为永久映射分配了所有页表页占用的内存，这样无论在内核启动早期还是内核运行中，其虚拟内存对应的页表页维持不变。如上图中 level3_kernel_pgt、level2_fixmap_pgt 和 level1_fixmap_pgt 之间的关系一直保持不变. 由于这个关系的存在这些页表的大小决定了永久映射分配器维护虚拟内存的大小。内核为永久映射分配了 FIXMAP_PMD_NUM 个 PTE 页表，那么其维护的范围为 FIXMAP_PMD_NUM * PTRS_PER_PTE 个 4KiB 虚拟内存。通过上面的分析，如果在永久映射分配器中新增一个 IDX，那么这个 IDX 不能超过 FIXMAP_PMD_NUM * PTRS_PER_PTE，否则编译器就直接报错.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+-------------------------------------------
+
+
+
