@@ -35,11 +35,31 @@ tags:
 >
 > - [Early IO/RSVD-MEM 内存世界地图](#F)
 >
-> - [Early IO/RSVD-MEM 应用场景](#E)
+> - Early IO/RSVD-MEM 应用场景
+>
+>   - [DMA Remapping/IOMMU 应用场景](#E1)
+>
+>   - [XHCI USB 主机控制器应用场景](#E2)
+>
+>   - [Apple AirPort Card 应用场景](#E3)
+>
+>   - [vSMP Foundation 超级计算机应用场景](#E4)
+>
+>   - [x2apic 中断控制器应用场景](#E5)
+>
+>   - [Early-Printk PCISerial 应用场景](#E6)
+>
+>   - [EFI 固件使用场景](#E7)
+>
+>   - [INITRD/ACPI 固件使用场景](#E8)
+>
+>   - [E820 内存管理器使用场景](#E9)
 >
 > - Early IO/RSVD-MEM 分配器 BUG 合集
 >
->   - [对只读映射的 Early RSVD-MEM 进行写操作 BUG]()
+>   - [对只读映射的 Early RSVD-MEM 进行写操作 BUG](/blog/Memory-ERROR/#A00A06)
+>
+>   - [Early IO/RSVD-MEM 分配器弃用之后再使用 BUG](/blog/Memory-ERROR/#A00A07)
 >
 > - Early IO/RSVD-MEM 分配器进阶研究
 
@@ -611,3 +631,197 @@ BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-EARLY-IOREMAP-early_memunmap
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
+--------------------------------------
+
+#### Early IO/RSVD-MEM 应用场景
+
+--------------------------------------
+
+<span id="E1"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000K.jpg)
+
+##### DMA Remapping/IOMMU 应用场景
+
+众所周知，外设可以访直接访问的内存称为 **DMA(Direct Memory Access)**, DMA 要访问的内存地址称为 DMA 地址或者存储域地址. 在 DMA 技术刚出现的时候，DMA 地址都是物理内存地址，优点就是简单直接，缺点就是不灵活，比如要求物理内存必须是连续的一整块而且不能是高位的地址等，也不能充分满足虚拟机的需求。为了优化这些缺点，引入了 **DMA(DMA Remapping)** 技术, Intel 为支持虚拟机而设计的 IO 虚拟机化技术。外设访问的 DMA 地址不再是物理内存地址，而是要通过 DMA Remapping 硬件进行转义，DMAR 硬件会把 DMA 地址翻译成存储域地址，并检查访问权限等。负责 DMA Remapping 操作的硬件称为 IOMMU。
+
+![](/assets/PDB/HK/TH002095.png)
+
+在 IOMMU/DMAR 初始化过程中，内核还处于系统初始化早期，DMAR 需要将 ACPI acpi_dmar_header 中描述的外设地址 MMIO 映射到内核的虚拟地址空间，此时 ioremap 机制还没有初始化，因此需要 Early IO/RSVD-MEM 分配器提供的内存进行映射。
+
+**结论**: Early IO/RSVD-MEM 分配器可以满足内核初始化早期临时对映射外设 MMIO 的需求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------
+
+<span id="E2"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
+
+##### XHCI USB 主机控制器应用场景
+
+**XHCI (eXtensible Host Controller Interface)** 是由 Intel 开发可扩展的 USB 主机控制器接口，主要面向 USB3.0，同时也支持 USB2.0 以下的设备。USB2.0 主要是 EHCI, USB1.1 则是 OHCI 和 UHCI. XHCI 具有如下特点:
+
+* XHCI 支持所有 USB3.0 特性
+* 支持所有 USB 设备
+* 为原有的 USB 主控制器存在的问题提供简单稳定的解决方案
+* 最优化内存访问效率
+* 减少硬件接口的复杂性
+* 支持 32bit 和 64bit 模式
+* 支持虚拟内存
+* 支持虚拟化技术
+
+XHCI 通过使用 PCIe 的 SR-IOV 规范，提供的虚拟机管理器能够启动虚拟 xHCI 控制器，并且可将任何 USB 设备指派到任意 VxHC 实例。XHCI 相关的寄存器映射到存储域上形成 MMIO 区域。
+
+![](/assets/PDB/HK/TH002096.png)
+
+内核初始化早期，需要通过 earlyprink 机制将内核启动早期的 LOG 打印到指定的输出设备，如果此时输出设备为 xdbc, 那么内核会调用 early_xdbc_parse_parameter() 进行初始化，由于 xdbc 是一个 XHCI USB3.0 设备，那么其设备内部寄存器是映射到了存储域的一段 MMIO 区域，此时 ioremap 机制还没有初始化，为了满足需求可以使用 Early IO/RSVD-MEM 分配器进行映射.
+
+**结论**: Early IO/RSVD-MEM 分配器可以满足内核初始化早期临时对映射外设 MMIO 的需求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------
+
+<span id="E3"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000X.jpg)
+
+##### Apple AirPort Card 应用场景
+
+![](/assets/PDB/HK/TH002097.png)
+
+在 Macbook 笔记本电脑上，苹果提供了新的无线模块 AirPort Card, 采用一种名为 802.11g 的高速无线技术，可以提供比早期 AirPort 快 5 倍的数据传输速度. 该模块也是以 PCIe 设备插入到主板上，因此其 BAR 空间包含了很多内部寄存器，硬件上将 AirePort 内部寄存器映射到了存储域空间并占用一段 MMIO 区域.
+
+![](/assets/PDB/HK/TH002098.png)
+
+内核初始化早期，Macbook 电脑需要启用 AirPort Card 来启用无线网，由于 AirePort Card 是一个 PCIe 设备，其内部的寄存器映射到了存储域，占用一段 MMIO 区域，那么内核需要将虚拟地址映射到 MMIO 之后才能操纵 AirPort Card. 由于还是系统启动早期，ioremap 机制还没有初始化，因此只能通过 early_ioremap() 函数进行映射，因此从上面的流程可以看到在调用 apple_aireport_reset() 函数使用，使用 early_ioremap() 函数映射了 AireProt Card 内部寄存器.
+
+**结论**: Early IO/RSVD-MEM 分配器可以满足内核初始化早期临时对映射外设 MMIO 的需求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------
+
+<span id="E4"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000C.jpg)
+
+##### vSMP Foundation 超级计算机应用场景
+
+ScaleMP 是高端计算虚拟化领域的领导者，可提供高性能和低总拥有成本。创新的 Versatile SMP™ (vSMP) 体系结构将多个 x86 系统聚合到单个虚拟的 x86 系统中，从而带来行业标准的高端 Symmetric 多处理器(SMP) 计算机。ScaleMP 使用软件取代自定义硬件和组件，可提供革命性的新型计算范式. vSMP Foundation 对多达 16 个 x86 系统进行聚合，以创建具有 4 到 32 个处理器（128核）和高达 4TiB 共享内存的单个系统。
+
+![](/assets/PDB/HK/TH002099.png)
+
+在 ScaleMP 机器初始化阶段，首先需要初始化 vsmp_box PCIe 设备，然后访问其内部寄存器，以此进行管理和初始化的目的，由于其属于 PCIe 设备，并且其内部寄存器已经映射到存储域，并占用一段 MMIO 区域。那么系统为了可以访问 vsmp_box 内部的寄存器，那么需要将虚拟地址映射到其映射的 MMIO 地址上。本来可以使用 ioremap 机制可以映射 MMIO，但由于系统启动早期，ioremap 机制还没有工作。于是可以使用系统在该阶段提供的 Early IO/RSVD-MEM 分配器，其中 early_ioremap() 函数就可以完成对 MMIO 区域的映射任务.
+
+**结论**: Early IO/RSVD-MEM 分配器可以满足内核初始化早期临时对映射外设 MMIO 的需求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------
+
+<span id="E5"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000V.jpg)
+
+##### x2apic 中断控制器应用场景
+
+在 X86 架构中存在 IOAPIC 和 LOCAL APIC 两种中断控制器，其中每个 CPU 都有一个 LOCAL APIC，LOCAL APIC 可以接受的中断源包括:
+
+* 本地相连的 I/O 设备，如直接连在 INT0、INT1 管脚上的设备
+* 外部 I/O 设备，这些设备产生的中断经过 I/O APIC，然后在通过 LOCAL APIC 到达处理器
+* IPI 中断，处理器间可以使用 IPI 中断对方
+* APIC 定时器中断，APIC 上自带定时器，在 OS 中也很常用
+* Performance monitoring counter interrupts, 性能监控计数器中断
+* 温度传感器中断
+* APIC 内部错误中断
+
+LOCAL APIC 可以看做一个独立的硬件，有自己的寄存器，叫做 Local vector table or LVT，其大小为 4KiB，并映射到存储域，每个 Local APIC 的 4KiB 寄存器共同占用一段 4KiB 的 MMIO，可以理解 LVT 为 PER-CPU 粒度的，虽然他们映射 MMIO 地址相同，但每当访问这段 MMIO 地址时，CPU 都会访问到自己 LOCAL APIC 的 4KiB LVT. APIC 实际可以分为三个版本:
+
+* APIC(Early P6)
+* xAPIC(Pentium 4 and Xeon)
+* x2APIC
+
+![](/assets/PDB/HK/TH002100.png)
+
+在内核启动早期，系统需要临时从 x2APIC 的 UV_LOCAL_MMR_BASE 寄存器中读取值，那么可以将虚拟地址映射到 UV_LOCAL_MMR_BASE MMIO 地址上，由于 ioremap 机制还没有初始化，那么可以使用 Eearly IO/RSVD-MEM 分配器提供的 early_ioremap() 进行映射，临时映射使用完毕之后，再使用 early_iounmap() 函数解除临时映射.
+
+**结论**: Early IO/RSVD-MEM 分配器可以满足内核初始化早期临时对映射外设 MMIO 的需求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------
+
+<span id="E6"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000B.jpg)
+
+##### Early-Printk PCISerial 应用场景
+
+在内核启动早期，需要通过 Early-Printk 机制将早期的内核启动日志输出到指定的输出设备，指定输出设备包括 serial、ttyS、pciserial、vga、dbgp、xdbc 以及 xen。其中 pciserial 是基于 PCI 设备的输出设备，那么内核需要访问该设备内部寄存器，才能达到将早期 Log 定向到 PCISerial 设备.
+
+![](/assets/PDB/HK/TH002101.png)
+
+PCISerial 设备内部寄存器映射到存储域，并占用一段 MMIO 地址，内核如果像访问 PCISerial 设备内部寄存器，那么需要将虚拟地址映射到其对应的 MMIO 区域上，但由于 ioremap 机制还没有建立，因此可以使用 Early IO/RSVD-MEM 分配器提供的 early_ioremap() 函数进行临时的映射，如上图 early_serial_base 存储了映射的虚拟地址，程序可以通过访问 early_serial_base 进而访问 PCISerial 内部寄存器.
+
+**结论**: Early IO/RSVD-MEM 分配器可以满足内核初始化早期临时对映射外设 MMIO 的需求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------
+
+<span id="E7"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000N.jpg)
+
+##### EFI 固件使用场景
+
+**UEFI(Unified Extensible Firmware Interface)**，即**统一的可扩展固件接口**，是一种详细描述全新类型接口的标准，是适用于电脑的标准固件接口，旨在代替 BIOS。此标准由 Intel 公司带头组织 UEFI 联盟中的 140 多个技术公司共同创建。UEFI 旨在提高软件互操作性和解决 BIOS 的局限性。作为传统 BIOS 的继任者，UEFI 拥有前辈所不具备的诸多功能，比如图形化界面、多种多样的操作方式、允许植入硬件驱动等等。这些特性让 UEFI 相比于传统 BIOS 更加易用、更加多功能、更加方便。
+
+![](/assets/PDB/HK/TH002102.png)
+
+UEFI 运行时会将一些 firmware 信息存储在内存里，然后将这块内存标记为预留内存，然后待操作系统启动时从预留内存中读取相关信息。预留内存是操作系统不维护的物理内存，如果要访问预留内存，那么需要建立虚拟内存到预留内存的页表，这样才能访问预留内存。但由于内核启动早期 ioremap 机制没有工作，那么内核只能通过 Early IO/RSVD-MEM 分配器提供的 early_memremap() 函数映射 UEFI 的预留内存。正如上图 \_\_efi_memmap_init() 函数确认现在是内核启动早期，那么调用 early_memremap() 映射预留内存，并将映射之后的虚拟地址存储在 map.map 变量里.
+
+**结论**: Early IO/RSVD-MEM 分配器可以满足内核初始化早期临时映射预留内存的需求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------
+
+<span id="E8"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
+
+##### INITRD/ACPI 固件使用场景
+
+**ACPI(Advanced Configuration and Power Interface)** 高级配置和电源接口，是在系统启动阶段由 BIOS/UEFI 收集系统各方面信息并创建的，它大致以树形的组织形式存在系统物理内存中。整个 ACPI 表以 RSDP(Root System Descriptor Pointer Table，根系统描述符指针表) 为入口点，存放了 R(X)DST 的地址。RSDT(根系统说明表) 是32位地址，XSDT 是 64 位地址，其功能一样。对于基于 Legacy BIOS 的系统而言，RSDP 表所在的物理地址并不固定，要么位于 EBDA(Extended BIOS Data Area) 的前1KB范围内, 要么位于 0x000E0000 到 0x000FFFFF 的物理地址范围内.
+
+![](/assets/PDB/HK/TH002103.png)
+
+在存在 INITRD 的系统中，内核启动过程中，内核会从 ACPI 中获得一些信息，并进行处理之后将这些信息更新到 INITRD 固件中，当由于 INITRD 位于预留内存里，因此需要将虚拟地址映射到预留内存之后才能进行信息更新，由于 ioremap 机制并没有工作，因此在这个阶段可以使用 Early IO/RSVD-MEM 分配器提供的 early_memremap() 函数进行映射，映射完毕之后就可以将固件信息更新到 INITRD "kernel/firmware/acpi/" 里，映射完毕之后再调用 early_memunmap() 函数解除对预留内存的映射.
+
+**结论**: Early IO/RSVD-MEM 分配器可以满足内核初始化早期临时映射预留内存的需求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------
+
+<span id="E9"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000P.jpg)
+
+##### E820 内存管理器使用场景
+
+E820 内存管理器用于管理 E820 表，其通过 BIOS 获得系统物理内存整体布局，并将物理内存划分为可用物理内存、预留内存、PMEM 等多种类型。在系统启动过程中，物理内存被用作不同的目的，有的区域变成预留内存，有的区域还是可用内存，因此整个物理内存会被拆分成很多零散的区域，每个区域都使用 E820 Entry 进行描述。E820 表最多支持 128 E820 Entry，如果区域超过这个限制，那么需要通过 SETUP_E820_EXT 进行 E820 表拓展.
+
+![](/assets/PDB/HK/TH002104.png)
+
+由于存储 E820 表需要通过 boot_params.hdr.setup_data 指定，该值存储的是一个物理地址，那么需要在这个阶段对其进行映射之后才能使用，但由于 memremap 机制没有工作，因此可以使用 Early IO/RSVD-MEM 分配器提供的 early_memremap() 函数进行映射，正如上图内核调用 e820__memory_setup_extended() 函数对 E820 表进行扩展.
+
+**结论**: Early IO/RSVD-MEM 分配器可以满足内核初始化早期临时映射物理内存的需求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------
