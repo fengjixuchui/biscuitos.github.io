@@ -165,6 +165,8 @@ tags:
 >
 >   - [Early_Res Allocator \[x86\]](/blog/Early_Res/)
 >
+>   - [Early IO/RSVD-MEM Allocator](/blog/EARLY-IO-REVDMEM-MEMAT/)
+>
 > - Memory Management Allocator
 >
 >   - [Bootmem Allocator](/blog/HISTORY-bootmem/)

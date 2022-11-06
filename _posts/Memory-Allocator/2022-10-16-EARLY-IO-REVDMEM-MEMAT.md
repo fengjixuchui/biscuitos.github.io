@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Early I/O and RSVD-Memory Memory Allocator"
+title:  "Early IO/RSVD-Memory Memory Allocator"
 date:   2022-10-16 12:01:00 +0800
 categories: [MMU]
 excerpt: Early IO/RESV-MEM Remap.
@@ -61,9 +61,23 @@ tags:
 >
 >   - [Early IO/RSVD-MEM 分配器弃用之后再使用 BUG](/blog/Memory-ERROR/#A00A07)
 >
+>   - [Early IO/RSVD-MEM 分配器没有可用的 Slot BUG](/blog/Memory-ERROR/#A00A08)
+>
+>   - [Early IO/RSVD-MEM 分配的内存没有回收 BUG](/blog/Memory-ERROR/#A00A09)
+>
+>   - [Early IO/RSVD-MEM 分配器映射长度为 0 BUG](/blog/Memory-ERROR/#A00A0A)
+>
+>   - [Early IO/RSVD-MEM 映射物理区域越界 BUG](/blog/Memory-ERROR/#A00A0B)
+>
+>   - [Early IO/RSVD-MEM 映射物理区域太大 BUG](/blog/Memory-ERROR/#A00A0C)
+>
+>   - [Early IO/RSVD-MEM 映射物理区域重复释放 BUG](/blog/Memory-ERROR/#A00A0D)
+>
+>   - [Early IO/RSVD-MEM 释放错误长度映射区 BUG](/blog/Memory-ERROR/#A00A0E)
+>
 > - Early IO/RSVD-MEM 分配器进阶研究
 
-######  🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂 捐赠一下吧 🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂
+######  🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂 捐赠一下吧 🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂
 
 ![BiscuitOS](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
 
@@ -77,7 +91,7 @@ tags:
 
 ![](/assets/PDB/HK/TH001990.png)
 
-**Early IO/RSVD-MEM Memory Allocator** 称为早期 IO/预留内存分配器，其属于**固定映射内存分配器**的一个分支，其目的是内核启动早期需要访问外设寄存器或预留内存，这个时候 IOREMAP 机制还没有建立，于是内核在这个阶段为外设的 MMIO 和预留内存做临时映射，当其任务完毕之后，内核会销毁该分配器, 然后专用功能完备的 IOREMAP 分配器.
+**Early IO/RSVD-MEM Memory Allocator** 称为早期 IO/预留内存分配器，其属于**固定映射内存分配器**的一个分支，其目的是内核启动早期需要访问外设寄存器或预留内存，这个时候 IOREMAP 机制还没有建立，于是内核在这个阶段为外设的 MMIO 和预留内存做临时映射，当其任务完毕之后，内核会销毁该分配器, 然后专用功能完备的 IOREMAP 分配器, 那么分配器也属于临时映射分配器.
 
 ![](/assets/PDB/HK/TH001481.png)
 
@@ -177,9 +191,7 @@ Early IO/RSVD-MEM 分配器通过 early_ioremap_init() 函数进行初始化，�
 
 ![](/assets/PDB/HK/TH002070.png)
 
-分配器提供了多种接口，用于满足不同场景的需求。early_ioremap() 函数用于在系统早期分配虚拟内存并映射到 phys_addr 对应的>物理区域上，物理区域可以是物理内存、预留物理内存和外设 MMIO，理论上映射到外设 MMIO 更好，这样可以有效利用分配器维护的>虚拟内存。early_memremap() 函数用于系统早期映射 phys_addr 指向的预留内存，预留内存指的是系统看不到的物理内存. early_memremap_ro() 函数的作用是在系统早期分配虚拟内存以只读的方式映射预留内存，有的场景需要只读方式读取预留内存中内容. early_memremap_prot() 函数提供了更灵活的映射方式，用于在系统早期分配虚拟内存，并可以灵活使用不同的页表属性映射物理区域，物理
-区域可以是外设 MMIO 也可以是预留内存。copy_from_early_mem() 函数则提供了系统早期需要从外设或者预留内存拷贝数据的场景，
-函数分配虚拟内存并映射到物理区域上，并将指定长度的内容从物理区域拷贝到 dest 指向的存储空间.
+分配器提供了多种接口，用于满足不同场景的需求。early_ioremap() 函数用于在系统早期分配虚拟内存并映射到 phys_addr 对应的>物理区域上，物理区域可以是物理内存、预留物理内存和外设 MMIO，理论上映射到外设 MMIO 更好，这样可以有效利用分配器维护的>虚拟内存。early_memremap() 函数用于系统早期映射 phys_addr 指向的预留内存，预留内存指的是系统看不到的物理内存. early_memremap_ro() 函数的作用是在系统早期分配虚拟内存以只读的方式映射预留内存，有的场景需要只读方式读取预留内存中内容. early_memremap_prot() 函数提供了更灵活的映射方式，用于在系统早期分配虚拟内存，并可以灵活使用不同的页表属性映射物理区域，物理区域可以是外设 MMIO 也可以是预留内存。copy_from_early_mem() 函数则提供了系统早期需要从外设或者预留内存拷贝数据的场景，函数分配虚拟内存并映射到物理区域上，并将指定长度的内容从物理区域拷贝到 dest 指向的存储空间.
 
 -------------------------------------
 
@@ -204,6 +216,16 @@ Early IO/MEM 内存分配器维护了一段虚拟内存区域，这段区域位�
 ![](/assets/PDB/HK/TH002077.png)
 
 分配器维护的虚拟区域在 enum fixed_addresses 中占用了 FIX_BTMAP_BEGIN 到 FIX_BTMAP_END 之间的索引，那么其虚拟区域范围是 \[fix_to_virt(FIX_BTMAP_BEGIN), fix_to_virt(FIX_BITMAP_END)] 区域. 其中 FIX_BTMAPS_SLOTS 表示分配器维护的 SLOT 数量，默认设置为 8，NR_FIX_BTMAPS 表示一个 SLOT 中最多映射物理区域的数量，那么分配器维护区域的总长度为 NR_FIX_BTMAPS * FIX_BTMAPS_SLOTS * 4KiB. 默认情况下分配器一共占用了 512 个 INDEX，那么分配器维护的虚拟内存区域为 **2MiB**. FIX_BTMAP_END 定义时，通过与 \_\_end_of_permanent_fixed_addresses 的对齐操作，目的就是让虚拟内存使用的页表独占一个 PMD Entry，确保不与永久映射分配器维护的虚拟区域共用 PMD Entry，这是因为永久映射分配器的 PTE 页表页在编译阶段就存在，而 Early IO/RSVD-MEM 分配器维护的虚拟区域需要在系统启动阶段才建立.
+
+------------------------------------------
+
+##### 分配器生命周期
+
+Early IO/RSVD-MEM 分配器正如名字一样，它只存在于系统早期，当其任务完成之后，系统将正式启动 ioremap 分配器取而代之，那么分配器的生命周期如何? 系统要在启动阶段启用 Early IO/RSVD-MEM 分配器，那么需要保证 CONFIG_GENERIC_EARLY_IOREMAP 宏已经启用，在 X86 架构中该宏始终启用.
+
+![](/assets/PDB/HK/TH002139.png)
+
+在**分配器初始化**章节了解到，分配器在 early_ioremap_init() 函数调用完毕之后，内核就可以使用分配器提供的接口临时映射物理区域. 当系统初始化到后期，分配器会调用 check_early_ioremap_leak() 函数检查分配器还有哪些内存没有回收，如果有就警告对其进行回收, 这之后可以认为分配器**停止使用**, 接着内核运行到 free_initmem() 函数，由于分配器提供的代码都位于 \_\_init section, 那么内核会清除掉 \_\_init section 所有的代码段，那么分配器**彻底抹除**. 当系统继续运行，并将 system_state 设置为 SYSTEM_RUNNING 时，那么 ioremap 分配器已经可以使用，因此可以看做分配器的**轮回新生**.
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
