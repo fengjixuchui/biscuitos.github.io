@@ -21,15 +21,53 @@ tags:
 >
 > - [MEMBLOCK 物理内存分配器使用](#B)
 >
+>   - [MEMBLOCK 分配物理内存](#B0)
+>
+>   - [MEMBLOCK 回收物理内存](#B1)
+>
+>   - [MEMBLOCK 新增物理内存](#B2)
+>
+>   - [MEMBLOCK 遍历物理内存区域](#B3)
+>
+>   - [MEMBLOCK 获取物理内存信息](#B4)
+>
+>   - [MEMBLOCK 控制与检测操作](#B7)
+>
 > - [MEMBLOCK 物理内存分配器 API 合集](#B5)
 >
 > - [MEMBLOCK 物理内存分配器使用场景](#X)
 >
+>   - [Mirror Memory 应用场景](#X0)
+>
+>   - [系统预留内存应用场景](#X1)
+>
 > - MEMBLOCK 物理内存分配器 BUG 合集
 >
 > - MEMBLOCK 物理内存分配器进阶研究
+>
+>   - [MEMBLOCK 分配器与 Mirror Memory 研究](#T0)
+>
+>   - [MEMBLOCK 分配器之 phymem Region 研究](#T1)
+>
+>   - [MEMBLOCK 分配器之 no-map 研究](#T2)
+>
+>   - [MEMBLOCK 分配器与设备管理内存研究](#T3)
+>
+>   - [MEMBLOCK 分配器与 Hotplug Memory 研究](#T4)
+>
+>   - [MEMBLOCK 分配器 Keep Work 研究](#T5)
+>
+>   - [MEMBLOCK 分配器不同 Region 研究](#T6)
+>
+>   - [MEMBLOCK 分配器 Split 与 Merge 研究](#T7)
+>
+>   - [MEMBLOCK 分配器调试研究](#T8)
+>
+>   - [MEMBLOCK 分配器与 NUMA 研究](#T9)
+>
+>   - [Boot time memory management From Kernel.org](https://www.kernel.org/doc/html/latest/core-api/boot-time-mm.html)
 
-######  🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂 捐赠一下吧 🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂
+######  🙂🙂🙂🙂🙂🙂 捐赠一下吧 🙂🙂🙂🙂🙂🙂
 
 ![BiscuitOS](/assets/PDB/BiscuitOS/kernel/HAB000036.jpg)
 
@@ -51,11 +89,19 @@ tags:
 
 ![](/assets/PDB/HK/TH002140.png)
 
-MEMBLOCK 物理内存分配器维护了早期系统的物理内存，其将物理内存划分成多个长度不同的 Region，Region 是 MEMBLOCK 分配器最小的管理单元. MEMBLOCK 继续将每个 Region 划分成两大类: **memory 区域**为 MEMBLOCK 分配器管理的物理内存，**reseved 区域**为 MEMBLO-CK 分配器已经分配的物理内存。
+MEMBLOCK 物理内存分配器维护了早期系统的物理内存，其将物理内存划分成多个长度不同的 Region，Region 是 MEMBLOCK 分配器最小的管理单元. MEMBLOCK 分配器将每个 Region 划分成两大类: **memory 区域**为 MEMBLOCK 分配器管理的可用物理内存，**reseved 区域**为 MEMBLOCK 分配器预留的物理内存.
+
+![](/assets/PDB/HK/TH002147.png)
+
+MEMBLOCK 分配器的 memory 区域为系统可用的物理区域，reserved 区域则为已经分配的物理区域，因此 MEMBLOCK 分配器的**可分配区域**为 memory 区域中剔除 reserved 区域之后的区域, 因此三者的关系如上图.
 
 ![](/assets/PDB/HK/TH002141.png)
 
 MEMBLOCK 分配器使用 struct memblock、struct memblock_type 和 struct memblock_reg-ion 三个数据结构体进行描述。struct memblock_region 表示 Region，其描述了物理区域的起始物理地址和长度、所属 NUMA NODE 以及标识信息; struct memblock_type 表示物理内存的类型，其描述某种类型当前 Region 的数量、最大支持 Region 数量、维护总物理内存量、内存类型的名字以及 Region 位置, MEMBLOCK 分配器只支持 memory(可分配物理内存) 和 reserved(已经被使用物理内存) 两种类型; struct memblock 对 MEMBLOCK 分配器的整体抽象，其描述分配器分配的方向、最大可分配物理内存、memory 和 reserved 区域.
+
+![](/assets/PDB/HK/TH002281.png)
+
+MEMBLOCK 分配器包含了 memory 和 reserved 两种区域，每种区域包含了多个物理区域，这些物理区域使用 struct memblock_region 进行维护，MEMBLOCK 分配器的 memory 或 reserved 区域按从地址到高地址的顺序，依次维护在给自的数组里，因此可以正序遍历或者倒序遍历所有区域.
 
 -----------------------------------------------
 
@@ -256,9 +302,117 @@ cd BiscuitOS/output/linux-6.0-x86_64/package/BiscuitOS-MEMBLOCK-memblock_alloc-d
 
 --------------------------------------------------
 
+<span id="B"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000U.jpg)
+
 #### MEMBLOCK 物理内存分配器使用 
 
+##### <span id="B0">MEMBLOCK 分配物理内存</span>
+
+MEMBLOCK 分配器提供了很多接口满足内核不同粒度和场景的物理内存分配，有的接口可以返回物理地址也可以返回虚拟地址，有的可以从指定的 NUMA NODE 或者物理区域内分配物理内存，归结如下:
+
+> - [标准接口: 分配指定长度的物理内存\[VA\]](#B59)
+>
+> - [标准接口: 保证可以分配到物理内存\[VA\]](#B5F)
+>
+> - [精准接口: 可指定范围/NUMA NODE/属性的分配物理物理内存\[VA\]](#B5A)
+>
+> - [特殊接口: 从某个地址之后分配物理内存\[VA\]](#B5B)
+>
+> - [特殊接口: 从低端分配物理内存\[VA\]](#B5C)
+>
+> - [特殊接口: 从指定 NUMA NODE 上分配物理内存\[VA\]](#B5D)
+>
+> - [安全接口: 优先从某个 NUMA NODE 上分配物理内存\[VA\]](#B5E)
+>
+> - [安全接口: 尽量从某个 NUMA NODE 上分配物理内存\[VA\]](#B5G)
+>
+> - [物理接口: 直接分配物理内存\[PA\]](#B61)
+>
+> - [物理接口: 直接从某个范围分配物理内存\[PA\]](#B5X)
+
+##### <span id="B1">MEMBLOCK 回收物理内存</span>
+
+MEMBLOCK 分配器提供了多个接口用于回收 MEMBLOCK 分配器分配出去的物理内存，对于不是分配器分配出去的物理内存，其也提供了多个接口用于移除这类物理区域:
+
+> - [标准接口: 回收分配物理内存对应的虚拟地址](#B5P)
+>
+> - [物理接口: 直接回收物理内存](#B5Y)
+>
+> - [特殊接口: 移除一段可用物理内存区域](#B5Z)
+
+##### <span id="B2">MEMBLOCK 新增物理内存</span>
+
+MEMBLOCK 分配器提供了多个接口用于新增物理区域，新增的物理区域可以插入到 memblock.memory 区域或者 memblock.reserved 区域, 归结如下:
+
+> - [标准接口: 新增一段预留物理区域](#B60)
+>
+> - [标准接口: 新增一段可用物理内存](#B57)
+>
+> - [标准接口: 向指定 NUMA NODE 新增一段物理内存](#B58)
+
+##### <span id="B3">MEMBLOCK 遍历物理内存</span>
+
+MEMBLOCK 分配器提供了丰富的遍历 memblock.memory 区域和 memblock.reserved 区域的接口，可以单独遍历，也可以按特定需求遍历，既可以正序遍历，也可以倒序遍历。另外还提供了遍历可分配区域的接口，归结如下:
+
+> - [标准接口: 正序遍历 memblock.memory 可用物理内存区域](#B52)
+>
+> - [标准接口: 倒序遍历 memblock.memory 可用物理内存区域](#B53)
+>
+> - [标准接口: 正序遍历 memblock.reserved 预留物理内存区域](#B55)
+>
+> - [标准接口: 正序遍历 MEMBLOCK 分配器可分配物理内存](#B62)
+>
+> - [标准接口: 倒序遍历 MEMBLOCK 分配器可分配物理内存](#B63)
+>
+> - [特殊接口: 按 Region 粒度遍历 memblock.memory 可用物理内存区域](#B54)
+>
+> - [特殊接口: 按 Region 粒度遍历 memblock.reserved 预留物理内存区域](#B56)
+>
+> - [基础接口: 正序遍历 MEMBLOCK 指定的 Region](#B50)
+>
+> - [基础接口: 倒序遍历 MEMBLOCK 指定的 Region](#B51)
+
+MEMBLOCK 分配器由于在系统启动阶段统一管理了所有可用的物理内存，因此可以通过 MEMBLOCK 分配器获得系统物理内存相关信息，归结如下:
+
+##### <span id="B4">MEMBLOCK 获取物理内存信息</span>
+
+> - [获得系统 DRAM 起始地址](#B5K)
+>
+> - [获得系统 DRAM 结束地址](#B5J)
+>
+> - [获得系统可用物理内存数量](#B5M)
+>
+> - [获得当前系统预留物理内存数量](#B5L)
+>
+> - [获得 MEMBLOCK 分配器最大可分配物理地址](#B5Q)
+
+##### <span id="B7">MEMBLOCK 控制与检测操作</span>
+
+MEMBLOCK 分配器提供了多个控制接口用于满足不同的分配需求，另外还提供了很多检测接口，可以便捷检测物理地址的属性，归结如下:
+
+> - [设置 MEMBLOCK 分配器最大可分配物理地址](#B5R)
+>
+> - [获得 MEMBLOCK 分配器分配方向](#B5H)
+>
+> - [设置 MEMBLOCK 分配器分配方向]()
+>
+> - [判断物理地址是否属于可用物理内存](#B5S)
+>
+> - [判断物理区域是否属于可用物理内存](#B5V)
+>
+> - [判断物理内存区域是否已经被虚拟地址映射](#B5N)
+>
+> - [判断物理地址是否属于预留内存](#B5T)
+
+MEMBLOCK 分配器的内部包含多个函数，其中可以提供给外部使用的接口归结如下:
+
 > <span id="B5"></span>
+> - [for_each_free_mem_range](#B62)
+>
+> - [for_each_free_mem_range_reverse](#B63)
+>
 > - [\_\_for_each_mem_range](#B50)
 >
 > - [\_\_for_each_mem_range_rev](#B51)
@@ -280,6 +434,58 @@ cd BiscuitOS/output/linux-6.0-x86_64/package/BiscuitOS-MEMBLOCK-memblock_alloc-d
 > - [memblock_alloc](#B59)
 >
 > - [memblock_alloc_exact_nid_raw](#B5A)
+>
+> - [memblock_alloc_from](#B5B)
+>
+> - [memblock_alloc_low](#B5C)
+>
+> - [memblock_alloc_node](#B5D)
+>
+> - [memblock_alloc_range_nid](#B5E)
+>
+> - [memblock_alloc_raw](#B5F)
+>
+> - [memblock_alloc_try_nid](#B5G)
+>
+> - [memblock_bottom_up](#B5H)
+>
+> - [memblock_end_of_DRAM](#B5J)
+>
+> - [memblock_free](#B5P)
+>
+> - [memblock_get_current_limit](#B5Q)
+>
+> - [memblock_is_map_memory](#B5N)
+>
+> - [memblock_is_memory](#B5S)
+>
+> - [memblock_is_region_reserved](#B5U)
+>
+> - [memblock_is_region_memory](#B5V)
+>
+> - [memblock_is_reserved](#B5T)
+>
+> - [memblock_overlaps_region](#B5W)
+>
+> - [memblock_phys_alloc](#B61)
+>
+> - [memblock_phys_alloc_range](#B5X)
+>
+> - [memblock_phys_free](#B5Y)
+>
+> - [memblock_phys_mem_size](#B5M)
+>
+> - [memblock_reserved_size](#B5L)
+>
+> - [memblock_remove](#B5Z)
+>
+> - [memblock_reserve](#B60)
+>
+> - [memblock_set_current_limit](#B5R)
+>
+> - [memblock_start_of_DRAM](#B5K)
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 --------------------------------------------------
 
@@ -669,4 +875,1062 @@ BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_alloc_exac
 
 ------------------------------------------
 
-###### <span id="B5A">memblock_alloc_exact_nid_raw</span>
+###### <span id="B5B">memblock_alloc_from</span>
+
+![](/assets/PDB/HK/TH002208.png)
+
+memblock_alloc_from() 函数用于从指定位置之后的区域中分配物理内存。参数 size 指明申请物理内存的长度，align 参数指明分配内存对齐方式, 参数 min_addr 指明分配物理内存的起始地址. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_alloc_from()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_alloc_from-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_alloc_from-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_alloc_from)
+
+![](/assets/PDB/HK/TH002209.png)
+
+程序源码很精简，程序在 22 行调用 memblock_alloc_from() 函数从 MEMBLOCK_FAKE_FROM 地址开始，申请申请 MEMBLOCK_FAKE_SIZE 长度的物理内存，并且物理内存按 SMP_CACHE_BYTES 方式对齐的物理内存。函数申请成功之后返回物理内存对应的虚拟地址，并存储在 mem 变量里。接着在 29-31 行使用申请到的物理内存。最后内存使用完毕之后，在 34 行调用 memblock_free() 函数进行释放. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002210.png)
+
+从 BiscuitOS 实践结果来看，案例可以从 MEMBLOCK 分配器中分配内存，分配的物理内存地址超过 MEMBLOCK_FAKE_FROM，并可以使用该内存，使用完毕之后也可以正确回收.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5C">memblock_alloc_low</span>
+
+![](/assets/PDB/HK/TH002211.png)
+
+memblock_alloc_from() 函数用于分配低地址物理内存，其范围是 MEMBLOCK_LOW_LIMIT 到 ARCH_LOW_ADDRESS_LIMIT。参数 size 指明申请物理内存的长度，align 参数指明分配内存对齐方式. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_alloc_low()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_alloc_low-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_alloc_low-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_alloc_low)
+
+![](/assets/PDB/HK/TH002212.png)
+
+程序源码很精简，程序在 25 行调用 memblock_alloc_low() 函数申请申请 MEMBLOCK_FAKE_SIZE 长度的物理内存，并且物理内存按 SMP_CACHE_BYTES 方式对齐的物理内存。函数申请成功之后返回物理内存对应的虚拟地址，并存储在 mem 变量里。接着在 31-33 行使用申请到的物理内存。最后内存使用完毕之后，在 36 行调用 memblock_free() 函数进行释放. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002210.png)
+
+从 BiscuitOS 实践结果来看，案例可以从 MEMBLOCK 分配器中分配内存，分配的物理内存地址在 MEMBLOCK_LOW_LIMIT 到 ARCH_LOW_ADDRESS_LIMIT 之间，并可以使用该内存，使用完毕之后也可以正确回收.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5D">memblock_alloc_node</span>
+
+![](/assets/PDB/HK/TH002213.png)
+
+memblock_alloc_node() 函数用于从指定 NUMA NODE 上分配物理内存。参数 size 指明申请物理内存的长度，align 参数指明分配内存对齐方式，参数 nid 指明了 NUMA NODE. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_alloc_node()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_alloc_node-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_alloc_node-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_alloc_node)
+
+![](/assets/PDB/HK/TH002214.png)
+
+程序源码很精简，程序在 32 行调用 memblock_alloc_node() 函数从 MEMBLOCK_FAKE_NODE 上申请申请 MEMBLOCK_FAKE_SIZE 长度的物理内存，并且物理内存按 SMP_CACHE_BYTES 方式对齐的物理内存。函数申请成功之后返回物理内存对应的虚拟地址，并存储在 mem 变量里。接着在 39-40 行使用申请到的物理内存。最后内存使用完毕之后，在 44 行调用 memblock_free() 函数进行释放. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002215.png)
+
+从 BiscuitOS 实践结果来看，案例可以从 MEMBLOCK 分配器中分配内存，此时 MEMBLOCK_FAKE_NODE 的范围是 0x20000000 到 0x300000000，因此符合分配的要求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5E">memblock_alloc_range_nid</span>
+
+![](/assets/PDB/HK/TH002216.png)
+
+memblock_alloc_range_nid() 函数用于精准分配物理内存。参数 size 指明申请物理内存的长度，align 参数指明分配内存对齐方式，参数 start 和 end 指明了分配的范围，参数 nid 指明了 NUMA NODE，参数 exact_nid 指明是否支持精准分配. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_alloc_range_nid()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_alloc_range_nid-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_alloc_range_nid-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_alloc_range_nid)
+
+![](/assets/PDB/HK/TH002217.png)
+
+程序源码很精简，程序在 34 行调用 memblock_alloc_range_nid() 函数从 MEMBLOCK_FAKE_NODE 上申请申请 MEMBLOCK_FAKE_SIZE 长度的物理内存，并且物理内存按 SMP_CACHE_BYTES 方式对齐的物理内存, 另外分配的范围是: MEMBLOCK_FAKE_BASE 到 MEMBLOCK_FAKE_END。函数申请成功之后返回物理地址，然后打印物理地址。最后内存使用完毕之后，在 45 行调用 memblock_phys_free() 函数进行释放. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002218.png)
+
+从 BiscuitOS 实践结果来看，案例可以从 MEMBLOCK 分配器中分配内存，此时 MEMBLOCK_FAKE_NODE 的范围是 0x22000000 到 0x280000000，因此符合分配的要求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5F">memblock_alloc_raw</span>
+
+![](/assets/PDB/HK/TH002219.png)
+
+memblock_alloc_raw() 函数用于分配物理内存。参数 size 指明申请物理内存的长度，align 参数指明分配内存对齐方式. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_alloc_raw()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_alloc_raw-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_alloc_raw-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_alloc_raw)
+
+![](/assets/PDB/HK/TH002220.png)
+
+程序源码很精简，程序在 21 行调用 memblock_alloc_raw() 函数申请申请 MEMBLOCK_FAKE_SIZE 长度的物理内存，并且物理内存按 SMP_CACHE_BYTES 方式对齐的物理内存, 函数申请成功之后返回物理地址，然后在 27-28 行使用内存。最后内存使用完毕之后，在 31 行调用 memblock_free() 函数进行释放. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002221.png)
+
+从 BiscuitOS 实践结果来看，案例可以从 MEMBLOCK 分配器中分配内存，并可以使用分配的物理内存，因此符合分配的要求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5G">memblock_alloc_try_nid</span>
+
+![](/assets/PDB/HK/TH002222.png)
+
+memblock_alloc_try_nid() 函数用于精准从指定 NUMA NODE 分配物理内存。参数 size 指明申请物理内存的长度，align 参数指明分配内存对齐方式，参数 min_addr 和 max_addr 指明分配物理内存的范围，参数 nid 指明分配的 NUMA NODE. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_alloc_try_nid()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_alloc_try_nid-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_alloc_try_nid-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_alloc_try_nid)
+
+![](/assets/PDB/HK/TH002223.png)
+
+程序源码很精简，程序在 28 行调用 memblock_alloc_try_nid() 函数从 MEMBLOCK_FAKE_NODE 上申请申请 MEMBLOCK_FAKE_SIZE 长度的物理内存，并且物理内存按 SMP_CACHE_BYTES 方式对齐的物理内存，申请的物理内存需要落在 MEMBLOCK_FAKE_BASE 到 MEMBLOCK_FAKE_END 之间, 函数申请成功之后返回虚拟地址，然后在 36-39 行使用内存。最后内存使用完毕之后，在 41 行调用 memblock_free() 函数进行释放. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002224.png)
+
+从 BiscuitOS 实践结果来看，案例可以从 MEMBLOCK 分配器中分配内存，并且物理内存来自 MEMBLOCK_FAKE_NODE, 且正好落在 MEMBLOCK_FAKE_BASE 到 MEMBLOCK_FA-KE_END 之间的物理内存，最后可以使用分配的物理内存，因此符合分配的要求.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5H">memblock_bottom_up</span>
+
+![](/assets/PDB/HK/TH002225.png)
+
+memblock_bottom_up() 函数用于获得 MEMBLOCK 分配器分配方向。MEMBLOCK 分配器支持从顶端向底部方向的分配，也支持从底部向顶端方向的分配. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_bottom_up()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_bottom_up-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_bottom_up-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_bottom_up)
+
+![](/assets/PDB/HK/TH002226.png)
+
+程序源码很精简，程序在 19 行调用 memblock_bottom_up() 函数获得 MEMBLOCK 分配器默认的分配方向，然后在 22 行调用 memblock_set_bottom_up() 函数将分配方向修改为 bottom 到 up，接着 23-27 行调用 memblock_alloc() 分配一块内存; 同理在 30 行再次调用 memblock_set_bottom_up() 函数将分配方向修改为 up 到 bottom，接着在 31-35 行调用 memblock_alloc() 函数分配一块内存，接着在 37-39 行打印两块内存的物理地址。最后回收内存并设置为默认的分配方向. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002227.png)
+
+从 BiscuitOS 实践结果来看，两次分配都从不同的方向分配到了物理内存，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5J">memblock_end_of_DRAM</span>
+
+![](/assets/PDB/HK/TH002228.png)
+
+memblock_end_of_DRAM() 函数可以获得最大 DRAM 地址。MEMBLOCK 分配器的 memory 区域维护了系统可用的物理内存，因此可以获得最大物理内存地址. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_end_of_DRAM()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_end_of_DRAM-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_end_of_DRAM-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_end_of_DRAM)
+
+![](/assets/PDB/HK/TH002229.png)
+
+程序源码很精简，通过 MEMBLOCK 分配器提供的接口获得内存相关的信息，其中 21 行调用 memblock_phys_mem_size() 函数获得可用物理内存的数量，25 行调用 memblock_reserved_size() 函数获得预留内存的数量，最后在 30 行调用 memblock_start_of_DRAM() 和 memblock_end_of_DRAM() 函数获得可用物理内存的范围. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002230.png)
+
+从 BiscuitOS 实践结果来看，可用物理内存为 0x3ff7cc00，预留内存为 0x2509000，可用物理内存的范围是 0x1000 到 0x3ffde000，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5K">memblock_start_of_DRAM</span>
+
+![](/assets/PDB/HK/TH002231.png)
+
+memblock_start_of_DRAM() 函数可以获得 DRAM 起始地址。MEMBLOCK 分配器的 memory 区域维护了系统可用的物理内存，因此可以获得起始物理内存地址. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_start_of_DRAM()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_start_of_DRAM-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_start_of_DRAM-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_start_of_DRAM)
+
+![](/assets/PDB/HK/TH002232.png)
+
+程序源码很精简，通过 MEMBLOCK 分配器提供的接口获得内存相关的信息，其中 21 行调用 memblock_phys_mem_size() 函数获得可用物理内存的数量，25 行调用 memblock_reserved_size() 函数获得预留内存的数量，最后在 30 行调用 memblock_start_of_DRAM() 和 memblock_end_of_DRAM() 函数获得可用物理内存的范围. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002230.png)
+
+从 BiscuitOS 实践结果来看，可用物理内存为 0x3ff7cc00，预留内存为 0x2509000，可用物理内存的范围是 0x1000 到 0x3ffde000，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5L">memblock_reserved_size</span>
+
+![](/assets/PDB/HK/TH002234.png)
+
+memblock_reserved_size() 函数可以获得 MEMBLOCK 分配器 reserved 区域的大小。MEMBLOCK 分配器的 reserved 区域维护了系统已经被使用的物理内存. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_reserved_size()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_reserved_size-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_reserved_size-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_reserved_size)
+
+![](/assets/PDB/HK/TH002233.png)
+
+程序源码很精简，通过 MEMBLOCK 分配器提供的接口获得内存相关的信息，其中 21 行调用 memblock_phys_mem_size() 函数获得可用物理内存的数量，25 行调用 memblock_reserved_size() 函数获得预留内存的数量，最后在 30 行调用 memblock_start_of_DRAM() 和 memblock_end_of_DRAM() 函数获得可用物理内存的范围. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002230.png)
+
+从 BiscuitOS 实践结果来看，可用物理内存为 0x3ff7cc00，预留内存为 0x2509000，可用物理内存的范围是 0x1000 到 0x3ffde000，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5M">memblock_phys_mem_size</span>
+
+![](/assets/PDB/HK/TH002235.png)
+
+memblock_phys_mem_size() 函数可以获得 MEMBLOCK 分配器维护可用物理内存的大小。MEMBLOCK 分配器的 memory 区域维护了系统所有可用的物理内存. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_phys_mem_size()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_phys_mem_size-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_phys_mem_size-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_phys_mem_size)
+
+![](/assets/PDB/HK/TH002236.png)
+
+程序源码很精简，通过 MEMBLOCK 分配器提供的接口获得内存相关的信息，其中 21 行调用 memblock_phys_mem_size() 函数获得可用物理内存的数量，25 行调用 memblock_reserved_size() 函数获得预留内存的数量，最后在 30 行调用 memblock_start_of_DRAM() 和 memblock_end_of_DRAM() 函数获得可用物理内存的范围. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002230.png)
+
+从 BiscuitOS 实践结果来看，可用物理内存为 0x3ff7cc00，预留内存为 0x2509000，可用物理内存的范围是 0x1000 到 0x3ffde000，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5N">memblock_is_map_memory</span>
+
+![](/assets/PDB/HK/TH002237.png)
+
+memblock_is_map_memory() 函数用于判断某段物理地址是否已经被虚拟地址映射。在 X86 架构中，MEMBLOCK 分配器维护的 memblock 区域的所有物理内存属于线性映射区，因此只要物理区域属于 memory 区域，那么函数就返回 true。参数 addr 指向需要检测的物理地址. 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_is_map_memory()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_is_map_memory-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_is_map_memory-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_is_map_memory)
+
+![](/assets/PDB/HK/TH002238.png)
+
+程序源码很精简，案例首先在 22 行通过调用 memblock_alloc() 函数分配长度为 MEMBLOCK_FAKE_SIZE 的物理内存，并返回物理内存对应的虚拟地址，接着在 28 行调用 \_\_pa() 函数获得虚拟地址对应的物理地址，接着在 32 行调用 memblock_is_map_memory() 函数判断物理地址是否已经被虚拟地址映射. 案例接着在 34 行将原来的物理地址加上 SMP_CACHE_BYTES 之后获得一个新的物理地址，同样检查新的物理地址是否已经被虚拟地址映射。最后案例在 39 行调用 memblock_free() 函数释放了分配的物理内存. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002239.png)
+
+从 BiscuitOS 实践结果来看，案例分配的物理地址是 0x3ffddfc0，其一定属于被虚拟地址映射的物理地址，然后 0x3ffddfc0 加上 SMP_CACHE_BYTES 之后的物理地址就不是一个被虚拟地址映射的物理地址.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5P">memblock_free</span>
+
+![](/assets/PDB/HK/TH002240.png)
+
+memblock_free() 函数用于回收 MEMBLOCK 分配器分配的物理地址。参数 ptr 为释放的物理地址对应的虚拟地址，参数 size 表示回收物理内存的长度. memblock_free() 函数回收的物理内存将从 memblock.reserved 区域中移除. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_free()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_free-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_free-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_free)
+
+![](/assets/PDB/HK/TH002241.png)
+
+程序源码很精简，案例首先在 21 行通过调用 memblock_alloc() 函数分配长度为 MEMBLOCK_FAKE_SIZE 的物理内存，并返回物理内存对应的虚拟地址，接着在 27-28 行使用这段物理内存，最后使用完毕之后在 31 行调用 memblock_free() 函数回收分配的物理内存. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002242.png)
+
+从 BiscuitOS 实践结果来看，案例可以分配并使用物理内存，最后可以正确回收物理内存.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5Q">memblock_get_current_limit</span>
+
+![](/assets/PDB/HK/TH002243.png)
+
+memblock_get_current_limit() 函数用于获得 MEMBLOCK 分配器可分配的最大物理内存，该值不代表 MEMBLOCK 分配器维护的最大可用物理内存，limit 值可以动态修改. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_get_current_limit()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_get_current_limit-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_get_current_limit-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_get_current_limit)
+
+![](/assets/PDB/HK/TH002244.png)
+
+程序源码很精简，案例首先在 23 行获得默认的 Limit，然后在 25 行调用 memblock_set_current_limit() 函数将 Limit 设置为 MEMBLOCK_FAKE_LIMIT, 接着在 28 行通过调用 memblock_alloc() 函数分配长度为 MEMBLOCK_FAKE_SIZE 的物理内存，并返回物理内存对应的虚拟地址，接着在 34-35 行使用这段物理内存，最后使用完毕之后在 38 行调用 memblock_free() 函数回收分配的物理内存，最后在 41 行调用 memblock_set_current_limit() 函数设置为默认的 Limit. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002245.png)
+
+从 BiscuitOS 实践结果来看，案例分配的物理内存为 0xffffc0，其没有超过 MEMBLOCK_FAKE_LIMIT 的地址，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5R">memblock_set_current_limit</span>
+
+![](/assets/PDB/HK/TH002246.png)
+
+memblock_set_current_limit() 函数用于设置 MEMBLOCK 分配器可分配的最大物理内存，该值不代表 MEMBLOCK 分配器维护的最大可用物理内存，limit 值可以动态修改. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_set_current_limit()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_set_current_limit-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_set_current_limit-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_set_current_limit)
+
+![](/assets/PDB/HK/TH002247.png)
+
+程序源码很精简，案例首先在 23 行获得默认的 Limit，然后在 25 行调用 memblock_set_current_limit() 函数将 Limit 设置为 MEMBLOCK_FAKE_LIMIT, 接着在 28 行通过调用 memblock_alloc() 函数分配长度为 MEMBLOCK_FAKE_SIZE 的物理内存，并返回物理内存对应的虚拟地址，接着在 34-35 行使用这段物理内存，最后使用完毕之后在 38 行调用 memblock_free() 函数回收分配的物理内存，最后在 41 行调用 memblock_set_current_limit() 函数设置为默认的 Limit. 接下来在 BiscuitOS 上运行案例:
+
+![](/assets/PDB/HK/TH002245.png)
+
+从 BiscuitOS 实践结果来看，案例分配的物理内存为 0xffffc0，其没有超过 MEMBLOCK_FAKE_LIMIT 的地址，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5S">memblock_is_memory</span>
+
+![](/assets/PDB/HK/TH002248.png)
+
+memblock_is_memory() 函数用于判断物理区域是否属于 MEMBLOCK 分配器维护的 memory 可用物理内存区域. 参数 addr 指向检查的物理区域. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_is_memory()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_is_memory-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_is_memory-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_is_memory)
+
+![](/assets/PDB/HK/TH002249.png)
+
+程序源码很精简，案例首先在 20 行调用 memblock_add() 函数向 MEMBLOCK 分配的 memory 区域添加一块可用物理区域，其范围是 MEMBLOCK_FAKE_BASE, 长度为 MEMBLOCK_SIZE. 函数接着在 23 行调用 memblock_is_memory() 函数判断新添加的区域是否属于可用物理区域，接着函数在 26 行调用 memblock_reserve() 函数将 MEMBLOCK_FAKE_BASE 之后 MEMBLOCK_FAKE_SIZE 的物理区域，长度为 MEMBLOCK_FAKE_SIZE，添加到了 reserved 区域，案例在 28 行调用 memblock_is_reserved() 函数判断新添加的区域是否属于 reserved 区域，最后在 33 和 35 行调用 memblock_remove() 函数将两段物理区域从 MEMBLOCK 分配器中移除。接下来在 BiscuitOS 上实践案例.
+
+![](/assets/PDB/HK/TH002250.png)
+
+从 BiscuitOS 实践结果来看，0x800000000 属于 MEMBLOCK 的 memory 区域，而 0x800100000 属于 MEMBLOCK 的 reserved 区域, 符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5T">memblock_is_reserved</span>
+
+![](/assets/PDB/HK/TH002251.png)
+
+memblock_is_reserved() 函数用于判断物理区域是否属于 MEMBLOCK 分配器维护的 reserved 预留物理内存区域. 参数 addr 指向检查的物理区域. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_is_reserved()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_is_reserved-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_is_reserved-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_is_reserved)
+
+![](/assets/PDB/HK/TH002252.png)
+
+程序源码很精简，案例首先在 20 行调用 memblock_add() 函数向 MEMBLOCK 分配的 memory 区域添加一块可用物理区域，其范围是 MEMBLOCK_FAKE_BASE, 长度为 MEMBLOCK_FAKE_SIZE. 函数接着在 23 行调用 memblock_is_memory() 函数判断新添加的区域是否属于可用物理区域，接着函数在 26 行调用 memblock_reserve() 函数将 MEMBLOCK_FAKE_BASE 之后 MEMBLOCK_FAKE_SIZE 的物理区域，长度为 MEMBLOCK_FAKE_SIZE，添加到了 reserved 区域，案例在 28 行调用 memblock_is_reserved() 函数判断新添加的区域是否属于 reserved 区域，最后在 33 和 35 行调用 memblock_remove() 函数将两段物理区域从 MEMBLOCK 分配器中移除。接下来在 BiscuitOS 上实践案例.
+
+![](/assets/PDB/HK/TH002250.png)
+
+从 BiscuitOS 实践结果来看，0x800000000 属于 MEMBLOCK 的 memory 区域，而 0x800100000 属于 MEMBLOCK 的 reserved 区域, 符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5U">memblock_is_region_reserved</span>
+
+![](/assets/PDB/HK/TH002253.png)
+
+memblock_is_region_reserved() 函数用于判断物理区域是否属于 MEMBLOCK 分配器维护的 reserved 预留物理内存区域, 或者判断某段物理内存是否已经不可分配. 参数 base 指向检查的物理区域，size 参数指明区域的长度. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_is_region_reserved()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_is_region_reserved-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_is_region_reserved-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_is_region_reserved)
+
+![](/assets/PDB/HK/TH002254.png)
+
+程序源码很精简，案例首先在 20 行调用 memblock_reserve() 函数向 MEMBLOCK 分配的 reserved 区域添加一块预留的物理区域，其范围是 MEMBLOCK_FAKE_BASE, 长度为 MEMBLOCK_FAKE_SIZE. 函数接着在 22 行调用 memblock_is_region_reserved() 函数判断新添加的区域是否属于预留物理区域，如果是则打印相关的字符串，最后函数在 26 行调用 memblock_remove() 将测试用的区域从 MEMBLOCK 分配器中移除. 接下来在 BiscuitOS 上实践案例:
+
+![](/assets/PDB/HK/TH002255.png)
+
+从 BiscuitOS 实践结果来看，0x800000000 属于 MEMBLOCK 的 reserved 区域, 符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5V">memblock_is_region_memory</span>
+
+![](/assets/PDB/HK/TH002256.png)
+
+memblock_is_region_memory() 函数用于判断物理区域是否属于 MEMBLOCK 分配器维护的 memory 预留物理内存区域, 或者判断某段物理内存是否为可用物理内存. 参数 base 指向检查的物理区域，size 参数指明区域的长度. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_is_region_memory()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_is_region_memory-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_is_region_memory-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_is_region_memory)
+
+![](/assets/PDB/HK/TH002257.png)
+
+程序源码很精简，案例首先在 20 行调用 memblock_add() 函数向 MEMBLOCK 分配的 memory 区域添加一块可用的物理区域，其范围是 MEMBLOCK_FAKE_BASE, 长度为 MEMBLOCK_FAKE_SIZE. 函数接着在 22 行调用 memblock_is_region_memory() 函数判断新添加的区域是否属于可用物理区域，如果是则打印相关的字符串，最后函数在 26 行调用 memblock_remove() 将测试用的区域从 MEMBLOCK 分配器中移除. 接下来在 BiscuitOS 上实践案例:
+
+![](/assets/PDB/HK/TH002258.png)
+
+从 BiscuitOS 实践结果来看，0x800000000 属于 MEMBLOCK 的 memory 区域, 符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5W">memblock_overlaps_region</span>
+
+![](/assets/PDB/HK/TH002259.png)
+
+memblock_overlaps_region() 函数用于判断某块区域是否与 memblock.memory 或者 memblock.reserved 区域重叠，如果重叠则返回 1. 参数 type 指向 memblock.memory 或者 memblock.reserved 区域，参数 base 和 size 指明了检测区域的范围. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_addrs_overlap()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_addrs_overlap-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_addrs_overlap-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_addrs_overlap)
+
+![](/assets/PDB/HK/TH002260.png)
+
+程序源码很精简，案例在 22 行调用 memblock_addrs_overlap() 函数检测 MEMBLOCK_FAKE_BASE 区域是否与 memblock.memory 区域重叠. 接下来 BiscuitOS 上实践案例:
+
+![](/assets/PDB/HK/TH002261.png)
+
+从 BiscuitOS 实践结果来看，0xC000000 到 0xC100000 区域与 MEMBLOCK 的 memory 区域中的 Region 重叠, 符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5X">memblock_phys_alloc_range</span>
+
+![](/assets/PDB/HK/TH002262.png)
+
+memblock_phys_alloc_range() 函数用于从指定范围内分配物理内存，参数 size 指明分配物理内存的长度，参数 align 指明分配的物理内存对其方式，参数 start 和 end 指明了分配物理内存的范围. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_phys_alloc_range()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_phys_alloc_range-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_phys_alloc_range-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_phys_alloc_range)
+
+![](/assets/PDB/HK/TH002263.png)
+
+程序源码很精简，案例在 35 行调用 memblock_phys_alloc_range() 函数从 MEMBLOCK_FAKE_BASE 到 MEMBLOCK_FAKE_END 区域中分配长度为 MEMBLOCK_FAKE_SIZE 的物理内存，物理内存必须按 SMP_CACHE_BYTES 方式对齐。当分配成功之后，函数将分配的物理地址存储在 phys 变量里。案例接着在 44 行调用 phys_to_virt() 函数将 phys 物理地址转换成虚拟地址，并在 46-48 行使用内存，最后函数在 51 行调用 memblock_phys_free() 函数释放分配的物理内存. 案例在 BiscuitOS 上的实践如下:
+
+![](/assets/PDB/HK/TH002264.png)
+
+从 BiscuitOS 实践结果来看，分配的物理内存属于 MEMBLOCK_FAKE_BASE 到 MEMBLOCK_FAKE_END 区域，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5Y">memblock_phys_free</span>
+
+![](/assets/PDB/HK/TH002265.png)
+
+memblock_phys_free() 函数用于回收 MEMBLOCK 分配的物理内存，参数 base 和 size 指明了回收物理内存的范围。案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_phys_free()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_phys_free-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_phys_free-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_phys_free)
+
+![](/assets/PDB/HK/TH002266.png)
+
+程序源码很精简，案例在 21 行调用 memblock_alloc_raw() 函数分配一块长度为 MEMBLOCK_FAKE_SIZE 的物理内存，然后在使用完毕之后，在 31 行调用 memblock_phys_free() 函数进行回收。
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B5Z">memblock_remove</span>
+
+![](/assets/PDB/HK/TH002267.png)
+
+memblock_remove() 函数用于从 MEMBLOCK 分配器的 memory 区域移除一段可用物理区域。参数 base 和 size 指明了移除物理区域的范围. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_remove()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_remove-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_remove-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_remove)
+
+![](/assets/PDB/HK/TH002268.png)
+
+程序源码很精简，案例在 21 行调用 memblock_add() 函数向 MEMBLOCK 分配器 memory 区域新增一块物理区域，然后在 26 行调用 for_each_mem_range() 函数遍历 memblock.memory 区域所有可用物理区域，接着函数在 30 行调用 memblock_remove() 函数从 memblock.memory 区域中移除新增的物理区域，最后在 33 行再次调用 for_each_mem_range() 函数遍历 memblock.memory 所有可用物理区域。案例在 BiscuitOS 中实践如下:
+
+![](/assets/PDB/HK/TH002269.png)
+
+从 BiscuitOS 实践结果来看，memblock_remove() 函数移除的区域确实来自 memblock.memory，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B60">memblock_reserve</span>
+
+![](/assets/PDB/HK/TH002270.png)
+
+memblock_reserve() 函数用于将一段物理区域进行预留，或者标记为 MEMBLOCK 分配器不可分配的物理内存。参数 base 和 size 指明的预留物理区域的范围。其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_reserve()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_reserve-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_reserve-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_reserve)
+
+![](/assets/PDB/HK/TH002271.png)
+
+程序源码很精简，案例在 20 行调用 memblock_reserve() 函数向 MEMBLOCK 分配器 reserved 区域新增一块物理区域，那么这块物理区域就不能再被分配。然后在 22 行调用 memblock_is_region_reserved() 函数判断该段区域是否已经被预留，如果是则打印; 最后函数在 26 行调用 memblock_remove() 函数将区域从 memblock.reserved 中移除. 案例在 BiscuitOS 中实践如下: 
+
+![](/assets/PDB/HK/TH002272.png)
+
+从 BiscuitOS 实践结果来看，memblock_reserve() 函数可以将某段物理内存添加到 MEMBLOCK 分配器的 memblock.memory 区域，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B61">memblock_phys_alloc</span>
+
+![](/assets/PDB/HK/TH002273.png)
+
+memblock_phys_alloc() 函数用于从指定范围内分配物理内存，参数 size 指明分配物理内存的长度，参数 align 指明分配的物理内存对其方式. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: memblock_phys_alloc()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-memblock_phys_alloc-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-memblock_phys_alloc-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-memblock_phys_alloc)
+
+![](/assets/PDB/HK/TH002274.png)
+
+程序源码很精简，案例在 35 行调用 memblock_phys_alloc() 函数分配长度为 MEMBLOCK_FAKE_SIZE 的物理内存，物理内存必须按 SMP_CACHE_BYTES 方式对齐。当分配成功之后，函数将分配的物理地址存储在 phys 变量里。案例接着在 44 行调用 phys_to_virt() 函数将 phys 物理地址转换成虚拟地址，并在 46-48 行使用内存，最后函数在 51 行调用 memblock_phys_free() 函数释放分配的物理内存. 案例在 BiscuitOS 上的实践如下:
+
+![](/assets/PDB/HK/TH002275.png)
+
+从 BiscuitOS 实践结果来看，案例可以从 MEMBLOCK 分配器中分配到物理内存，并正常使用和回收，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B62">for_each_free_mem_range</span>
+
+![](/assets/PDB/HK/TH002276.png)
+
+for_each_free_mem_range() 函数用于遍历 MEMBLOCK 分配器中可以分配的物理内存。参数 i 指明遍历的 Region 序号，参数 nid 指明需要遍历的空闲内存所在的 NUMA NODE，参数 flags 指明遍历空闲内存的属性，参数 p_start 和 p_end 用于记录每次遍历空闲区域的起始物理地址和结束物理地址，参数 p_nid 指明了遍历到的区域所在的 NUMA NODE. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: for_each_free_mem_range()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-for_each_free_mem_range-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-for_each_free_mem_range-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-for_each_free_mem_range)
+
+![](/assets/PDB/HK/TH002277.png)
+
+程序源码很精简，案例在 36 行调用 memblock_add() 函数向 memblock.memory 区域添加 MEMBLOCK_FAKE_MEMORY 起始的一段物理内存，在 37 行调用 memblock_reserve() 函数向 memblock.reserved 区域添加 MEMBLOCK_FAKE_RESRVE 起始的一段物理内存。案例接着在 40-45 行调用 for_each_free_mem_range() 函数正序遍历 MEMBLOCK_FAKE_NODE 上所有空闲物理内存; 同理案例在 48-54 行调用 for_each_free_mem_range() 函数正序遍历 MEMBLOCK_FAKE_NODE + 1 上的所有空闲物理内存. 最后案例在 57-63 行调用 for_each_free_mem_range_reverse() 函数倒序遍历 MEMBLOCK_FAKE_NODE 上所有空闲物理内存. 案例最后在 67-68 行调用 memblock_remove() 函数移除之前新增的区域. 案例在 biscuitOS 上实践如下:
+
+![](/assets/PDB/HK/TH002278.png)
+
+从 BiscuitOS 实践结果来看，第一次只正序遍历了 MEMBLOCK_FAKE_NODE 上的所有空闲内存，第二次遍历了下一个 NODE 上的所有空闲物理内存，最后以此倒序遍历了 MEMBLOCK_FAKE_NODE 上的所有空闲内存，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+###### <span id="B63">for_each_free_mem_range_reverse</span>
+
+![](/assets/PDB/HK/TH002279.png)
+
+for_each_free_mem_range_severse() 函数用于倒序遍历 MEMBLOCK 分配器中可以分配的物理内存。参数 i 指明遍历的 Region 序号，参数 nid 指明需要遍历的空闲内存所在的 NUMA NODE，参数 flags 指明遍历空闲内存的属性，参数 p_start 和 p_end 用于记录每次遍历空闲区域的起始物理地址和结束物理地址，参数 p_nid 指明了遍历到的区域所在的 NUMA NODE. 案例在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK API: for_each_free_mem_range_reverse()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-for_each_free_mem_range_reverse-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-for_each_free_mem_range_reverse-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-for_each_free_mem_range_reverse)
+
+![](/assets/PDB/HK/TH002280.png)
+
+程序源码很精简，案例在 36 行调用 memblock_add() 函数向 memblock.memory 区域添加 MEMBLOCK_FAKE_MEMORY 起始的一段物理内存，在 37 行调用 memblock_reserve() 函数向 memblock.reserved 区域添加 MEMBLOCK_FAKE_RESRVE 起始的一段物理内存。案例接着在 40-45 行调用 for_each_free_mem_range() 函数正序遍历 MEMBLOCK_FAKE_NODE 上所有空闲物理内存; 同理案例在 48-54 行调用 for_each_free_mem_range() 函数正序遍历 MEMBLOCK_FAKE_NODE + 1 上的所有空闲物理内存. 最后案例在 57-63 行调用 for_each_free_mem_range_reverse() 函数倒序遍历 MEMBLOCK_FAKE_NODE 上所有空闲物理内存. 案例最后在 67-68 行调用 memblock_remove() 函数移除之前新增的区域. 案例在 biscuitOS 上实践如下:
+
+![](/assets/PDB/HK/TH002278.png)
+
+从 BiscuitOS 实践结果来看，第一次只正序遍历了 MEMBLOCK_FAKE_NODE 上的所有空闲内存，第二次遍历了下一个 NODE 上的所有空闲物理内存，最后以此倒序遍历了 MEMBLOCK_FAKE_NODE 上的所有空闲内存，符合预期.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+#### MEMBLOCK 物理内存分配器进阶研究
+
+------------------------------------------
+
+<span id="T0"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
+
+##### Mirror Memory 研究
+
+![](/assets/PDB/HK/TH002282.png)
+
+Memory Mirror 是一种硬件控制行为，但硬件系统采用这种行为之后，硬件上会将同体积的两块内存作为主备。当系统对 Mirror 内存进行写操作时，内存控制器会将写请求同时下发到两块内存上。当系统对 Mirror 内存进行读操作时，为了保持一致性，内存控制器会同时读取两块内存上的数据，然后进行比较，确保数据是一致的。Memory mirror 对硬件的影响很大，直接改了内存的 interleaving Mode，可能导致性能受损.
+
+![](/assets/PDB/HK/TH002283.png)
+
+Memory mirror 虽然缺点明显，但在 RAS 高可用场景，如果 MemoryA 发送 UNcorrectable Error(UE)，如果没有 Memory mirror，那么 CPU 读取 UE 内存之后直接导致宕机; 但如果使能 Memory mirror 的话，如果 Memory A 上发送了 UE，那么内存控制器就直接使用 Memory B 上的数据，这大大提供了系统可用性.
+
+![](/assets/PDB/HK/TH002284.png)
+
+Memroy mirror 从软件角度来看，其就是一段普通的物理内存，但其有具有硬件所见的特殊功能，因此需要特殊对待。在系统启动阶段，有的组件或子系统回去使用这部分内存，由于 MEMBLOCK 分配器负责早期的物理内存管理，因此 MEMBLOCK 分配器需要对 Memory mirror 进行特殊管理。memblock.memory 区域表示系统可用物理内存，Memory mirror 也属于系统可用物理内存，因此 Memory mirror 内存也维护在 memblock.memory 区域。MEMBLOCK 分配器将维护的 Region 标记为 MEMBLOCK_MIRROR.
+
+![](/assets/PDB/HK/TH002285.png)
+
+由于 Memory Mirror 物理内存维护在 memblock.memory 区域里，并且 MEMBLOCK 分配器对外提供了 Mirrorable 物理内存分配和 Non-Mirrorable 物理内存的分配，因此当请求者需要分配 Mirror 物理内存时，MEMBLOCK 分配器优先提供 Mirrorable 物理内存，如果系统没有足够的 Mirrorable 内存，那么 MEMBLOCK 分配器会发出警告，但分配器还是会提供 Non-Mirrorable 物理内存. 那么接下来通过一个 Memory mirror 案例进行分析, 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MIRROR MEMORY: mirror memory on MEMBLOCK()  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-MIRROR-MEMORY-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-MIRROR-MEMORY-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-MIRROR-MEMORY)
+
+![](/assets/PDB/HK/TH002286.png)
+
+为了支持 MEMBLOCK MIRROR MEMORY 功能，需要在 CMDLINE 中添加 'kernelcore=mirror' 字段。回到案例源码，其在 41 行调用 memblock_mark_mirror() 函数将 MEMBLOCK_MIRROR_BASE 到 MEMBLOCK_MIRROR_END 的区域标记为 Mirrorable，那么这段区域在 memblock.memory 区域中被标记为 MEMBLOCK_MIRROR, 于是在 45 行调用 \_\_for_each_mem_range() 函数遍历 memblock.memory 中的 MEMBLOCK_MIRROR 区域进行验证. 案例接着在 50 行调用 memblock_alloc_range_nid() 函数用于从 MEMBLOCK_MIRROR 中分配 mirror 物理内存，在调用函数时只指定了分配范围对应 Mirrorable 区域。分配完毕之后函数在 60 行再次调用 for_each_reserved_mem_region() 函数检查 memblock.reserved 中的 MEMBLOCK_MIRROR 区域，以此检查分配的 mirror 物理内存已经被加入到 memblock.reserved 里. 最后在 65-71 行对 MIRROR 物理内存进行使用和回收。接下来在 BiscuitOS 上进行实践:
+
+![](/assets/PDB/HK/TH002287.png)
+
+BiscuitOS 运行之后，可以从 Dmesg 中看到第一次遍历 memblock.memory 的时候，可以只遍历 MEMBLOCK_MIRROR 区域，正好是 MEMBLOCK_MIRROR_BASE 到 MEMBLOCK_M-IRROR_END. 当分配 mirror 物理内存之后再次遍历 memblock.reserved 区域，此时分配的物理地址是 0x2200ffc0，可以在 memblock.reserved 中找到，但是其 flags 并不是 MEMBLO-CK_MIRROR. 以上实践符合预期. 
+
+![](/assets/PDB/HK/TH002288.png)
+
+MEMBLOCK 分配器优先为需求 Mirror 内存的请求者提供 Mirrorable 内存，如果 MEMBLOCK 分配器已经将所有 Mirrorable 内存分配完，那么 MEMBLOCK 分配器会在给请求者发出警告，然后为其分配 Un-Mirrorable 的物理内存。接下来通过一个案例进行实践:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MIRROR MEMORY: Lake Mirrorable Memory  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-MIRROR-MEMORY-lake-memory-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-MIRROR-MEMORY-lake-memory-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-MIRROR-MEMORY-lake-memory)
+
+![](/assets/PDB/HK/TH002289.png)
+
+为了支持 MEMBLOCK MIRROR MEMORY 功能，需要在 CMDLINE 中添加 'kernelcore=mirror' 字段。回到案例源码，其首先在 42-46 行先遍历了 MEMBLOCK_FAKE_NODE 上可分配的物理内存，然后在 49 行调用 memblock_mark_mirror() 函数将 MEMBLOCK_MIRROR_BASE 长度为 MEMBLOCK_MIRROR_SIZE 的物理内存标记为 Mirrorable. 接着函数在 52 行调用 memblock_alloc_range_nid() 函数从 MEMBLOCK_FAKE_BASE 到 MEMBLOCK_FAKE_END 区域分配器长度为 MEMBLOCK_FAKE_SIZE 的 Mirrorable 物理内存。接着就是分配的物理内存使用和回收。在案例中可以看到 Mirrorable 物理内存只有 0x1000, 但请求者需要 0x2000 的 Mirrorable 物理内存。那么接下来在 BiscuitOS 上实践，以此观察 MEMBLOCK 分配器如何处理这种情况:
+
+![](/assets/PDB/HK/TH002290.png)
+
+BiscuitOS 运行之后，可以看到 MEMBLOCK_FAKE_NODE 上的可用物理内存包括了 MEMBLOCK_MIRROR_BASE 到 MEMBLOCK_MIRROR_END 区域，那么当分配的长度超过 Mirrorable 内存长度之后，MEMBLOCK 分配器分配的物理内存只有分配 Un-Mirrorable 物理内存，此时系统会提示 "Could not allocate 0x0000000000002000 bytes of mirrored memory". 那么值得注意的是: MEMBLOCK 是否会分配既有 Mirrorable 又有 Un-Mirrorable 物理内存, 接下来基于上面的案例，进行修改:
+
+![](/assets/PDB/HK/TH002291.png)
+
+其他不变的前提下，将 MEMBLOCK_FAKE_BASE 修改为 MEMBLOCK_MIRROR_BASE 前一个 PAGE_SIZE，MEMBLOCK_FAKE_END 设置为 MEMBLOCK_MIRROR_BASE 后一个 PAGE_SIZE, 那么此时可分配区域长度正好是 MEMBLOCK_FAKE_SIZE:;
+
+![](/assets/PDB/HK/TH002292.png)
+
+BiscuitOS 运行之后，可以看到 MEMBLOCK 分配器分配内存失败了，因此可以知道 MEMBLOCK 分配器不会同时分配即 Mirrorable 和 Un-Mirrorable 的物理内存. 
+
+> - [如何选择内存模式 (Independent/Mirroring/Lock Step) 区别与性能评测](http://www.shiiko.cn/2019/02/notes/memory-mode/)
+>
+> - [Configuring the memory mirroring mode](https://techlibrary.hpe.com/docs/iss/proliant-gen10-uefi/GUID-F8C8A028-EB57-4EAC-A664-331EAC4EA821.html)
+>
+> - [内存的可靠性、可用性和诊断功能(内存 RAS)](https://blog.csdn.net/woody1209/article/details/100924764)
+>
+> - [Address Range Partial Memory Mirroring - Intel](https://www.intel.com/content/www/us/en/developer/articles/technical/address-range-partial-memory-mirroring.html)
+>
+> - [Address Range Memory Mirrori - FUJITSU](https://events.static.linuxfound.org/sites/events/files/slides/Address%20Range%20Memory%20Mirroring-RC.pdf)
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+<span id="T1"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000O.jpg)
+
+##### physmem Region 研究
+
+![](/assets/PDB/HK/TH002293.png)
+
+在 MEMBLOCK 分配器中，memblock.memory 区域维护的是系统可用的物理内存 **Available Physical Memory**, memblock.reserved 区域维护的是 MEMBLOCK 分配器已经分配的可用物理内存, 那么 MEMBLOCK 分配器可分配的物理内存就是 memblock.memory 区域中剔除 memblock.reserved 区域之后的物理内存。但在系统中还存在另外一种内存，这部分物理内存不被系统管理，称为 **System Reserved Physical Memory**, 也就是通常所说的预留内存. 系统预留物理内存是特定预留给某个某块或子系统使用，内核无法用通用内存管理器管理到.
+
+![](/assets/PDB/HK/TH002140.png)
+
+系统默认的 MEMBLOCK 分配器使用 memblock.memory 和 memblock.reserved 两组数据结构进行维护，其无法管理到系统预留物理内存。在 X86 架构中，由于 E820 表的存在，系统预留内存的信息都维护在 E820 表中，但在有的架构中并不存在类似 E820 表的机制，因此在这些架构中，想在 Boot 阶段维护系统预留内存，那么可以提供 MEMBLOCK 分配器提供的 physmem 区域.
+
+![](/assets/PDB/HK/TH002294.png)
+
+MEMBLOCK 分配器新建立一个名为 physmem 的区域，这个区域包含了 memblock_physmem_init_regions[] 数组，数组中的成员按从地址到高地址的将系统所有的物理内存区域都进行维护，那么系统预留内存和系统可用物理内存被维护在 physmem 区域里.
+
+![](/assets/PDB/HK/TH002295.png)
+
+physmem 区域中包含了系统所有的物理内存，包括系统可用物理内存和系统预留物理内存，因此 physmem 区域剔除掉 memblock.memory 区域就是系统预留内存.
+
+![](/assets/PDB/HK/TH002296.png)
+
+MEMBLOCK 分配器中，如果要使用 physmem 区域，那么需要打开 CONFIG_HAVE_MEMBLOCK_PHYS_MAP 宏. physmem 区域定义为 struct memblock_type, 其默认情况下支持 INIT_PHYSMEM_REGIONS 个物理区域，这些区域通过 memblock_physmem_init_regions[] 数组维护，当添加的物理区域超过 INIT_PHYSMEM_REGIONS 时，MEMBLOCK 分配器会动态扩容 Regions 的数量. 那么接下来介绍 X86-64 架构上如何启用 physmem 区域:
+
+![](/assets/PDB/HK/TH002297.png)
+
+首先是启用 CONFIG_HAVE_MEMBLOCK_PHYS_MAP 宏，可以在 arch/x86/Kconfig 文件中 "config X86_64" 处选中宏，使用上图的语句 "select HAVE_MEMBLOCK_PHYS_MAP", 其他架构类似，这样重新编译内核的时候，宏就启用。
+
+![](/assets/PDB/HK/TH002298.png)
+
+宏启动之后，接下来就是在内核启动的合适位置，将系统探测到的物理内存添加到 physmem 区域，在 X86-64 架构中，无论支不支持 NUMA 机制，E820 表中都记录了系统物理内存信息，但刚从 BIOS 中获得的 E820 表里是可以包含所有的物理内存，因此在 e820__memory_setup() 函数中添加 1223-1325 行对 e820__memblock_add_physmem() 函数的调用，其实现在 1293-1304 行，函数通过遍历 E820 表的所有 Entry，将其中 E820_TYPE_RAM 的区域全部通过调用 memblock_physmem_add() 函数添加到 physmem 区域里. 接下来使用一个案例说明如何通过 MEMBLOCK 分配器获得系统预留的物理内存，其在 BiscuitOS 中的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK physmem Region  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-physmem-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-physmem-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-physmem)
+
+![](/assets/PDB/HK/TH002299.png)
+
+为了更好的验证 physmem 区域，可以在 CMDLINE 中添加 'memmap=1M$0x10000000 memmap=1M$0x10200000 memmap=1M$0x10400000' 字段，那么系统就存在新增的三块预留区域。案例很简单，案例在 25 行调用 for_each_physmem_range() 函数遍历所有的系统物理内存，案例接着在 30 行同样调用 for_each_physmem_range() 函数，不同的是第二个参数是 memblock.memory 区域，其效果相当于从 physmem 区域中移除 memblock.memory 区域，那么就是系统预留物理内存，一旦有了系统预留内存信息，就可以使用 MEMBLOCK 分配器提供的接口使用物理内存。最后在 BiscuitOS 中实践案例:
+
+![](/assets/PDB/HK/TH002300.png)
+
+当 BiscuitOS 运行之后，可以看到系统物理内存包括两个区域，另外系统预留区域中包括了之前新增的三个区域，符合预期. 通过上面的分析 physmem 区域可以用来维护系统所有的物理内存，并结合 memblock.memory 区域可以获得系统预留内存.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+-------------------------------------------
+
+<span id="T5"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000L.jpg)
+
+##### Keeping Work 研究
+
+![](/assets/PDB/HK/TH001990.png)
+
+MEMBLOCK 分配器作为系统启动阶段用于管理系统物理内存的分配器，当系统启动完毕，MEMBLOCK 分配器完成使命，Buddy 分配器接过物理内存管理的任务之后，系统将终结 MEMBLOCK 分配器的生命. 本节研究的 Keeping Work 是想继续延续 MEMBLOCK 分配器的生命，使其在系统启动完毕之后，继续可以为系统提供服务.
+
+![](/assets/PDB/HK/TH002301.png)
+![](/assets/PDB/HK/TH002302.png)
+
+为了让 MEMBLOCK 分配器可以继续工作，那么需要在内核打开 CONFIG_A-RCH_KEEP_MEMBLOCK 宏. 例如在 X86-64 架构需要打开该宏，可以修改 "arch/x86/Kconfig" 配置文件，在上图 config X86_64 宏下面填入 **select ARCH_KEEP_MEMBLOCK** 内容, 最后重编译内核即可:
+
+![](/assets/PDB/HK/TH002303.png)
+
+当系统启动完毕之后，系统新增 "/sys/kernel/debug/memblock/" 目录，目录下包含了 memory/physmem/reserved 三个区域，然后通过 cat 命令可以读取每个区域中包含的 Region 信息. 那么 MEMBLOCK 分配器 Keeping Work 之后可以继续获得三个分区的信息，接下来通过几个案例进一步分析，案例一在 BiscuitOS 中的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK KEEP: Iterate Regions  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-KEEP-iterate-region-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-KEEP-iterate-region-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-KEEP-iterate-region)
+
+![](/assets/PDB/HK/TH002304.png)
+
+案例代码很简单，案例在 21 行调用 for_each_mem_range() 函数遍历了 memblock.memory 系统可用物理内存所有区域，另外案例在 27 行调用 device_initcall() 函数，说明此时系统已经启动完成, 那么接下来在 BiscuitOS 上实践案例代码:
+
+![](/assets/PDB/HK/TH002305.png)
+
+BiscuitOS 启动之后，可以看到案例被加载之后，其将系统所有可用物理内存打印出来了，因此在 MEMBLOCK 分配器 Keeping Work 之后，可以继续对 memblock.memory/physmem/memblock.reserved 使用. 那么接下来使用另外一个案例，其在 BiscuitOS 中的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK KEEP: Allocate Memory  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-KEEP-allocate-memory-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-KEEP-allocate-memory-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-KEEP-allocate-memory)
+
+![](/assets/PDB/HK/TH002306.png)
+
+案例代码很简单，案例在 22 行调用 memblock_alloc() 函数分配长度为 MEMBLOC-K_FAKE_SIZE 的物理内存，然后在 28-29 行使用分配的内存，最后在 32 行调用 memblock_free() 函数将分配的内存释放. 那么接下来在 BiscuitOS 上实践案例代码:
+
+![](/assets/PDB/HK/TH002307.png)
+
+BiscuitOS 运行之后，案例被调用时，系统 WARNING mm/memblock.c 文件 1504 处有问题，其函数调用栈显示系统调用 memblock_alloc_try_nid() 函数时发生 WARNING，警告完之后案例还是分配到了内存，并打印了字符串 "Hello BiscuitOS". 以上便是 Keep Work 的两个案例，那么为什么 MEMBLOCK 分配器在 Keeping Work 之后行为与 Boot 阶段出现差异，接下来进行详细分析:
+
+![](/assets/PDB/HK/TH002142.png)
+![](/assets/PDB/HK/TH002143.png)
+
+内核在定义 memblock/memblock_memory_init_regions/memblock_reserved_init_regions/memblock_physmem_init_regions/physmem 数据时，将其放置在 \_\_initdata_memblock Section 内，当内核启用了 CONFIG_ARCH_KEEP_MEMBLOCK 宏之后，\_\_initdata_memblock 为空，不再属于 .memblock.text Section. 那么内核初始化到后期之后，这些数据就不会被内核抹除掉，可以继续使用.
+
+![](/assets/PDB/HK/TH002308.png)
+
+至于调用 memblock_alloc() 相关的分配函数，其最终都会调用 memblock_alloc_internal() 函数，函数如果通过 slab_is_available() 函数探测到 SLAB 分配器已经启用，那么其会通过 WARN_ON_ONCE() 函数进行警告，因此告诉调用者请使用 SLAB 分配器内存，不要直接使用 MEMBLOCK 分配器分配内存, 最后内核还是从 SLAB 分配器中分配了内存，没有从 MEMBLOCK 分配器中分配，因此 Keeping Work 之后，MEMBLOCK 分配器已经不提供物理内存分配能力了. 综上所属，MEMBLOCK Keeping Work 的有效用途就是查看 memblock.memory、memblock.reserved、physmem 区域的信息.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------------
