@@ -33,6 +33,8 @@ tags:
 >
 >   - [MEMBLOCK 控制与检测操作](#B7)
 >
+>   - [MEMBLOCK 分配器系统接口](#B8)
+>
 > - [MEMBLOCK 物理内存分配器 API 合集](#B5)
 >
 > - [MEMBLOCK 物理内存分配器使用场景](#X)
@@ -40,6 +42,10 @@ tags:
 >   - [Mirror Memory 应用场景](#X0)
 >
 >   - [系统预留内存应用场景](#X1)
+>
+>   - [CRASH VMCORE 应用场景](#X2)
+>
+>   - [Hugetlb 1G 大页应用场景](#X3)
 >
 > - MEMBLOCK 物理内存分配器 BUG 合集
 >
@@ -51,19 +57,17 @@ tags:
 >
 >   - [MEMBLOCK 分配器之 no-map 研究](#T2)
 >
->   - [MEMBLOCK 分配器与设备管理内存研究](#T3)
+>   - [MEMBLOCK 分配器 DRVIER_MANAGED 研究](#T3)
 >
 >   - [MEMBLOCK 分配器与 Hotplug Memory 研究](#T4)
 >
 >   - [MEMBLOCK 分配器 Keep Work 研究](#T5)
 >
->   - [MEMBLOCK 分配器不同 Region 研究](#T6)
->
 >   - [MEMBLOCK 分配器 Split 与 Merge 研究](#T7)
 >
 >   - [MEMBLOCK 分配器调试研究](#T8)
 >
->   - [MEMBLOCK 分配器与 NUMA 研究](#T9)
+>   - [MEMBLOCK 分配器 BiscuitOS Doc 2.0+](/blog/MMU-ARM32-MEMBLOCK-index/)
 >
 >   - [Boot time memory management From Kernel.org](https://www.kernel.org/doc/html/latest/core-api/boot-time-mm.html)
 
@@ -484,6 +488,36 @@ MEMBLOCK 分配器的内部包含多个函数，其中可以提供给外部使�
 > - [memblock_set_current_limit](#B5R)
 >
 > - [memblock_start_of_DRAM](#B5K)
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+--------------------------------------------------
+
+<span id="B8"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000T.jpg)
+
+##### MEMBLOCK 分配器系统接口
+
+内核提供了多个系统接口来获得 MEMBLOCK 分配器的信息，本节就详细介绍相关的接口和使用说明:
+
+###### 固件映射接口
+
+![](/assets/PDB/HK/TH002343.png)
+
+内核提供了 /sys/firmware/memmap 接口，用于获得从固件 E820 表和 MEMBLOCK 分配器获得系统可用物理内存和系统预留内存的信息，其按 memblock.memory 区域进行划分，每个节点包含了 start、end 和 type 属性，可以从中获得每个 Region 的范围和类型. 当不是所有的 memblock.memory Region 都维护在该接口里，例如 MEMBLOCK_DRVIER_MANAGED 就不维护在这里.
+
+###### MEMBLOCK 调试接口
+
+![](/assets/PDB/HK/TH002344.png)
+ 
+当内核启用 CONFIG_DEBUG_FS 和 CONFIG_ARCH_KEEP_MEMBLOCK 两个宏之后，MEMBLOCK 分配器可以一直存在，那么可以在 /sys/kernel/debug/memeblock 节点下获得 MEMBLOCK 分配器的信息，其中 memory 节点代表 memblock.memory 区域信息，physmem 节点代表 physmem 区域信息，reserved 节点代表 memblock.reserved 区域信息。信息按 Region 的顺序、起始物理地址和结束物理地址组成.
+
+###### 系统物理地址总线接口
+
+![](/assets/PDB/HK/TH002345.png)
+
+内核提供的 /proc/iomem 接口可以获得系统物理地址总线上的信息，其中包括可系统可用的物理内存 "System RAM", 以及系统预留区域，这些预留区域可能是物理内存。
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -1934,3 +1968,369 @@ BiscuitOS 运行之后，案例被调用时，系统 WARNING mm/memblock.c 文�
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
 ----------------------------------------------
+
+<span id="T3"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
+
+##### DRVIER-MANAGED 研究
+
+![](/assets/PDB/HK/TH002309.png)
+
+MEMBLOCK 分配器通过 memblock.memory 管理了系统可用的物理内存，这些物理内存按区域进行维护。由于物理内存的用途不同，MEMBLOCK 分配器再将可用物理内存分作了 5 类，第一类 **MEMBLOCK_NONE** 为普通可用物理内存，作为 Buddy 分配器维护的物理内存; 第二类 **MEMBLOCK_MIRROR** 为 Mirror Memory，作为内存高可用的自动镜像内存使用; 第三类 **MEMBLOCK_NOMAP** 为系统预留物理内存，在有的架构中用来管理系统预留物理内存; 第四类 **MEMBLOCK_HOTPLUG** 为热插拔的物理内存，其热插之后作为普通内存使用; 第五类 **MEMBLOCK_DRIVER_MANAGED** 为设备管理的物理内存，由设备添加并独占使用.
+
+![](/assets/PDB/HK/TH002310.png)
+
+在以前的内核中，系统使用的物理内存为 "System RAM", 而设备使用的物理内存只能来自默认约定的物理内存. 而在高版本内核中，MEMBLOCK 分配器支持 MEMBLOCK_D-RIVER_MANAGED 区域之后，设备可以独立通过热插的方式增加物理内存，并且设备独占使用这段物理内存。接下来先通过一个实践案例讲解 MEMBLOCK_DRIVER_MANAGED 的用法，其在 BiscuitOS 中的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK Driver Managned Memory  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-DRIVER-MANAGED-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-DRIVER-MANAGED-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-DRIVER-MANAGED)
+
+![](/assets/PDB/HK/TH002311.png)
+
+案例首先按照 4-6 行的建议在 CMDLINE 中添加 "memmap=128M$0x10000000" 字段到 CMDLINE 中，然后启用 CONFIG_ARCH_KEEP_MEMBLOCK 宏让 MEMBLOCK 分配器一直有效. 案例接着在 24-28 行定义了一段系统物理内存资源，这段物理内存资源的范围是 BISCUITOS_FAKE_BASE 到 BISCUITOS_FAKE_END, 其 flags 设置为 IORESOURCE_SYSRA-M_DRIVER_MANAGED, 意味这段内存是有设备进行管理的，最后 name 设置为 "System RAM Driver Managed". 案例在 38 行调用 add_memory_resource() 函数将 BiscuitOS_resource 描述的物理内存热插到系统。案例在 42 行调用 for_each_mem_region() 函数遍历系统所有可用物理内存，并在 43 行调用 memblock_is_driver_managed() 函数对每次遍历的 Region 进行判断，如果物理区域是 MEMBLOCK_DRIVER_MANAGED 属性，那么打印区域并将区域的起始物理地址转换成对应的虚拟地址，然后存储在 mem 变量里. 案例最后在 50 行判断了 mem 不空的情况下使用对应的内存，并打印内存的内容. 接下来在 BiscuitOS 上实践案例:
+
+![](/assets/PDB/HK/TH002312.png)
+
+当 BiscuitOS 运行之后，可以从启动 Dmesg 中看到案例加载之后，MEMBLOCK 分配器的 MEMBLOCK_DRIVER_MANAGED 区域为 \[0x10000000 - 0x18000000\], 并且内存可以正常使用. 此时在 /sys/devices/kernel/memory 目录下，看到热插之后的设备 memory2，查看其内部的物理内存都是 offline 的，最后在查看 /sys/kernel/debug/memblock/ 目录下 memory 区域中所有物理区域，可以看到 \[0x10000000 - 0x18000000\] 也是独立的物理区域. 另外查看固件映射信息(/sys/firmware/memmap)，并没有包括 MEMBLOCK_DRIVER_MANAGED 中的区域. 通过案例可以知道 MEMBLOCK_DRIVER_MANAGED 的物理区域可以通过设备独立填充并热插到系统，并被设备独占使用(既然都可以获得独占物理内存，当然可以独立管理). 那么接下来分析 MEMBLOCK 分配器如何实现 MEMBLOCK_DRIVER_MANAGED:
+
+![](/assets/PDB/HK/TH002313.png)
+
+MEMBLOCK 分配器新增了 MEMBLOCK_DRIVER_MANAGED 区域标志，用于在 memblock.memory 区域中与其他 memblock_flags 类型的物理区域区分开来。MEMBLOCK 分配器提供了 memblock_is_driver_managed() 函数进行区分, 结合 for_each_mem_region() 函数可以从系统可用物理内存中找出设备管理的物理内存。设备在获得设备管理内存之后，可以使用自定义的分配器进行管理. 
+
+![](/assets/PDB/HK/TH002314.png)
+
+当调用 add_memory_resource() 函数热插一段物理内存时，如果检查到系统已经启用了 CONFIG_ARCH_KEEP_MEMBLOCK 宏，然后 resource 的 flags 包含了 IORESOURCE_S-YSRAM_DRIVER_MANAGED，那么函数将 memblock_flags 设置为 MEMBLOCK_DRIVE-R_MANAGED，并调用 memblock_add_node() 函数向 memblock.memory 区域中新增区域，以上便是设备可以独立插入并管理物理内存的核心，其余的就是内存热插相关的逻辑.
+
+![](/assets/PDB/HK/TH002315.png)
+
+上图是 MEMBLOCK_DRIVER_MANAGED Commit 介绍，其核心思想就是: 在以前内核热插一块物理内存时，其作为 "System RAM" 插入系统，然后驱动要使用只能通过固件提供的映射(/sys/firmware/memmap) 按顺序遍历所有可用内存来使用，可能使用的不是热插的内存; 但有了 MEMBLOCK_DRIVER_MANAGED 之后，其结合 IORESOURCE_SYSRAM_DRIVER_MANAGED 标志可以通过驱动独立将一块物理内存热插到系统，其不为 "System RAM", 且不需要通过固件提供的映射就可以找到这块物理内存并使用. 总结为 MEMBLOCK_DRIVER_MANAGED 物理区域可以被驱动独立探测、加载和使用. 那么接下来通过一个案例实践 MEMBLOCK_HOTPLUG 的差异, 其在 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK with Hotplug Memory  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-Hotplug-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-Hotplug-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-Hotplug)
+
+![](/assets/PDB/HK/TH002317.png)
+![](/assets/PDB/HK/TH002316.png)
+
+在使用案例之前，需要在 RunBiscuitOS.sh 脚本中添加内存热插相关的命令行，那么系统在启动阶段就会自动热插一块物理内存。案例很简单，在内核启动后期在 23 行调用 for_each_mem_region() 函数遍历系统可用物理内存，也包括了刚刚热插的物理内存，并在每次遍历过程中调用 memblock_is_hotplugable() 函数判断物理内存区域是否热插的，如果是则打印物理内存区域信息，并记录区域的起始地址，然后将物理地址转换成虚拟地址，并在 31 行分支使用内存. 接着在 BiscuitOS 上实践案例:
+
+![](/assets/PDB/HK/TH002318.png)
+
+BiscuitOS 运行之后，从 Demsg 中可以看出案例并没有在 MEMBLOCK 的 memory 区域中找到热插的物理内存，但可以在 /sys/firmware/memmap 和 /sys/kernel/debug/memblock/memory 中找到热插的物理内存区域，因此结合之前和 MEMBLOCK_DRIVER_MANAGED 的对比讨论基本可以验证 Commit 里提到的，Hotplug 的物理内存只能作为 "System RAM" 被系统使用，而 MEMBLOCK_DRIVER_MANAGED 的物理内存可以被驱动探测并添加到系统，然后由驱动独立使用. 至此 MEMBLOCK_DRIVER_MANAGED 研究完结.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------------
+
+<span id="T4"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000X.jpg)
+
+##### Boot Hotplug 内存研究
+
+![](/assets/PDB/HK/TH002309.png)
+
+内存热插拔是内核提供的一种机制，可以将 DIM、NVME 热插到系统内，然后通过 ACPI 机制通知系统有新的内存条插入到系统, 并将内存作为系统可用内存进行使用。如果将热插内存的时机按系统启动阶段进行划分，那么在内核启动阶段热插的物理内存称为 Boot Hotplug 内存，其热插进系统之后先由 MEMBLOCK 分配器进行管理; 如果在系统初始化之后进行内存热插，其热插进系统之后由 Buddy 分配器进行管理。MEMBLOCK 分配器将 boot 阶段热插的内存维护的 memblock.memory 区域里，并将热插的物理内存区域标记为 MEMBLOCK_HOTPLUG.
+
+![](/assets/PDB/HK/TH002319.png)
+
+内核处理 Boot-Plug 内存时的流程如上，热插的内存首先被 ACPI 感知到，内核在调用 numa_init() 函数过程中，系统回去遍历 ACPI 的 SRAT 表，以此获得内存硬件信息，其中在 acpi_numa_memory_affinity_init() 函数可以从 SRAT 表中获得热插的内存信息，其包含 ACPI_SRAT_MEM_HOT_PLUGGABLE 标志，接下来函数调用 memblock_mark_hotplug() 函数将物理内存区域标记为 MEMBLOCK_HOTPLUG. 但随着 NUMA 的初始化完毕，内核又调用 numa_clear_kernel_node_hotplug() 函数将所有的物理区域的 MEMBLOCK_HOTPLUG 标志清除，以此将热插和非热插的内存都看做 "System RAM" 使用，因此系统初始化完毕之后很难判断哪些是热插的内存. 接下来通过一个案例进行分析，其在 BiscuitOS 上的部署逻辑为:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK with Hotplug Memory  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-Hotplug-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-Hotplug-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-Hotplug)
+
+![](/assets/PDB/HK/TH002317.png)
+![](/assets/PDB/HK/TH002316.png)
+
+在使用案例之前，需要在 RunBiscuitOS.sh 脚本中添加内存热插相关的命令行，那么系统在启动阶段就会自动热插一块物理内存。案例很简单，在内核启动后期在 23 行调用 for_each_mem_region() 函数遍历系统可用物理内存，也包括了刚刚热插的物理内存，并在每次遍历过程中调用 memblock_is_hotplugable() 函数判断物理内存区域是否热插的，如果是则打印物理内存区域信息，并记录区域的起始地址，然后将物理地址转换成虚拟地址，并在 31 行分支使用内存. 接着在 BiscuitOS 上实践案例:
+
+![](/assets/PDB/HK/TH002318.png)
+
+BiscuitOS 运行之后，从 Demsg 中可以看出案例并没有在 MEMBLOCK 的 memory 区域中找到热插的物理内存，但可以在 /sys/firmware/memmap 和 /sys/kernel/debug/memblock/memory 中找到热插的物理内存区域，因此 Boot Hotplug 的物理内存被当做了 "System RAM" 使用. 至此 Boot Hotplug 内存研究完毕.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------------
+
+<span id="T2"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000Z.jpg)
+
+##### NOMAP 内存研究
+
+系统物理内存可以分为两大类，一类为系统可用物理内存，就是系统可以管理维护的物理内存; 另一类为系统预留内存，这部分物理内存真实存在，但不在操作系统的管理范围内。不同的架构维护系统预留内存的方式不同，例如在 X86 架构中，其使用 E820 表和 CMDLINE 的 memap 字段可以设置系统预留内存的范围。但有的架构没有 E820 表，那么其可以借助 MEMBLOCK 分配器提供的 MEMBLOCK_NOMAP 标志将系统预留内存进行独立区分
+
+![](/assets/PDB/HK/TH002320.png)
+
+例如在 ARM 架构中，其借助 MEMBLOCK 分配器实现了系统预留内存的功能，核心实现是: 将系统所有的物理内存存储在 memblock.memory 区域，然后将需要预留的区域从 memblock.memory 区域中分配出来，那么预留内存区域会再次维护在 memblock.reserved 区域，接着将分配出来的区域在 memblock.memory 区域中标记为 MEMBLOCK_NONE, 那么系统在建立页表时不会对 MEMBLOCK_NOMAP 的区域建立页表. 接下来通过一个实践案例进行讲解，其在 BiscuitOS 上的部署逻辑为:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK NOMAP Memory  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-NOMAP-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-NOMAP-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-NOMAP)
+
+![](/assets/PDB/HK/TH002322.png)
+![](/assets/PDB/HK/TH002321.png)
+
+案例需要运行在 ARM 架构，并且需要在 vexpress-v2p-ca9.dts 文件中添加预留内存的描述，例如上上图在 ARM 架构中物理内存的范围从 memory 中知道为 \[0x60000000, 0xA0000000\], 那么在 reserved-memory 中新增 BiscuitOS 预留区域，其从 reg 指向的 0x70000000 开始，长度 size 为 0x02000000(32MiB), 并添加 alloc-range 属性指定了可接受的预留范围，最后添加 no-map 属性告诉系统不要为这段预留内存建立页表. 另外案例需要保持 CONFIG_ARCH_KEEP_MEMBLOCK 宏开启。回到案例其在 39 行调用 for_each_mem_region() 遍历 memblock.memory 区域里所有的 Region，案例在 40 行调用 memblock_is_nomap() 函数对每次遍历的 Region 检查其是否是 MEMBLOCK_NOMAP 区域，如果是则打印 Region 的范围，并记录 Region 的首地址. 最后函数在 47-51 行使用了 MEMBLOCK_NOMAP 的物理内存，默认情况下 TRIGGER_BUG 为 0，因此这段代码默认不会执行，那么接下来在 BiscuitOS 上实践案例:
+
+![](/assets/PDB/HK/TH002323.png)
+
+首先从 dmsg 中可以看到遍历 NO-MAP 的区域正好是 DTS 里配置的区域。接着查看 /sys/kernel/debug/memblock 的 memory 和 reserved 区域，均可以看到 DTS 中配置的 NO-MAP 区域. 最后查看 /proc/iomem 打印的信息，可以看到系统物理总线上对 DTS 中 NO-MAP 区域已经不属于 "System RAM" 范围了，因此实践的结果符合预期。接下来验证 NO-MAP 区域是否建立页表，可以在案例中将 TRIGGER_BUG 宏设置为 1，让案例去使用 NO-MAP 的内存，如果已经建立页表，那么可以直接使用 phys_to_virt() 函数直接获得虚拟机地址，然后直接使用。接下来将改动后的案例在 BiscuitOS 上实践:
+
+![](/assets/PDB/HK/TH002324.png)
+
+案例运行之后 BiscuitOS 直接挂死了，那么说明可以说明 NO-MAP 的物理内存确实没有建立页表。那么对于 NO-MAP 的预留内存，如果要使用该如何使用呢? 可以参考如下案例进行使用, 其在 BiscuitOS 上的部署逻辑为:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK NOMAP Memory with ioremap  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-NOMAP-IOREMAP-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-NOMAP-IOREMAP-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-NOMAP-IOREMAP)
+
+![](/assets/PDB/HK/TH002325.png)
+
+案例不同之处在于，当获得 NO-MAP 区域的物理地址之后，案例在 46 行调用 ioremap() 函数为预留物理内存建立映射，然后可以使用内存，使用完毕之后在 51 行调用 iounmap() 函数撤销物理内存的页表，这相当于归还预留物理内存，那么接下来在 BiscuitOS 上实践:
+
+![](/assets/PDB/HK/TH002326.png)
+
+BiscuitOS 启动之后，可以从 Dmesg 中看到案例成功的遍历到了 NO-MAP 的区域，并使用了 NO-MAP 的物理内存。接下来从源码角度分析 NO-MAP 预留内存的实现过程.
+
+![](/assets/PDB/HK/TH002322.png)
+![](/assets/PDB/HK/TH002327.png)
+
+当需要在 ARM 架构里面新增一块 NO-MAP 的预留内存，那么需要在对应的 DTS 文件的 reserved-memory 节点里添加新的节点，例如上图的 BiscuitOS 节点，节点一定要包含 compatible、reg、size、alloc-ranges 和 no-map 属性，因此在系统启动阶段解析 DTS 是，fdt_init_reserved_mem() 函数会解析 reserved-mem 节点及其子节点，函数首先会解析子节点中带 "no-map" 属性的节点，然后以此解析子节点中一定要包含 size、no-map 和 alloc-ranges 属性之后，函数会最终调用到 early_init_dt_alloc_reserved_memory() 函数，其内部首先调用 memblock_phys_alloc_range() 函数从 memblock.memory 区域的 start 到 end 区域中分配需要预留长度的物理内存，然后把这些预留内存通过 memblock_mark_nomap() 函数标记为 MEMBLOCK_NOMAP 属性.因此就可以解释在 ARM 架构里，系统预留的物理内存既可以在 memblock.memory 中看到，又可以在 memblock.reserved 中看到. 至此 MEMBLOCK_NOMAP 内存研究到此结束.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------------
+
+<span id="T7"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000S.jpg)
+
+##### Region Merge/Split 研究
+
+![](/assets/PDB/HK/TH002295.png)
+
+在 MEMBLOCK 分配器中，memblock.memory 区域维护了系统可用的物理内存，memblock.reserved 区域维护了已经使用的物理内存，physmem 中维护了系统所有的物理内存。这些区域都是通过 struct memblock_region 进行维护. Region 是 MEMBLOCK 分配器管理的最小单元. physmem 区域的 Region 包含了 memblock.memory 所有 Region，memblock.memory 区域 Region 包含了 memblock.reserved 所有 Region。
+
+![](/assets/PDB/HK/TH002328.png)
+
+struct memblock_region 的定义如上，其通过 base 成员描述了 Region 起始物理地址，size 成员描述了 Region 的长度，nid 成员描述了 Region 所属的 NUMA NODE，flags 成员描述了 Region 的属性。Region 一共了包含了 5 中属性:
+
+* MEMBLOCK_NONE 表示普通可用物理内存
+* MEMBLOCK_HOTPLUG 表示 Boot 阶段热插的物理内存
+* MEMBLOCK_MIRROR 表示 Mirror 属性的物理内存
+* MEMBLOCK_NOMAP 表示 ARM 架构中系不建立页表的系统预留内存
+* MEMBLOCK_DRIVER_MANAGED 表示可由驱动探测和热插并使用的物理内存
+
+MEMBLOCK 分配器规定了一个 Region 只能有一种属性，默认为 MEMBLOCK_NOMAP; 同一个区域内同一属性的 Region 不能重叠，不同属性的 Region 也不能重叠; 不同区域的同一属性的 Region 可以重叠. 由于有了这些限制，那么会出现不同 Region 之间在 MEMBLOCK 分配器分配、回收、新增时候的 Merge 和 Split，本节对该问题进行进一步研究:
+
+###### 新增分离(Separation) Region
+
+![](/assets/PDB/HK/TH002329.png)
+
+当新增的 Region 与已经存在的 Region 位置上相离(Separation)，那么新增的 Region 不用与其他 Region 合并，作为一个新的 Region 插入，并且 memblock.memory 或者 memblock.reserved 中会重新排序. 接下来一个案例进行说明，其中 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK Region: Adding Separation Region  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-MERGE-Separation-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-MERGE-Separation-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-MERGE-Separation)
+
+![](/assets/PDB/HK/TH002330.png)
+
+案例很精简，案例在 25 行向 memblock.memory 区域新增 Region \[0x810000000, 0x810100000\], 然后在 29 行遍历 memblock.memory 区域。接着函数在 34-35 行调用 memblock_add() 函数向 memblock.memory 区域新增两个 Region \[0x800000000, 0x800100000\] 和 \[0x820000000, 0x820100000\]， 案例再次在 39 行遍历 memblock.memory 所有 Region。案例最后在 44-46 行调用 memblock_remove() 函数将新增区域移除。接下来在 BiscuitOS 上实践该案例:
+
+![](/assets/PDB/HK/TH002331.png)
+
+BiscuitOS 运行之后，从 Dmesg 可以看到打印的 LOG 显示新增的三块 Separation 区域在 memblock.memory 都是独立的 Region，并且已经按低地址到高地址的排好序。实践符合预期，那么符合这样的场景有:
+
+* 通过 memblock_add() 向 memblock.memory 区域中新增分离物理区域
+* 通过 memblock_add() 向 physmem 区域中新增分离的物理区域
+* 通过 memblock_reserve() 向 memblock.reserved 区域新增分离物理区域
+* 通过 memblock_alloc() 从独立的 Region 中分配整块物理内存
+
+###### 相同属性新增相邻(Adjacent) Region
+
+![](/assets/PDB/HK/TH002332.png)
+
+当新增的 Region 与已经存在的 Region 位置上相邻(Adjacent)，并且新区域属性相同，那么新增的 Region 与其他 Region 合并，但不作为一个新的 Region 插入，而是保留原始 Region. 接下来一个案例进行说明，其中 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK Region: Adding Adjacent Region  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-MERGE-Adjacent-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-MERGE-Adjacent-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-MERGE-Adjacent)
+
+![](/assets/PDB/HK/TH002333.png)
+
+案例很精简，案例在 25 行向 memblock.memory 区域新增 Region \[0x800100000, 0x800200000\], 然后在 29 行遍历 memblock.memory 区域。接着函数在 34-35 行调用 memblock_add() 函数向 memblock.memory 区域新增两个 Region \[0x800000000, 0x800100000\] 和 \[0x8000200000, 0x800300000\]， 案例再次在 39 行遍历 memblock.memory 所有 Region。案例最后在 44-46 行调用 memblock_remove() 函数将新增区域移除。接下来在 BiscuitOS 上实践该案例:
+
+![](/assets/PDB/HK/TH002334.png)
+
+BiscuitOS 运行之后，从 Dmesg 可以看到打印的 LOG 显示新增的三块 Adjacent 区域在 memblock.memory 都是属性相同且相邻的 Region，最后都合并成同一个 Region，并使用原始的 Region。实践符合预期，那么符合这样的场景有:
+
+* 通过 memblock_add() 向 memblock.memory 区域中新增属性相同且相邻物理区域
+* 通过 memblock_add() 向 physmem 区域中新增相邻的物理区域
+* 通过 memblock_mark_hotplug() 标记两块相邻的区域
+* 通过 memblock_mark_driver_managed() 标记两块相邻的区域
+
+###### 不同属性新增相邻(Adjacent) Region
+
+![](/assets/PDB/HK/TH002335.png)
+
+当新增的 Region 与已经存在的 Region 位置上相邻(Adjacent)，但新区域属性不相同，那么新增的 Region 与其他 Region 不合并，作为一个新的 Region 插入，并且 memblock.memory 或者 memblock.reserved 中会重新排序. 接下来一个案例进行说明，其中 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK Region: Adding Adjacent Region with Diff flags  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-MERGE-Adjacent-Diff-flags-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-MERGE-Adjacent-Diff-flags-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-MERGE-Adjacent-Diff-flags)
+
+![](/assets/PDB/HK/TH002336.png)
+
+案例很精简，案例在 25 行向 memblock.memory 区域新增 Region \[0x800000000, 0x800300000\], 然后在 29 行遍历 memblock.memory 区域。接着函数在 34-35 行调用 memblock_mark_hotplug() 函数将 memblock.memory 区域标记两个 Region \[0x800000000, 0x800100000\] 和 \[0x8000200000, 0x800300000\] 为 MEMBLOCK_HOTPLUG， 案例再次在 39 行遍历 memblock.memory 所有 Region。案例最后在 44 行调用 memblock_remove() 函数将新增区域移除。接下来在 BiscuitOS 上实践该案例:
+
+![](/assets/PDB/HK/TH002337.png)
+
+BiscuitOS 运行之后，从 Dmesg 可以看到打印的 LOG 显示新增的三块 Adjacent 区域在 memblock.memory 都是属性不相同但相邻的 Region，最后没有合并成同一个 Region，而是独立的三个 Region，且 Region 按顺序重排。实践符合预期，那么符合这样的场景有:
+
+* 通过 memblock_mark_hotplug() 将部分区域标记为 MEMBLOCK_HOTPLUG
+* 通过 memblock_mark_driver_managed() 将部分区域标记
+
+###### 相同属性新增相邻(Intersection) Region
+
+![](/assets/PDB/HK/TH002338.png)
+
+当新增的 Region 与已经存在的 Region 位置上相邻(Adjacent)，但新区域属性不相同，那么新增的 Region 与其他 Region 不合并，作为一个新的 Region 插入，并且 memblock.memory 或者 memblock.reserved 中会重新排序. 接下来一个案例进行说明，其中 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK Region: Adding Intersection Region  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-MERGE-Intersection-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-MERGE-Intersection-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-MERGE-Intersection)
+
+![](/assets/PDB/HK/TH002339.png)
+
+案例很精简，案例在 25 行向 memblock.memory 区域新增 Region \[0x800100000, 0x800200000\], 然后在 29 行遍历 memblock.memory 区域。接着函数在 34-35 行调用 memblock_add() 函数向 memblock.memory 区域新增两个 Region \[0x800010000, 0x801100000\] 和 \[0x8000120000, 0x800220000\] ， 案例再次在 39 行遍历 memblock.memory 所有 Region。案例最后在 44 行调用 memblock_remove() 函数将新增区域移除。接下来在 BiscuitOS 上实践该案例:
+
+![](/assets/PDB/HK/TH002340.png)
+
+BiscuitOS 运行之后，从 Dmesg 可以看到打印的 LOG 显示新增的三块 Intersection 区域在 memblock.memory 都是属性相同但相交的 Region，最后合并成同一个 Region，且使用原来的 Region。实践符合预期，那么符合这样的场景有:
+
+* 通过 memblock_add() 向 memblock.memory 区域新增相交的物理区域
+* 通过 memblock_add() 向 physmem 区域新增相交的物理区域
+* 通过 memblock_reserved() 预留相交的物理区域
+
+###### 不同属性新增相交(Intersection) Region
+
+![](/assets/PDB/HK/TH002335.png)
+
+当新增的 Region 与已经存在的 Region 位置上相交(Intersection)，但新区域属性不相同，那么新增的 Region 与其他 Region 不合并，作为一个新的 Region 插入，并且 memblock.memory 或者 memblock.reserved 中会重新排序. 接下来一个案例进行说明，其中 BiscuitOS 上的部署逻辑如下:
+
+{% highlight bash %}
+cd BiscuitOS
+make menuconfig
+
+  [*] Package  --->
+      [*] MEMBLOCK Memory Allocator  --->
+          [*] MEMBLOCK Region: Adding Intersection Region with Diff flags  --->
+
+BiscuitOS/output/linux-X.Y.Z-ARCH/package/BiscuitOS-MEMBLOCK-MERGE-Intersection-Diff-flags-default
+{% endhighlight %}
+
+> [BiscuitOS-MEMBLOCK-MERGE-Intersection-Diff-flags-default Source Code](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Memory-Allocator/MEMBLOCK/BiscuitOS-MEMBLOCK-MERGE-Intersection-Diff-flags)
+
+![](/assets/PDB/HK/TH002341.png)
+
+案例很精简，案例在 25 行向 memblock.memory 区域新增 Region \[0x800100000, 0x800200000\], 然后在 29 行遍历 memblock.memory 区域。接着函数在 34-35 行调用 memblock_mark_hotplug() 函数将 memblock.memory 区域标记两个 Region \[0x800010000, 0x800110000\] 和 \[0x8000120000, 0x800220000\] 为 MEMBLOCK_HOTPLUG， 案例再次在 39 行遍历 memblock.memory 所有 Region。案例最后在 44 行调用 memblock_remove() 函数将新增区域移除。接下来在 BiscuitOS 上实践该案例:
+
+![](/assets/PDB/HK/TH002342.png)
+
+BiscuitOS 运行之后，从 Dmesg 可以看到打印的 LOG 显示新增的三块 Intersection 区域在 memblock.memory 都是属性不相同但相交的 Region，最后没有合并成同一个 Region，而是独立的三个 Region，且 Region 按顺序重排。实践符合预期，那么符合这样的场景有:
+
+* 通过 memblock_mark_hotplug() 将部分区域标记为 MEMBLOCK_HOTPLUG
+* 通过 memblock_mark_driver_managed() 将部分区域标记
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+------------------------------------------
+
+#### MEMBLOCK 物理内存分配器使用场景
+
+------------------------------------------

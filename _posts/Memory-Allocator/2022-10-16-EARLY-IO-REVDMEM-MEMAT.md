@@ -7,7 +7,7 @@ excerpt: Early IO/RESV-MEM Remap.
 tags:
   - Boot-Time Allocator
   - Linux 6.0+
-  - BiscuitOS Doc 3.0+
+  - BiscuitOS DOC 3.0+
   - Fixmap Allocator Sub
 ---
 
