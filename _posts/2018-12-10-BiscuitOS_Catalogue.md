@@ -171,7 +171,7 @@ tags:
 >
 >   - [Bootmem Allocator](/blog/HISTORY-bootmem/)
 >
->   - [MEMBLOCK Allocator](/blog/MMU-ARM32-MEMBLOCK-index/)
+>   - [MEMBLOCK Allocator](/blog/MEMBLOCK-MEMAT/)
 >
 >   - [Buddy Memory Allocator](/blog/HISTORY-buddy/)
 >

@@ -70,6 +70,8 @@ tags:
 >   - [MEMBLOCK 分配器 BiscuitOS Doc 2.0+](/blog/MMU-ARM32-MEMBLOCK-index/)
 >
 >   - [Boot time memory management From Kernel.org](https://www.kernel.org/doc/html/latest/core-api/boot-time-mm.html)
+>
+> - [MEMBLOCK 分配器讨论 and Q&A](https://github.com/BiscuitOS/BiscuitOS/discussions/32)
 
 ######  🙂🙂🙂🙂🙂🙂 捐赠一下吧 🙂🙂🙂🙂🙂🙂
 
@@ -250,6 +252,25 @@ memblock_free() 函数是 MEMBLOCK 分配器提供的核心回收物理内存函
 ![](/assets/PDB/HK/TH002170.png)
 
 案例介绍了 MEMBLOCK 分配器回收物理内存的过程，案例首先在 21 行调用 memblock_alloc() 函数分配指定长度的物理内存，函数同时将物理内存对应的虚拟地址返回给调用者，案例接着在 27-28 行使用了内存，最后在 31 行调用 memblock_free() 函数将内存进行回收，至此一次完整的 MEMBLOCK 分配器内存分配、使用和回收完结.
+
+-------------------------------------------
+
+##### 分配器与 Buddy 分配器
+
+![](/assets/PDB/HK/TH002353.png)
+
+内核启动到一定阶段，MEMBLOCK 分配器完成早期物理内存分配的任务之后，接下来需要将其管理的物理内存移交给 Buddy 分配器进行管理，这也是 Buddy 分配器获得物理页的起源。代码流程大概如上，比较核心的点是内核启动到 mm_init() 函数时，调用 memblock_free_all() 函数来完成核心任务，包括如下:
+
+* 将每个 pgdate 的每个 Zone 管理物理页数 managed_pages 清零
+* 遍历 memblock.reserved 区域将其对应的物理页标记为 PageReserved
+* 遍历 MEMBLOCK_NOMAP 区域将其对应的物理页标记为 PageReserved
+* 将 MEMBLOCK_HOTPLUG 区域修改为 MEMBLOCK_NONE
+* 遍历 memblock.memory 区域将 MEMBLOCK_NONE 对应的物理页添加到 Buddy
+* 更新 _totalram_pages 表示 Buddy 分配器起始物理页数量
+
+![](/assets/PDB/HK/TH002354.png)
+
+MEMBLOCK 分配器 memblock.reserved 区域对应的物理页全部转换成 PageReserved, 而 memblock.memory 区域中的 MEMBLOCK_HOTPLUG 和 MEMBLOCK_NONE Region 作为 Buddy 分配器管理的物理页; memblock.memory 区域的 MEMBLOCK_NOMAP Region 对应的物理页转换成 PageReserved; memblock.memory 区域的 MEMBLOCK_DRIVER_MANAGED Region 对应的物理页则由驱动探测和加载，并由驱动进行管理维护.
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
@@ -2329,8 +2350,124 @@ BiscuitOS 运行之后，从 Dmesg 可以看到打印的 LOG 显示新增的三�
 
 ![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
 
+----------------------------------------------
+
+<span id="T8"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000G.jpg)
+
+##### 分配器调试研究
+
+MEMBLOCK 分配器提供了调试功能，可以对每次分配、回收和区域修改输出调试信息。默认情况下内核关闭了 MEMBLOCK 分配器的调试功能，如果需要可以通过在 CMDLINE 中添加 "memblock=debug" 字段进行开启, 开启之后的效果如下:
+
+![](/assets/PDB/HK/TH002346.png)
+
+可以在 Dmesg 中看到很多的打印信息，其中包括调用的函数名字、分配或释放的长度、范围以及调用位置信息。可以利用这些信息对某个某些 MEMBLOCK 分配器行为进行跟踪，或者某些子系统在 Boot 阶段使用物理内存进行跟踪。
+
+![](/assets/PDB/HK/TH002344.png)
+ 
+当内核启用 CONFIG_DEBUG_FS 和 CONFIG_ARCH_KEEP_MEMBLOCK 两个宏之后，MEMBLOCK 分配器可以一直存在，那么可以在 /sys/kernel/debug/memeblock 节点下获得 MEMBLOCK 分配器的信息，其中 memory 节点代表 memblock.memory 区域信息，physmem 节点代表 physmem 区域信息，reserved 节点代表 memblock.reserved 区域信息。信息按 Region 的顺序、起始物理地址和结束物理地址组成.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
 ------------------------------------------
 
 #### MEMBLOCK 物理内存分配器使用场景
 
 ------------------------------------------
+
+----------------------------------------------
+
+<span id="X0"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000M.jpg)
+
+##### Mirror Memory 应用场景 
+
+![](/assets/PDB/HK/TH002347.png)
+
+Mirror Memory 是硬件提供了一种内存高可用机制，当系统启用 Mirror Memory 之后，其会将内存分作两份，其中一份为系统正常使用的，另外一部分用作备份。当系统对 Mirror Memory 进行写的时候，内存控制器会同时写入两份内存里，当系统读取内存时，内存控制器同时从两份内存中读取数据，然后比较一致之后在返回值给系统。当 Mirror Memory 发送了 UE(Uncorrect Error) 之后，系统在读取 UE 内存时，内存控制器直接从备份中返回数据，这样避免系统消费到 UE 内存而宕机. 更多细节可以参考:
+
+> [《MEMBLOCK 分配器 Mirror Memory 研究》](#T0)
+
+![](/assets/PDB/HK/TH002309.png)
+
+MEMBLOCK 分配器提供了标记物理区域为不同属性的能力，其中 MEMBLOCK_MIRROR 属性表示物理区域为 Mirror Memory。并向外提供了 memblock_mark_mirror() 函数标记物理内存为 MEMBLOCK_MIRROR 属性，并且提供了方法用于分配 Mirror Memory. 
+
+![](/assets/PDB/HK/TH002348.png)
+
+BIOS 负责开启或关闭 Mirror Memory 的功能，然后系统通过 UEFI 获得 Mirror Memory 的具体信息。在 UEFI 初始化过程中，内核调用 efi_find_mirror() 函数获得 EFI 中保存的 Mirror Memory 信息，当找到之后调用 memblock_mark_mirror() 函数，其在 MEMBLOCK 分配器的 memblock.memory 区域中将指定区域标记为 MEMBLOCK_MIRROR, 待系统继续初始化，MEMBLOCK_MIRROR 物理内存会有 Buddy 进行管理并提供给系统使用.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------------
+
+<span id="X1"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000R.jpg)
+
+##### 系统预留内存应用场景
+
+对于 Linux 来说，物理内存可以分为三类: 第一类系统可以维护和使用的物理内存，称为系统可用物理内存; 第二类是系统无法管理留给特定模块使用的物理内存，称为系统预留内存; 第三类为内存控制器看到的物理内存，暂时描述为 DDR 内存。三者的管理是: DDR 内存是系统可用物理内存与系预留内存的总和 (不考虑 SMM). 在不同的架构中对系统预留内存的管理各不相同，例如在 X86 中借助 E820 表维护，又例如 ARM 架构其通过 MEMBLOCK 分配器进行管理。那么本节描述系统使用 MEMBLOCK 分配器管理系统预留内存.
+
+![](/assets/PDB/HK/TH002295.png)
+
+MEMBLOCK 分配器除了提供 memblock.memory 和 memblock.reserved 区域之后，额外提供了 physmem 区域，physmem 区域表示的就是 DDR 内存，那么简单的从 physmem 区域中移除 memblock.memory 之后就是系统预留内存。
+
+![](/assets/PDB/HK/TH002344.png)
+
+基于这个原理在启用 CONFIG_ARCH_KEEP_MEMBLOCK 的系统里，可以在 /sys/kernel/debug/memblock 中获得 memblock.memory 和 physmem 的信息，那么通过两个区域就可以知道系统预留内存的信息.
+
+![](/assets/PDB/HK/TH002320.png)
+
+MEMBLOCK 分配器在 ARM 架构还提供了另外一种方法管理系统预留内存，其通过 DTS 将需要预留的内存标记为 no-map 属性，内核在启动解析 DTS 时，会按 no-map 节点的描述在 memblock.memory 中找到指定的区域，然后将这部分内存区域标记为 MEMBLOCK_NOMAP，并将这部分区域也添加在 memblock.reserved 区域，这样系统不会为这段区域的物理内存建立页表，因此系统也无法直接使用这些物理内存，最后这些物理内存也就称为系统预留内存. 更多技术细节可以参考:
+
+> [《MEMBLOCK 分配器 physmem 区域研究》](#T1)
+>
+> [《MEMBLOCK 分配器 NO-MAP 研究》](#T2)
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------------
+
+<span id="X2"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000C.jpg)
+
+##### CRASH VMCORE 应用场景
+
+内核核心转储又成为 core dump，在 Unix/Linux 中，将主内存 "Main Memory" 称为核心 core, 这是因为在半导体作为内存材料前，便使用核心 "core" 表示内存。另外核心镜像 "core image" 就是内核作为一个内核线程执行时在内存中的内容。当内核线程发生错误或者收到特定信号而终止执行时，系统在借助 KEXEC 工具的情况下，可以将核心镜像写入一个文件，以便后期调试问题之用，这个过程就是所谓的核心转储 "core dump". 系统会在系统预留一段物理内存用于存在 Kdump 系统的镜像，这段物理内存预留之后不能被其他使用。当系统发生 CoreDump 时，系统会启动 Kdump 系统 Dump 内存。由于 Kdump 系统预留的内存需要在系统启动阶段就需要进行预留，那么可以借助 MEMBLOCK 分配器提供的能力实现.
+
+![](/assets/PDB/HK/TH002349.png)
+
+要开启 Kdump 功能需要在 CMDLINE 中添加 "crashkernel=" 字段指明 Kdump 预留内存的大小或者起始物理地址，然后内存在启动过程中调用 reserve_crashkernel() 函数解析 "crashkernel=" 字段，然后获得预留内存的大小，然后调用 memblock_phys_alloc_range() 函数分配指定长度的物理内存，一旦分配出去只能 kdump 独占使用，最后函数更新 crash_res 的信息，最后调用 insert_resource() 函数将其添加到系统地址总线资源树上.
+
+![](/assets/PDB/HK/TH002350.png)
+
+系统启动之后，可以从 /proc/iomem 中看到 Crash kernel 占用了 \[37000000, 3effffff\] 区域，一共 128MiB, 因此 MEMBLOCK 分配器可以为 CRASH 机制提供早期的物理内存.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------------
+
+<span id="X3"></span>
+
+![](/assets/PDB/BiscuitOS/kernel/IND00000H.jpg)
+
+##### Hugetlb 1G 大页应用场景
+
+![](/assets/PDB/HK/TH001196.png)
+
+在 Hugetlb 大页机制中，内核可以向用户空间进程提供 1Gig 的物理大页，1Gig 的物理大页可以通过动态分配，也可以在系统启动阶段就分配。本节用于介绍 MEMBLOCK 分配器在启动阶段实现 1Gig 物理大页分配场景, 在分析之前，系统为了在启动阶段分配 1Gig 的 hugetlb 大页，需要在 CMDLINE 中添加 "hugepagesz=1G hugepages={num}" 字段，其中 num 指明分配 1Gig Hugetlb 大页的数量.
+
+![](/assets/PDB/HK/TH002351.png)
+
+内核启动时解析 "hugepagesz=" 时调用 hugepages_setup() 函数，在函数 hugetlb_max_hstate 的值来自 "hugepages=" 字段，此时判断该值不为零，且 hstate_is_gigantic() 函数有效，那么内核认为现在需要为分配 1Gig 的 Hugetlb 大页，接下来函数调用 hugetlb_hstate_alloc_pages() 函数进行分配，其内部再次检查 hugetlb_max_hstate，当该值不为 0 时且分配 1Gig 大页，那么函数最终调用 alloc_bootmem_huge_page() 函数在 boot 阶段分配 1Gig 大页。函数最终调用到 memblock_alloc_try_nid_raw() 函数进行实际的内存分配，那么 1Gig 物理大页所在的区域就被添加到 memblock.reserved 区域，后续 Buddy 分配器将占用的 struct page 全部标记为 PageReserved 标志.
+
+![](/assets/PDB/HK/TH002352.png)
+
+系统启动之后，可以在 /sys/kernel/mm/hugepages/hugepages-1048576kB/ 目录下查看 1Gig Hugetlb 大页的情况，通过上图可以看出 1Gig Hugetlb 大页池子中有一个是空闲的，没有超发的大页. 以上便是 MEMBLOCK 分配器在 1Gig 大页的应用场景.
+
+![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+
+----------------------------------------------
