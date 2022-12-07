@@ -9071,5 +9071,4923 @@ https://zhuanlan.zhihu.com/p/372958922
 
 
 
+                                       IO Port                          MMIO
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                +----------------------------------+
+                             | | | | | | | | | | | | | |                |                                  |
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                +----------------------------------+  Guest OS
+                  =============================|====================================|=================================
+                                   A           |                 A                  |            A     Synchronous KVM
+                                   |   VM-EXIT |        VM-ENTRY | Read/Write       | VM-EXIT    |
+                          VM-ENTRY |           V                 | Emulate          V            | VM-ENTRY
+                                   |     o-----o-----o           |            o-----o-----o      |
+                                   |     |           |           |            |           |      |
+                                   |     |           V           |            V           |      |
+                                   |     |     +-----------------o------------------+     |      |
+                                   |     |     |                                    |     |      |
+                                   |     |     |          In-Kernel Device          |     |      |
+                                   |     |     |                                    |     |      |
+                                   |     |     +------------------------------------+     |      |
+                                   |     |                                                |      |     Synchronous KVM
+                  =================|=====|================================================|======|====================
+                                   |     |                                                |      |             Broiler
+                        Read/Write |     |                                                |      | Read/Write
+                           Emulate |     |                                                |      | Emulate
+                                   |     V                                                V      |
+                                +------------------------------------------------------------------+
+                                |                                                                  |
+                                |                        In-Broiler Device                         |
+                                |                                                                  |
+                                +------------------------------------------------------------------+
+
+
+
+
+
+https://www.cnblogs.com/wuchanming/p/4732595.html
+
+
+
+
+                                Exit Qualification for I/O Instructions
+
+                                 63                                                                32
+                                +--------------------------------------------------------------------+
+                                |                        Reserved(Clear to 0)                        |
+                                +--------------------------------------------------------------------+
+                                 31                             16 15                   6 5 4 3 2 1 0
+                                +---------------------------------+--------------------+-+-+-+-+-----+
+                                |                                 | Reserved(Clear 0)  | | | | |     |
+                                +---------------------------------+--------------------+-+-+-+-+-----+
+                                                A                                       A A A A   A
+                                                |                                       | | | |   |
+                                                |                                       | | | |   o--- Size of access
+                                                |                                       | | | |          0: 1-Byte
+                                                |                                       | | | |          1: 2-Byte
+                                                |                                       | | | |          3: 4-Byte
+                                                |                                       | | | o------- Direction
+                                                |                                       | | |            0: OUT
+                                                |                                       | | |            1: IN
+                                                |                                       | | o--------- String Instrution
+                                                |                                       | |              0: not string
+                                                |                                       | |              1: string
+                                                |                                       | o----------- REP frefixed
+                                                |                                       |                0: not REP
+                                                |                                       |                1: REP
+                                                |                                       o------------- Operand Encoding
+                                                |                                                        0: DX
+                                                |                                                        1: Immediate
+                                                |                            
+                                                o----------------------------------------------------- Port Number
+
+
+
+
+
+                                        Synchronous IO Read On Broiler Device
+
+                                                    PIO Read Begin: IN AX,DX
+                                                             |
+                                                             V
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                        | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                         Guest OS
+                                        =====|================================================================================
+                                             | VM-EXIT: EXIT_REASON_IO_INSTRUCTION                             Synchronous KVM
+                                             V
+                                        vmx_handle_exit                                                 
+                                          |
+                                          o-> handle_io
+                                                |
+                                                o-> kvm_fast_pio
+                                                      |
+                                                      o-> kvm_fast_pio_in
+                                                            |
+                                                            o-> emulator_pio_in
+                                                                  |
+                                                                  o-> emulator_pio_in_out: vcpu->run
+                                                                        |                                      Synchronous KVM
+                                        ================================|=====================================================
+                                                                        | Return From IOCTL: KVM_RUN       Synchronous Broiler
+                                                                        V
+                                        broiler_cpu_start
+                                          |
+                                          o-> case: KVM_EXIT_IO
+                                          |     |
+                                          |     o-> broiler_cpu_emulate_io: vcpu->kvm_run
+                                          |           |
+                                          |           o-> Broiler_pio_callback                      
+                                          |
+                                          o-> broiler_cpu_run
+                                                |
+                                                o-> ioctl: KVM_RUN                                         Synchronous Broiler 
+                                        ==============|=======================================================================
+                                                      V                                                        Synchronous KVM
+                                        kvm_vcpu_ioctl
+                                          |
+                                          o-> case: KVM_RUN
+                                                |
+                                                o-> kvm_arch_vcpu_ioctl_run
+                                                      |
+                                                      o-> vcpu_run
+                                                            |
+                                                            | VM-ENTRY                                         Synchronous KVM
+                                        ====================|=================================================================
+                                                            V                                                         Guest OS
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                        | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                         
+                                                            |
+                                                            V
+                                                PIO Read Finish: IN AX,DX
+                     
+
+
+
+
+
+
+
+
+
+                                        Synchronous IO Write On Broiler Device
+
+                                                    PIO Write Begin: OUT DX,AX
+                                                             |
+                                                             V
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                        | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                         Guest OS
+                                        =====|================================================================================
+                                             | VM-EXIT: EXIT_REASON_IO_INSTRUCTION                             Synchronous KVM
+                                             V
+                                        vmx_handle_exit        
+                                          |  
+                                          o-> handle_io
+                                                |
+                                                o-> kvm_fast_pio
+                                                      |
+                                                      o-> kvm_fast_pio_out
+                                                            |
+                                                            o-> kvm_rax_read
+                                                            |
+                                                            o-> emulator_pio_out
+                                                                  |
+                                                                  o-> emulator_pio_in_out: vcpu->run
+                                                                        |                                      Synchronous KVM
+                                        ================================|=====================================================
+                                                                        | Return From IOCTL: KVM_RUN       Synchronous Broiler
+                                                                        V
+                                        broiler_cpu_start
+                                          |
+                                          o-> case: KVM_EXIT_IO
+                                          |     |
+                                          |     o-> broiler_cpu_emulate_io: vcpu->kvm_run
+                                          |           |
+                                          |           o-> Broiler_pio_callback
+                                          |
+                                          o-> broiler_cpu_run
+                                                |
+                                                o-> ioctl: KVM_RUN                                         Synchronous Broiler
+                                        ==============|=======================================================================
+                                                      V                                                        Synchronous KVM
+                                        kvm_vcpu_ioctl
+                                          |
+                                          o-> case: KVM_RUN
+                                                |
+                                                o-> kvm_arch_vcpu_ioctl_run
+                                                      |
+                                                      o-> vcpu_run
+                                                            |
+                                                            | VM-ENTRY                                         Synchronous KVM
+                                        ====================|=================================================================
+                                                            V                                                         Guest OS
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                        | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                                            |
+                                                            V
+                                                PIO Write Finish: OUT DX,AX
+
+
+
+
+
+
+
+
+
+                                        Synchronous IO Read On In-Kernel Device
+
+                                                    PIO Read Begin: IN AX,DX
+                                                             |
+                                                             V
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                        | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                         Guest OS
+                                        =====|================================================================================
+                                             | VM-EXIT: EXIT_REASON_IO_INSTRUCTION                             Synchronous KVM
+                                             V
+                                        vmx_handle_exit
+                                          |
+                                          o-> handle_io
+                                                |
+                                                o-> kvm_fast_pio
+                                                      |
+                                                      o-> kvm_fast_pio_in
+                                                            |
+                                                            o-> emulator_pio_in
+                                                            |     |
+                                                            |     o-> emulator_pio_in_out
+                                                            |           |
+                                                            |           o-> kernel_pio
+                                                            |                 |
+                                                            |                 o-> kvm_io_bus_read
+                                                            |                       |
+                                                            |                       o-> __kvm_io_bus_read
+                                                            |                             |
+                                                            |                             o-> kvm_iodevice_read
+                                                            |
+                                                            o-> kvm_rax_write
+                                        
+                                        vcpu_run
+                                          |
+                                          | VM-ENTRY                                                           Synchronous KVM
+                                        ==|===================================================================================
+                                          V                                                                           Guest OS
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                        | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                                            |
+                                                            V
+                                                PIO Read Finish: IN AX,DX
+
+
+
+
+
+
+
+
+                                        Synchronous IO Write On In-Kernel Device
+
+                                                    PIO Write Begin: OUT DX,AX
+                                                             |
+                                                             V
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                        | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                         Guest OS
+                                        =====|================================================================================
+                                             | VM-EXIT: EXIT_REASON_IO_INSTRUCTION                             Synchronous KVM
+                                             V
+                                        vmx_handle_exit
+                                          |
+                                          o-> handle_io
+                                                |
+                                                o-> kvm_fast_pio
+                                                      |
+                                                      o-> kvm_fast_pio_out
+                                                            |
+                                                            o-> kvm_rax_read
+                                                            |
+                                                            o-> emulator_pio_out
+                                                                  |
+                                                                  o-> emulator_pio_in_out
+                                                                        |
+                                                                        o-> kernel_pio
+                                                                              |
+                                                                              o-> kvm_io_bus_write
+                                                                                    |
+                                                                                    o-> __kvm_io_bus_write
+                                                                                          |
+                                                                                          o-> kvm_iodevice_write
+                                        vcpu_run
+                                          |
+                                          | VM-ENTRY                                                           Synchronous KVM
+                                        ==|===================================================================================
+                                          V                                                                           Guest OS
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                        | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                                            |
+                                                            V
+                                                PIO Write Finish: OUT DX,AX
+
+
+
+
+
+
+
+
+                                       IO Port                         
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+               
+                             | | | | | | | | | | | | | |               
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                 Guest OS
+                  =============================|=================================
+                                   A           |                  Synchronous KVM
+                                   |           |
+                          VM-ENTRY |           | VM-EXIT
+                                   |           |
+                                   |           |      
+                                   |           |     
+                                   |           |                  Synchronous KVM
+                  =================|===========|=================================
+                                   |           |                          Broiler
+                        Read/Write |           |                             
+                           Emulate |           |                             
+                                   |           V                             
+                        +---------------------------------+
+                        |                                 |
+                        |        In-Broiler Device        |
+                        |                                 |
+                        +---------------------------------+
+
+
+
+
+
+                                       IO Port
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+
+                             | | | | | | | | | | | | | |
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                 Guest OS
+                  =============================|=================================
+                                   A           |                  Synchronous KVM
+                                   |           |
+                          VM-ENTRY |           | VM-EXIT
+                                   |           |
+                        Read/Write |           |
+                           Emulate |           |
+                                   |           V
+                        +---------------------------------+
+                        |                                 |
+                        |        In-Kernel  Device        |
+                        |                                 |
+                        +---------------------------------+
+
+
+
+                        PCI Agent
+                        +------------------------+-----------------+
+                        |         IO-BAR         |     MEM-BAR     |
+                        +------------------------+-----------------+     Guest OS
+                  =============================|=================================
+                                   A           |                  Synchronous KVM
+                                   |           |
+                          VM-ENTRY |           | VM-EXIT
+                                   |           |
+                                   |           |
+                                   |           |
+                                   |           |                  Synchronous KVM
+                  =================|===========|=================================
+                                   |           |                          Broiler
+                        Read/Write |           |
+                           Emulate |           |
+                                   |           V
+                        +---------------------------------+
+                        |                                 |
+                        |      In-Broiler PCI Device      |
+                        |                                 |
+                        +---------------------------------+
+
+
+
+
+
+
+
+                                        Asynchronous IO Write On Broiler Device
+
+                                                    PIO Write Begin: OUT DX,AX
+                                                             |
+                                                             V
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                        | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+                                        =====|====================================================================================================
+                                             | VM-EXIT: EXIT_REASON_IO_INSTRUCTION                                                 Synchronous KVM
+                                             V
+                                        vmx_handle_exit
+                                          |
+                                          o-> handle_io
+                                                |
+                                                o-> kvm_fast_pio
+                                                      |
+                                                      o-> kvm_fast_pio_out
+                                                            |
+                                                            o-> kvm_rax_read
+                                                            |
+                                                            o-> emulator_pio_out
+                                                                  |
+                                                                  o-> emulator_pio_in_out
+                                                                        |
+                                                                        o-> kernel_pio
+                                                                              |
+                                                                              o-> kvm_io_bus_write
+                                                                                    |
+                                                                                    o-> __kvm_io_bus_write: KVM_PIO_BUS
+                                                                                          |
+                                                                                          o-> kvm_iodevice_write
+                                                                                                |
+                                                                                                o-> ioeventfd_write
+                                                                                                      |  | 
+                                                                                             VM-ENTRY |  | evnetfd_signal          Synchronous KVM
+                                        ==============================================================|===========================================
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+         V  :                                Guest OS
+                                        | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space   :  
+                                        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+            :  
+                                                             |                                           :  
+                                                             V                                           :  
+                                                    PIO Write Finish: OUT DX,AX                          :
+                                                                                                         :
+                                        ==========================================================================================================
+                                                                                        eventfd from KVM |                    Asynchronous Broiler
+                                                                                                         V 
+                                        read(eventfd)
+                                          |
+                                          o-> Emulate-PIO-write
+                                                |
+                                                o-> broiler_irq_line
+                                                      |                                                                       Asynchronous Broiler
+                                        ==============|===========================================================================================
+                                                      V                                                                           Asynchronous KVM
+                                                      o-> Inject Interrupt
+                                                            |                                                                     Asynchronous KVM
+                                        ====================|=====================================================================================
+o                                                           V Interrupt                                                                   Guest OS
+
+
+
+
+
+                                        Create An Asynchronous PIO on Broiler Device
+
+                                        eventfd(0, 0)
+                                        ioctl: KVM_IOEVENTFD                                                           Broiler
+                                        ==|===================================================================================
+                                          V                                                                                KVM
+                                        kvm_vm_ioctl: KVM_IOEVENTFD
+                                          |
+                                          o-> kvm_ioeventfd
+                                                |
+                                                o-> kvm_assign_ioeventfd
+                                                      |
+                                                      o-> kvm_assign_ioeventfd_idx
+                                                            |
+                                                            o-> eventfd_ctx_fdget
+                                                            |
+                                                            o-> kvm_iodevice_init: ioeventfd_ops
+                                                            |
+                                                            o-> kvm_io_bus_register_dev
+                                                                     
+
+   
+                                                     +--------------+     +--------------+     +--------------+     +--------------+
+                                                 o-> | KVM_MMIO_BUS | <-> | kvm_io_range | <-> | kvm_io_range | <-> | kvm_io_range |
+                                                 |   +--------------+     +--------------+     +--------------+     +--------------+
+                                                 |
+                                                 |   +-------------+     +--------------+     +--------------+     +--------------+
+                                                 o-> | KVM_PIO_BUS | <-> | kvm_io_range | <-> | kvm_io_range | <-> | kvm_io_range |
+                                      +-----+    |   +-------------+     +--------------+     +--------------+     +--------------+
+                                      | KVM |----o
+                                      +-----+    |   +---------------------------+     +--------------+     +--------------+     +--------------+
+                                                 o-> | KVM_VIRTIO_CCW_NOTIFY_BUS | <-> | kvm_io_range | <-> | kvm_io_range | <-> | kvm_io_range |
+                                                 |   +---------------------------+     +--------------+     +--------------+     +--------------+
+                                                 |
+                                                 |   +-------------------+     +--------------+     +--------------+
+                                                 o-> | KVM_FAST_MMIO_BUS | <-> | kvm_io_range | <-> | kvm_io_range |
+                                                     +-------------------+     +--------------+     +--------------+
+
+
+
+
+
+                                       IO Port
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+
+                             | | | | | | | | | | | | | |
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                 Guest OS
+                  =============================|=================================
+                             A              A  |                  Synchronous KVM
+                             |              |  |
+                             |     VM-ENTRY |  | VM-EXIT
+                             |              |  |
+                             |              |  |
+                             |              |  | Eventfd Notify
+                             |              o--V                  Synchronous KVM
+                  ===========|=================|=================================
+                     Inject  |         eventfd |             Asynchronous Broiler
+                   Interrupt |                 |
+                             |                 V
+                        +---------------------------------+
+                        |                                 |
+                        |        In-Broiler Device        |
+                        |          Write Emulate          |
+                        +---------------------------------+
+
+
+
+
+
+
+
+                                       Synchronous MMIO
+
+                                                   MMIO R/W                        MMIO Finish
+                                                       |                               |
+                                                       |                               |
+                                       System Running  V        System Waiting         V  System Running
+                                       --------------->o------------------------------>o------------------->
+                                                       | | | | | | | | | | | | | | | |A
+                                                       | | | | | | | | | | | | | | | ||
+                                                       V V V V V V V V V V V V V V V V|
+                                                       o------------------------------>o
+                                                               Device Handle IO
+
+                                       Asynchronous MMIO
+
+                                                    MMIO W                         MMIO Finish
+                                                       |                               |
+                                                       |                               |
+                                       System Running  V        System Running         V  System Running
+                                       --------------->o------------------------------>o------------------->
+                                                       |                               A
+                                                       |                               |
+                                                       V                               | Interrupt
+                                                       o------------------------------>o
+                                                               Device Handle IO
+
+
+
+
+
+
+
+
+
+https://blog.csdn.net/u014022631/article/details/83895821
+
+https://www.it610.com/article/1293804501379129344.htm
+
+
+
+
+
+                   First MMIO Read Begin: MOV EDI, imm32
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_VIOLATION                                                  Synchronous KVM
+                V
+           handle_ept_violation
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> kvm_mmu_do_page_fault
+                   |     |
+                   |     o-> kvm_tdp_page_fault
+                   |           |
+                   |           o-> direct_page_fault
+                   |                 |
+                   |                 o-> __direct_map
+                   |                      |
+                   |                      o-> mmu_set_spte
+                   |                            |
+                   |                            o-> set_spte
+                   |                                  |
+                   |                                  o-> set_mmio_spte
+                   |                                        |
+                   |                                        o-> mark_mmio_spte --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> segmented_read
+                         |           |
+                         |           o-> read_emulated
+                         |                 |
+                         |                 o-> emulator_read_emulated
+                         |                       |
+                         |                       o-> emulator_read_write
+                         |                             |
+                         |                             o-> emulator_read_write_onepage --> kvm_run --> KVM_EXIT_MMIO
+                         |                                   |
+                         |                                   o-> vcpu_mmio_read
+                         |
+                         o-> if: vcpu->mmio_needed
+                               |
+                               o-> vcpu->arch.complete_userspace_io: complete_emulated_mmio      
+                                           |                                                          Synchronous KVM
+           ================================|=========================================================================
+                                           | Return From IOCTL: KVM_RUN                           Synchronous Broiler
+                                           V
+           broiler_cpu_start
+             |
+             o-> case: KVM_EXIT_MMIO
+             |     |
+             |     o-> broiler_cpu_emulate_mmio: vcpu->kvm_run
+             |           |
+             |           o-> Broiler_pio_callback
+             |
+             o-> broiler_cpu_run
+                   |
+                   o-> ioctl: KVM_RUN                                                             Synchronous Broiler
+           ==============|===========================================================================================
+                         V                                                                            Synchronous KVM
+           kvm_vcpu_ioctl
+             |
+             o-> case: KVM_RUN
+                   |
+                   o-> kvm_arch_vcpu_ioctl_run
+                         |
+                         o-> if: vcpu->arch.complete_userspace_io
+                         |     |
+                         |     o-> complete_emulated_mmio
+                         |           |
+                         |           o-> complete_emulated_io
+                         |                 |
+                         |                 o-> kvm_emulate_instruction --> EMULTYPE_NO_DECODE
+                         |                       |
+                         |                       o-> x86_emulate_instruction
+                         |                             |
+                         |                             o-> x86_emulate_insn
+                         |                                   |
+                         |                                   o-> segmented_read
+                         |                                   |
+                         |                                   o-> writeback_registers
+                         |                                         |
+                         |                                         o-> emulator_write_gpr
+                         |                                               |
+                         |                                               o-> kvm_register_write
+                         |
+                         o-> vcpu_run
+                               |
+                               | VM-ENTRY                                                             Synchronous KVM
+           ====================|=====================================================================================
+                               V                                                                             Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+               First MMIO Read Finish: MOV EDI, imm32
+
+
+
+
+
+
+
+
+                 Not First MMIO Read Begin: MOV EDI, imm32
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_MISCONFIG                                                  Synchronous KVM
+                V
+           handle_ept_misconfig
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> handle_mmio_page_fault
+                   |     |
+                   |     o-> mmio_info_in_cache --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> segmented_read
+                         |           |
+                         |           o-> read_emulated
+                         |                 |
+                         |                 o-> emulator_read_emulated
+                         |                       |
+                         |                       o-> emulator_read_write
+                         |                             |
+                         |                             o-> emulator_read_write_onepage --> kvm_run --> KVM_EXIT_MMIO
+                         |                                   |
+                         |                                   o-> vcpu_mmio_read
+                         |                                   |
+                         |                                   o-> read_exit_mmio
+                         |
+                         o-> if: vcpu->mmio_needed
+                               |
+                               o-> vcpu->arch.complete_userspace_io: complete_emulated_mmio      
+                                           |                                                          Synchronous KVM
+           ================================|=========================================================================
+                                           | Return From IOCTL: KVM_RUN                           Synchronous Broiler
+                                           V
+           broiler_cpu_start
+             |
+             o-> case: KVM_EXIT_MMIO
+             |     |
+             |     o-> broiler_cpu_emulate_mmio: vcpu->kvm_run
+             |           |
+             |           o-> Broiler_pio_callback
+             |
+             o-> broiler_cpu_run
+                   |
+                   o-> ioctl: KVM_RUN                                                             Synchronous Broiler
+           ==============|===========================================================================================
+                         V                                                                            Synchronous KVM
+           kvm_vcpu_ioctl
+             |
+             o-> case: KVM_RUN
+                   |
+                   o-> kvm_arch_vcpu_ioctl_run
+                         |
+                         o-> if: vcpu->arch.complete_userspace_io
+                         |     |
+                         |     o-> complete_emulated_mmio
+                         |           |
+                         |           o-> complete_emulated_io
+                         |                 |
+                         |                 o-> kvm_emulate_instruction --> EMULTYPE_NO_DECODE
+                         |                       |
+                         |                       o-> x86_emulate_instruction
+                         |                             |
+                         |                             o-> x86_emulate_insn
+                         |                                   |
+                         |                                   o-> segmented_read
+                         |                                   |
+                         |                                   o-> writeback_registers
+                         |                                         |
+                         |                                         o-> emulator_write_gpr
+                         |                                               |
+                         |                                               o-> kvm_register_write
+                         |
+                         o-> vcpu_run
+                               |
+                               | VM-ENTRY                                                             Synchronous KVM
+           ====================|=====================================================================================
+                               V                                                                             Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+             Not First MMIO Read Finish: MOV EDI, imm32
+
+
+
+
+
+                                    Virtual Address
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |      PTE_OFFSET      |      PAGE_OFFSET      |
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                              |                      |                      |                      |                       |
+                                              |                      |                      |                      |                       |
+                                              |                      |                      |                      |                       |  +--------------+
+                                              |                      |                      |                      |  +--------------+     |  |              |
+                                              |                      |                      |                      |  |              |     |  +--------------+
+                                              |                      |                      |                      |  +--------------+     o->|              |
+                                              |                      |                      |                      |  |              |        +--------------+
+                                              |                      |                      |                      |  +--------------+        |              |
+                                              |                      |                      |  +--------------+    o->|   Physical   | -----> +--------------+
+                                              |                      |                      |  |              |       +--------------+         MMIO
+                                              |                      |                      |  +--------------+       |              |
+                                              |                      |  +--------------+    o->|   Physical   | ----> +--------------+
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |  +--------------+    o->|   Physcial   | ----> +--------------+
+                                              |  |              |       +--------------+
+                                              |  +--------------+       |              |
+                                              o->|   Physcial   | ----> +--------------+
+                                                 +--------------+
+                                                 |              |
+                                CR3              +--------------+
+                                +----------+     |              |
+                                | Physical | --> +--------------+
+                                +----------+
+
+
+
+
+
+
+
+                              +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+                             +----------------------+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                             |                      | | | | | | | | | | | | | | | | | | |
+                             +----------------------+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | o--- 1: Data Read
+                                                     | | | | | | | | | | | | | | | | o----- 1: Data Write
+                                                     | | | | | | | | | | | | | | | o------- 1: Instruction Fetch
+                                                     | | | | | | | | | | | | | | o--------- 
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+                                                     | | | | | | | | | | | | | | | | | |
+
+
+
+
+
+
+
+             C Code:
+
+             mmio = ioremap(BROILER_MMIO_BASE, BROILER_MMIO_LEN);
+             data = *(uint32_t *)mmio
+
+	     X86 Machine Code        Assembly Code:
+
+             bf 00 00 00 d0          mov	$0xd0000000,%edi
+
+
+
+
+
+
+            +--------------+----------+----------+-------+----------------+-------------+
+            | Instructions |          |          |       |                |             |
+            |   Prefixes   |  Opcode  |  ModR/M  |  SIB  |  displacement  |  immediate  |
+            |              |          |          |       |                |             |
+            +--------------+----------+----------+-------+----------------+-------------+
+
+
+
+
+
+                     PIO Read Begin: IN AX, DX
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_IO_INSTRUCTION                                                 Synchronous KVM
+                V
+           handle_io
+             |
+             o-> kvm_fast_pio
+                   |
+                   o-> kvm_fast_pio_in
+                         |
+                         o-> kvm_fast_pio_in --> vcpu->arch.complete_userspace_io: complete_fast_pio_in
+                               |
+                               o-> emulator_pio_in
+                                     |
+                                     o-> emulator_pio_in_out --> KVM_EXIT_IO/KVM_EXIT_IO_IN
+                                              |                                                       Synchronous KVM
+           ===================================|======================================================================
+                                              | Return From IOCTL: KVM_RUN                                    Broiler
+                                              V
+           broiler_cpu_start
+             |
+             o-> case: KVM_EXIT_IO
+             |     |
+             |     o-> broiler_cpu_emulate_io: vcpu->kvm_run
+             |           |
+             |           o-> Broiler_pio_callback
+             |   
+             o-> broiler_cpu_run
+                   |
+                   o-> ioctl: KVM_RUN                                                                         Broiler
+           ==============|===========================================================================================
+                         V                                                                            Synchronous KVM
+           kvm_vcpu_ioctl
+             |
+             o-> case: KVM_RUN
+                   |
+                   o-> kvm_arch_vcpu_ioctl_run
+                         |
+                         o-> if: vcpu->arch.complete_userspace_io
+                         |         |
+                         |         o-> complete_fast_pio_in
+                         |               |
+                         |               o-> emulator_pio_in
+                         |               |     |
+                         |               |     o-> memcpy: val <-- vcpu->arch.pio_data
+                         |               |           
+                         |               o-> kvm_rax_write: RAX <-- val           
+                         |               |
+                         |               o-> vmx_skip_emulated_instruction
+                         |
+                         o-> vcpu_run
+                               |
+                               | VM-ENTRY                                                             Synchronous KVM
+           ====================|=====================================================================================
+                               V                                                                             Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+                   PIO Read Finish: IN AX, DX
+
+
+
+
+
+                    PIO Read Begin: IN AX, DX
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_IO_INSTRUCTION                                                 Synchronous KVM
+                V
+           handle_io
+             |
+             o-> kvm_fast_pio
+                   |
+                   o-> kvm_fast_pio_in
+                   |     |
+                   |     o-> kvm_fast_pio_in
+                   |           |
+                   |           o-> emulator_pio_in:
+                   |           |     |
+                   |           |     o-> emulator_pio_in_out
+                   |           |     |     |
+                   |           |     |     o-> kernel_pio
+                   |           |     |           |
+                   |           |     |           o-> kvm_io_bus_read
+                   |           |     |                 |
+                   |           |     |                 o-> __kvm_io_bus_read
+                   |           |     |                       |
+                   |           |     |                       o-> kvm_iodevice_read
+                   |           |     |                             |
+                   |           |     |                             o-> broiler_synchronous_pio_read (In-Kernel Device)
+                   |           |     |
+                   |           |     o-> memcpy: val <- vcpu->arch.pio_data
+                   |           |     
+                   |           o-> kvm_rax_write: RAX <- val
+                   |
+                   o-> kvm_skip_emulated_instruction
+         
+           vcpu_enter_guest
+             |
+             | VM_ENTRY                                                                               Synchronous KVM
+           ==|=======================================================================================================
+             V                                                                                               Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+                   PIO Read Finish: IN AX, DX
+
+
+
+
+
+
+
+
+                                                       +------------+
+                                                       |  pio_tree  |
+                                                       +------------+
+                                                              |
+                                                      o-------o-------o
+                                                      |               |
+                                              o-------o-------o       o-------o
+                                              |               |               |
+                                         +----o----+     +----o----+     +----o----+     +-------------------+
+                                         | IO PORT |     | IO PORT |     | IO PORT |---> | In-Broiler Device |
+                                         +---------+     +---------+     +---------+     +-------------------+
+                                              |               |               |
+                                              V               V               V
+                                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                   | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+                                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+
+
+
+
+
+
+
+                   First MMIO Read Begin: MOV EDI, imm32
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_VIOLATION                                                  Synchronous KVM
+                V
+           handle_ept_violation
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> kvm_mmu_do_page_fault
+                   |     |
+                   |     o-> kvm_tdp_page_fault
+                   |           |
+                   |           o-> direct_page_fault
+                   |                 |
+                   |                 o-> __direct_map
+                   |                      |
+                   |                      o-> mmu_set_spte
+                   |                            |
+                   |                            o-> set_spte
+                   |                                  |
+                   |                                  o-> set_mmio_spte
+                   |                                        |
+                   |                                        o-> mark_mmio_spte --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> segmented_read
+                         |     |     |
+                         |     |     o-> read_emulated
+                         |     |           |
+                         |     |           o-> emulator_read_emulated
+                         |     |           |     |
+                         |     |           |     o-> emulator_read_write
+                         |     |           |           |
+                         |     |           |           o-> emulator_read_write_onepage
+                         |     |           |                 |
+                         |     |           |                 o-> vcpu_mmio_read
+                         |     |           |                       |
+                         |     |           |                       o-> kvm_io_bus_read
+                         |     |           |                             |
+                         |     |           |                             o-> __kvm_io_bus_read
+                         |     |           |                                  |
+                         |     |           |                                  o-> kvm_iodevice_read
+                         |     |           |                                        |
+                         |     |           |                                        o-> broiler_synchronous_mmio_read
+                         |     |           |
+                         |     |           o-> memcpy: ctxt->src.valptr <-- mc->data
+                         |     |
+                         |     o-> if: ctxt->execute
+                         |     |     |
+                         |     |     o-> em_mov
+                         |     |
+                         |     o-> writeback_registers 
+                         |     
+                         o-> if: writeback     
+                               |
+                               o-> kvm_rip_write
+                               |
+                               o-> vmx_update_emulated_instruction
+
+           for(;;)
+             |
+             o-> vcpu_enter_guest
+                   |
+                   | VM-ENTRY                                                                         Synchronous KVM
+           ========|=================================================================================================
+                   V                                                                                         Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+               First MMIO Read Finish: MOV EDI, imm32
+
+
+
+
+
+                 Not First MMIO Read Begin: MOV EDI, imm32
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_MISCONFIG                                                  Synchronous KVM
+                V
+           handle_ept_misconfig
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> handle_mmio_page_fault
+                   |     |
+                   |     o-> mmio_info_in_cache --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> segmented_read
+                         |     |     |
+                         |     |     o-> read_emulated
+                         |     |           |
+                         |     |           o-> emulator_read_emulated
+                         |     |           |     |
+                         |     |           |     o-> emulator_read_write
+                         |     |           |           |
+                         |     |           |           o-> emulator_read_write_onepage
+                         |     |           |                 |
+                         |     |           |                 o-> vcpu_mmio_read
+                         |     |           |                       |
+                         |     |           |                       o-> kvm_io_bus_read
+                         |     |           |                             |
+                         |     |           |                             o-> __kvm_io_bus_read
+                         |     |           |                                  |
+                         |     |           |                                  o-> kvm_iodevice_read
+                         |     |           |                                        |
+                         |     |           |                                        o-> broiler_synchronous_mmio_read
+                         |     |           |
+                         |     |           o-> memcpy: ctxt->src.valptr <-- mc->data
+                         |     |
+                         |     o-> if: ctxt->execute
+                         |     |     |
+                         |     |     o-> em_mov
+                         |     |
+                         |     o-> writeback_registers 
+                         |     
+                         o-> if: writeback     
+                               |
+                               o-> kvm_rip_write
+                               |
+                               o-> vmx_update_emulated_instruction
+
+           for(;;)
+             |
+             o-> vcpu_enter_guest
+                   |
+                   | VM-ENTRY                                                                         Synchronous KVM
+           ========|=================================================================================================
+                   V                                                                                         Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+              Not First MMIO Read Begin: MOV EDI, imm32
+
+
+
+
+
+
+
+
+
+                                                        +-----------+
+                                                        | mmio_tree |
+                                                        +-----------+
+                                                              |
+                                                      o-------o-------o
+                                                      |               |
+                                              o-------o-------o       o-------o
+                                              |               |               |
+                                       +------o---=--+ +------o------+ +------o------+     +-------------------+
+                                       | MMIO  Range | | MMIO  Range | | MMIO  Range |---> | In-Broiler Device |
+                                       +-------------+ +-------------+ +-------------+     +-------------------+
+                                              |               |               |
+                                              V               V               V
+                                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                                   | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+                                   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+
+
+
+
+
+                                       MMIO
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+
+                             | | | | | | | | | | | | | |
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                 Guest OS
+                  =============================|=================================
+                                   A           |                  Synchronous KVM
+                                   |           |
+                          VM-ENTRY |           | VM-EXIT
+                                   |           |
+                                   |           |
+                                   |           |
+                                   |           |                  Synchronous KVM
+                  =================|===========|=================================
+                                   |           |                          Broiler
+                        Read/Write |           |
+                           Emulate |           |
+                                   |           V
+                        +---------------------------------+
+                        |                                 |
+                        |        In-Broiler Device        |
+                        |                                 |
+                        +---------------------------------+
+
+
+
+
+
+
+
+
+
+                                        MMIO
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+
+                             | | | | | | | | | | | | | |
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                 Guest OS
+                  =============================|=================================
+                                   A           |                  Synchronous KVM
+                                   |           |
+                          VM-ENTRY |           | VM-EXIT
+                                   |           |
+                        Read/Write |           |
+                           Emulate |           |
+                                   |           V
+                        +---------------------------------+
+                        |                                 |
+                        |        In-Kernel  Device        |
+                        |                                 |
+                        +---------------------------------+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   First MMIO Write Begin: MOV imm32, EDI
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_VIOLATION                                                  Synchronous KVM
+                V
+           handle_ept_violation
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> kvm_mmu_do_page_fault
+                   |     |
+                   |     o-> kvm_tdp_page_fault
+                   |           |
+                   |           o-> direct_page_fault
+                   |                 |
+                   |                 o-> __direct_map
+                   |                      |
+                   |                      o-> mmu_set_spte
+                   |                            |
+                   |                            o-> set_spte
+                   |                                  |
+                   |                                  o-> set_mmio_spte
+                   |                                        |
+                   |                                        o-> mark_mmio_spte --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> writeback
+                         |           |
+                         |           o-> OP_MEM: segmented_write
+                         |                 |
+                         |                 o-> emulator_write_emulated
+                         |                       |
+                         |                       o-> emulator_read_write
+                         |                             |
+                         |                             o-> emulator_read_write_onepage
+                         |                             |
+                         |                             o-> vcpu->mmio_needed: 1
+                         |                             |
+                         |                             o-> vcpu->run->exit_reason: KVM_EXIT_MMIO
+                         |                             |
+                         |                             o-> write_exit_mmio
+                         |
+                         o-> if: vcpu->mmio_needed
+                               |
+                               o-> vcpu->arch.complete_userspace_io: complete_emulated_mmio
+                                           |                                                          Synchronous KVM
+           ================================|=========================================================================
+                                           | Return From IOCTL: KVM_RUN                           Synchronous Broiler
+                                           V
+           broiler_cpu_start
+             |
+             o-> case: KVM_EXIT_MMIO
+             |     |
+             |     o-> broiler_cpu_emulate_mmio: vcpu->kvm_run
+             |           |
+             |           o-> Broiler_mmio_callback
+             |
+             o-> broiler_cpu_run
+                   |
+                   o-> ioctl: KVM_RUN                                                             Synchronous Broiler
+           ==============|===========================================================================================
+                         V                                                                            Synchronous KVM
+           kvm_vcpu_ioctl
+             |
+             o-> case: KVM_RUN
+                   |
+                   o-> kvm_arch_vcpu_ioctl_run
+                         |
+                         o-> if: vcpu->arch.complete_userspace_io
+                         |     |
+                         |     o-> complete_emulated_mmio
+                         |           |
+                         |           o-> if: vcpu->mmio_is_write
+                         |                 |
+                         |                 o-> return 1
+                         |
+                         o-> vcpu_run
+                               |
+                               | VM-ENTRY                                                             Synchronous KVM
+           ====================|=====================================================================================
+                               V                                                                             Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+               First MMIO Write Finish: MOV imm32, EDI
+
+
+
+
+
+
+
+                   First MMIO Write Begin: MOV imm32, EDI
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_VIOLATION                                                  Synchronous KVM
+                V
+           handle_ept_violation
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> kvm_mmu_do_page_fault
+                   |     |
+                   |     o-> kvm_tdp_page_fault
+                   |           |
+                   |           o-> direct_page_fault
+                   |                 |
+                   |                 o-> __direct_map
+                   |                      |
+                   |                      o-> mmu_set_spte
+                   |                            |
+                   |                            o-> set_spte
+                   |                                  |
+                   |                                  o-> set_mmio_spte
+                   |                                        |
+                   |                                        o-> mark_mmio_spte --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> writeback
+                         |           |
+                         |           o-> OP_MEM: segmented_write
+                         |                 |
+                         |                 o-> emulator_write_emulated
+                         |                       |
+                         |                       o-> emulator_read_write
+                         |                             |
+                         |                             o-> emulator_read_write_onepage
+                         |                             |
+                         |                             o-> vcpu->mmio_needed: 1
+                         |                             |
+                         |                             o-> vcpu->run->exit_reason: KVM_EXIT_MMIO
+                         |                             |
+                         |                             o-> write_exit_mmio
+                         |
+                         o-> if: vcpu->mmio_needed
+                               |
+                               o-> vcpu->arch.complete_userspace_io: complete_emulated_mmio
+                                           |                                                          Synchronous KVM
+           ================================|=========================================================================
+                                           | Return From IOCTL: KVM_RUN                           Synchronous Broiler
+                                           V
+           broiler_cpu_start
+             |
+             o-> case: KVM_EXIT_MMIO
+             |     |
+             |     o-> broiler_cpu_emulate_mmio: vcpu->kvm_run
+             |           |
+             |           o-> Broiler_mmio_callback
+             |
+             o-> broiler_cpu_run
+                   |
+                   o-> ioctl: KVM_RUN                                                             Synchronous Broiler
+           ==============|===========================================================================================
+                         V                                                                            Synchronous KVM
+           kvm_vcpu_ioctl
+             |
+             o-> case: KVM_RUN
+                   |
+                   o-> kvm_arch_vcpu_ioctl_run
+                         |
+                         o-> if: vcpu->arch.complete_userspace_io
+                         |     |
+                         |     o-> complete_emulated_mmio
+                         |           |
+                         |           o-> if: vcpu->mmio_is_write
+                         |                 |
+                         |                 o-> return 1
+                         |
+                         o-> vcpu_run
+                               |
+                               | VM-ENTRY                                                             Synchronous KVM
+           ====================|=====================================================================================
+                               V                                                                             Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+               First MMIO Write Finish: MOV imm32, EDI
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Not First MMIO Write Begin: MOV imm32, EDI
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_MISCONFIG                                                  Synchronous KVM
+                V
+           handle_ept_misconfig
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> handle_mmio_page_fault
+                   |     |
+                   |     o-> mmio_info_in_cache --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> writeback
+                         |           |
+                         |           o-> OP_MEM: segmented_write
+                         |                 |
+                         |                 o-> emulator_write_emulated
+                         |                       |
+                         |                       o-> emulator_read_write
+                         |                             |
+                         |                             o-> emulator_read_write_onepage
+                         |                             |
+                         |                             o-> vcpu->mmio_needed: 1
+                         |                             |
+                         |                             o-> vcpu->run->exit_reason: KVM_EXIT_MMIO
+                         |                             |
+                         |                             o-> write_exit_mmio
+                         |
+                         o-> if: vcpu->mmio_needed
+                               |
+                               o-> vcpu->arch.complete_userspace_io: complete_emulated_mmio
+                                           |                                                          Synchronous KVM
+           ================================|=========================================================================
+                                           | Return From IOCTL: KVM_RUN                           Synchronous Broiler
+                                           V
+           broiler_cpu_start
+             |
+             o-> case: KVM_EXIT_MMIO
+             |     |
+             |     o-> broiler_cpu_emulate_mmio: vcpu->kvm_run
+             |           |
+             |           o-> Broiler_mmio_callback
+             |
+             o-> broiler_cpu_run
+                   |
+                   o-> ioctl: KVM_RUN                                                             Synchronous Broiler
+           ==============|===========================================================================================
+                         V                                                                            Synchronous KVM
+           kvm_vcpu_ioctl
+             |
+             o-> case: KVM_RUN
+                   |
+                   o-> kvm_arch_vcpu_ioctl_run
+                         |
+                         o-> if: vcpu->arch.complete_userspace_io
+                         |     |
+                         |     o-> complete_emulated_mmio
+                         |           |
+                         |           o-> if: vcpu->mmio_is_write
+                         |                 |
+                         |                 o-> return 1
+                         |
+                         o-> vcpu_run
+                               |
+                               | VM-ENTRY                                                             Synchronous KVM
+           ====================|=====================================================================================
+                               V                                                                             Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+             Not First MMIO Write Finish: MOV imm32, EDI
+
+
+
+
+
+
+
+
+
+                   First MMIO Write Begin: MOV imm32, EDI
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_VIOLATION                                                  Synchronous KVM
+                V
+           handle_ept_violation
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> kvm_mmu_do_page_fault
+                   |     |
+                   |     o-> kvm_tdp_page_fault
+                   |           |
+                   |           o-> direct_page_fault
+                   |                 |
+                   |                 o-> __direct_map
+                   |                      |
+                   |                      o-> mmu_set_spte
+                   |                            |
+                   |                            o-> set_spte
+                   |                                  |
+                   |                                  o-> set_mmio_spte
+                   |                                        |
+                   |                                        o-> mark_mmio_spte --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> if: ctxt->execute
+                         |     |     |
+                         |     |     o-> em_mov
+                         |     |
+                         |     o-> writeback
+                         |     |     |
+                         |     |     o-> OP_MEM: segmented_write
+                         |     |           |
+                         |     |           o-> emulator_write_emulated
+                         |     |                 |
+                         |     |                 o-> emulator_read_write
+                         |     |                       |
+                         |     |                       o-> emulator_read_write_onepage
+                         |     |                             |
+                         |     |                             o-> ops->read_write_mmio: write_mmio
+                         |     |                                   |
+                         |     |                                   o-> vcpu_mmio_write
+                         |     |                                         |
+                         |     |                                         o-> kvm_io_bus_write
+                         |     |                                               |
+                         |     |                                               o-> __kvm_io_bus_write 
+                         |     |                                                     |
+                         |     |                                                     o-> kvm_iodevice_write
+                         |     |                                                           |
+                         |     |                                                           o-> broiler_synchronous_mmio_write
+                         |     |
+                         |     o-> writeback_registers 
+                         |     
+                         o-> if: writeback     
+                               |
+                               o-> kvm_rip_write
+                               |
+                               o-> vmx_update_emulated_instruction
+
+           for(;;)
+             |
+             o-> vcpu_enter_guest
+                   |
+                   | VM-ENTRY                                                                         Synchronous KVM
+           ========|=================================================================================================
+                   V                                                                                         Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+               First MMIO Write Finish: MOV imm32, EDI
+
+
+
+
+
+                Not First MMIO Write Begin: MOV imm32, EDI
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_MISCONFIG                                                  Synchronous KVM
+                V
+           handle_ept_misconfig
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> handle_mmio_page_fault
+                   |     |
+                   |     o-> mmio_info_in_cache --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> if: ctxt->execute
+                         |     |     |
+                         |     |     o-> em_mov
+                         |     |
+                         |     o-> writeback
+                         |     |     |
+                         |     |     o-> OP_MEM: segmented_write
+                         |     |           |
+                         |     |           o-> emulator_write_emulated
+                         |     |                 |
+                         |     |                 o-> emulator_read_write
+                         |     |                       |
+                         |     |                       o-> emulator_read_write_onepage
+                         |     |                             |
+                         |     |                             o-> ops->read_write_mmio: write_mmio
+                         |     |                                   |
+                         |     |                                   o-> vcpu_mmio_write
+                         |     |                                         |
+                         |     |                                         o-> kvm_io_bus_write
+                         |     |                                               |
+                         |     |                                               o-> __kvm_io_bus_write
+                         |     |                                                     |
+                         |     |                                                     o-> kvm_iodevice_write
+                         |     |                                                           |
+                         |     |                                                           o-> broiler_synchronous_mmio_write
+                         |     |
+                         |     o-> writeback_registers
+                         |
+                         o-> if: writeback
+                               |
+                               o-> kvm_rip_write
+                               |
+                               o-> vmx_update_emulated_instruction
+
+           for(;;)
+             |
+             o-> vcpu_enter_guest
+                   |
+                   | VM-ENTRY                                                                         Synchronous KVM
+           ========|=================================================================================================
+                   V                                                                                         Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+              Not First MMIO Write Finish: MOV imm32, EDI
+
+
+
+
+                        PCI Agent
+                        +-----------------------------------------+
+                        |                 MEM-BAR                 |
+                        +-----------------------------------------+      Guest OS
+                  =============================|=================================
+                                   A           |                  Synchronous KVM
+                                   |           |
+                          VM-ENTRY |           | VM-EXIT
+                                   |           |
+                                   |           |
+                                   |           |
+                                   |           |                  Synchronous KVM
+                  =================|===========|=================================
+                                   |           |                          Broiler
+                        Read/Write |           |
+                           Emulate |           |
+                                   |           V
+                        +---------------------------------+
+                        |                                 |
+                        |      In-Broiler PCI Device      |
+                        |                                 |
+                        +---------------------------------+
+
+
+
+
+
+
+
+
+
+
+
+
+                    PIO Write Begin: OUT DX, AX
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_IO_INSTRUCTION                                                 Synchronous KVM
+                V
+           handle_io
+             |
+             o-> kvm_fast_pio
+                   |
+                   o-> kvm_fast_pio_out
+                         |
+                         o-> kvm_rax_read: <-- RAX/AX
+                         |
+                         o-> emulator_pio_out: vcpu->arch.pio_data <-- RAX/AX
+                         |     |
+                         |     o-> emulator_pio_in_out --> KVM_EXIT_IO/KVM_EXIT_IO_OUT
+                         |
+                         o-> vcpu->arch.complete_userspace_io: complete_fast_pio_out
+                                     |                                                                Synchronous KVM
+           ==========================|===============================================================================
+                                     | Return From IOCTL: KVM_RUN                                             Broiler
+                                     V        
+           broiler_cpu_start
+             |
+             o-> case: KVM_EXIT_IO
+             |     |
+             |     o-> broiler_cpu_emulate_io: vcpu->kvm_run
+             |           |
+             |           o-> Broiler_pio_callback
+             |   
+             o-> broiler_cpu_run
+                   |
+                   o-> ioctl: KVM_RUN                                                                         Broiler
+           ==============|===========================================================================================
+                         V                                                                            Synchronous KVM
+           kvm_vcpu_ioctl
+             |
+             o-> case: KVM_RUN
+                   |
+                   o-> kvm_arch_vcpu_ioctl_run
+                         |
+                         o-> if: vcpu->arch.complete_userspace_io
+                         |         |
+                         |         o-> complete_fast_pio_out
+                         |               |
+                         |               o-> kvm_skip_emulated_instruction
+                         |
+                         o-> vcpu_run
+                               |
+                               | VM-ENTRY                                                             Synchronous KVM
+           ====================|=====================================================================================
+                               V                                                                             Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+                   PIO Write Finish: IN DX, AX
+
+
+
+
+
+                    PIO Write Begin: IN DX, AX
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_IO_INSTRUCTION                                                 Synchronous KVM
+                V
+           handle_io
+             |
+             o-> kvm_fast_pio
+                   |
+                   o-> kvm_fast_pio_in
+                   |     |
+                   |     o-> kvm_fast_pio_out
+                   |           |
+                   |           o-> kvm_rax_read: <-- RAX/AX
+                   |           |
+                   |           o-> emulator_pio_out: vcpu->arch.pio_data <-- RAX/AX
+                   |                 |
+                   |                 o-> emulator_pio_in_out
+                   |                       |
+                   |                       o-> kernel_pio
+                   |                             |
+                   |                             o-> kvm_io_bus_write
+                   |                                   |
+                   |                                   o-> __kvm_io_bus_write
+                   |                                         |
+                   |                                         o-> kvm_iodevice_write
+                   |                                               |
+                   |                                               o-> broiler_synchronous_pio_write (In-Kernel Device)
+                   |
+                   o-> kvm_skip_emulated_instruction
+         
+           vcpu_enter_guest
+             |
+             | VM_ENTRY                                                                               Synchronous KVM
+           ==|=======================================================================================================
+             V                                                                                               Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+                   PIO Write Finish: IN DX, AX
+
+
+
+
+
+
+                                       IO Port                          MMIO
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                +----------------------------------+
+                             | | | | | | | | | | | | | |                |                                  |
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                +----------------------------------+  Guest OS
+                  =============================|====================================|=================================
+                                   A           |                 A                  |            A     Synchronous KVM
+                                   |   VM-EXIT |        VM-ENTRY | Read/Write       | VM-EXIT    |
+                          VM-ENTRY |           V                 | Emulate          V            | VM-ENTRY
+                                   |     o-----o-----o           |            o-----o-----o      |
+                                   |     |           |           |            |           |      |
+                                   |     |           V           |            V           |      |
+                                   |     |     +-----------------o------------------+     |      |
+                                   |     |     |                                    |     |      |
+                                   |     |     |          In-Kernel Device          |     |      |
+                                   |     |     |                                    |     |      |
+                                   |     |     +------------------------------------+     |      |
+                                   |     |                                                |      |     Synchronous KVM
+                  =================|=====|================================================|======|====================
+                                   |     |                                                |      |             Broiler
+                        Read/Write |     |                                                |      | Read/Write
+                           Emulate |     |                                                |      | Emulate
+                                   |     V                                                V      |
+                                +------------------------------------------------------------------+
+                                |                                                                  |
+                                |                        In-Broiler Device                         |
+                                |                                                                  |
+                                +------------------------------------------------------------------+
+
+
+                            MMIO
+                            +--------------------------------------+
+                            |                                      |
+                            +--------------------------------------+
+                  =============================|====================================|=================================
+                                               |A
+                                       VM-EXIT || VM-ENTRY
+                                               ||
+                                               ||
+                                               ||
+                                               ||
+                                               ||
+                                               V|
+                  ==============================|===================================|=================================
+
+                                       
+
+             ----------------------------------------------------------------------------------------------------------->
+
+             ------------------------+------------------+----------------------------------+-----------+----------------
+                                     |                  |                                  |  Guest OS |
+             Guest Running           |  Geust Stopping  |          Guest  Running          | handle on | Guest Running
+                         Access MMIO |                  |                                  | Interrupt |
+             ------------------------+------------------+----------------------------------+-----------+----------------
+                                     |                  A                                  A
+                             VM-EXIT |                  | VM-ENTRY                         |
+                                     V                  |                                  |
+                                     +------------------+                  +---------------+
+                                     |      Kernel      |                  |    Kernel     |
+                                     |                  |                  |  KVM  Inject  |
+                                     | KVM Pass Broiler |                  |   Interrupt   |
+                                     +------------------+                  +---------------+
+                                                        |                  A                                        KVM
+             -------------------------------------------|------------------|--------------------------------------------
+                                                        |                  |                                   Userspace
+                                                        V                  |
+                                                        +------------------+
+                                                        |     Broiler      |
+                                           thread ----->|                  | MMIO Finish
+                                                        | Emulate Hardware |
+                                                        +------------------+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+             ----------------------------------------------------------------------------------------------------------->
+
+             ------------------------+------------------+----------------------------------+-----------+----------------
+                                     |                  |                                  |  Guest OS |
+             Guest Running           |  Geust Stopping  |          Guest  Running          | handle on | Guest Running
+                          Access I/O |                  |                                  | Interrupt |
+             ------------------------+------------------+----------------------------------+-----------+----------------
+                                     |                  A                                  A
+                             VM-EXIT |                  | VM-ENTRY                         |
+                                     V                  |                                  |
+                                     +------------------+                  +---------------+
+                                     |      Kernel      |                  |    Kernel     |
+                                     |                  |                  |  KVM  Inject  |
+                                     | KVM Pass Broiler |                  |   Interrupt   |
+                                     +------------------+                  +---------------+
+                                                        |                  A                                        KVM
+             -------------------------------------------|------------------|--------------------------------------------
+                                                        |                  |                                   Userspace
+                                                        V                  |              
+                                                        +------------------+              
+                                                        |     Broiler      |              
+                                           thread ----->|                  | I/O Finish            
+                                                        | Emulate Hardware |              
+                                                        +------------------+              
+
+
+
+
+
+
+
+                   First MMIO Write Begin: MOV imm32, EDI
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_VIOLATION                                                  Synchronous KVM
+                V
+           handle_ept_violation
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> kvm_mmu_do_page_fault
+                   |     |
+                   |     o-> kvm_tdp_page_fault
+                   |           |
+                   |           o-> direct_page_fault
+                   |                 |
+                   |                 o-> __direct_map
+                   |                      |
+                   |                      o-> mmu_set_spte
+                   |                            |
+                   |                            o-> set_spte
+                   |                                  |
+                   |                                  o-> set_mmio_spte
+                   |                                        |
+                   |                                        o-> mark_mmio_spte --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> writeback
+                         |           |
+                         |           o-> OP_MEM: segmented_write
+                         |                 |
+                         |                 o-> emulator_write_emulated
+                         |                       |
+                         |                       o-> emulator_read_write
+                         |                             |
+                         |                             o-> emulator_read_write_onepage
+                         |                             |
+                         |                             o-> vcpu->mmio_needed: 1
+                         |                             |
+                         |                             o-> vcpu->run->exit_reason: KVM_EXIT_MMIO
+                         |                             |
+                         |                             o-> write_exit_mmio
+                         |
+                         o-> if: vcpu->mmio_needed
+                               |
+                               o-> vcpu->arch.complete_userspace_io: complete_emulated_mmio
+                                           |                                                          Synchronous KVM
+           ================================|=========================================================================
+                                           | Return From IOCTL: KVM_RUN                           Synchronous Broiler
+                                           V
+           broiler_cpu_start
+             |
+             o-> case: KVM_EXIT_MMIO
+             |     |
+             |     o-> broiler_cpu_emulate_mmio: vcpu->kvm_run
+             |           |
+             |           o-> Broiler_mmio_callback
+             |
+             o-> broiler_cpu_run
+                   |
+                   o-> ioctl: KVM_RUN                                                             Synchronous Broiler
+           ==============|===========================================================================================
+                         V                                                                            Synchronous KVM
+           kvm_vcpu_ioctl
+             |
+             o-> case: KVM_RUN
+                   |
+                   o-> kvm_arch_vcpu_ioctl_run
+                         |
+                         o-> if: vcpu->arch.complete_userspace_io
+                         |     |
+                         |     o-> complete_emulated_mmio
+                         |           |
+                         |           o-> if: vcpu->mmio_is_write
+                         |                 |
+                         |                 o-> return 1
+                         |
+                         o-> vcpu_run
+                               |
+                               | VM-ENTRY                                                             Synchronous KVM
+           ====================|=====================================================================================
+                               V                                                                             Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+               First MMIO Write Finish: MOV imm32, EDI
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Not First MMIO Write Begin: MOV imm32, EDI
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                             Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_MISCONFIG                                                  Synchronous KVM
+                V
+           handle_ept_misconfig
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> handle_mmio_page_fault
+                   |     |
+                   |     o-> mmio_info_in_cache --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> writeback
+                         |           |
+                         |           o-> OP_MEM: segmented_write
+                         |                 |
+                         |                 o-> emulator_write_emulated
+                         |                       |
+                         |                       o-> emulator_read_write
+                         |                             |
+                         |                             o-> emulator_read_write_onepage
+                         |                                   |
+                         |                                   o-> ops->read_write_mmio: write_mmio
+                         |                                         |
+                         |                                         o-> vcpu_mmio_write
+                         |                                               |
+                         |                                               o->
+                         |                                               |
+                         |                                               |
+                         |                                               |
+                         |                                               
+
+
+
+                                           |                                                          Synchronous KVM
+           ================================|=========================================================================
+                                           | Return From IOCTL: KVM_RUN                           Synchronous Broiler
+                                           V
+           broiler_cpu_start
+             |
+             o-> case: KVM_EXIT_MMIO
+             |     |
+             |     o-> broiler_cpu_emulate_mmio: vcpu->kvm_run
+             |           |
+             |           o-> Broiler_mmio_callback
+             |
+             o-> broiler_cpu_run
+                   |
+                   o-> ioctl: KVM_RUN                                                             Synchronous Broiler
+           ==============|===========================================================================================
+                         V                                                                            Synchronous KVM
+           kvm_vcpu_ioctl
+             |
+             o-> case: KVM_RUN
+                   |
+                   o-> kvm_arch_vcpu_ioctl_run
+                         |
+                         o-> if: vcpu->arch.complete_userspace_io
+                         |     |
+                         |     o-> complete_emulated_mmio
+                         |           |
+                         |           o-> if: vcpu->mmio_is_write
+                         |                 |
+                         |                 o-> return 1
+                         |
+                         o-> vcpu_run
+                               |
+                               | VM-ENTRY                                                             Synchronous KVM
+           ====================|=====================================================================================
+                               V                                                                             Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                               |
+                               V
+             Not First MMIO Write Finish: MOV imm32, EDI
+
+
+
+
+
+
+                   First MMIO Write Begin: MOV imm32, EDI
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                                   Guest OS
+           =====|==========================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_VIOLATION                                                        Synchronous KVM
+                V                                                                                    
+           handle_ept_violation
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> kvm_mmu_do_page_fault
+                   |     |
+                   |     o-> kvm_tdp_page_fault
+                   |           |
+                   |           o-> direct_page_fault
+                   |                 |
+                   |                 o-> __direct_map
+                   |                      |
+                   |                      o-> mmu_set_spte
+                   |                            |
+                   |                            o-> set_spte
+                   |                                  |
+                   |                                  o-> set_mmio_spte
+                   |                                        |
+                   |                                        o-> mark_mmio_spte --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> if: ctxt->execute
+                         |     |     |
+                         |     |     o-> em_mov
+                         |     |
+                         |     o-> writeback
+                         |     |     |
+                         |     |     o-> OP_MEM: segmented_write
+                         |     |           |
+                         |     |           o-> emulator_write_emulated
+                         |     |                 |
+                         |     |                 o-> emulator_read_write
+                         |     |                       |
+                         |     |                       o-> emulator_read_write_onepage
+                         |     |                             |
+                         |     |                             o-> ops->read_write_mmio: write_mmio
+                         |     |                                   |
+                         |     |                                   o-> vcpu_mmio_write
+                         |     |                                         |
+                         |     |                                         o-> kvm_io_bus_write
+                         |     |                                               |
+                         |     |                                               o-> __kvm_io_bus_write 
+                         |     |                                                     |
+                         |     |                                                     o-> kvm_iodevice_write
+                         |     |                                                           |
+                         |     |                                                           o-> ioeventfd_write
+                         |     |                                                                 |
+                         |     o-> writeback_registers                                           |
+                         |                                                                       |
+                         o-> if: writeback                                                       |
+                               |                                                                 |
+                               o-> kvm_rip_write                                                 |
+                               |                                                                 |
+                               o-> vmx_update_emulated_instruction                               |
+           for(;;)                                                                               |
+             |                                                                                   |
+             o-> vcpu_enter_guest                                                                |
+                   |                                                                             |
+                   | VM-ENTRY                                                                    |          Synchronous KVM
+           ========|=======================================================================================================
+                   V                                                                             :                 Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                 :      
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space                    :
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                 :
+                               |                                                                 :
+                               V                                                                 :
+               First MMIO Write Finish: MOV imm32, EDI                                           :
+                                                                                                 :
+                                                                A Interrupt                      :                Guest OS
+           =====================================================|==========================================================
+                                                                :                                |     Asynchronous Broiler
+           read(eventfd) <-----------------------------------------------------------------------o
+             |                                                  :
+             o-> Emulate-MMIO-Write: Asynchronous Task          :
+                   |                                            :
+                   o-> broiler_irq_line                         :
+                         |                                      :                                      Asynchronous Broiler
+           ==============|=================================================================================================
+                         V                                      |                                          Asynchronous KVM
+                         o-> Inject Interrupt ------------------o
+                                                                                                          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                Not First MMIO Write Begin: MOV imm32, EDI
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                                   Guest OS
+           =====|==========================================================================================================
+                | VM-EXIT: EXIT_REASON_EPT_MISCONFIG                                                        Synchronous KVM
+                V
+           handle_ept_misconfig
+             |
+             o-> kvm_mmu_page_fault
+                   |
+                   o-> handle_mmio_page_fault
+                   |     |
+                   |     o-> mmio_info_in_cache --> RET_PF_EMULATE
+                   |
+                   o-> x86_emulate_instruction
+                         |
+                         o-> x86_decode_insn
+                         |
+                         o-> x86_emulate_insn
+                         |     |
+                         |     o-> if: ctxt->execute
+                         |     |     |
+                         |     |     o-> em_mov
+                         |     |
+                         |     o-> writeback
+                         |     |     |
+                         |     |     o-> OP_MEM: segmented_write
+                         |     |           |
+                         |     |           o-> emulator_write_emulated
+                         |     |                 |
+                         |     |                 o-> emulator_read_write
+                         |     |                       |
+                         |     |                       o-> emulator_read_write_onepage
+                         |     |                             |
+                         |     |                             o-> ops->read_write_mmio: write_mmio
+                         |     |                                   |
+                         |     |                                   o-> vcpu_mmio_write
+                         |     |                                         |
+                         |     |                                         o-> kvm_io_bus_write
+                         |     |                                               |
+                         |     |                                               o-> __kvm_io_bus_write
+                         |     |                                                     |
+                         |     |                                                     o-> kvm_iodevice_write
+                         |     |                                                           |
+                         |     |                                                           o-> ioeventfd_write
+                         |     |                                                                 |
+                         |     o-> writeback_registers                                           |
+                         |                                                                       |
+                         o-> if: writeback                                                       |
+                               |                                                                 |
+                               o-> kvm_rip_write                                                 |
+                               |                                                                 |
+                               o-> vmx_update_emulated_instruction                               |
+           for(;;)                                                                               |
+             |                                                                                   |
+             o-> vcpu_enter_guest                                                                |
+                   |                                                                             |
+                   | VM-ENTRY                                                                    |          Synchronous KVM
+           ========|=======================================================================================================
+                   V                                                                             :                 Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                 :
+           | | | | | | | | | | | | | | | | | | | | | | | | | | | Memory Space                    :
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                 :
+                               |                                                                 :
+                               V                                                                 :
+             Not First MMIO Write Finish: MOV imm32, EDI                                         :
+                                                                                                 :
+                                                                A Interrupt                      :                Guest OS
+           =====================================================|==========================================================
+                                                                :                                |     Asynchronous Broiler
+           read(eventfd) <-----------------------------------------------------------------------o
+             |                                                  :
+             o-> Emulate-MMIO-Write: Asynchronous Task          :
+                   |                                            :
+                   o-> broiler_irq_line                         :
+                         |                                      :                                      Asynchronous Broiler
+           ==============|=================================================================================================
+                         V                                      |                                          Asynchronous KVM
+                         o-> Inject Interrupt ------------------o
+
+
+
+
+
+
+
+
+
+
+                                       MMIO
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+
+                             | | | | | | | | | | | | | |
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                 Guest OS
+                  =============================|=================================
+                             A              A  |                  Synchronous KVM
+                             |              |  |
+                             |     VM-ENTRY |  | VM-EXIT
+                             |              |  |
+                             |              |  |
+                             |              |  | Eventfd Notify
+                             |              o--V                  Synchronous KVM
+                  ===========|=================|=================================
+                     Inject  |         eventfd |             Asynchronous Broiler
+                   Interrupt |                 |
+                             |                 V
+                        +---------------------------------+
+                        |                                 |
+                        |        In-Broiler Device        |
+                        |    Handle Asynchronous Task     |
+                        +---------------------------------+
+
+
+
+
+
+
+                                       MMIO
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+
+                             | | | | | | | | | | | | | |
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                 Guest OS
+                  =============================|=================================
+                             A              A  |                  Synchronous KVM
+                             |              |  |
+                             |     VM-ENTRY |  | VM-EXIT
+                             |              |  |
+                             |              |  |
+                             |              |  | Eventfd Notify
+                             |              o--V                  Synchronous KVM
+                  ===========|=================|=================================
+                     Inject  |         eventfd |             Asynchronous Broiler
+                   Interrupt |                 |
+                             |                 V
+                        +---------------------------------+
+                        |                                 |
+                        |           PCI  Device           |
+                        |    Handle Asynchronous Task     |
+                        +---------------------------------+
+
+
+
+
+
+
+
+
+
+
+                    PIO Write Begin: IN DX, AX
+                                |
+                                V
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+           | | | | | | | | | | | | | | | | | | | | | | | | | IO Space
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+                                                 Guest OS
+           =====|====================================================================================================
+                | VM-EXIT: EXIT_REASON_IO_INSTRUCTION                                                 Synchronous KVM
+                V
+           handle_io
+             |
+             o-> kvm_fast_pio
+                   |
+                   o-> kvm_fast_pio_in
+                   |     |
+                   |     o-> kvm_fast_pio_out
+                   |           |
+                   |           o-> kvm_rax_read: <-- RAX/AX
+                   |           |
+                   |           o-> emulator_pio_out: vcpu->arch.pio_data <-- RAX/AX
+                   |                 |
+                   |                 o-> emulator_pio_in_out
+                   |                       |
+                   |                       o-> kernel_pio
+                   |                             |
+                   |                             o-> kvm_io_bus_write
+                   |                                   |
+                   |                                   o-> __kvm_io_bus_write
+                   |                                         |
+                   |                                         o-> kvm_iodevice_write
+                   |                                               |
+                   |                                               o-> ioeventfd_write
+                   |                                                     |
+                   o-> kvm_skip_emulated_instruction                     |
+                                                                         |
+           vcpu_enter_guest                                              |
+             |                                                           |
+             | VM_ENTRY                                                  |                            Synchronous KVM
+           ==|=======================================================================================================
+             V                                                           :                                   Guest OS
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+             :
+           | | | | | | | | | | | | | | | | | | | | | | | | | IO Space    :
+           +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+             :
+                               |                                         :
+                               V                                         :
+                   PIO Write Finish: IN DX, AX                           :
+                                                                         :
+                                                      Interrupt A        :                                   Guest OS
+           =====================================================|====================================================
+                                                                :        |                       Asynchronous Broiler
+           read(eventfd) <-----------------------------------------------o
+             |                                                  :
+             o-> Emulate-PIO-Write: Asynchronous Task           :
+                   |                                            :
+                   o-> broiler_irq_line                         :
+                         |                                      :                                Asynchronous Broiler
+           ==============|===========================================================================================
+                         V                                      |                                    Asynchronous KVM
+                         o-> Inject Interrupt ------------------o
+
+
+
+
+
+
+
+
+                                      IO Port
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+
+                             | | | | | | | | | | | | | |
+                             +-+-+-+-+-+-+-+-+-+-+-+-+-+                 Guest OS
+                  =============================|=================================
+                             A              A  |                  Synchronous KVM
+                             |              |  |
+                             |     VM-ENTRY |  | VM-EXIT
+                             |              |  |
+                             |              |  |
+                             |              |  | Eventfd Notify
+                             |              o--V                  Synchronous KVM
+                  ===========|=================|=================================
+                     Inject  |         eventfd |             Asynchronous Broiler
+                   Interrupt |                 |
+                             |                 V
+                        +---------------------------------+
+                        |                                 |
+                        |           PCI  Device           |
+                        |    Handle Asynchronous Task     |
+                        +---------------------------------+
+
+
+INS
+ins
+
+                                                   
+                                                   
+                                                   init_mem_mapping
+                                                  probe_page_size_mask 
+
+                                                   
+                                                   
+                                                   o
+
+
+
+
+
+
+
+
+                       Compile/Assembly/Link      Load/boot             Running          Stop
+                    | <---------------------> | <-----------> | <--------------> | <-------->
+
+                    o-----------------------------------------------------------------------> Permanent Mapping Memory Allocator
+                                              o---------------------------------------------> Fixed Mapping Memory Allocator
+                                              o--------------->                               Early-IO Memory Allocator
+                                              o--------------->                               Early-REVDMEM Memory Allocator
+                                              o--------------->                               MEMBLOCK Memory Allocator
+                                                              o-----------------------------> Buddy Memory Allocator
+                                                                  o-------------------------> SLAB/SLOB/SLUB
+                                                                  
+
+
+                                FIXADDR_TOP                                                 FIXADDR_START
+                                |                        FIXADDR_SIZE                       |
+                                | <-------------------------------------------------------> |
+                                V                                                           V                      0
+                        +-------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+----------------------+
+                        |       |     |     |     |     |     |     |     |     |     |     |                      |
+                        |  ...  |     |     |     |     |     |     |     |     |     |     |        ......        | Virtual Address Space
+                        |       |     |     |     |     |     |     |     |     |     |     |                      |
+                        +-------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+----------------------+
+                                      A     A     A     A                                   A
+                                      |     |     |     |                                   |
+                                      |     | o---o     |                                   |
+                                      |     | | o-------o                             o-----o
+                                      |     | | |                                     |  
+                                     +-+---+-+-+-+-+-+-+-------+-+-+-------+-+-+-+-+-+-+
+                                     | |   | | | | | | |       | | |       | | | | | | |
+                                     | | . | | | | | | |  ...  | | |  ...  | | | | | | | Permanent Mapping Aear
+                                     | |   | | | | | | |       | | |       | | | | | | |
+                                     +-+---+-+-+-+-+-+-+-------+-+-+-------+-+-+-+-+-+-+
+                                      A     A A A A A A         A A         A A A A A A
+                                      |     | | | | | |         | |         | | | | | |
+                                      |     | | | | | |         | |         | | | | | o--------- __end_of_permanent_fixed_addresses,
+                                      |     | | | | | |         | |         | | | | o----------- FIX_APEI_GHES_NMI
+                                      |     | | | | | |         | |         | | | o------------- FIX_APEI_GHES_IRQ
+                                      |     | | | | | |         | |         | | o--------------- FIX_PARAVIRT_BOOTMAP
+                                      |     | | | | | |         | |         | o----------------- FIX_PCIE_MCFG
+                                      |     | | | | | |         | |         o------------------- FIX_KMAP_END
+                                      |     | | | | | |         | |                              A
+                                      |     | | | | | |         | |                              |
+                                      |     | | | | | |         | |                              | KM_MAX_IDX * NR_CPUS
+                                      |     | | | | | |         | |                              |
+                                      |     | | | | | |         | |                              V
+                                      |     | | | | | |         | o----------------------------- FIX_KMAP_BEGIN 
+                                      |     | | | | | |         o------------------------------- FIX_IO_APIC_BASE_END
+                                      |     | | | | | |                                          A
+                                      |     | | | | | |                                          |
+                                      |     | | | | | |                                          | MAX_IO_APICS
+                                      |     | | | | | |                                          |
+                                      |     | | | | | |                                          V
+                                      |     | | | | | o----------------------------------------- FIX_IO_APIC_BASE_0
+                                      |     | | | | o------------------------------------------- FIX_APIC_BASE
+                                      |     | | | o--------------------------------------------- FIX_OHCI1394_BASE
+                                      |     | | o----------------------------------------------- FIX_EARLYCON_MEM_BASE
+                                      |     | o------------------------------------------------- FIX_DBGP_BASE
+                                      |     o--------------------------------------------------- VSYSCALL_PAGE
+                                      |                                                          A    
+                                      |                                                          | 
+                                      |                                                          V
+                                      o--------------------------------------------------------- FIX_HOLE
+
+
+
+
+
+
+
+                                FIXADDR_TOP                                                 FIXADDR_START
+                                |                        FIXADDR_SIZE                       |
+                                | <-------------------------------------------------------> |
+                                V                                                           V                      0
+                        +-------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+----------------------+
+                        |       |     |     |     |     |     |     |     |     |     |     |                      |
+                        |  ...  |     |     |     |     |     |     |     |     |     |     |        ......        | Virtual Address Space
+                        |       |     |     |     |     |     |     |     |     |     |     |                      |
+                        +-------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+----------------------+
+                                         
+
+
+
+
+
+
+
+
+                                    Permanent Virtual Address
+
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |      PTE_OFFSET      |      PAGE_OFFSET      |
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                              |                      |                      |                      |                       |
+                                              |                      |                      |                      |                       |
+                                              |                      |                      |                      |                       |  +--------------+
+                                              |                      |                      |                      |  +--------------+     |  |              |
+                                              |                      |                      |                      |  |              |     |  +--------------+
+                                              |                      |                      |                      |  +--------------+     o->|              |
+                                              |                      |                      |                      |  |              |        +--------------+
+                                              |                      |                      |                      |  +--------------+        |              |
+                                              |                      |                      |  +--------------+    o->|   Physical   | -----> +--------------+
+                                              |                      |                      |  |              |       +--------------+         MMIO/Memory
+                                              |                      |                      |  +--------------+       |              |
+                                              |                      |  +--------------+    o->|   Physical   | ----> +--------------+
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |  +--------------+    o->|   Physcial   | ----> +--------------+
+                                              |  |              |       +--------------+
+                                              |  +--------------+       |              |
+                                              o->|   Physcial   | ----> +--------------+
+                                                 +--------------+
+                                                 |              |
+                                CR3              +--------------+
+                                +----------+     |              |
+                                | Physical | --> +--------------+
+                                +----------+
+
+
+
+
+                               set_fixmap_offset
+                                 |
+                                 o-> __set_fixmap_offset: FIXMAP_PAGE_NORMAL
+                                       |
+                                       o-> __set_fixmap
+                                       |     |
+                                       |     o-> native_set_fixmap
+                                       |           |
+                                       |           o-> __native_set_fixmap
+                                       |                 |
+                                       |                 o-> __fix_to_virt
+                                       |                 |
+                                       |                 o-> set_pte_vaddr
+                                       |                       |
+                                       |                       o-> pgd_offset_k
+                                       |                       |
+                                       |                       o-> p4d_offset
+                                       |                       |
+                                       |                       o-> set_pte_vaddr_p4d
+                                       |                             |
+                                       |                             o-> fill_pud
+                                       |                             |
+                                       |                             o-> __set_pte_vaddr
+                                       |                                   |
+                                       |                                   o-> fill_pmd
+                                       |                                   |
+                                       |                                   o-> fill_pte
+                                       |                                   |
+                                       |                                   o-> set_pte: PTE/NEW-PTE
+                                       |                                   |
+                                       |                                   o-> flush_tlb_one_kernel
+                                       |
+                                       o-> fix_to_virt
+
+
+                        startup_64
+                          |
+                          o-> __startup_64
+                                |
+                                o->secondary_startup_64
+                                     |
+                                     o-> initial_code(%rip)
+                                           |
+                                           o->x86_64_start_kernel
+                                                |
+                                                o-> init_top_pgt[511] = early_top_pgt[511]
+                                                |
+                                                o-> x86_64_start_reservations 
+                                                      |
+                                                      o-> start_kernel
+
+
+
+                        startup_64
+                          |
+                          o-> __startup_64
+                                |
+                                o->secondary_startup_64
+                                     |
+                                     o-> initial_code(%rip)
+                                           |
+                                           o->x86_64_start_kernel
+                                                |
+                                                o-> reset_early_page_tables
+                                                      |
+                                                      o-> write_cr3: early_top_pgt /* Kill off the identity-map trampoline */
+                       
+
+early_idt_handler_array
+early_idt_handler_common
+do_early_exception
+
+
+kernel/head_64.S
+
+       _
+
+
+
+
+                                    Early Identity-Mapping Stage: Permanent Mapping PageTable
+
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |      PTE_OFFSET      |      PAGE_OFFSET      |
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                              |                      |                      |                                           
+                                              |                      |                      |                                           
+                                              |                      |                      |                         level1_fixmap_pgt 
+                                              |                      |                      |                         +--------------+  
+                                              |                      |                      |                         |              |  
+                                              |                      |                      |                         +--------------+  
+                                              |                      |                      |                         |              |  
+                                              |                      |                      |  level2_fixmap_pgt      +--------------+  
+                                              |                      |                      |  +--------------+       |   Physical   | 
+                                              |                      |                      |  |              |       +--------------+ 
+                                              |                      |  level3_kernel_pgt   |  +--------------+       |              |
+                                              |                      |  +--------------+    o->|   Physical   | ----> +--------------+
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |  early_top_pgt       |  +--------------+       |              |
+                                              |  +--------------+    |  |              |   o-> +--------------+
+                                              |  |              |    |  +--------------+   |
+                                              |  +--------------+    o->|   Physical   | --o
+                                              |  |              |   o-> +--------------+
+                                              |  +--------------+   |
+                                              |  |              |   |
+                                CR3           |  +--------------+   |
+                                +----------+  o->|   Physical   | --o
+                                | Physical | --> +--------------+
+                                +----------+     
+
+
+
+
+                                    Full-Boot Stage: Permanent Mapping PageTable
+
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |      PTE_OFFSET      |      PAGE_OFFSET      |
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                              |                      |                      |
+                                              |                      |                      |
+                                              |                      |                      |                         level1_fixmap_pgt
+                                              |                      |                      |                         +--------------+
+                                              |                      |                      |                         |              |
+                                              |                      |                      |                         +--------------+
+                                              |                      |                      |                         |              |
+                                              |                      |                      |  level2_fixmap_pgt      +--------------+
+                                              |                      |                      |  +--------------+       |   Physical   |
+                                              |                      |                      |  |              |       +--------------+
+                                              |                      |  level3_kernel_pgt   |  +--------------+       |              |
+                                              |                      |  +--------------+    o->|   Physical   | ----> +--------------+
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |  init_top_pgt        |  +--------------+       |              |
+                                              |  +--------------+    |  |              |   o-> +--------------+
+                                              |  |              |    |  +--------------+   |
+                                              |  +--------------+    o->|   Physical   | --o
+                                              |  |              |   o-> +--------------+
+                                              |  +--------------+   |
+                                              |  |              |   |
+                                CR3           |  +--------------+   |
+                                +----------+  o->|   Physical   | --o
+                                | Physical | --> +--------------+
+                                +----------+     #define swapper_pg_dir init_top_pgt
+
+
+
+
+
+
+
+
+
+                                    Full-Boot Stage: Permanent Mapping PageTable
+
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |      PTE_OFFSET      |      PAGE_OFFSET      |
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                              |                      |                      |                      |
+                                              |                      |                      |                      |
+                                              |                      |                      |                      |  level1_fixmap_pgt
+                                              |                      |                      |                      |  +--------------+
+                                              |                      |                      |                      |  |              |
+                                              |                      |                      |                      |  +--------------+
+                                              |                      |                      |                      |  |              |     +----------------------+
+                                              |                      |                      |  level2_fixmap_pgt   |  +--------------+     |                      |
+                                              |                      |                      |  +--------------+    o->|   Physical   | --> | Physical Memory/MMIO |
+                                              |                      |                      |  |              |       +--------------+     |                      |
+                                              |                      |  level3_kernel_pgt   |  +--------------+       |              |     +----------------------+
+                                              |                      |  +--------------+    o->|   Physical   | ----> +--------------+
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |  init_top_pgt        |  +--------------+       |              |
+                                              |  +--------------+    |  |              |   o-> +--------------+
+                                              |  |              |    |  +--------------+   |
+                                              |  +--------------+    o->|   Physical   | --o
+                                              |  |              |   o-> +--------------+
+                                              |  +--------------+   |
+                                              |  |              |   |
+                                CR3           |  +--------------+   |
+                                +----------+  o->|   Physical   | --o
+                                | Physical | --> +--------------+
+                                +----------+     #define swapper_pg_dir init_top_pgt
+
+
+
+
+
+                                    Full-Boot Stage: Permanent Mapping PageTable
+
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |      PTE_OFFSET      |      PAGE_OFFSET      |
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                              |                      |                      |                      |
+                                              |                      |                      |                      |
+                                              |                      |                      |                      |  level1_fixmap_pgt
+                                              |                      |                      |                      |  +--------------+
+                                              |                      |                      |                      |  |              |
+                                              |                      |                      |                      |  +--------------+
+                                              |                      |                      |                      |  |              |
+                                              |                      |                      |  level2_fixmap_pgt   |  +--------------+
+                                              |                      |                      |  +--------------+    o->|       0      |
+                                              |                      |                      |  |              |       +--------------+
+                                              |                      |  level3_kernel_pgt   |  +--------------+       |              |
+                                              |                      |  +--------------+    o->|   Physical   | ----> +--------------+
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |  init_top_pgt        |  +--------------+       |              |
+                                              |  +--------------+    |  |              |   o-> +--------------+
+                                              |  |              |    |  +--------------+   |
+                                              |  +--------------+    o->|   Physical   | --o
+                                              |  |              |   o-> +--------------+
+                                              |  +--------------+   |
+                                              |  |              |   |
+                                CR3           |  +--------------+   |
+                                +----------+  o->|   Physical   | --o
+                                | Physical | --> +--------------+
+                                +----------+     #define swapper_pg_dir init_top_pgt
+
+
+
+                               clear_fixmap:
+                                 |
+                                 o-> __set_fixmap_offset: FIXMAP_PAGE_CLEAR
+                                       |
+                                       o-> __set_fixmap
+                                             |
+                                             o-> native_set_fixmap
+                                                   |
+                                                   o-> __native_set_fixmap
+                                                         |
+                                                         o-> __fix_to_virt
+                                                         |
+                                                         o-> set_pte_vaddr
+                                                               |
+                                                               o-> pgd_offset_k
+                                                               |
+                                                               o-> p4d_offset
+                                                               |
+                                                               o-> set_pte_vaddr_p4d
+                                                                     |
+                                                                     o-> __set_pte_vaddr
+                                                                           |
+                                                                           o-> set_pte: PTE/0
+                                                                           |
+                                                                           o-> flush_tlb_one_kernel
+                                        
+
+                                    Early IO/RSVD-MEM Memory Allocator                                       
+
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |      PTE_OFFSET      |      PAGE_OFFSET      |
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                              |                      |                      |                      |                       |
+                                              |                      |                      |                      |                       |
+                                              |                      |                      |                      |                       |  +--------------+
+                                              |                      |                      |                      |  +--------------+     |  |              |
+                                              |                      |                      |                      |  |              |     |  +--------------+
+                                              |                      |                      |                      |  +--------------+     o->|              |
+                                              |                      |                      |                      |  |              |        +--------------+
+                                              |                      |                      |                      |  +--------------+        |              |
+                                              |                      |                      |  +--------------+    o->|   Physical   | -----> +--------------+
+                                              |                      |                      |  |              |       +--------------+         MMIO/RSVD-Memory
+                                              |                      |                      |  +--------------+       |              |
+                                              |                      |  +--------------+    o->|   Physical   | ----> +--------------+
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |  +--------------+    o->|   Physcial   | ----> +--------------+
+                                              |  |              |       +--------------+
+                                              |  +--------------+       |              |
+                                              o->|   Physcial   | ----> +--------------+
+                                                 +--------------+
+                                                 |              |
+                                CR3              +--------------+
+                                +----------+     |              |
+                                | Physical | --> +--------------+
+                                +----------+
+
+
+
+
+
+                                fix_to_virt(FIX_BTMAP_END)                                  fix_to_virt(FIX_BTMAP_BEGIN)
+                                |                                                           |
+                                | <-------------------------------------------------------> |
+                                V                                                           V                      0
+                        +-------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+----------------------+
+                        |       |     |     |     |     |     |     |     |     |     |     |                      |
+                        |  ...  |     |     |     |     |     |     |     |     |     |     |        ......        | Virtual Address Space
+                        |       |     |     |     |     |     |     |     |     |     |     |                      |
+                        +-------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+----------------------+
+                                                              A     A     A     A     A     A
+                                                              |     |     |     |     |     |
+                                                              |     |     |     |     o---o |
+                                                              |     |     |     o-------o | |
+                                                              |     |     o-----------o | | |
+                                                              |     o---------------o | | | |
+                                                              o-------------------o | | | | |
+                                                                                  | | | | | |
+                                                                                  | | | | | |
+                         +-+---+-+-+---+-+-+---+-+-+---+-+-+---+-+-+-+-+-+-+-----+-+-+-+-+-+-+
+                         | |   | | |   | | |   | | |   | | |   | | | | | | |     | | | | | | |
+                         | | . | | | . | | | . | | | . | | | . | | | | | | | ... | | | | | | | Early IO/RSVD-MEM Mapping Area
+                         | |   | | |   | | |   | | |   | | |   | | | | | | |     | | | | | | |
+                         +-+---+-+-+---+-+-+---+-+-+---+-+-+---+-+-+-+-+-+-+-----+-+-+-+-+-+-+
+                         | <---> | <---> | <---> | ..... | <---> | <------- Slot0 ---------> | 
+                           Slot7   Slot6   Slot5           Slot1  A A A A A       A A A A A A 
+                                                                  | | | | |       | | | | | |
+                                                                  | | | | |       | | | | | |
+                                                                  | | | | |       | | | | | o---- Mapped 1st MMIO/Page  ---
+                                                                  | | | | |       | | | | o------ Mapped 2nd MMIO/Page   A
+                                                                  | | | | |       | | | o-------- Mapped 3rd MMIO/Page   |
+                                                                  | | | | |       | | o---------- Mapped 4th MMIO/Page   |
+                                                                  | | | | |       | o------------ Mapped 5th MMIO/Page   |
+                                                                  | | | | |       o-------------- Mapped 6th MMIO/Page   |
+                                                                  | | | | |                       A                      |
+                                                                  | | | | |                       | Mapped X MMIO/Page   | NR_FIX_BTMAPS
+                                                                  | | | | |                       V                      |
+                                                                  | | | | o---------------------- Mapped 59th MMIO/Page  |
+                                                                  | | | o------------------------ Mapped 60th MMIO/Page  |
+                                                                  | | o-------------------------- Mapped 61th MMIO/Page  |
+                                                                  | o---------------------------- Mapped 62th MMIO/Page  V
+                                                                  o------------------------------ Mapped 63th MMIO/Page ---
+
+
+
+
+
+                 start_kernel
+                   |
+                   o-> setup_arch
+                         |
+                         o-> early_ioremap_init
+                               |
+                               o-> early_ioremap_setup
+                               |
+                               o-> early_ioremap_pmd
+                               |
+                               o-> pmd_populate_kernel
+                               
+
+
+
+
+                                    Before Initialize: Early IO/RSVD-MEM Mapping PageTable
+
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |      PTE_OFFSET      |      PAGE_OFFSET      |
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                              |                      |                      |                     
+                                              |                      |                      |                     
+                                              |                      |                      |                     
+                                              |                      |                      |                     
+                                              |                      |                      |                     
+                                              |                      |                      |                     
+                                              |                      |                      |                     
+                                              |                      |                      |  level2_fixmap_pgt  
+                                              |                      |                      |  +--------------+   
+                                              |                      |                      |  |              |   
+                                              |                      |  level3_kernel_pgt   |  +--------------+   
+                                              |                      |  +--------------+    o->|       0      |
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |  init_top_pgt        |  +--------------+       |              |
+                                              |  +--------------+    |  |              |   o-> +--------------+
+                                              |  |              |    |  +--------------+   |
+                                              |  +--------------+    o->|   Physical   | --o
+                                              |  |              |   o-> +--------------+
+                                              |  +--------------+   |
+                                              |  |              |   |
+                                CR3           |  +--------------+   |
+                                +----------+  o->|   Physical   | --o
+                                | Physical | --> +--------------+
+                                +----------+     #define swapper_pg_dir init_top_pgt
+
+
+
+
+
+
+                                    After Initialize: Early IO/RSVD-MEM Mapping PageTable
+
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |      PTE_OFFSET      |      PAGE_OFFSET      |
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                              |                      |                      |                      |
+                                              |                      |                      |                      |
+                                              |                      |                      |                      |  bm_pte
+                                              |                      |                      |                      |  +--------------+
+                                              |                      |                      |                      |  |              |
+                                              |                      |                      |                      |  +--------------+
+                                              |                      |                      |                      |  |              |
+                                              |                      |                      |  level2_fixmap_pgt   |  +--------------+
+                                              |                      |                      |  +--------------+    o->|       0      |
+                                              |                      |                      |  |              |       +--------------+
+                                              |                      |  level3_kernel_pgt   |  +--------------+       |              |
+                                              |                      |  +--------------+    o->|   Physical   | ----> +--------------+
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |  init_top_pgt        |  +--------------+       |              |
+                                              |  +--------------+    |  |              |   o-> +--------------+
+                                              |  |              |    |  +--------------+   |
+                                              |  +--------------+    o->|   Physical   | --o
+                                              |  |              |   o-> +--------------+
+                                              |  +--------------+   |
+                                              |  |              |   |
+                                CR3           |  +--------------+   |
+                                +----------+  o->|   Physical   | --o
+                                | Physical | --> +--------------+
+                                +----------+     #define swapper_pg_dir init_top_pgt
+
+
+
+
+
+
+
+
+                                  Early IO/RSVD-MEM Memory Allocator
+
+
+                                  prev_map[]                     prev_virt[]                    slot_size[]
+                                  +------------+                 +------------+                 +------------+
+                                  |            |                 |            |                 |            |
+                                  +------------+                 +------------+                 +------------+
+                                  |            |                 |            |                 |            |
+                                  +------------+                 +------------+                 +------------+
+                                  |            |                 |            |                 |            |
+                                  +------------+                 +------------+                 +------------+
+                                  |            |                 |            |                 |            |
+                                  +------------+ <-------------> +------------+ <-------------> +------------+
+                                  |            |                 |            |                 |            |
+                                  +------------+                 +------------+                 +------------+
+                                  |            |                 |            |                 |            |
+                                  +------------+                 +------------+                 +------------+
+                                  |            |                 |            |                 |            |
+                                  +------------+                 +------------+                 +------------+
+                                  |            |                 |            |                 |            |
+                                  +------------+                 +------------+                 +------------+
+
+
+
+
+
+                              /* Remap an IO device */
+                              void __init __iomem * early_ioremap(resource_size_t phys_addr, unsigned long size)
+                            
+                              /* Remap memory */
+                              void __init * early_memremap(resource_size_t phys_addr, unsigned long size)
+                            
+                              /* Remap RO memory */
+                              void __init * early_memremap_ro(resource_size_t phys_addr, unsigned long size)
+                            
+                              /* Remap memory with prot attribute */
+                              void __init * early_memremap_prot(resource_size_t phys_addr,
+                                                                   unsigned long size, unsigned long prot_val)
+                            
+                              /* Build temp mapping and copy data */
+                              void __init copy_from_early_mem(void *dest, phys_addr_t src, unsigned long size)
+
+
+
+
+
+
+
+
+
+
+                            __early_ioremap
+                              |
+                              o-> prev_map[idx]: Available member for prev_map[]
+                              |
+                              o-> prev_size[idx]: Store Mapping Size
+                              |
+                              o-> offset_in_page
+                              |
+                              o-> while: npages
+                              |     |
+                              |     o-> __early_set_fixmap
+                              |           |
+                              |           o-> early_ioremap_pte
+                              |           |     |
+                              |           |     o-> bm_pte[pte_index(addr)]
+                              |           |
+                              |           o-> set_pte
+                              |           |
+                              |           o-> flush_tlb_one_kernel
+                              |
+                              o-> prev_map[idx]: Store Virtual Address
+
+
+
+
+
+                                    Early IO/RSVD-MEM Mapping PageTable
+
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |      PTE_OFFSET      |      PAGE_OFFSET      |
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                              |                      |                      |                      |
+                                              |                      |                      |                      |                         +-----------------+
+                                              |                      |                      |                      |  bm_pte                 |                 |
+                                              |                      |                      |                      |  +--------------+       |                 |
+                                              |                      |                      |                      |  |              |       |  MMIO/RSVD-MEM  |
+                                              |                      |                      |                      |  +--------------+       |                 |
+                                              |                      |                      |                      |  |              |       |                 |
+                                              |                      |                      |  level2_fixmap_pgt   |  +--------------+       |                 |
+                                              |                      |                      |  +--------------+    o->|   Physical   | ----> +-----------------+
+                                              |                      |                      |  |              |       +--------------+
+                                              |                      |  level3_kernel_pgt   |  +--------------+       |              |
+                                              |                      |  +--------------+    o->|   Physical   | ----> +--------------+
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |  init_top_pgt        |  +--------------+       |              |
+                                              |  +--------------+    |  |              |   o-> +--------------+
+                                              |  |              |    |  +--------------+   |
+                                              |  +--------------+    o->|   Physical   | --o
+                                              |  |              |   o-> +--------------+
+                                              |  +--------------+   |
+                                              |  |              |   |
+                                CR3           |  +--------------+   |
+                                +----------+  o->|   Physical   | --o
+                                | Physical | --> +--------------+
+                                +----------+     #define swapper_pg_dir init_top_pgt
+
+
+
+
+
+
+
+
+
+                            early_memunmap
+                              |
+                              o-> early_iounmap
+                                    |
+                                    o-> prev_map[idx]: Find index with Vadr
+                                    |
+                                    o-> npages: Caculate total pages need relase
+                                    |
+                                    o-> while: npages
+                                    |     |
+                                    |     o-> __early_set_fixmap
+                                    |          |
+                                    |          o-> early_ioremap_pte
+                                    |          |     |
+                                    |          |     o-> bm_pte[pte_index(addr)]
+                                    |          |
+                                    |          o-> pte_clear
+                                    |          |
+                                    |          o-> flush_tlb_one_kernel
+                                    |
+                                    o-> prev_map[slot] = NULL: Mark Slot as free
+
+
+
+
+
+
+
+https://developer.aliyun.com/mirror/?spm=a2c6h.25603864.0.0.59b75a23sgT9y3
+
+http://t.zoukankan.com/dream397-p-13558436.html
+![DMAR](https://zhuanlan.zhihu.com/p/492749752?utm_medium=social&utm_oi=50718148919296)
+
+
+
+     start_kernel
+       |
+       o-> mm_init
+             |
+             o-> mem_init 
+                   |
+                   o-> pci_iommu_alloc
+                         |
+                         o-> detect_intel_iommu                              
+                               |
+                               o-> dmar_validate_one_drhd
+                                     |
+                                     o-> early_ioremap
+                              
+                              
+                              
+
+
+
+         setup_early_printk
+           |
+           o-> buf: "xdbc"
+                 |
+                 o-> early_xdbc_parse_parameter             
+                       |
+                       o-> xdbc_map_pci_mmio
+                             |
+                             o-> early_ioremap                              
+                              
+
+
+
+               start_kernel                    
+                 |
+                 o-> setup_arch                  
+                       |
+                       o-> early_quirks
+                             |
+                             o-> early_pci_scan_bus
+                                   |
+                                   o-> check_dev_quirk
+                                         |
+                                         o-> early_qrk
+                                               |
+                                               o-> apple_airport_reset
+                                                     |
+                                                     o-> early_ioremap
+
+
+
+
+
+
+
+
+
+                start_kernel
+                  |
+                  o-> setup_arch
+                        |
+                        o-> vsmp_init
+                              |
+                              o-> vsmp_cap_cpus
+                                    |
+                                    o-> early_ioremap
+
+
+
+
+
+
+native_smp_prepare_cpus
+uv_system_init
+apic_x2apic_uv_x
+uv_acpi_madt_oem_check
+uv_set_system_type
+early_get_pnodeid
+uv_early_read_mmr
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+early_pci_serial_init
+
+
+
+
+                 start_kernel
+                   |
+                   o-> setup_arch
+                   |     |
+                   |     o-> early_ioremap_init
+                   |           |
+                   |           o-> early_ioremap_setup
+                   |           |
+                   |           o-> early_ioremap_pmd
+                   |           |
+                   |           o-> pmd_populate_kernel
+                   |
+                   |==> Early IO/RSVD-MEM Using
+                   |
+                   o-> arch_call_rest_init
+                         |
+                         o-> rest_init
+                               |
+                               o-> kernel_init
+                               |     |
+                               |     o-> kernel_init_freeable
+                               |     |     |
+                               |     |     o-> do_basic_setup
+                               |     |           |
+                               |     |           o-> do_initcalls
+                               |     |                 |
+                               |     |                 o-> late_initcall: check_early_ioremap_leak
+                               |     |
+                               |     o-> free_initmem
+                               |
+                               o-> system_state = SYSTEM_RUNNING
+
+
+
+
+
+
+arch_call_rest_init
+rest_init
+kernel_init
+kernel_init_freeable
+do_basic_setup
+do_initcalls
+                                                  
+
+
+
+                                                 struct memblock_region
+                       struct memblock_type      memblock_memory_init_regions[INIT_MEMBLOCK_MEMORY_REGIONS]
+                               +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                               |          |      |     |     |     |     |     |     |     |      |    |     |
+                         o---> |  memory  |----> | R00 | R01 | R02 | R03 | R04 | R05 | R06 |  R07 |... | RXY | 
+       struct memblock   |     |          |      |     |     |     |     |     |     |     |      |    |     |
+       +------------+    |     +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+       |            |----o
+       |  memblock  |
+       |            |----o
+       +------------+    |     +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                         |     |          |      |     |     |     |     |     |     |     |      |    |     |
+                         o---> | reserved |----> | R00 | R01 | R02 | R03 | R04 | R05 | R06 |  R07 |... | RXY | 
+                               |          |      |     |     |     |     |     |     |     |      |    |     |
+                               +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                       struct memblock_type      memblock_reserved_init_regions[INIT_MEMBLOCK_RESERVED_REGIONS]
+                                                 struct memblock_region
+
+
+
+
+struct memblock_region {
+        phys_addr_t base;
+        phys_addr_t size;
+        enum memblock_flags flags;
+#ifdef CONFIG_NUMA
+        int nid;
+#endif
+};
+
+struct memblock_type {
+        unsigned long cnt;
+        unsigned long max;
+        phys_addr_t total_size;
+        struct memblock_region *regions;
+        char *name;
+};
+
+struct memblock {
+        bool bottom_up;  /* is bottom up direction? */
+        phys_addr_t current_limit;
+        struct memblock_type memory;
+        struct memblock_type reserved;
+};
+
+
+
+#define __meminit        __section(".meminit.text") __cold notrace \
+                                                  __latent_entropy
+#define __meminitdata    __section(".meminit.data")
+#define __meminitconst   __section(".meminit.rodata")
+#define __memexit        __section(".memexit.text") __exitused __cold notrace
+#define __memexitdata    __section(".memexit.data")
+#define __memexitconst   __section(".memexit.rodata")
+
+
+#ifndef CONFIG_ARCH_KEEP_MEMBLOCK
+#define __init_memblock __meminit
+#define __initdata_memblock __meminitdata
+#else
+#define __init_memblock
+#define __initdata_memblock
+#endif
+
+
+
+
+reserve_brk
+  |
+  o-> memblock_reserve: [_brk_start, _brk_end]
+
+early_reserve_initrd
+  |
+  o-> memblock_reserve: [ramdisk_image, ramdisk_end]
+
+memblock_x86_reserve_range_setup_data
+  |
+  o-> memblock_reserve: [boot_params.hdr.setup_data, len]
+
+
+                 start_kernel
+                   |
+                   o-> setup_arch
+                         |
+                         o-> early_reserve_memory
+                         |     |
+                         |     o-> memblock_reserve: [_text, __end_of_kernel_reserve]
+                         |     |
+                         |     o-> memblock_reserve: [0, SZ_64K]
+                         |     |
+                         |     o-> early_reserve_initrd
+                         |     |     |
+                         |     |     o-> memblock_reserve: [ramdisk_image, ramdisk_end]
+                         |     |
+                         |     o-> memblock_x86_reserve_range_setup_data
+                         |     |     |
+                         |     |     o-> memblock_reserve: [boot_params.hdr.setup_data, len]
+                         |     |
+                         |     o-> reserve_ibft_region
+                         |     |     |
+                         |     |     o-> memblock_reserve: [ibft_phys_addr, len]
+                         |     |
+                         |     o-> reserve_bios_regions
+                         |     |     |
+                         |     |     o-> memblock_reserve: [bios_start, 0x100000 - bios_start]
+                         |     |
+                         |     o-> trim_snb_memory
+                         |           |
+                         |           o-> memblock_reserve: [bad_pages[i], PAGE_SIZE]
+                         |     
+                         o-> reserve_brk     
+                         |     |
+                         |     o-> memblock_reserve: [_brk_start, _brk_end]
+                         |     
+                         o-> e820__memblock_setup
+                         |     |
+                         |     o-> memblock_allow_resize
+                         |     |
+                         |     o-> memblock_reserve: E820_TYPE_SOFT_RESERVED
+                         |     |
+                         |     o-> memblock_add: E820_TYPE_RAM/E820_TYPE_RESERVED_KERN     
+                         |     
+                         o-> memblock_set_current_limit: get_max_mapped()
+                                            
+
+
+
+
+
+
+
+             MEMBLOCK Allocator Layout
+
+             Bottom                                                                                           UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                  |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |
+             |      |      | R |        | R |         | R |      | R |    | R |            |                  |
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+                        A    A      A     A      A      A          A    A   A        A
+                        |    |      |     |      |      |          |    |   |        |
+                        |    |      |     |      |      |          |    |   |        o-- FreeArea[0]
+                        |    |      |     |      |      |          |    |   o----------- reserved.regions[0]
+                        |    |      |     |      |      |          |    o--------------- FreeArea[1]
+                        |    |      |     |      |      |          o-------------------- reserved.regions[1]
+                        |    |      |     |      |      o------------------------------- reserved.regions[2]
+                        |    |      |     |      o-------------------------------------- FreeArea[2]
+                        |    |      |     o--------------------------------------------- reserved.regions[3]
+                        |    |      o--------------------------------------------------- FreeArea[3]
+                        |    o---------------------------------------------------------- reserved.regions[4]
+                        o--------------------------------------------------------------- FreeArea[4]
+
+
+
+
+
+
+            MEMBLOCK Allocator Layout
+
+                    | <------------------------ Allocatable Area ------------------------> |
+                    +------+   +--------+   +---------+              +----+   +------------+  
+                    |      |   |        |   |         |              |    |   |            |
+                    |      |   |        |   |         |              |    |   |            |
+                    |      |   |        |   |         |              |    |   |            |
+                    +------+   +--------+   +---------+              +----+   +------------+  
+                                                        A
+                                                        |
+             Bottom                                     |                                                     UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                  |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |      
+             |      |      | R |        | R |         | R |      | R |    | R |            |                  |      
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |      
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+                                                        |
+                                                        |
+                                                        V
+                           +---+        +---+         +---+      +---+    +---+
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           +---+        +---+         +---+      +---+    +---+
+                           | <--------------- Allocated Area ---------------> |
+
+
+
+
+
+
+
+                       memblock_alloc
+                         |
+                         o-> memblock_alloc_try_nid
+                               |
+                               o-> memblock_alloc_internal
+                               |     |
+                               |     o-> memblock_alloc_range_nid
+                               |     |     |
+                               |     |     o-> memblock_find_in_range_node
+                               |     |     |     |
+                               |     |     |     o-> __memblock_find_range_top_down/__memblock_find_range_bottom_up
+                               |     |     |           |
+                               |     |     |           o-> for_each_free_mem_range/for_each_free_mem_range_reverse
+                               |     |     |
+                               |     |     o-> memblock_reserve
+                               |     |     
+                               |     o-> phys_to_virt     
+                               |           
+                               o-> memset: 0
+
+
+
+             MEMBLOCK Allocator Layout
+
+             Bottom                                                                                            UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                   |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+-------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                   |
+             |      |      | R |        | R |         | R |      | R |    | R |            |                   |
+             |      |      |   |        |   |         |   |      |   |    |   |            |                   |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+-------------------+
+             | <-------------- NUMA NODE 0 -------------> | <-------- NUMA NODE 1 -------> | <- NUMA NODE 2 -> |
+
+           
+                                           
+                                           
+
+
+
+  
+             MEMBLOCK Allocator Layout
+
+
+             Bottom to UP
+             ----------------------->
+
+             Bottom                                                                                            UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                   |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+-------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                   |
+             |      |      | R |        | R |         | R |      | R |    | R |            |                   |
+             |      |      |   |        |   |         |   |      |   |    |   |            |                   |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+-------------------+
+
+
+                                                                                                   UP to Bottom
+                                                                                         <---------------------
+
+             Bottom                                                                                            UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                   |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+-------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                   |
+             |      |      | R |        | R |         | R |      | R |    | R |            |                   |
+             |      |      |   |        |   |         |   |      |   |    |   |            |                   |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+-------------------+
+
+
+
+
+
+             MEMBLOCK Allocator Layout
+
+             Bottom                                                                                            UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                   |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+-------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                   |
+             |      |      | R |        | R |         | R |      | R |    | R |            |                   |
+             |      |      |   |        |   |         |   |      |   |    |   |            |                   |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+-------------------+
+                                        | <----- Speical Area -----> |
+
+
+
+
+
+
+
+
+
+                 X86 Architecture Virtual Memory
+
+                 0                                                         PAGE_OFFSET: 0xffff888000000000      MAX
+                 |                                                         |                                    |
+                 | <------------ Userspace ------------> |                 | <--------- Kernel Space ---------> |
+                 +---------------------------------------+-----------------+------------------------------------+
+                 |                                       |                 |                                    |
+                 |                                       |                 |                                    |
+                 |                                       |                 |                                    |
+                 +---------------------------------------+-----------------+-------------------------------+----+
+                                                                           | <------ Linear Mapping -----> |
+                                                                           |                               |
+                                                                           |                               |
+                                                                           V                               V 
+                                                                           +-------------------------------+
+                                                                           |                               |                          
+                                                                           |                               |                          
+                                                                           |                               |                          
+                                                                           +-------------------------------+
+                                                                           |                               |
+                                                                           0                               (max_pfn << PAGE_SHIFT)
+                                                                           
+                                                                           Physical Memory
+
+
+
+
+
+
+
+
+
+                                    Kernel Space Linear Mapping PageTable
+
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |      PTE_OFFSET      |      PAGE_OFFSET      |
+                                    +----------------------+----------------------+----------------------+----------------------+-----------------------+
+                                              |                      |                      |                      |
+                                              |                      |                      |                      |                         +-----------------+
+                                              |                      |                      |                      |                         |                 |
+                                              |                      |                      |                      |                         |                 |
+                                              |                      |                      |                      |  +--------------+       |       4KiB      |
+                                              |                      |                      |                      |  |              |       | Physical Memory |
+                                              |                      |                      |                      |  +--------------+       |                 |
+                                              |                      |                      |                      |  |              |       |                 |
+                                              |                      |                      |                      |  +--------------+       |                 |
+                                              |                      |                      |  +--------------+    o->|   Physical   | ----> +-----------------+
+                                              |                      |                      |  |              |       +--------------+
+                                              |                      |  level3_kernel_pgt   |  +--------------+       |              |
+                                              |                      |  +--------------+    o->|   Physical   | ----> +--------------+
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |  init_top_pgt        |  +--------------+       |              |
+                                              |  +--------------+    |  |              |   o-> +--------------+
+                                              |  |              |    |  +--------------+   |
+                                              |  +--------------+    o->|   Physical   | --o
+                                              |  |              |   o-> +--------------+
+                                              |  +--------------+   |
+                                              |  |              |   |
+                                CR3           |  +--------------+   |
+                                +----------+  o->|   Physical   | --o
+                                | Physical | --> +--------------+
+                                +----------+     #define swapper_pg_dir init_top_pgt
+
+
+				    PTE Entry
+                                  
+                                    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                                    
+
+
+
+                                    X86 Architecture PTE Entry
+
+                                       62   59 58         52 51         M                         12 11  9 8 7 6 5 4 3 2 1 0
+                                    +-+-------+-------------+------------+--------------------------+-----+-+-+-+-+-+-+-+-+-+
+                                    |X|       |             |            |                          |     | |P| | |P|P|U|R| |
+                                    | | Prote |   Ignored   |  Reserved  | Physical Address of 4KiB | Ign |G|A|D|A|C|W|/|/|P|
+                                    |D|       |             |            |                          |     | |T| | |D|T|S|W| |
+                                    +-+-------+-------------+------------+--------------------------+-----+-+-+-+-+-+-+-+-+-+
+                                     A                                                A                    A A A A A A A A A
+                                     |                                                |                    | | | | | | | | |
+                                     |                                                |                    | | | | | | | | o-- Present: 1
+                                     |                                                |                    | | | | | | | o---- Read/Write: 1 
+                                     |                                                |                    | | | | | | o------ User/Superviosr: 0
+                                     |                                                |                    | | | | | o-------- Page-level Write-Through: None
+                                     |                                                |                    | | | | o---------- Page-level cache Disable: None
+                                     |                                                |                    | | | o------------ Accessed: 1
+                                     |                                                |                    | | o-------------- Dirty: 1
+                                     |                                                |                    | o---------------- Memory type: None
+                                     |                                                |                    o------------------ Global: 1
+                                     |                                                |                    
+                                     |                                                o--------------------------------------- Physical Address Offset
+                                     |                                               
+                                     o---------------------------------------------------------------------------------------- Execute-Disable: 1
+
+
+
+                               
+
+                                    Kernel Space Linear Mapping PageTable
+
+                                    +----------------------+----------------------+----------------------+---------------------------------------------+
+                                    |      PGD_OFFSET      |      PUD_OFFSET      |      PMD_OFFSET      |                 PAGE_OFFSET                 |
+                                    +----------------------+----------------------+----------------------+---------------------------------------------+
+                                              |                      |                      |                           
+                                              |                      |                      |                           
+                                              |                      |                      |                           
+                                              |                      |                      |                            +-----------------+
+                                              |                      |                      |                            |                 |
+                                              |                      |                      |                            |                 |
+                                              |                      |                      |                            |       2MiB      |
+                                              |                      |                      |                            | Physical Memory |
+                                              |                      |                      |  +--------------+          |                 |
+                                              |                      |                      |  |              |          |                 |
+                                              |                      |  level3_kernel_pgt   |  +--------------+          |                 |
+                                              |                      |  +--------------+    o->|   Physical   | -------> +-----------------+
+                                              |                      |  |              |       +--------------+
+                                              |                      |  +--------------+       |              |
+                                              |                      |  |              |       +--------------+
+                                              |  init_top_pgt        |  +--------------+       |              |
+                                              |  +--------------+    |  |              |   o-> +--------------+
+                                              |  |              |    |  +--------------+   |
+                                              |  +--------------+    o->|   Physical   | --o
+                                              |  |              |   o-> +--------------+
+                                              |  +--------------+   |
+                                              |  |              |   |
+                                CR3           |  +--------------+   |
+                                +----------+  o->|   Physical   | --o
+                                | Physical | --> +--------------+
+                                +----------+     #define swapper_pg_dir init_top_pgt
+
+
+
+
+
+
+                                    X86 Architecture PMD Entry
+      
+                                       62   59 58         52 51         M                         21 20  13   11  9 8 7 6 5 4 3 2 1 0
+                                    +-+-------+-------------+------------+--------------------------+------+-+-----+-+-+-+-+-+-+-+-+-+
+                                    |X|       |             |            |                          |      |P|     | |P| | |P|P|U|R| |
+                                    | | Prote |   Ignored   |  Reserved  | Physical Address of 2MiB | RSVD |A| Ign |G| |D|A|C|W|/|/|P|
+                                    |D|       |             |            |                          |      |T|     | |S| | |D|T|S|W| |
+                                    +-+-------+-------------+------------+--------------------------+------+-+-----+-+-+-+-+-+-+-+-+-+
+                                     A                                                A                     A       A A A A A A A A A
+                                     |                                                |                     |       | | | | | | | | |
+                                     |                                                |                     |       | | | | | | | | o-- Present: 1
+                                     |                                                |                     |       | | | | | | | o---- Read/Write: 1
+                                     |                                                |                     |       | | | | | | o------ User/Superviosr: 0
+                                     |                                                |                     |       | | | | | o-------- Page-level Write-Through: None
+                                     |                                                |                     |       | | | | o---------- Page-level cache Disable: None
+                                     |                                                |                     |       | | | o------------ Accessed: 1
+                                     |                                                |                     |       | | o-------------- Dirty: 1
+                                     |                                                |                     |       | o---------------- Page Size: 1
+                                     |                                                |                     |       o------------------ Global: 1
+                                     |                                                |                     o-------------------------- Memory Type: None
+                                     |                                                |
+                                     |                                                o------------------------------------------------ Physical Address Offset
+                                     |
+                                     o------------------------------------------------------------------------------------------------- Execute-Disable: 1
+
+
+
+
+
+
+
+                                     /* Linear: PHYS TO VIRT */
+				     static inline void *phys_to_virt(phys_addr_t address);
+
+				     #define __va(x)	((void *)((unsigned long)(x)+PAGE_OFFSET))
+
+                                     /* Linear: VIRT TO PHYS */
+				     static inline phys_addr_t virt_to_phys(volatile void *address);
+
+                                     #define __pa(x)	__phys_addr((unsigned long)(x))
+
+
+
+
+
+
+
+                 start_kernel
+                   |
+                   o-> setup_arch
+                         |
+                         o-> early_reserve_memory
+                         |
+                         o-> reserve_brk
+                         |     |
+                         |     o-> memblock_reserve: [_brk_start, _brk_end]
+                         |
+                         o-> e820__memblock_setup
+                         |     |
+                         |     o-> memblock_allow_resize
+                         |     |
+                         |     o-> memblock_reserve: E820_TYPE_SOFT_RESERVED
+                         |     |
+                         |     o-> memblock_add: E820_TYPE_RAM/E820_TYPE_RESERVED_KERN
+                         |           |
+                         |           o-> MEMBLOCK Allocator Can Allocate
+                         |
+                         o-> memblock_set_current_limit: get_max_mapped()
+
+
+
+
+
+
+
+
+
+		/* Allocate Physical Memory anywhere */
+                 static __always_inline phys_addr_t memblock_phys_alloc(phys_addr_t size,
+                                                                       phys_addr_t align);
+                 static __always_inline void *memblock_alloc(phys_addr_t size, phys_addr_t align);
+                 static inline void *memblock_alloc_raw(phys_addr_t size, phys_addr_t align);
+
+		/* Allocate Physical Memory on Speical NUMA NODE */
+                 phys_addr_t memblock_alloc_range_nid(phys_addr_t size,
+                                                      phys_addr_t align, phys_addr_t start,
+                                                      phys_addr_t end, int nid, bool exact_nid);
+                 phys_addr_t memblock_phys_alloc_try_nid(phys_addr_t size, phys_addr_t align, int nid);
+                 void *memblock_alloc_exact_nid_raw(phys_addr_t size, phys_addr_t align,
+                        			phys_addr_t min_addr, phys_addr_t max_addr,int nid);
+                 void *memblock_alloc_try_nid_raw(phys_addr_t size, phys_addr_t align,
+                        			phys_addr_t min_addr, phys_addr_t max_addr, int nid);
+                 void *memblock_alloc_try_nid(phys_addr_t size, phys_addr_t align,
+                        			phys_addr_t min_addr, phys_addr_t max_addr, int nid);
+
+		/* Allocate Physical Memory on Special Area */
+                 phys_addr_t memblock_phys_alloc_range(phys_addr_t size, phys_addr_t align,
+                                                      phys_addr_t start, phys_addr_t end);
+                 static inline void *memblock_alloc_from(phys_addr_t size,
+                 				phys_addr_t align, phys_addr_t min_addr);
+                 static inline void *memblock_alloc_low(phys_addr_t size, phys_addr_t align);
+                 static inline void *memblock_alloc_node(phys_addr_t size, phys_addr_t align, int nid)
+		
+
+
+
+                /* Iterate through memblock areas from type_a and not included in type_b*/
+                 __for_each_mem_range(i, type_a, type_b, nid, flags, p_start, p_end, p_nid);
+                /* Reverse iterate through memblock areas from type_a and not included in type_b */
+                __for_each_mem_range_rev(i, type_a, type_b, nid, flags, p_start, p_end, p_nid);
+		/* Iterate through memory areas */
+                for_each_mem_range(i, p_start, p_end);
+		/* Reverse iterate through memblock areas from type_a and not included in type_b */
+		for_each_mem_range_rev(i, p_start, p_end);
+		/* Iterate over all reserved memblock areas */
+		for_each_reserved_mem_range(i, p_start, p_end);
+		/* Early memory pfn range iterato */
+		for_each_mem_pfn_range(i, nid, p_start, p_end, p_nid);
+		/* Iterate through free memblock areas */
+		for_each_free_mem_range(i, nid, flags, p_start, p_end, p_nid);
+		/* Rev-iterate through free memblock areas */
+		for_each_free_mem_range_reverse(i, nid, flags, p_start, p_end, p_nid);
+		/* Itereate over memory regions */
+		for_each_mem_region(region);
+		/* Itereate over reserved memory regions */
+		for_each_reserved_mem_region(region);
+
+
+
+
+		/* Check Whether Physical Memory has reserved */
+		bool __init_memblock memblock_is_reserved(phys_addr_t addr);
+		/* Check Whether Physical Memory is Available Memory */
+		bool __init_memblock memblock_is_memory(phys_addr_t addr);
+		/* Check Whether Physical Memory has mapped */
+		bool __init_memblock memblock_is_map_memory(phys_addr_t addr);
+		/* Check Whether Region belong to memblock.memory */
+		bool memblock_is_region_memory(phys_addr_t base, phys_addr_t size);
+		/* Check Whether Region belong to memblock.reserved */
+		bool memblock_is_region_reserved(phys_addr_t base, phys_addr_t size);
+		/* Check Whether Region is Hot-Plug */
+		static inline bool memblock_is_hotpluggable(struct memblock_region *m);
+		/* Check Whether Region is Mirror memory */
+		static inline bool memblock_is_mirror(struct memblock_region *m);
+		/* Check Whether Region is no mapped */
+		static inline bool memblock_is_nomap(struct memblock_region *m);
+		/* Obtain Total Size For All Available Physical Memory */
+		phys_addr_t memblock_phys_mem_size(void);
+		/* Obtain Total Size For memblock.reserved */
+		phys_addr_t memblock_reserved_size(void);
+		/* Obtain First Physical Address for DRAM */
+		phys_addr_t memblock_start_of_DRAM(void);
+		/* Obtain Last Physical Address for DRAM */
+		phys_addr_t memblock_end_of_DRAM(void);
+
+
+
+
+
+
+
+
+            MEMBLOCK Allocator Layout
+
+             Bottom                                                                                           UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                  |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |
+             |      |      | R |        | R |         | R |      | R |    | R |            |                  |
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+                                                        |
+                                                        V
+                           | <--------------- Allocated Area ---------------> |
+                           +---+        +---+         +---+      +---+    +---+
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           +---+        +---+         +---+      +---+    +---+
+                                                                   |
+                                                                   | Free
+                                                                   V
+                    +------+   +--------+   +---------+          +---+----+   +------------+
+                    |      |   |        |   |         |          |   |    |   |            |
+                    |      |   |        |   |         |          |   |    |   |            |
+                    |      |   |        |   |         |          |   |    |   |            |
+                    +------+   +--------+   +---------+          +---+----+   +------------+
+                    | <------------------------ Allocatable Area ------------------------> |
+                                                        |
+                                                        |
+             Bottom                                     V                                                     UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                  |
+             +------+------+---+--------+---+---------+---+------+--------+---+------------+------------------+
+             |      |      |   |        |   |         |   |      |        |   |            |                  |
+             |      |      | R |        | R |         | R |      |        | R |            |                  |
+             |      |      |   |        |   |         |   |      |        |   |            |                  |
+             +------+------+---+--------+---+---------+---+------+--------+---+------------+------------------+
+
+
+
+
+                         memblock_free
+                           |
+                           o-> memblock_phys_free: __pa(va)
+                                 |
+                                 o-> memblock_remove_range
+                                       |
+                                       o-> memblock_isolate_range
+                                       |     |
+                                       |     o-> for_each_memblock_type: memblock.reserved 
+                                       |           |
+                                       |           o-> A: rbase < base
+                                       |           |      |
+                                       |           |      o-> memblock_insert_region
+                                       |           |
+                                       |           o-> B: rend > end
+                                       |           |      |
+                                       |           |      o-> memblock_insert_region
+                                       |           |
+                                       |           o-> C: [rbase, rend] == [base, end]
+                                       |                  | 
+                                       |                  o-> start_rgn/end_rgn
+                                       |
+                                       o-> for: start_rgn -- end_rgn
+                                             |
+                                             o-> memblock_remove_region
+
+
+
+
+
+
+                                                 struct memblock_region
+                       struct memblock_type      memblock_memory_init_regions[INIT_MEMBLOCK_MEMORY_REGIONS]
+                               +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                               |          |      |     |     |     |     |     |     |     |      |    |     |
+                         o---> |  memory  |----> | R00 | R01 | R02 | R03 | R04 | R05 | R06 |  R07 |... | RXY |
+       struct memblock   |     |          |      |     |     |     |     |     |     |     |      |    |     |
+       +------------+    |     +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+       |            |----o
+       |  memblock  |
+       |            |----o
+       +------------+    |     +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                         |     |          |      |     |     |     |     |     |     |     |      |    |     |
+                         o---> | reserved |----> | R00 | R01 | R02 | R03 | R04 | R05 | R06 |  R07 |... | RXY |
+                               |          |      |     |     |     |     |     |     |     |      |    |     |
+                               +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                       struct memblock_type      memblock_reserved_init_regions[INIT_MEMBLOCK_RESERVED_REGIONS]
+                                                 struct memblock_region
+
+
+
+
+                                   Physical Address Space
+
+                                   LOW                                                                        HIGH
+                                   |                                                                          |
+                                   +----------------+--+-----------+-------+-------------+---+----------------+
+                                   |                |  |           |       |             |   |                |
+                                   |                |  |           |  ...  |             |   |                |
+                                   |                |  |           |       |             |   |                |
+                                   +----------------+--+-----------+-------+-------------+---+----------------+
+                                   A                   A                   A                 A
+                                   |                   |                   |                 |
+                                   o----------------o  o--o                |      o----------o
+                                                    |     |                |      |          
+                                                    |     |                |      |          
+          struct memblock                           |     |                |      |          
+          +--------------+     +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+          |              |     |          |      |     |     |     |     |     |     |     |      |    |     |
+          |   memblock   |---> |  memory  |----> | R00 | R01 | R02 | R03 | R04 | R05 | R06 |  R07 |... | RXY |
+          |              |     |          |      |     |     |     |     |     |     |     |      |    |     |
+          +--------------+     +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                       struct memblock_type      struct memblock_region
+                                                 memblock_memory_init_regions[INIT_MEMBLOCK_MEMORY_REGIONS]
+       
+       
+       
+       
+                     
+                     
+                     
+                     
+                     
+                     
+
+
+
+
+                                                                                +--------------+                            +--------------+
+                                                                                |              |                            |              |
+                                                                                | Data Writing |                            | Data Reading |
+                                                                                |              |                            |              |
+                                                                                +--------------+                            +--------------+
+                                                                                       |                                           A
+                                                                                       |                                           |
+                                                                                       V                                           |
+                                                                               +----------------+                          +----------------+
+                                                                               | Memory  Access |                          | Memory  Access |
+                                                                               |   Controller   |                          |   Controller   |
+                                                                               +----------------+                          +----------------+
+                                                                                       |                                           A
+                                                                               o-------o--------o                                  | Compared
+                                                                               |                |                          o-------o--------o
+                                                                               |                |                          |                |
+                                                                               V                V                          |                |
+                                                                          +----------+     +----------+               +----------+     +----------+
+                                                                          |          |     |          |               |          |     |          |
+                                                                          | Memory A |     | Memory B |               | Memory A |     | Memory B |
+                                                                          |          |     |          |               |          |     |          |
+                                                                          +----------+     +----------+               +----------+     +----------+
+
+
+
+
+
+
+
+
+                                                                                       +--------------+                                +--------------+
+                                                                                       |              |                                |              |
+                                                                                       | Data Reading |                                | Data Reading |
+                                                                                       |              |                                |              |
+                                                                                       +--------------+                                +--------------+
+                                                                                              A                                               A
+                                                                                              |                                               |
+                                                                                              |                                               |
+                                                                                      +----------------+                              +----------------+
+                                                                                      | Memory  Access |                              | Memory  Access |
+                                                                                      |   Controller   |                              |   Controller   |
+                                                                                      +----------------+                              +----------------+
+                                                                                              A                                               A
+                                                                                              | Compared                                      | 
+                                                                                      o-------o--------o                                      o--------o
+                                                                                      |                |                              A                |
+                                                                                      |                |                           UE |                |
+                                                                                 +----------+     +----------+                   +----------+     +----------+
+                                                                                 |          |     |          |                   |          |     |          |
+                                                                                 | Memory A |     | Memory B |                   | Memory A |     | Memory B |
+                                                                                 |          |     |          |                   |          |     |          |
+                                                                                 +----------+     +----------+                   +----------+     +----------+
+
+
+
+
+
+
+
+
+
+                                   Physical Address Space
+
+                                   LOW                                                                        HIGH
+                                   |                                       | <- Mirror --> |                    |
+                                   +----------------+--+-----------+-------+---------------+---+----------------+
+                                   |                |  |           |       |               |   |                |
+                                   |                |  |           |  ...  | Memory Mirror |   |                |
+                                   |                |  |           |       |               |   |                |
+                                   +----------------+--+-----------+-------+---------------+---+----------------+
+                                   A                   A                   A                   A
+                                   |                   |                   |                   |
+                                   o----------------o  o--o                |      o------------o
+                                                    |     |                |      |
+                                                    |     |                |      |
+          struct memblock                           |     |                |      |
+          +--------------+     +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+          |              |     |          |      |     |     |     |     |     |     |     |      |    |     |
+          |   memblock   |---> |  memory  |----> | R00 | R01 | R02 | R03 | R04 | R05 | R06 |  R07 |... | RXY |
+          |              |     |          |      |     |     |     |     |     |     |     |      |    |     |
+          +--------------+     +----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                       struct memblock_type      struct memblock_region
+                                                 memblock_memory_init_regions[INIT_MEMBLOCK_MEMORY_REGIONS]
+
+
+
+
+
+
+
+            MEMBLOCK Allocator Layout
+
+                    | <------------------------ Allocatable Area ------------------------> |
+                    +------+   +--------+   +---------+              +----+   +------------+
+                    |      |   |        |   |         |              |    |   |            |
+                    |      |   |        |   |         |              |    |   |            |
+                    |      |   |        |   |         |              |    |   |            |
+                    +------+   +--------+   +---------+              +----+   +------------+
+                                                        A                     | <-mirror-> |
+                                                        |
+             Bottom                                     |                                                     UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                  |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |
+             |      |      | R |        | R |         | R |      | R |    | R |            |                  |
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+                                                        |                     | <-mirror-> |
+                                                        |
+                                                        V
+                           +---+        +---+         +---+      +---+    +---+
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           +---+        +---+         +---+      +---+    +---+
+                           | <--------------- Allocated Area ---------------> |
+
+
+
+
+
+
+            MEMBLOCK Allocator Layout
+
+                    | <---------------- Allocatable Area ---------------> |
+                    +------+   +--------+   +---------+              +----+   
+                    |      |   |        |   |         |              |    |   
+                    |      |   |        |   |         |              |    |   
+                    |      |   |        |   |         |              |    |   
+                    +------+   +--------+   +---------+              +----+   
+                    | <----------------- Un-Mirrorable -----------------> |
+                                                        A                     
+                                                        |
+             Bottom                                     |                                                     UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                  |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |
+             |      |      | R |        | R |         | R |      | R |    | R |            |                  |
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+                                                        |                     | <-mirror-> |
+                                                        |
+                                                        V                 
+                           +---+        +---+         +---+      +---+    +----------------+
+                           |   |        |   |         |   |      |   |    |                |
+                           |   |        |   |         |   |      |   |    |                |
+                           |   |        |   |         |   |      |   |    |                |
+                           +---+        +---+         +---+      +---+    +----------------+
+                           | <--------------------- Allocated Area ----------------------> |
+
+
+
+
+
+
+
+WordPress
+
+
+
+            MEMBLOCK Allocator Layout
+
+                    | <------------------------ Allocatable Area ------------------------> |
+                    +------+   +--------+   +---------+              +----+   +------------+
+                    |      |   |        |   |         |              |    |   |            |
+                    |      |   |        |   |         |              |    |   |            |
+                    |      |   |        |   |         |              |    |   |            |
+                    +------+   +--------+   +---------+              +----+   +------------+
+                                                        A
+                                                        |
+             Bottom                                     |                                                                 UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                              |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                              |
+             |      |      | R |        | R |         | R |      | R |    | R |            |                              |
+             |      |      |   |        |   |         |   |      |   |    |   |            |                              |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------------------+
+                                                        |                                  | <- System Reserved Memory -> |
+                                                        |
+                                                        V
+                           +---+        +---+         +---+      +---+    +---+
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           +---+        +---+         +---+      +---+    +---+
+                           | <--------------- Allocated Area ---------------> |
+
+
+
+
+
+                                                   
+                               +-----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                               |           |      |     |     |     |     |     |     |     |      |    |     |
+                               |  physmem  |----> | R00 | R01 | R02 | R03 | R04 | R05 | R06 |  R07 |... | RXY |
+                               |           |      |     |     |     |     |     |     |     |      |    |     |
+                               +-----------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                        struct memblock_type      struct memblock_region
+                                                  memblock_physmem_init_regions[INIT_PHYSMEM_REGIONS]
+
+
+
+
+
+
+
+
+                                   Physical Address Space
+
+                                   LOW                                                                         HIGH
+                                   |                                       | <- Reserved -> |                     |
+                                   +----------------+--+-----------+-------+----------------+---+-----------------+
+                                   |                |  |           |       |                |   |                 |
+                                   |                |  |           |  ...  |                |   |                 |
+                                   |                |  |           |       |                |   |                 |
+                                   +----------------+--+-----------+-------+----------------+---+-----------------+
+                                   A                   A                   A                    A <- Avail-mem -> |
+                                   |                   |                   |                    |
+                                   o----------------o  o--o                |      o-------------o
+                                                    |     |                |      |
+                                                    |     |                |      |
+                                                    |     |                |      |
+                                +---------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                                |         |      |     |     |     |     |     |     |     |      |    |     |
+                                | physmem |----> | R00 | R01 | R02 | R03 | R04 | R05 | R06 |  R07 |... | RXY |
+                                |         |      |     |     |     |     |     |     |     |      |    |     |
+                                +---------+      +-----+-----+-----+-----+-----+-----+-----+------+----+-----+
+                       struct memblock_type      struct memblock_region
+                                                 memblock_physmem_init_regions[INIT_PHYSMEM_REGIONS]
+
+
+
+
+
+            MEMBLOCK Allocator Layout
+
+                    | <------------------------ Allocatable Area ------------------------> |
+                    +------+   +--------+   +---------+              +----+   +------------+
+                    |      |   |        |   |         |              |    |   |            |
+                    |      |   |        |   |         |              |    |   |            |
+                    |      |   |        |   |         |              |    |   |            |
+                    +------+   +--------+   +---------+              +----+   +------------+
+                                                        A
+                                                        |
+                           +---+        +---+         +---+      +---+    +---+
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           +---+        +---+         +---+      +---+    +---+
+                           | <--------------- Allocated Area ---------------> |
+                                                        A
+             Bottom                                     |                                                                 UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                              |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                              |
+             |      |      | R |        | R |         | R |      | R |    | R |            |                              |
+             |      |      |   |        |   |         |   |      |   |    |   |            |                              |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------------------+
+                    | <------- physmem.region[0] -------> |      | <---------------- physmem.region[1] -----------------> |
+                                                                                                          |
+                                                                                                          V
+                                                                                           +------------------------------+
+                                                                                           |                              |
+                                                                                           |                              |
+                                                                                           |                              |
+                                                                                           +------------------------------+
+                                                                                           | <- System Reserved Memory -> |                         
+
+
+
+
+
+
+
+
+
+
+                 MEMBLOCK Allocator Layout
+ 
+                 Bottom                                                                                                        UP
+                 |                                                                                                             |
+                 | <-- memory.region[0] --> | <- memory.region[1] -> |     | <- memory.region[n] -> | <- memblock.region[m] -> |
+                 +------------+-------------+------------------------+-----+------------------------+--------------------------+
+                 |            |             |                        |     |                        |                          |
+                 |            |             |                        | ... |                        |                          |
+                 |            |             |                        |     |                        |                          |
+                 +------------+-------------+------------------------+-----+------------------------+--------------------------+
+                       A              A     | <-- MEMBLOCK_NOMAP --> |        A                     | <-- MEMBLOCK_HOTPLUG --> |
+                       |              |                                       |
+                       |              |                                       |
+                       |              o------ MEMBLOCK_MIRROR                 |
+                       o--------------------- MEMBLOCK_NONE                   o--- MEMBLOCK_DRIVER_MANAGED
+
+
+                       
+
+
+
+
+
+                   add_memory_resource
+                     |
+                     o-> if: IS_ENABLED(CONFIG_ARCH_KEEP_MEMBLOCK)
+                     |     |
+                     |     o-> if: res->flags & IORESOURCE_SYSRAM_DRIVER_MANAGED
+                     |           |
+                     |           o-> memblock_flags = MEMBLOCK_DRIVER_MANAGED
+                     |
+                     o-> memblock_add_node: memblock_flags
+                     |
+                     o-> __try_online_node
+                     |
+                     o-> arch_add_memory
+                     |
+                     o-> create_memory_block_devices
+                     |
+                     o-> register_memory_blocks_under_node
+
+
+
+
+
+
+
+CRASH
+SYSCALL_DEFINE4(kexec_load
+crashk_res
+
+
+ parse_crashkernel_dummy
+ 
+
+                    start_kernel
+                      |
+                      o-> setup_arch
+                            |
+                            o-> reserve_crashkernel
+                                  |
+                                  o-> parse_crashkernel: crash_size, crash_base
+                                  |     |
+                                  |     o-> __parse_crashkernel
+                                  |
+                                  o-> memblock_phys_alloc_range: [crash_base, crash_base + crash_size]
+                                  |
+                                  o-> crash_res.start: crash_base
+                                  |
+                                  o-> crash_res.end: crash_base + crash_size - 1
+                                  |
+                                  o-> insert_resource: iomem_reserouce
+
+
+
+
+
+
+
+
+
+
+
+
+                        start_kernel
+                          |
+                          o-> setup_arch
+                                |
+                                o-> initmem_init
+                                      |
+                                      o-> x86_numa_init
+                                            |
+                                            o-> numa_init
+                                            |     |
+                                            |     o-> acpi_numa_init
+                                            |           |
+                                            |           o-> acpi_parse_memory_affinity
+                                            |                 |
+                                            |                 o-> acpi_numa_memory_affinity_init
+                                            |                       |
+                                            |                       o-> hutplugable: CONFIG_MEMORY_HOTPLUG &
+                                            |                       |                ACPI_SRAT_MEM_HOT_PLUGGABLE
+                                            |                       |
+                                            |                       o-> if: hutplugable
+                                            |                             |
+                                            |                             o-> memblock_mark_hotplug
+                                            |
+                                            o-> numa_register_memblks
+                                                  |
+                                                  o-> numa_clear_kernel_node_hotplug
+                                                        |
+                                                        o-> memblock_clear_hotplug
+
+
+
+
+
+
+            MEMBLOCK Allocator Layout
+
+                    | <------------------------ Allocatable Area ------------------------> |
+                    +------+   +--------+   +---------+              +----+   +------------+
+                    |      |   |        |   |         |              |    |   |            |
+                    |      |   |        |   |         |              |    |   |            |
+                    |      |   |        |   |         |              |    |   |            |
+                    +------+   +--------+   +---------+              +----+   +------------+
+                                                        A                     | <-mirror-> |
+                                                        |
+             Bottom                                     |                                                     UP
+             |      | <------- memory.regions[0] -------> |      | <- memory.regions[1] -> |                  |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |
+             |      |      | R |        | R |         | R |      | R |    | R |            |                  |
+             |      |      |   |        |   |         |   |      |   |    |   |            |                  |
+             +------+------+---+--------+---+---------+---+------+---+----+---+------------+------------------+
+                                                        |                     | <-mirror-> |
+                                                        |
+                                                        V
+                           | <--------------- Allocated Area ---------------> |
+                           +---+        +---+         +---+      +---+    +---+
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           |   |        |   |         |   |      |   |    |   |
+                           +---+        +---+         +---+      +---+    +---+
+                                                                   A        A
+                                                                   |        |
+                                                                   |        o---- MEMBLOCK_NOMAP
+                                                                   o------------- MEMBLOCK_NOMAP
+
+
+
+
+
+	fdt_init_reserved_mem
+          |
+          o-> of_get_flat_dt_prop: "no-map"
+          |
+          o-> __reserved_mem_alloc_size
+                |
+                o-> of_get_flat_dt_prop: "size"
+                |
+                o-> of_get_flat_dt_prop: "alignment"
+                |
+                o-> of_get_flat_dt_prop: "no-map"
+                |
+                o-> of_get_flat_dt_prop: "alloc-ranges"
+                      |
+                      o-> early_init_dt_alloc_reserved_memory_arch
+                            |
+                            o-> memblock_phys_alloc_range: [start, end]
+                            |
+                            o-> memblock_mark_nomap
+
+
+
+
+                       MEMBLOCK Region Separation
+
+
+                                 +-----------------+                                                +-----------------+ 
+                                 |                 |                                                |                 |
+                                 |                 |                                                |                 |
+                                 |                 |                                                |                 |
+                                 +-----------------+                                                +-----------------+
+                                          |                                                                  |         
+                                          |                                                                  |         
+                                          V                                                                  V         
+                       -----------------------------------+-----------------------------------+-----------------------------
+                                                          |                                   |
+                                                          | <---------- Region[0] ----------> |
+                                                          |                                   |
+                       -----------------------------------+-----------------------------------+-----------------------------
+                                                                            |
+                                                                            |
+                                                                            V
+                       ----------+-----------------+------+-----------------------------------+-----+-----------------+-----
+                                 |                 |      |                                   |     |                 |
+                                 | <- Region[0] -> |      | <---------- Region[1] ----------> |     | <- Region[2] -> |
+                                 |                 |      |                                   |     |                 |
+                       ----------+-----------------+------+-----------------------------------+-----+-----------------+-----
+
+
+
+
+
+
+
+                       MEMBLOCK Region Adjacent
+
+
+                                 +-----------------+                                   +-----------------+
+                                 |                 |                                   |                 |
+                                 |                 |                                   |                 |
+                                 |                 |                                   |                 |
+                                 +-----------------+                                   +-----------------+
+                                          |                                                    |
+                                          |                                                    |
+                                          V                                                    V
+                       ----------------------------+-----------------------------------+-----------------------
+                                                   |                                   |
+                                                   | <---------- Region[0] ----------> |
+                                                   |                                   |
+                       ----------------------------+-----------------------------------+-----------------------
+                                                                     |
+                                                                     |
+                                                                     V
+                       ----------+-----------------------------------------------------------------------+-----
+                                 |                                                                       |
+                                 | <---------------------------- Region[0] ----------------------------> |
+                                 |                                                                       |
+                       ----------+-----------------------------------------------------------------------+-----
+
+
+
+
+
+
+                       MEMBLOCK Region Adjacent with Diff flags
+
+
+                                 +-----------------+                                   +-----------------+
+                                 |                 |                                   |                 |
+                                 |                 |                                   |                 |
+                                 |                 |                                   |                 |
+                                 +-----------------+                                   +-----------------+
+                                          |                                                    |
+                                          |                                                    |
+                                          V                                                    V
+                       ----------------------------+-----------------------------------+-----------------------
+                                                   |                                   |
+                                                   | <---------- Region[0] ----------> |
+                                                   |                                   |
+                       ----------------------------+-----------------------------------+-----------------------
+                                                                     |
+                                                                     |
+                                                                     V
+                       ----------+-----------------+-----------------------------------+-----------------+-----
+                                 |                 |                                   |                 |
+                                 | <- Region[0] -> | <---------- Region[1] ----------> | <- Region[2] -> |
+                                 |                 |                                   |                 |
+                       ----------+-----------------+-----------------------------------+-----------------+-----
+
+
+
+
+
+
+
+                       MEMBLOCK Region intersection
+
+
+                                 +-----------------+                       +-----------------+
+                                 |                 |                       |                 |
+                                 |                 |                       |                 |
+                                 |                 |                       |                 |
+                                 +-----------------+                       +-----------------+
+                                          |                                         |
+                                          |                                         |
+                                          V                                         V
+                       -----------------------+-----------------------------------+-------------
+                                              |                                   |
+                                              | <---------- Region[0] ----------> |
+                                              |                                   |
+                       -----------------------+-----------------------------------+-------------
+                                                                            |
+                                                                            |
+                                                                            V
+                       ----------+-----------------------------------------------------------+---
+                                 |                                                           |   
+                                 | <---------------------- Region[0] ----------------------> |   
+                                 |                                                           |   
+                       ----------+-----------------------------------------------------------+---
+
+
+
+
+
+
+
+
+                                         Correct Way                                                                                                                    Uncorrect Way
+
+                                               +--------------+                  +--------------+              |             +--------------+                 +--------------+
+                                               |              |                  |              |              |             |              |                 |              |
+                                               | Data Writing |                  | Data Reading |              |             | Data Reading |                 | Data Reading |
+                                               |              |                  |              |              |             |              |                 |              |
+                                               +--------------+                  +--------------+              |             +--------------+                 +--------------+
+                                                      |                                 A                      |                    A                                A
+                                                      |                                 |                      |                    |                                |
+                                                      V                                 |                      |                    |                                |
+                                              +----------------+                +----------------+             |            +----------------+               +----------------+
+                                              | Memory  Access |                | Memory  Access |             |            | Memory  Access |               | Memory  Access |
+                                              |   Controller   |                |   Controller   |             |            |   Controller   |               |   Controller   |
+                                              +----------------+                +----------------+             |            +----------------+               +----------------+
+                                                      |                                 A                      |                    A                                A
+                                              o-------o--------o                        | Compared             |                    | Compared                       |
+                                              |                |                o-------o--------o             |            o-------o--------o                       o--------o
+                                              |                |                |                |             |            |                |               A                |
+                                              V                V                |                |             |            |                |            UE |                |
+                                         +----------+     +----------+     +----------+     +----------+       |       +----------+     +----------+    +----------+     +----------+
+                                         |          |     |          |     |          |     |          |       |       |          |     |          |    |          |     |          |
+                                         | Memory A |     | Memory B |     | Memory A |     | Memory B |       |       | Memory A |     | Memory B |    | Memory A |     | Memory B |
+                                         |          |     |          |     |          |     |          |       |       |          |     |          |    |          |     |          |
+                                         +----------+     +----------+     +----------+     +----------+       |       +----------+     +----------+    +----------+     +----------+
+
+
+
+
+
+
+
+
+                                                                                       +--------------+                                +--------------+
+                                                                                       |              |                                |              |
+                                                                                       | Data Reading |                                | Data Reading |
+                                                                                       |              |                                |              |
+                                                                                       +--------------+                                +--------------+
+                                                                                              A                                               A
+                                                                                              |                                               |
+                                                                                              |                                               |
+                                                                                      +----------------+                              +----------------+
+                                                                                      | Memory  Access |                              | Memory  Access |
+                                                                                      |   Controller   |                              |   Controller   |
+                                                                                      +----------------+                              +----------------+
+                                                                                              A                                               A
+                                                                                              | Compared                                      |
+                                                                                      o-------o--------o                                      o--------o
+                                                                                      |                |                              A                |
+                                                                                      |                |                           UE |                |
+                                                                                 +----------+     +----------+                   +----------+     +----------+
+                                                                                 |          |     |          |                   |          |     |          |
+                                                                                 | Memory A |     | Memory B |                   | Memory A |     | Memory B |
+                                                                                 |          |     |          |                   |          |     |          |
+                                                                                 +----------+     +----------+                   +----------+     +----------+
+
+
+
+
+
+
+                          start_kernel
+                            |
+                            o-> setup_arch
+                                  |
+                                  o-> efi_find_mirror
+                                        |
+                                        o-> for_each_efi_memory_desc
+                                              |
+                                              o-> if: md->attribute & EFI_MEMORY_MORE_RELIABLE
+                                                    |
+                                                    o-> memblock_mark_mirror
+
+
+
+
+
+
+
+
+
+
+
+   __setup("hugepages=", hugepages_setup)
+     |
+     o-> hugepages_setup
+           |
+           o-> if: hugetlb_max_hstate && hstate_is_gigantic
+                 |
+                 o-> hugetlb_hstate_alloc_pages
+                       |
+                       o-> for: h->max_huge_pages
+                             |
+                             o-> if: hstate_is_gigantic
+                                   |
+                                   o-> alloc_bootmem_huge_page
+                                         |
+                                         o-> memblock_alloc_try_nid_raw
+
+
+
+
+
+
+
+    start_kernel
+      |
+      o-> setup_arch
+      |
+      o-> mm_init
+            |
+            o-> mem_init
+                  |
+                  o-> memblock_free_all
+                        |
+                        o-> reset_all_zones_managed_pages
+                        |     |
+                        |     o-> for_each_online_pgdat
+                        |           |
+                        |           o-> reset_node_managed_pages
+                        |                 |
+                        |                 o-> for: [pgdat->node_zones, pgdat->node_zones + MAX_NR_ZONES]
+                        |                       |
+                        |                       o-> atomic_long_set ==> z->managed_pages: 0
+                        |
+                        o-> free_low_memory_core_early
+                        |     |
+                        |     o-> memblock_clear_hotplug
+                        |     |
+                        |     o-> memmap_init_reserved_pages
+                        |     |     |
+                        |     |     o-> for_each_reserved_mem_range
+                        |     |           |
+                        |     |           o-> reserve_bootmem_region
+                        |     |                 |
+                        |     |                 o-> __SetPageReserved
+                        |     |
+                        |     o-> for_each_mem_region
+                        |     |     |
+                        |     |     o-> memblock_is_nomap
+                        |     |           |
+                        |     |           o-> reserve_bootmem_region
+                        |     |
+                        |     o-> for_each_free_mem_range
+                        |           |
+                        |           o-> __free_memory_core
+                        |                 |
+                        |                 o-> __free_pages_memory
+                        |                       |
+                        |                       o-> memblock_free_pages
+                        |                             |
+                        |                             o-> __free_pages_core
+                        |                                   |
+                        |                                   o-> __ClearPageReserved
+                        |                                   |
+                        |                                   o-> atomic_long_add ==> page_zone(page)->managed_pages
+                        |                                   |
+                        |                                   o-> __free_pages_ok ==> Buddy
+                        |
+                        o-> totalram_pages_add
+                              |
+                              o-> atomic_long_add ==> _totalram_pages
+
+
+
+
+
+
+
+
+
+
+
+
+
+                 MEMBLOCK Allocator Layout
+
+                 Bottom                                                                                                        UP
+                 |                                                                                                             |
+                 | <-- memory.region[0] --> | <- memory.region[1] -> |     | <- memory.region[n] -> | <- memblock.region[m] -> |
+                 +------------+-------------+------------------------+-----+------------------------+--------------------------+
+                 |            |             |                        |     |                        |                          |
+                 |            |             |                        | ... |                        |                          |
+                 |            |             |                        |     |                        |                          |
+                 +------------+-------------+------------------------+-----+------------------------+--------------------------+
+                       A              A            A                          A                     | <-- MEMBLOCK_MIRROR ---> |
+                       |              |            |                          |
+                       |              |            |                          |
+                       |              |            |                          o--- MEMBLOCK_DRIVER_MANAGED ==> Driver
+                       |              |            |                          
+                       |              |            |                          
+                       |              |            o-- MEMBLOCK_NOMAP    ==> PageReserved                      
+                       |              o--------------- MEMBLOCK_HOTPLUG  ==> Buddy      
+                       o------------------------------ MEMBLOCK_NONE     ==> Buddy     
+
+
+
+
+
+
+
 
 
