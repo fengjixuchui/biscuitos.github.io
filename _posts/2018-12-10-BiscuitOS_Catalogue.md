@@ -53,6 +53,7 @@ tags:
 >
 > - [问题反馈及留言](https://github.com/BiscuitOS/BiscuitOS/issues)
 
+![](/assets/PDB/GIF/BF000001.gif)
 ![](/assets/PDB/BGP/BGP000100.png)
 
 ## 内存管理
