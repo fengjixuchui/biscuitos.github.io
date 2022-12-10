@@ -7,7 +7,8 @@ excerpt: Catalogue.
 tags:
 ---
 
-![](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000204.gif)
+<!-- ![](https://gitee.com/BiscuitOS/GIFBaseX/raw/master/RPI/GIF000204.gif) -->
+![](/assets/PDB/GIF/BS00002.gif)
 
 ![](/assets/PDB/RPI/RPI100100.png)
 
@@ -54,7 +55,7 @@ tags:
 > - [问题反馈及留言](https://github.com/BiscuitOS/BiscuitOS/issues)
 
 ![](/assets/PDB/GIF/BF000001.gif)
-![](/assets/PDB/BGP/BGP000100.png)
+<!-- ![](/assets/PDB/BGP/BGP000100.png) -->
 
 ## 内存管理
 
@@ -272,7 +273,8 @@ tags:
 >
 >   - [OOM Mechanism](/blog/OOM/)
 
-![](/assets/PDB/BiscuitOS/kernel/IND000108.png)
+![](/assets/PDB/GIF/BS00003.gif)
+<!-- ![](/assets/PDB/BiscuitOS/kernel/IND000108.png) -->
 
 ## 虚拟文件系统
 
@@ -300,7 +302,8 @@ tags:
 >
 >   - [RISCV64 架构中添加新的系统调用](/blog/SYSCALL_ADD_NEW_RISCV64/)
 
-![](/assets/PDB/BGP/BGP000101.png)
+![](/assets/PDB/GIF/BF000000.gif)
+<!-- ![](/assets/PDB/BGP/BGP000101.png) -->
 
 ## 虚拟化
 
@@ -350,6 +353,7 @@ tags:
 >
 >   - [新增一个带 DMA 的 PCIe 设备](https://gitee.com/BiscuitOS_team/HardStack/tree/Gitee/Device-Driver/DMA/BiscuitOS-dma-device-QEMU-emulate)
 
+![](/assets/PDB/GIF/BF000002.gif)
 
 ### Basic Research
 
@@ -417,6 +421,7 @@ tags:
 >
 >   - [atomic 原子操作](/blog/ATOMIC/)
 
+![](/assets/PDB/BGP/BGP000100.png)
 
 ## Linux Source Code list
 
@@ -424,7 +429,7 @@ tags:
 >
 > - [Linux 5.x 函数列表](/blog/SC-LIST-5.0/)
 
-![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BiscuitOS/kernel/IND000108.png)
 
 ## <span id="Uboot">Bootloader</span>
 
@@ -464,7 +469,7 @@ tags:
 >
 > - [RISCV-64]()
 
-![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/GIF/BS00001.gif)
 
 ## <span id="Enginerring">Enginerring Hardware Practice</span>
 
@@ -526,7 +531,7 @@ tags:
 >
 >   - [tetris 俄罗斯方块](/blog/USER_tetris/)
 
-![](/assets/PDB/BiscuitOS/kernel/IND000100.png)
+![](/assets/PDB/BGP/BGP000101.png)
 
 ## <span id="Debug">Debug Tools and Usermanual </span>
 
