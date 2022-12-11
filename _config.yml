@@ -34,7 +34,7 @@ baidu_analytics: 5b31ffbbdc6cff18727f3adf75a03777    #from //hm.baidu.com/hm.js?
 author:
   #resume: /resume
   name: BiscuitOS     #the name of Blog section
-  about_me: BiscuitOS is Open Project which used to establish and build a simple linux-distro. The BiscuitOS running on ARM, ARM64, RISCV32, RISCV64 platform. The BiscuitOS base on 0.x, 1.x, 2.x, 3.x, 4.x, and 5.x and running on Qemu or RaspberryPi.
+  about_me: BiscuitOS 开源社区是中国(China)国内活跃的 Linux 技术实践分享社区，社区内集结了大批经验丰富和对 Linux 热爱的开发者，社区定期进行 Linux 相关的技术分享活动，致力于让更多的开发者热爱 Linux。社区还提供了 BiscuitOS、Broiler 等开源项目，帮助开发者能通过简单便捷的方式实践 Linux，克服因部署、硬件差异等带来的学习困难.
 
 # Social Links
 email:               buddy.zhang@aliyun.com
