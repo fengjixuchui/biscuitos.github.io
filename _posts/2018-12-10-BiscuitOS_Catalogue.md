@@ -87,13 +87,19 @@ tags:
 >
 >   - [X86 Architecture Register](/blog/Register/)
 >
-> - Cache/TLB
+> - Cache System[Updating]
 >
 >   - Cache Mechanism
 >
 >   - TLB Mechanism
 >
->   - Page table struct cache
+>   - Store Buffer
+>
+>   - Page-table struct cache
+>
+>   - Memory Ordering
+>
+>   - Memory Barriers Mechanism
 >
 > - Paging Mechanism
 >
