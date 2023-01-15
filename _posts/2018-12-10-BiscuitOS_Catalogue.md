@@ -89,7 +89,7 @@ tags:
 >
 > - Cache System[Updating]
 >
->   - Cache Mechanism
+>   - [Cache Mechanism](/blog/CACHE-ALL/)
 >
 >   - TLB Mechanism
 >
