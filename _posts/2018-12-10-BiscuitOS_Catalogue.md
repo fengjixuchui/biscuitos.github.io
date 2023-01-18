@@ -16,6 +16,8 @@ tags:
 
 > - [Build Linux 6.0 - RISCV32/RISCV64/ARM32/ARM64/I386/X86_64](/blog/Linux-6.x-x86_64-Usermanual/)
 >
+> - [BiscuitOS 最新发布文档](/blog/DOC-NEW-List/)
+>
 > - [Build Upstream Linux from Linus Torvalds](/blog/Kernel_Build/#Linux_newest)
 >
 > - [Build Linux 0.X](/blog/Kernel_Build/#Linux_0X)
@@ -59,7 +61,17 @@ tags:
 
 ## 内存管理
 
-> - [内存百科全书](/blog/Memory-Hardware/)
+> - 内存硬件架构
+>
+>   - [内存硬件基础](/blog/Memory-Hardware/)
+>
+>   - [CPU 总线/Intel CPU 总线]()
+>
+>   - [Intel X86 硬件架构]()
+>
+>   - [MMU 硬件架构]()
+>
+>   - [硬件存储子系统]()
 >
 > - 开源内存项目
 >
@@ -71,15 +83,17 @@ tags:
 >
 >   - [用户空间实现 Linux 内核分配器](/blog/Memory-Userspace/)
 >
-> - Physical Address Space
+> - Address Space
 >
 >   - [X86: Real Mode Address Space (\< 1 MiB)](/blog/MMU-seaBIOS_E820/#B0003)
 >
 >   - [i386/X86_64 Address Space Layout](/blog/Address-Space-i386)
 >
-> - Virtual Address Space
->
 >   - [进程地址空间构建研究](/blog/Process-Address-Space)
+>
+>   - [X86 IO Space]()
+>
+>   - [Memory Mmapping IO(MMIO)]()
 >
 > - Register
 >
@@ -95,13 +109,13 @@ tags:
 >
 >   - Store Buffer
 >
->   - Page-table struct cache
+>   - Paging-Struct cache
 >
 >   - Memory Ordering
 >
 >   - Memory Barriers Mechanism
 >
-> - Paging Mechanism
+> - Paging Mechanism[Updating]
 >
 >   - [Intel 32-Bit Paging Mechanism](/blog/32bit-Paging/)
 >
@@ -113,11 +127,27 @@ tags:
 >
 >   - [GUP: Get User Page Mechanism]()
 >
+>   - [Intel MTRR/PAT Mechanism]()
+>
+>   - [X86 Identity Mapping Mechanism]()
+>
+>   - [Kernel Linear Mapping Mechanism]()
+>
+> - Page Fault Mechanism[Updating]
+>
+>   - [Anonymous Shared/Private Page Fault]()
+>
+>   - [File Shared/Private Page Fault]()
+>
+>   - [缺页实践: Page Fault Practice and Trace on 32-Bit Paging](/blog/32bit-Paging/#K0)
+>
+>   - [userfaultfd mechanism]()
+>
 > - PCI/PCIe Bus
 >
 >   - [PCI and PCIe Address Space](/blog/PCI-Address-Space/)
 >
-> - I/O and Device Memory
+> - I/O and Device Memory[Updating]
 >
 >   - DMA Buffer
 >
@@ -125,23 +155,19 @@ tags:
 >
 >   - I/O Port Space
 >
-> - Physical Memory Topology
+> - Physical Memory Topology[Updating]
 >
->   - [Flat Memory Model]()
+>   - [Memory Model]() 
 >
->   - [Discontig Memory Model]()
+>   - [NUMA Topology]()
 >
->   - [SPARSE Memory Model]()
+>   - [Memory Interleave Topology]()
 >
->   - [NUMA]()
->
->   - [UMA]()
->
->   - [ZONE]()
+>   - [Physical Memory ZONE]()
 >
 >   - [Physical Page/Frame](/blog/PAGE/)
 >
-> - Memory Management on Architecutre
+> - Memory Management on Architecutre[Updating]
 >
 >   - I386 Memory Management
 >
@@ -205,47 +231,37 @@ tags:
 >
 >   - [Permanent Mapping Memory Allocator](/blog/PERMANENT-MEMAT/)
 >
-> - Page Fault Mechanism
->
->   - [Anonymous Shared/Private Page Fault]()
->
->   - [File Shared/Private Page Fault]()
->
->   - [缺页实践: Page Fault Practice and Trace on 32-Bit Paging](/blog/32bit-Paging/#K0)
->
->   - [userfaultfd mechanism]()
->
 > - Huge Page Mechanism
 >
 >   - [Hugetlb and Hugetlbfs Mechanism](/blog/Hugetlbfs)
 >
 >   - [Transparent HugePage Mechanism](/blog/THP/)
 >
-> - Memory MMAP Mechanism
+> - Memory Mmapping Mechanism[Updating]
 >
-> - Memory Compact Technology
+> - Memory Compact Technology[Updating]
 >
-> - Memory Reclaim Mechansim
+> - Memory Reclaim Mechansim[Updating]
 >
-> - Memory SWAP Mechanism
+> - Memory SWAP Mechanism[Updating]
 >
-> - Share Memory Mechanism
+> - Share Memory Mechanism[Updating]
 >
 >   - [SHM: Share Memory on Process]()
 >
 >   - [KSM: Kernel Same Page Mechanism]()
 >
-> - [Memory Hotplug Technology](/blog/MEMORY-HOTPLUG/)
+> - Memory Hotplug Technology
+>
+>   - [ACPI Memory Hotplug Technology](/blog/MEMORY-HOTPLUG/)
 >
 > - Memory Virtualize
 >
 >   - [QEMU Memory Manager for Virtual machine](/blog/QEMU-Memory-Manager-VM)
 >
-> - Memory Principle
+>   - [PIO/MMIO Virtualize](/blog/Broiler-vIO)
 >
->   - [PAT: Page Attribute Table]()
->
->   - [MTRR: Memory Type Range Register]()
+>   - [EPT Paging-Table Mechanism]()
 >
 > - Memory Diagnostic/Sanitizers Tools
 >
@@ -257,7 +273,7 @@ tags:
 >
 >   - [KASAN/KMEM]()
 >
-> - Userspace Memory Manager
+> - Userspace Memory Manager[Updating]
 >
 >   - GLIBC/LIBC: malloc/mallopt
 >
@@ -265,11 +281,13 @@ tags:
 >
 >   - libhugetlbfs: Hugetlb allocator on Userspace
 >
-> - 内存压测工具
+> - 内存压测工具[Updating]
 >
 >   - Intel MLC
 >
 >   - memtest
+>
+>   - RDT
 >
 > - Memory BUG
 >
@@ -278,6 +296,14 @@ tags:
 >   - [Memory UCE]()
 >
 >   - [OOM Mechanism](/blog/OOM/)
+>
+> - Memory RAS[Updating]
+>
+>   - [MCELOG/mcelog-dev Mechanism]()
+>
+>   - [Memory UE/CE]()
+>
+>   - [Memory Error Inject]()
 
 ![](/assets/PDB/GIF/BS00003.gif)
 <!-- ![](/assets/PDB/BiscuitOS/kernel/IND000108.png) -->
