@@ -11,7 +11,7 @@ tags:
 
 #### BiscuitOS Doc 3.0+
 
-> - [2022-01-01: 内存基础知识](/blog/Memory-Hardware/)
+> - [2023-01-01: 内存基础知识](/blog/Memory-Hardware/)
 >
 > - [2022-12-16: MEMBLOCK Physical Memory Allocator](/blog/MEMBLOCK-MEMAT/)
 >
