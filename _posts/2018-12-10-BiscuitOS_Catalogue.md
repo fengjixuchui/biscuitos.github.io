@@ -52,6 +52,8 @@ tags:
 >
 > - [Linux Favourable Mechansim](/blog/Human-Knowledge-Common/#H000023)
 >
+> - [BiscuitOS English Term Project]()
+>
 > - [BiscuitOS 社区技术论坛](https://github.com/BiscuitOS/BiscuitOS/discussions)
 >
 > - [问题反馈及留言](https://github.com/BiscuitOS/BiscuitOS/issues)
@@ -79,9 +81,9 @@ tags:
 >
 >   - [自己动手设计一个内存管理子系统 (ARM Architecture)](/blog/Design-MMU/)
 >
->   - [自己动手设计一个内存管理子系统 (X86 Architecture)](/blog/Design-MMU/)
+>   - [自己动手设计一个内存管理子系统 (X86 Architecture)[TODO]]()
 >
->   - [用户空间实现 Linux 内核分配器](/blog/Memory-Userspace/)
+>   - [用户空间实现 Linux 内核分配器[TODO]](/blog/Memory-Userspace/)
 >
 > - Address Space
 >
@@ -143,17 +145,19 @@ tags:
 >
 >   - [userfaultfd mechanism]()
 >
-> - PCI/PCIe Bus
+> - IO and MMIO
 >
 >   - [PCI and PCIe Address Space](/blog/PCI-Address-Space/)
 >
-> - I/O and Device Memory[Updating]
+>   - DMA
 >
 >   - DMA Buffer
 >
 >   - IOMMU
 >
->   - I/O Port Space
+>   - I/O Port
+>
+>   - MMIO
 >
 > - Physical Memory Topology[Updating]
 >
@@ -237,13 +241,23 @@ tags:
 >
 >   - [Transparent HugePage Mechanism](/blog/THP/)
 >
-> - Memory Mmapping Mechanism[Updating]
+> - Memory Mmapping Mechanism[TODO]
 >
-> - Memory Compact Technology[Updating]
+>   - [Anonymous and File mmapping Mechanism]()
 >
-> - Memory Reclaim Mechansim[Updating]
+>   - [Shared and Privated mmapping Mechanism]()
 >
-> - Memory SWAP Mechanism[Updating]
+>   - [ioremap Mechanism]()
+>
+>   - [/dev/mem Interface]()
+>
+> - Memory Compact Technology[TODO]
+>
+> - Memory Reclaim Mechansim[TODO]
+>
+> - Memory SWAP Mechanism[TODO]
+>
+> - Memory Migration Mechanism[TODO]
 >
 > - Share Memory Mechanism[Updating]
 >
@@ -254,6 +268,18 @@ tags:
 > - Memory Hotplug Technology
 >
 >   - [ACPI Memory Hotplug Technology](/blog/MEMORY-HOTPLUG/)
+>
+>   - [Boot-Time Memory Hotplug Technology]()
+>
+> - Memory Compress Mechanism[TODO]
+>
+>   - [ZSMALLOC Memory Allocator]()
+>
+>   - [ZPOOL Memory Allocator]()
+>
+>   - [ZBUD Memory Allocator]()
+>
+>   - [Z3FOLD Memory Allocator]()
 >
 > - Memory Virtualize
 >
@@ -273,7 +299,17 @@ tags:
 >
 >   - [KASAN/KMEM]()
 >
-> - Userspace Memory Manager[Updating]
+> - Memory Statistics Tools[TODO]
+>
+>   - VMSTAT Mechanism
+>
+>   - /proc/meminfo information
+>
+>   - free tools
+>
+>   - Memory Water-Line
+>
+> - Userspace Memory Manager[TODO]
 >
 >   - GLIBC/LIBC: malloc/mallopt
 >
@@ -281,7 +317,13 @@ tags:
 >
 >   - libhugetlbfs: Hugetlb allocator on Userspace
 >
-> - 内存压测工具[Updating]
+>   - libnuma: NUMA on Userspace
+> 
+>   - madvise/fadvise Mechanism
+>
+>   - mprotect Mechanism
+>
+> - 内存压测工具[TODO]
 >
 >   - Intel MLC
 >
@@ -303,7 +345,9 @@ tags:
 >
 >   - [Memory UE/CE]()
 >
->   - [Memory Error Inject]()
+>   - [Memory Hwpoison Inject]()
+>
+>   - [Page-Offline and Memory-Failure Mechanism]()
 
 ![](/assets/PDB/GIF/BS00003.gif)
 <!-- ![](/assets/PDB/BiscuitOS/kernel/IND000108.png) -->
