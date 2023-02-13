@@ -13,6 +13,8 @@ tags:
 
 ![](/assets/PDB/BiscuitOS/kernel/IND00000L0.PNG)
 
+![](/assets/PDB/RPI/RPI100100.png)
+
 #### 目录
 
 > - [Early IO/RSVD-MEM 内存分配器原理](#A)
